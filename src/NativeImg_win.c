@@ -16,7 +16,7 @@ BITMAP createWinBmap(const Image* image) {
 		bmap.bmHeight = image->imageData.tiff.length;
 		bmap.bmWidthBytes = (image->imageData.tiff.width * sizeof(uint32)) / sizeof(BYTE);
 
-		revrsColorEncoding(image->imageData.tiff.raster, bmap.bmHeight * bmap.bmWidth); // Should maybe move to ImgTIFF
+		revrsColorBits_RB(image->imageData.tiff.raster, bmap.bmHeight * bmap.bmWidth); // Should maybe move to ImgTIFF
 		bmap.bmBits = image->imageData.tiff.raster;
 #endif
 		break;

@@ -1,8 +1,17 @@
 #include "ImageSupport.h"
 
+#ifndef IMAGE_LOADER_H
+
+
+
 typedef struct _Image Image;
 
 #define BAD_COLOR_CODE 0xFF000000
+
+#define ALPHA_BITS_MASK 0xFF000000 // alpha channel represented by first two bytes
+#define RED_BITS_MASK 0x00FF0000 // red channel represented by second two bytes
+#define GREEN_BITS_MASK 0x0000FF00 // green channel represented by third two bytes
+#define BLUE_BITS_MASK 0x000000FF // blue channel represented by last two bytes
 
 #ifdef USE_IMG_TIFF
 #include <tiffio.h>
@@ -116,7 +125,7 @@ typedef struct _Image {
 
 
 // General purpose functions
-void revrsColorEncoding(uint32_t* raster, unsigned int pCount);// Utility Function
+void revrsColorBits_RB(uint32_t* raster, unsigned int pCount);// Utility Function
 void makeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal);
 
 void createImage(const char* fileName, Image* image);
@@ -135,3 +144,6 @@ void createImage(const char* fileName, Image* image);
 	void drawWinBmap(HWND hwnd, const BITMAP* bmap);
 	// void drawWinBmap(HWND hwnd, const Image* image);
 #endif // Port later to some Internal.h header
+
+#define IMAGE_LOADER_H
+#endif // IMAGE_LOADER_H

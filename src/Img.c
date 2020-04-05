@@ -1,7 +1,9 @@
+/* Provide general image utilities */
+
 #include "ImageLoader.h"
 
 // Reverses the blue and the red bits of the image
-void revrsColorEncoding(uint32_t* raster, unsigned int pCount) {
+void revrsColorBits_RB(uint32_t* raster, unsigned int pCount) {
 	unsigned int bCount = pCount * 8;
 	for (unsigned int i = 0; i < pCount; i++) {
 		unsigned int val = *(raster + i);
@@ -17,10 +19,17 @@ void makeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal) {
 	return;
 }
 
-void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newColorVal, uint32_t oldColorVal) {
+void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, uint32_t oldClr) {
 	for (unsigned int i = 0; i < pCount; i++)
-		if (*(raster + i) == oldColorVal)
-			*(raster + i) = newColorVal;
+		if (*(raster + i) == oldClr) 
+			*(raster + i) = newClr;
+	return;
+}
+
+uint32_t grayify(uint32_t refClr){
+	uint8_t greyVal = ((uint32_t)(refClr & 0xFF) + (uint32_t)(refClr & 0xFF00) + (uint32_t)(refClr & 0xFF0000)) / 3;
+	uint8_t alpha = refClr & 0xFF000000;
+	return (uint32_t)((alpha << 24) | (greyVal << 16) | (greyVal << 8) | greyVal);
 }
 
 
