@@ -37,7 +37,7 @@ ExternalProject_Add(libpng
 set(LIBTIFF_DIR "${EXTERNAL_PROJ_DIR}/libtiff")
 ExternalProject_Add(libtiff
     GIT_REPOSITORY "https://github.com/Anton-Os/libtiff.git"
-    GIT_TAG "24ec5574b8eb700912f5b7f0ded373e59d3596d5"
+    GIT_TAG "790fdb276eb8dc119c18a55dc92f202e6e0025c1"
 
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_INSTALL_DIR}
 
@@ -51,13 +51,32 @@ ExternalProject_Add(libtiff
 
 set(RASTERON_SRC 
     src/Img.c 
-    src/ImgTIFF.c 
+    # src/ImgTIFF.c 
     src/ImgBmp.c 
     src/ImgTarga.c
-    src/ImgPng.c
+    # src/ImgPng.c
 )
 
-if(WIN32) # Conditional sources
+
+# MIGHT NEED TO PATCH
+find_package(libpng16 PATHS ${EXTERNAL_INSTALL_DIR}/lib/libpng)
+if(libpng16_FOUND)
+    set(PNG_SUPPORT_STR "#define USE_IMG_PNG")
+    list(APPEND Rasteron src/ImgPng.c)
+else(NOT libpng16_FOUND)
+    set(PNG_SUPPORT_STR "// #define USE_IMG_PNG")
+endif(libpng16_FOUND)
+
+find_package(libtiff PATHS ${EXTERNAL_INSTALL_DIR}/lib/libtiff)
+if(libtiff_FOUND)
+    set(TIFF_SUPPORT_STR "#define USE_IMG_TIFF")
+    list(APPEND Rasteron src/ImgTIFF.c)
+else(NOT libtiff_FOUND)
+    set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
+endif(libtiff_FOUND)
+
+
+if(WIN32) # Conditional OS Sources
     list(APPEND RASTERON_SRC src/NativeImg_win.c)
 endif()
 
@@ -67,5 +86,9 @@ add_library(Rasteron STATIC
 
 target_include_directories(Rasteron
     PUBLIC include
-    PRIVATE ${ZLIB_DIR} ${ZLIB_DIR}/Build ${LIBTIFF_DIR}/Build ${LIBPNG_DIR}
+)
+
+target_link_libraries(Rasteron
+    tiff
+    png
 )

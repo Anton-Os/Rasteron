@@ -89,7 +89,7 @@ typedef struct {
 
 	uint8_t count; 
 	uint32_t** rasters; // For animated/layered image support
-}
+};
 
 
 // Generalized image structures
