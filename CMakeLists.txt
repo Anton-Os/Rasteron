@@ -76,19 +76,21 @@ else(NOT libtiff_FOUND)
 endif(libtiff_FOUND)
 
 
+
 if(WIN32) # Conditional OS Sources
     list(APPEND RASTERON_SRC src/NativeImg_win.c)
 endif()
 
-add_library(Rasteron STATIC
-    ${RASTERON_SRC}
-)
+add_library(Rasteron STATIC  ${RASTERON_SRC})
 
-target_include_directories(Rasteron
-    PUBLIC include
-)
+target_include_directories(Rasteron PUBLIC include )
 
-target_link_libraries(Rasteron
-    tiff
-    png
-)
+# target_link_libraries(Rasteron tiff png) # FIX THIS!
+target_link_libraries(Rasteron tiff)
+
+
+if(WIN32)
+    add_executable(DemoImaging demos/DemoImaging_win.c)
+    target_include_directories(DemoImaging PUBLIC include)
+    target_link_libraries(DemoImaging Rasteron)
+endif()

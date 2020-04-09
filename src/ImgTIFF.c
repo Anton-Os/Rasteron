@@ -27,7 +27,7 @@ void loadImage_TIFF(const char* fileName, Image* image) {
 	return;
 }
 
-void delImage_TIFF(Image* image) {
+void delImage_TIFF(const Image* image) {
 	if (image->fileFormat != IMG_Tiff) {
 		puts("Image provided for deletion is not TIFF type");
 		return;

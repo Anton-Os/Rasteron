@@ -29,7 +29,7 @@ typedef struct {
 } ImageData_Tiff; // TIFF-specific Data Structure
 
 void loadImage_TIFF(const char* fileName, Image* image);
-void delImage_TIFF(Image* image);
+void delImage_TIFF(const Image* image);
 #endif // USE_IMG_TIFF
 
 
