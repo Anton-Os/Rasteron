@@ -12,17 +12,17 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case (WM_CREATE): {
 	}
 	case (WM_PAINT): {
-		//Image img1 = { 0 };
-		/* loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img1);
+		Image img1 = { 0 };
+		loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img1);
 		makeSolidColor(img1.imageData.tiff.raster,
 			img1.imageData.tiff.length * img1.imageData.tiff.width,
-			0x00FFFF00); */
-        //BITMAP bmap1 = createWinBmap(&img1);
-        //drawWinBmap(hwnd, &bmap1);
-		//delImage_TIFF(&img1); // FIX THIS!!! Unresolved?
+			0x00FFFF00);
+        BITMAP bmap1 = createWinBmap(&img1);
+        drawWinBmap(hwnd, &bmap1);
+		delImage_TIFF(&img1); // FIX THIS!!! Unresolved?
 
 		Image img2 = { 0 };
-		loadImage_BMP("\\..\\res\\PurpleCult.bmp", &img2);
+		loadImage_BMP("C:\\AntonDocs\\Design\\PurpleCult2.bmp", &img2);
 		BITMAP bmap2 = createWinBmap(&img2);
         drawWinBmap(hwnd, &bmap2);
         delImage_BMP(&img2);

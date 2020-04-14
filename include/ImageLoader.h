@@ -3,7 +3,6 @@
 #ifndef IMAGE_LOADER_H
 
 
-
 typedef struct _Image Image;
 
 #define BAD_COLOR_CODE 0xFF000000

@@ -5,11 +5,6 @@ BITMAP createWinBmap(const Image* image) {
 
 	switch (image->fileFormat) {
 
-	// All bitmaps have these properties regardless
-	bmap.bmType = 0;
-	bmap.bmPlanes = 1;
-	bmap.bmBitsPixel = 32;
-
 	case(IMG_Tiff):
 #ifdef USE_IMG_TIFF
 		bmap.bmWidth = image->imageData.tiff.width;
@@ -55,6 +50,11 @@ BITMAP createWinBmap(const Image* image) {
 		puts("Image Format not yet supported!!!");
 		break;
 	}
+
+	// All bitmaps have these properties regardless
+	bmap.bmType = 0;
+	bmap.bmPlanes = 1;
+	bmap.bmBitsPixel = 32;
 
     // In case a macro isnt defined include an empty bitmap error check here
 

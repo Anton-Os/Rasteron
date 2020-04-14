@@ -2,6 +2,10 @@
 
 #include "ImageLoader.h"
 
+static enum IMG_FileFormat getFileExtension(const char* filePath) {
+	return IMG_NonValid;
+}
+
 // Reverses the blue and the red bits of the image
 void revrsColorBits_RB(uint32_t* raster, unsigned int pCount) {
 	unsigned int bCount = pCount * 8;
@@ -26,10 +30,17 @@ void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, ui
 	return;
 }
 
-uint32_t grayify(uint32_t refClr){
+// Produces a 32 bit grey value based on provided reference color
+uint32_t grayify_32(uint32_t refClr){
 	uint8_t greyVal = ((uint32_t)(refClr & 0xFF) + (uint32_t)(refClr & 0xFF00) + (uint32_t)(refClr & 0xFF0000)) / 3;
 	uint8_t alpha = refClr & 0xFF000000;
 	return (uint32_t)((alpha << 24) | (greyVal << 16) | (greyVal << 8) | greyVal);
+}
+
+// Produces a 8 bit grey value based on provided reference color
+uint8_t grayify_8(uint32_t refClr){
+	uint8_t greyVal = ((uint32_t)(refClr & 0xFF) + (uint32_t)(refClr & 0xFF00) + (uint32_t)(refClr & 0xFF0000)) / 3;
+	return greyVal;
 }
 
 
