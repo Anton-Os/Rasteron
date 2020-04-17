@@ -45,5 +45,6 @@ void delImage_Targa(Image* image) {
 		return;
 	}
 	free(image->imageData.targa.data);
+	image->fileFormat = IMG_NonValid;
 	return;
 }

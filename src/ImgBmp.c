@@ -52,5 +52,6 @@ void delImage_BMP(Image* image) {
 		return;
 	}
 	free(image->imageData.bmp.data);
+	image->fileFormat = IMG_NonValid;
 	return;
 }

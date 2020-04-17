@@ -90,5 +90,6 @@ void delImage_PNG(Image* image) {
 	free(image->imageData.png.rowPtrs);
 
 	free(image->imageData.png.rgbaData);
+	image->fileFormat = IMG_NonValid;
 	return;
 }

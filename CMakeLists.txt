@@ -15,8 +15,6 @@ ExternalProject_Add(zlib
 
     PREFIX ${ZLIB_DIR}
     BINARY_DIR ${ZLIB_DIR}/Build
-    # INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    # INSTALL_DIR ${ZLIB_DIR}/Install
 )
 
 set(LIBPNG_DIR "${EXTERNAL_PROJ_DIR}/libpng")
@@ -28,11 +26,16 @@ ExternalProject_Add(libpng
 
     PREFIX ${LIBPNG_DIR}
     BINARY_DIR ${LIBPNG_DIR}/Build
-    # INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    # INSTALL_DIR ${LIBPNG_DIR}/Install
 
     DEPENDS zlib
 )
+
+add_custom_target(pngconfig
+    COMMAND ${CMAKE_COMMAND} 
+        -E copy ${EXTERNAL_INSTALL_DIR}/lib/libpng/libpng16.cmake ${EXTERNAL_INSTALL_DIR}/lib/libpng/libpng-config.cmake
+    DEPENDS libpng
+)
+
 
 set(LIBTIFF_DIR "${EXTERNAL_PROJ_DIR}/libtiff")
 ExternalProject_Add(libtiff
@@ -43,8 +46,6 @@ ExternalProject_Add(libtiff
 
     PREFIX ${LIBTIFF_DIR}
     BINARY_DIR ${LIBTIFF_DIR}/Build
-    # INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    # INSTALL_DIR ${LIBTIFF_DIR}/Install
 
     DEPENDS zlib
 )
@@ -54,21 +55,18 @@ set(RASTERON_SRC
     src/ImgTIFF.c 
     src/ImgBmp.c 
     src/ImgTarga.c
+    # src/ImgPng.c
 
     src/Cellwise/Cellwise.c
-    
-    # src/ImgPng.c
 )
 
-
-# MIGHT NEED TO PATCH
-find_package(libpng16 PATHS ${EXTERNAL_INSTALL_DIR}/lib/libpng)
-if(libpng16_FOUND)
+find_package(libpng PATHS ${EXTERNAL_INSTALL_DIR}/lib/libpng)
+if(libpng_FOUND)
     set(PNG_SUPPORT_STR "#define USE_IMG_PNG")
     list(APPEND Rasteron src/ImgPng.c)
-else(NOT libpng16_FOUND)
+else(NOT libpng_FOUND)
     set(PNG_SUPPORT_STR "// #define USE_IMG_PNG")
-endif(libpng16_FOUND)
+endif(libpng_FOUND)
 
 find_package(libtiff PATHS ${EXTERNAL_INSTALL_DIR}/lib/libtiff)
 if(libtiff_FOUND)
@@ -77,6 +75,10 @@ if(libtiff_FOUND)
 else(NOT libtiff_FOUND)
     set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
 endif(libtiff_FOUND)
+
+# Probably need a GLOB expression
+#add_custom_target(copySharedLibs
+#)
 
 
 

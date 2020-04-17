@@ -33,5 +33,6 @@ void delImage_TIFF(const Image* image){
 		return;
 	}
 	_TIFFfree(image->imageData.tiff.raster);
+	image->fileFormat = IMG_NonValid;
 	return;
 }

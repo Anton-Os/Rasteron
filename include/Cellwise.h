@@ -69,8 +69,6 @@ typedef struct {
     float weight;
 } PixelWeight;
 
-// Checks whether cell neighbors exist
-nebrCheckFlags check_existNebrs(uint32_t imgWidth, uint32_t imgHeight, uint32_t index);
 //nebrCheckFlags check_colorRangeNebrs_BW(PixelCRange_BW pixCRange, uint8_t greyRef, enum NBR_ColorRange_Mode mode);
 //nebrCheckFlags check_colorRangeNebrs_RGBA(PixelCRange_RGBA pixCRange, uint32_t colorRef, enum NBR_ColorRange_Mode mode);
 
@@ -80,4 +78,8 @@ typedef struct {
     unsigned short nebrCount;
 } nebrTable;
 
+// Checks whether cell neighbors exist
+nebrCheckFlags check_existNebrs(uint32_t imgWidth, uint32_t imgHeight, uint32_t index);
+
 nebrTable* gen_nebrTables(const Image* image);
+void del_nebrTables();
