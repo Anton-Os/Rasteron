@@ -28,7 +28,7 @@ typedef struct {
 } ImageData_Tiff; // TIFF-specific Data Structure
 
 void loadImage_TIFF(const char* fileName, Image* image);
-void delImage_TIFF(const Image* image);
+void delImage_TIFF(Image* image);
 #endif // USE_IMG_TIFF
 
 
@@ -88,7 +88,7 @@ typedef struct {
 
 	uint8_t count; 
 	uint32_t** rasters; // For animated/layered image support
-};
+}ImageData_Custom;
 
 
 // Generalized image structures
@@ -115,6 +115,7 @@ union ImageData {
 	#ifdef USE_IMG_TARGA // DEFECTIVE!
 		ImageData_Targa targa;
 	#endif
+	ImageData_Custom custom;
 };
 
 typedef struct _Image {

@@ -75,11 +75,19 @@ typedef struct {
 typedef struct {
     uint32_t* target;
     uint32_t** nebrs;
-    unsigned short nebrCount;
-} nebrTable;
+    nebrCheckFlags nebrExistFlags;
+    // unsigned short nebrCount;
+} NebrTable;
+
+typedef struct {
+	uint32_t count;
+	NebrTable* tables;
+} NebrTable_List;
 
 // Checks whether cell neighbors exist
-nebrCheckFlags check_existNebrs(uint32_t imgWidth, uint32_t imgHeight, uint32_t index);
+nebrCheckFlags check_existNebrs(uint32_t index, uint32_t imgWidth, uint32_t imgHeight);
 
-nebrTable* gen_nebrTables(const Image* image);
-void del_nebrTables();
+// NebrTable* gen_nebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight);
+NebrTable_List* gen_nebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight);
+// void del_nebrTables(NebrTable* nebrTable);
+void del_nebrTables(NebrTable_List* nebrTables);

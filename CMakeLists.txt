@@ -19,8 +19,8 @@ ExternalProject_Add(zlib
 
 set(LIBPNG_DIR "${EXTERNAL_PROJ_DIR}/libpng")
 ExternalProject_Add(libpng
-    GIT_REPOSITORY "https://github.com/glennrp/libpng.git"
-    GIT_TAG "3cec1a16f5ec9ad925ce71785a2b429b02de5fec"
+    GIT_REPOSITORY "https://github.com/Anton-Os/libpng.git"
+    GIT_TAG "a2446b1e4becfeaf480ffc315c44e194bf7c114a"
 
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_INSTALL_DIR}
 
@@ -55,7 +55,7 @@ set(RASTERON_SRC
     src/ImgTIFF.c 
     src/ImgBmp.c 
     src/ImgTarga.c
-    # src/ImgPng.c
+    src/ImgPng.c
 
     src/Cellwise/Cellwise.c
 )
@@ -90,12 +90,16 @@ add_library(Rasteron STATIC  ${RASTERON_SRC})
 
 target_include_directories(Rasteron PUBLIC include )
 
-# target_link_libraries(Rasteron tiff png) # FIX THIS!
-target_link_libraries(Rasteron tiff)
+target_link_libraries(Rasteron tiff png) # FIX THIS!
+# target_link_libraries(Rasteron tiff)
 
 
 if(WIN32)
     add_executable(DemoImaging demos/DemoImaging_win.c)
     target_include_directories(DemoImaging PUBLIC include)
     target_link_libraries(DemoImaging Rasteron)
+
+    add_executable(DemoCellwise demos/DemoCellwise_win.c)
+    target_include_directories(DemoCellwise PUBLIC include)
+    target_link_libraries(DemoCellwise Rasteron)
 endif()
