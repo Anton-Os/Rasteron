@@ -73,7 +73,7 @@ typedef struct {
 //nebrCheckFlags check_colorRangeNebrs_RGBA(PixelCRange_RGBA pixCRange, uint32_t colorRef, enum NBR_ColorRange_Mode mode);
 
 typedef struct {
-    uint32_t* target;
+    const uint32_t* target;
     uint32_t** nebrs;
     nebrCheckFlags nebrExistFlags;
     // unsigned short nebrCount;
@@ -90,4 +90,5 @@ nebrCheckFlags check_existNebrs(uint32_t index, uint32_t imgWidth, uint32_t imgH
 // NebrTable* gen_nebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight);
 NebrTable_List* gen_nebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight);
 // void del_nebrTables(NebrTable* nebrTable);
+void print_nebrTables(const NebrTable_List* nebrTables); // For debug purposes
 void del_nebrTables(NebrTable_List* nebrTables);

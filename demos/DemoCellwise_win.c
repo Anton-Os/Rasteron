@@ -14,9 +14,15 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 	case (WM_PAINT): {
 		Image img2 = { 0 };
-		loadImage_BMP("C:\\AntonDocs\\Design\\PurpleCult2.bmp", &img2);
+		// loadImage_BMP("C:\\AntonDocs\\Design\\PurpleCult2.bmp", &img2);
+		loadImage_BMP("C:\\AntonDocs\\Design\\Small.bmp", &img2);
 
-		NebrTable* neighborTable = gen_nebrTables(img2.imageData.bmp.data, img2.imageData.bmp.width, img2.imageData.bmp.height);
+		NebrTable_List* neighborTable = gen_nebrTables(
+			img2.imageData.bmp.data, 
+			abs(img2.imageData.bmp.width), // abs is bmp specific
+			abs(img2.imageData.bmp.height) // abs is bmp specific
+		);
+		print_nebrTables(neighborTable);
 		del_nebrTables(neighborTable);
 
         // Cellwise modifier functions

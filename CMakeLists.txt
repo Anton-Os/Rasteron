@@ -87,11 +87,19 @@ if(WIN32) # Conditional OS Sources
 endif()
 
 add_library(Rasteron STATIC  ${RASTERON_SRC})
-
 target_include_directories(Rasteron PUBLIC include )
-
 target_link_libraries(Rasteron tiff png) # FIX THIS!
-# target_link_libraries(Rasteron tiff)
+
+
+if(WIN32)
+    file(GLOB sLibTarg ${EXTERNAL_INSTALL_DIR}/bin/*.dll)
+
+    foreach(file IN ITEMS ${sLibTarg})
+        add_custom_command(TARGET Rasteron POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy 
+            "${file}" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/")
+    endforeach()
+endif()
 
 
 if(WIN32)
