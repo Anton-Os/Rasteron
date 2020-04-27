@@ -58,6 +58,7 @@ set(RASTERON_SRC
     src/ImgPng.c
 
     src/Cellwise/Cellwise.c
+    src/Primitives/Rasteron_Primitives.c
 )
 
 find_package(libpng PATHS ${EXTERNAL_INSTALL_DIR}/lib/libpng)
@@ -110,4 +111,8 @@ if(WIN32)
     add_executable(DemoCellwise demos/DemoCellwise_win.c)
     target_include_directories(DemoCellwise PUBLIC include)
     target_link_libraries(DemoCellwise Rasteron)
+
+    add_executable(DemoPrim demos/DemoPrim_win.c)
+    target_include_directories(DemoPrim PUBLIC include)
+    target_link_libraries(DemoPrim Rasteron)
 endif()
