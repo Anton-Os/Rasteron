@@ -16,8 +16,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		Image img2 = { 0 };
 		loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
 
-		Rasteron_ImageSq* imageSq = createImageSq_Rstn(&img2);
-		delImageSq_Rstn(imageSq);
+		Rasteron_Image* rImage = rstnCreate_Base(&img2);
+		Rasteron_Image* rImageGrey = rstnCreate_Grey(rImage);
+		delImage_Rstn(rImage);
+		delImage_Rstn(rImageGrey);
 		
         delImage_TIFF(&img2);
 	}

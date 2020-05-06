@@ -26,16 +26,6 @@ BITMAP createWinBmap(const Image* image) {
 #endif
 		break;
 
-	case(IMG_Targa):
-#ifdef USE_IMG_TARGA // DEFECTIVE!!
-		bmap.bmWidth = abs(image->imageData.targa.width);
-		bmap.bmHeight = abs(image->imageData.targa.height);
-		bmap.bmWidthBytes = (image->imageData.targa.width * sizeof(int32_t)) / sizeof(BYTE);
-
-		bmap.bmBits = image->imageData.targa.data;
-#endif
-		break;
-
 	case(IMG_Png):
 #ifdef USE_IMG_PNG
 		bmap.bmWidth = image->imageData.png.width;

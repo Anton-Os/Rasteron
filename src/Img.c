@@ -34,7 +34,9 @@ void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, ui
 uint32_t grayify_32(uint32_t refClr){
 	uint8_t greyVal = ((uint32_t)(refClr & 0xFF) + (uint32_t)(refClr & 0xFF00) + (uint32_t)(refClr & 0xFF0000)) / 3;
 	uint8_t alpha = refClr & 0xFF000000;
-	return (uint32_t)((alpha << 24) | (greyVal << 16) | (greyVal << 8) | greyVal);
+	uint32_t result = ((alpha << 24) | (greyVal << 16) | (greyVal << 8) | greyVal);
+	return result;
+	// return (uint32_t)((alpha << 24) | (greyVal << 16) | (greyVal << 8) | greyVal);
 }
 
 // Produces a 8 bit grey value based on provided reference color

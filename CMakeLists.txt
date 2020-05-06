@@ -53,8 +53,7 @@ ExternalProject_Add(libtiff
 set(RASTERON_SRC 
     src/Img.c 
     src/ImgTIFF.c 
-    src/ImgBmp.c 
-    src/ImgTarga.c
+    src/ImgBmp.c
     src/ImgPng.c
 
     src/Cellwise/Cellwise.c

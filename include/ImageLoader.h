@@ -65,41 +65,11 @@ void delImage_BMP(Image* image);
 #endif // USE_IMG_BMP
 
 
-// Issues with TARGA, not the biggest fan
-#ifdef USE_IMG_TARGA
-typedef struct {
-	int8_t idfield;
-	int16_t height;
-	int16_t width;
-	int8_t depth;
-
-	int32_t* data;
-} ImageData_Targa;
-
-void loadImage_Targa(const char* fileName, Image* image);
-void delImage_Targa(Image* image);
-#endif // USE_IMG_TARGA
-
-// CUSTOM IMAGE STRUCTURE
-
-/* typedef struct {
-	uint32_t width;
-	uint32_t height;
-
-	uint8_t count; 
-	uint32_t** rasters; // For animated/layered image support
-}ImageData_Custom; */
-
-
-// Generalized image structures
-
 enum IMG_FileFormat {
 	IMG_NonValid = 0,
 	IMG_Tiff = 1,
 	IMG_Png = 2,
 	IMG_Bmp = 3,
-	IMG_Targa = 4,
-	IMG_Custom = 5
 };
 
 union ImageData {
@@ -112,10 +82,6 @@ union ImageData {
 	#ifdef USE_IMG_BMP
 		ImageData_Bmp bmp;
 	#endif
-	#ifdef USE_IMG_TARGA // DEFECTIVE!
-		ImageData_Targa targa;
-	#endif
-	// ImageData_Custom custom;
 };
 
 typedef struct _Image {
@@ -127,6 +93,7 @@ typedef struct _Image {
 // General purpose functions
 void revrsColorBits_RB(uint32_t* raster, unsigned int pCount);// Utility Function
 void makeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal);
+uint32_t grayify_32(uint32_t refClr);
 
 void createImage(const char* fileName, Image* image);
 

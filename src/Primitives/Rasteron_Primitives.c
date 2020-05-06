@@ -1,37 +1,40 @@
 #include "Rasteron.h"
 
-Rasteron_ImageSq* createImageSq_Rstn(const Image* image){
-    	Rasteron_ImageSq* rstn_imageSq = (Rasteron_ImageSq*)malloc(sizeof(Rasteron_ImageSq));
-        rstn_imageSq->count = 1;
-        // rstn_imageSq->labels[0] = "base"; // Furst label
-        rstn_imageSq->data = (uint32_t**)malloc(sizeof(uint32_t*)); // Just using a base imaage for now!
+Rasteron_Image* rstnCreate_Base(const Image* image){
+	if (image == NULL) {
+		puts("Cannot create base image! Null pointer provided!");
+		return NULL;
+	}
 
-        switch(image->fileFormat){
+    Rasteron_Image* rstn_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+    rstn_image->name = "base";
 
-        case(IMG_Tiff):
+    switch(image->fileFormat){
+
+    case(IMG_Tiff):
 #ifdef USE_IMG_TIFF
-		rstn_imageSq->width = image->imageData.tiff.width;
-        rstn_imageSq->height = image->imageData.tiff.length;
-        *(rstn_imageSq->data) = (uint32_t*)malloc(rstn_imageSq->width * rstn_imageSq->height * sizeof(uint32_t));
-        *(*(rstn_imageSq->data)) = *(image->imageData.tiff.raster); // One member so far, we are copying the image to "base"
+		rstn_image->width = image->imageData.tiff.width;
+        rstn_image->height = image->imageData.tiff.length;
+        rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
+        *(rstn_image->data) = *(image->imageData.tiff.raster);
 #endif
-		break;
+	break;
 
 	case(IMG_Bmp):
 #ifdef USE_IMG_BMP
-		rstn_imageSq->width = image->imageData.bmp.width;
-        rstn_imageSq->height = image->imageData.bmp.height;
-        *(rstn_imageSq->data) = (uint32_t*)malloc(rstn_imageSq->width * rstn_imageSq->height * sizeof(uint32_t));
-        *(rstn_imageSq->data) = *(image->imageData.bmp.data);
+		rstn_image->width = abs(image->imageData.bmp.width);
+        rstn_image->height = abs(image->imageData.bmp.height);
+        rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
+        *(rstn_image->data) = *(image->imageData.bmp.data);
 #endif
 		break;
 	
     case(IMG_Png):
 #ifdef USE_IMG_PNG
-		rstn_imageSq->width = image->imageData.png.width;
-        rstn_imageSq->height = image->imageData.png.height;
-        *(rstn_imageSq->data) = (uint32_t*)malloc(rstn_imageSq->width * rstn_imageSq->height * sizeof(uint32_t));
-        *(rstn_imageSq->data) = *(image->imageData.png.rgbaData);
+		rstn_image->width = image->imageData.png.width;
+        rstn_image->height = image->imageData.png.height;
+        rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
+        *(rstn_image->data) = *(image->imageData.png.rgbaData);
 #endif
 		break;
 
@@ -40,12 +43,31 @@ Rasteron_ImageSq* createImageSq_Rstn(const Image* image){
 		break;
 	}
 
-	return rstn_imageSq;
+	return rstn_image;
+}
+Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref) {
+	if (ref == NULL) {
+		puts("Cannot create grey image! Null pointer provided!");
+		return NULL;
+	}
+
+	Rasteron_Image* rstn_image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	rstn_image->name = "grey";
+
+	rstn_image->height = ref->height;
+	rstn_image->width = ref->width;
+	
+	uint32_t grey;
+	rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
+	for (unsigned p = 0; p < rstn_image->width * rstn_image->height; p++) {
+		grey = (uint32_t)grayify_32(*(ref->data));
+		*(rstn_image->data + p) = grey;
+	}
+
+	return rstn_image;
 }
 
-void delImageSq_Rstn(Rasteron_ImageSq* rstn_image){
-    for(unsigned short i = 0; i < rstn_image->count; i++)
-        free(*(rstn_image->data) + i);
+void delImage_Rstn(Rasteron_Image* rstn_image){
     free(rstn_image->data);
     free(rstn_image);
 }

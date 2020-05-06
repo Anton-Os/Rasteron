@@ -4,10 +4,10 @@ typedef struct {
 	uint32_t width;
 	uint32_t height;
 
-	uint8_t count;
-    char** labels;
-	uint32_t** data; // For animated/layered image support
-} Rasteron_ImageSq;
+    // Base of the image
+    char* name;
+    uint32_t* data;
+} Rasteron_Image;
 
 typedef struct {
     float topLeft_Pt[2];
@@ -17,12 +17,14 @@ typedef struct {
 } Rasteron_BoxBounds;
 
 typedef struct {
-    Rasteron_ImageSq images;
+    Rasteron_Image images;
     Rasteron_BoxBounds bounds;
 } Rasteron_Sprite;
 
-Rasteron_ImageSq* createImageSq_Rstn(const Image* image); // Creates an image based on my readers
-Rasteron_Sprite* createSprite_Rstn(const Rasteron_ImageSq* rstn_image); // Creates a sprite based on rstn image above
+Rasteron_Image* rstnCreate_Base(const Image* image); // Creates an image based on my readers
+// Rasteron_Sprite* createSprite_Rstn(const Rasteron_Image* rstn_image); // Creates a sprite based on rstn image above
 
-void delImageSq_Rstn(Rasteron_ImageSq* rstn_image);
+Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref); // Add after appropriate allocation
+
+void delImage_Rstn(Rasteron_Image* rstn_image);
 void delSprite_Rstn(Rasteron_Sprite* rstn_sprite);
