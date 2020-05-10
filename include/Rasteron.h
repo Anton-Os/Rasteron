@@ -1,5 +1,9 @@
 #include "ImageLoader.h"
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+
 typedef struct {
 	uint32_t width;
 	uint32_t height;
@@ -28,3 +32,7 @@ Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref); // Add after appropr
 
 void delImage_Rstn(Rasteron_Image* rstn_image);
 void delSprite_Rstn(Rasteron_Sprite* rstn_sprite);
+
+#ifdef __cplusplus
+}
+#endif

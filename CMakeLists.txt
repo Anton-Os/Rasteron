@@ -63,7 +63,7 @@ set(RASTERON_SRC
 find_package(libpng PATHS ${EXTERNAL_INSTALL_DIR}/lib/libpng)
 if(libpng_FOUND)
     set(PNG_SUPPORT_STR "#define USE_IMG_PNG")
-    list(APPEND Rasteron src/ImgPng.c)
+    # list(APPEND RASTERON_SRC src/ImgPng.c)
 else(NOT libpng_FOUND)
     set(PNG_SUPPORT_STR "// #define USE_IMG_PNG")
 endif(libpng_FOUND)
@@ -71,25 +71,44 @@ endif(libpng_FOUND)
 find_package(libtiff PATHS ${EXTERNAL_INSTALL_DIR}/lib/libtiff)
 if(libtiff_FOUND)
     set(TIFF_SUPPORT_STR "#define USE_IMG_TIFF")
-    list(APPEND Rasteron src/ImgTIFF.c)
+    # list(APPEND RASTERON_SRC src/ImgTIFF.c)
 else(NOT libtiff_FOUND)
     set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
 endif(libtiff_FOUND)
-
-# Probably need a GLOB expression
-#add_custom_target(copySharedLibs
-#)
-
-
 
 if(WIN32) # Conditional OS Sources
     list(APPEND RASTERON_SRC src/NativeImg_win.c)
 endif()
 
 add_library(Rasteron STATIC  ${RASTERON_SRC})
-target_include_directories(Rasteron PUBLIC include )
+add_dependencies(Rasteron libpng libtiff)
+
+target_include_directories(Rasteron PRIVATE include )
 target_link_libraries(Rasteron tiff png) # FIX THIS!
 
+### EXPORTS AND STUFF
+
+file(GLOB i_Headers ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+foreach(file IN ITEMS ${i_Headers})
+    message(STATUS "${file}")
+endforeach()
+
+target_include_directories(Rasteron
+    INTERFACE
+    $<BUILD_INTERFACE:${i_Headers}>
+    $<INSTALL_INTERFACE:include/Rasteron>
+)
+
+install(TARGETS Rasteron
+        EXPORT ExpTarg_Rasteron
+        RUNTIME DESTINATION bin
+	    LIBRARY DESTINATION lib
+	    ARCHIVE DESTINATION lib
+	    FRAMEWORK DESTINATION lib
+)
+
+install(FILES ${i_Headers} DESTINATION include/Rasteron)
+install(EXPORT ExpTarg_Rasteron DESTINATION lib/Rasteron FILE RasteronConfig.cmake)
 
 if(WIN32)
     file(GLOB sLibTarg ${EXTERNAL_INSTALL_DIR}/bin/*.dll)
@@ -105,7 +124,7 @@ endif()
 if(WIN32)
     add_executable(DemoImaging demos/DemoImaging_win.c)
     target_include_directories(DemoImaging PUBLIC include)
-    target_link_libraries(DemoImaging Rasteron)
+    target_link_libraries(DemoImaging Rasteron tiff png)
 
     add_executable(DemoCellwise demos/DemoCellwise_win.c)
     target_include_directories(DemoCellwise PUBLIC include)
