@@ -51,6 +51,20 @@ BITMAP createWinBmap(const Image* image) {
 	return bmap;
 }
 
+BITMAP createWinBmap_Raw(uint32_t width, uint32_t height, uint32_t* data){
+	BITMAP bmap = { 0 };
+	bmap.bmWidth = width;
+	bmap.bmHeight = height;
+	bmap.bmWidthBytes = (width * sizeof(uint32_t)) / sizeof(BYTE);
+	bmap.bmType = 0;
+	bmap.bmPlanes = 1;
+	bmap.bmBitsPixel = 32;
+
+	bmap.bmBits = data;
+
+	return bmap;
+}
+
 void drawWinBmap(HWND hwnd, const BITMAP* bmap){
     HBITMAP hBmap = CreateBitmapIndirect(bmap);
 

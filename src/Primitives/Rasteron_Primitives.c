@@ -16,7 +16,8 @@ Rasteron_Image* rstnCreate_Base(const Image* image){
 		rstn_image->width = image->imageData.tiff.width;
         rstn_image->height = image->imageData.tiff.length;
         rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
-        *(rstn_image->data) = *(image->imageData.tiff.raster);
+        for(unsigned i = 0; i < rstn_image->width * rstn_image->height; i++)
+		   *(rstn_image->data + i) = *(image->imageData.tiff.raster + i); // Fix the color inversion!!!
 #endif
 	break;
 
@@ -25,7 +26,8 @@ Rasteron_Image* rstnCreate_Base(const Image* image){
 		rstn_image->width = abs(image->imageData.bmp.width);
         rstn_image->height = abs(image->imageData.bmp.height);
         rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
-        *(rstn_image->data) = *(image->imageData.bmp.data);
+		for (unsigned i = 0; i < rstn_image->width * rstn_image->height; i++)
+			*(rstn_image->data + i) = *(image->imageData.bmp.data + i);
 #endif
 		break;
 	
@@ -34,7 +36,8 @@ Rasteron_Image* rstnCreate_Base(const Image* image){
 		rstn_image->width = image->imageData.png.width;
         rstn_image->height = image->imageData.png.height;
         rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
-        *(rstn_image->data) = *(image->imageData.png.rgbaData);
+		for (unsigned i = 0; i < rstn_image->width * rstn_image->height; i++)
+			*(rstn_image->data + i) = *(image->imageData.png.rgbaData + i);
 #endif
 		break;
 
@@ -45,6 +48,7 @@ Rasteron_Image* rstnCreate_Base(const Image* image){
 
 	return rstn_image;
 }
+
 Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref) {
 	if (ref == NULL) {
 		puts("Cannot create grey image! Null pointer provided!");

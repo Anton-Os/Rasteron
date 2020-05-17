@@ -18,6 +18,12 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 		Rasteron_Image* rImage = rstnCreate_Base(&img2);
 		Rasteron_Image* rImageGrey = rstnCreate_Grey(rImage);
+
+		BITMAP bmapTiff = createWinBmap(&img2);
+		// drawWinBmap(hwnd, &bmapTiff);
+		BITMAP bmapBase = createWinBmap_Raw(rImage->width, rImage->height, rImage->data);
+		drawWinBmap(hwnd, &bmapBase);
+
 		delImage_Rstn(rImage);
 		delImage_Rstn(rImageGrey);
 		

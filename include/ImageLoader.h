@@ -107,7 +107,8 @@ void createImage(const char* fileName, Image* image);
 		#define WIN_INCLUDE
 	#endif
 
-	BITMAP createWinBmap(const Image* image);
+	BITMAP createWinBmap(const Image* image); // Helper for all image types
+	BITMAP createWinBmap_Raw(uint32_t width, uint32_t height, uint32_t* data); // Just dimensions and data are provided
 	void drawWinBmap(HWND hwnd, const BITMAP* bmap);
 	// void drawWinBmap(HWND hwnd, const Image* image);
 #endif // Port later to some Internal.h header
