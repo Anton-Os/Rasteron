@@ -1,56 +1,5 @@
 #include "ImageLoader.h"
 
-BITMAP createWinBmap(const Image* image) {
-	BITMAP bmap = { 0 };
-
-	switch (image->fileFormat) {
-
-	case(IMG_Tiff):
-#ifdef USE_IMG_TIFF
-		bmap.bmWidth = image->imageData.tiff.width;
-		bmap.bmHeight = image->imageData.tiff.length;
-		bmap.bmWidthBytes = (image->imageData.tiff.width * sizeof(uint32)) / sizeof(BYTE);
-
-		revrsColorBits_RB(image->imageData.tiff.raster, bmap.bmHeight * bmap.bmWidth); // Should maybe move to ImgTIFF
-		bmap.bmBits = image->imageData.tiff.raster;
-#endif
-		break;
-
-	case(IMG_Bmp):
-#ifdef USE_IMG_BMP
-		bmap.bmWidth = abs(image->imageData.bmp.width);
-		bmap.bmHeight = abs(image->imageData.bmp.height);
-		bmap.bmWidthBytes = (image->imageData.bmp.width * sizeof(uint32_t)) / sizeof(BYTE);
-
-		bmap.bmBits = image->imageData.bmp.data;
-#endif
-		break;
-
-	case(IMG_Png):
-#ifdef USE_IMG_PNG
-		bmap.bmWidth = image->imageData.png.width;
-		bmap.bmHeight = image->imageData.png.height;
-		bmap.bmWidthBytes = (image->imageData.png.width * sizeof(uint32_t)) / sizeof(BYTE);
-
-		bmap.bmBits = image->imageData.png.rgbaData;
-#endif
-		break;
-
-	default:
-		puts("Image Format not yet supported!!!");
-		break;
-	}
-
-	// All bitmaps have these properties regardless
-	bmap.bmType = 0;
-	bmap.bmPlanes = 1;
-	bmap.bmBitsPixel = 32;
-
-    // In case a macro isnt defined include an empty bitmap error check here
-
-	return bmap;
-}
-
 BITMAP createWinBmap_Raw(uint32_t width, uint32_t height, uint32_t* data){
 	BITMAP bmap = { 0 };
 	bmap.bmWidth = width;
@@ -62,6 +11,38 @@ BITMAP createWinBmap_Raw(uint32_t width, uint32_t height, uint32_t* data){
 
 	bmap.bmBits = data;
 
+	return bmap;
+}
+
+BITMAP createWinBmap(const Image* image) {
+	switch (image->fileFormat) {
+
+	case(IMG_Tiff):
+#ifdef USE_IMG_TIFF
+		revrsColorBits_RB(image->imageData.tiff.raster, image->imageData.tiff.width * image->imageData.tiff.length); // Should maybe move to ImgTIFF
+		return createWinBmap_Raw(image->imageData.tiff.width, image->imageData.tiff.length, image->imageData.tiff.raster);
+#endif
+		break;
+
+	case(IMG_Bmp):
+#ifdef USE_IMG_BMP
+		return createWinBmap_Raw(abs(image->imageData.bmp.width), abs(image->imageData.bmp.height), image->imageData.bmp.data);
+#endif
+		break;
+
+	case(IMG_Png):
+#ifdef USE_IMG_PNG
+		return createWinBmap_Raw(image->imageData.png.width, image->imageData.png.height, image->imageData.png.rgbaData);
+#endif
+		break;
+
+	default:
+		puts("Image Format not yet supported!!!");
+		break;
+	}
+
+	BITMAP bmap = { 0 };
+	puts("Make sure the correct libraries are built and ImageSupport.h has correct macro definitions");
 	return bmap;
 }
 
