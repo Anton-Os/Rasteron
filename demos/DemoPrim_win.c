@@ -21,7 +21,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 		BITMAP bmapTiff = createWinBmap(&img2);
 		// drawWinBmap(hwnd, &bmapTiff);
-		BITMAP bmapBase = createWinBmap_Raw(rImage->width, rImage->height, rImage->data);
+		BITMAP bmapBase = createWinBmap_Raw(rImageGrey->width, rImageGrey->height, rImageGrey->data);
 		drawWinBmap(hwnd, &bmapBase);
 
 		delImage_Rstn(rImage);

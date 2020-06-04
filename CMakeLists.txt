@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 project(Rasteron DESCRIPTION "Image Loading and Experiments")
 
 set(default_build_type "Debug")
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
       STRING "Choose the type of build." FORCE)
@@ -18,7 +18,7 @@ set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 set(EXTERNAL_INSTALL_DIR "${EXTERNAL_PROJ_DIR}/Install")
 
 list(APPEND EXTERNAL_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_INSTALL_DIR}")
-list(APPEND EXTERNAL_ARGS "-DCMAKE_BUILD_TYPE:STRING=\"Debug\"") # Temporary fix
+list(APPEND EXTERNAL_ARGS "-DCMAKE_BUILD_TYPE:STRING=Debug") # Temporary fix
 
 set(ZLIB_DIR "${EXTERNAL_PROJ_DIR}/zlib")
 ExternalProject_Add(zlib
@@ -31,11 +31,20 @@ ExternalProject_Add(zlib
     BINARY_DIR ${ZLIB_DIR}/Build
 )
 
+if (CMAKE_BUILD_TYPE EQUAL "Debug")
+    find_library(zlib_Target NAMES zlibstaticd HINTS "${EXTERNAL_INSTALL_DIR}/lib")
+else()
+    find_library(zlib_Target NAMES zlibstatic HINTS "${EXTERNAL_INSTALL_DIR}/lib")
+endif()
+
+message(STATUS "zlib static lib ${zlib_Target}")
+list(APPEND EXTERNAL_ARGS "-DZLIB_LIBRARY:STRING=${zlib_Target}")
+list(APPEND EXTERNAL_ARGS "-DZLIB_INCLUDE_DIR:PATH=${EXTERNAL_INSTALL_DIR}/include")
 
 set(LIBPNG_DIR "${EXTERNAL_PROJ_DIR}/libpng")
 ExternalProject_Add(libpng
     GIT_REPOSITORY "https://github.com/Anton-Os/libpng.git"
-    GIT_TAG "274b925bb2a1c483add8559e09489bc573215af1"
+    GIT_TAG "396519eff95064233ca5d90a3ec19789f12d912f"
 
     CMAKE_ARGS ${EXTERNAL_ARGS}
 
@@ -55,7 +64,7 @@ add_custom_target(pngconfig # Renames the configuration file from libpng16 to li
 set(LIBTIFF_DIR "${EXTERNAL_PROJ_DIR}/libtiff")
 ExternalProject_Add(libtiff
     GIT_REPOSITORY "https://github.com/Anton-Os/libtiff.git"
-    GIT_TAG "2ea8b32e59d7e8a9c97f6b8f9bee8f7cae83da49"
+    GIT_TAG "5430ec2523004c6d054baa9982c4183709099a57"
 
     CMAKE_ARGS ${EXTERNAL_ARGS}
 
@@ -72,8 +81,6 @@ set(RASTERON_SRC
     src/Cellwise/Cellwise.c
     src/Primitives/Rasteron_Primitives.c
 )
-
-find_library(zlib_Target NAMES zlibstatic HINTS "${EXTERNAL_INSTALL_DIR}/lib")
 
 find_package(libpng PATHS ${EXTERNAL_INSTALL_DIR}/lib)
 if(libpng_FOUND)
@@ -104,26 +111,17 @@ if(WIN32) # Conditional OS Sources
 endif()
 
 add_library(RasteronLib STATIC  ${RASTERON_SRC})
-add_dependencies(RasteronLib libpng libtiff)
+# add_dependencies(RasteronLib libpng libtiff)
 
 target_include_directories(RasteronLib PRIVATE include )
 target_link_libraries(RasteronLib tiff png)
 target_link_libraries(RasteronLib ${zlib_Target}) # zlib should have export targets
-
-### EXPORTS AND STUFF
-
-file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
-foreach(file IN ITEMS ${interfaceHeaders})
-    message(STATUS "${file}")
-endforeach()
 
 target_include_directories(RasteronLib
     INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Rasteron>
 )
-
-target_link_libraries(RasteronLib tiff png ${zlib_Target}) # Conditional?? Fix zlib
 
 
 if(WIN32)
@@ -150,5 +148,6 @@ install(TARGETS RasteronLib
 	    FRAMEWORK DESTINATION lib
 )
 
+file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)
 install(EXPORT Rasteron DESTINATION lib/Rasteron FILE RasteronConfig.cmake)

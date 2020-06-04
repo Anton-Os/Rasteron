@@ -68,7 +68,7 @@ Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref) {
 	uint32_t grey;
 	rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
 	for (unsigned p = 0; p < rstn_image->width * rstn_image->height; p++) {
-		grey = (uint32_t)grayify_32(*(ref->data));
+		grey = (uint32_t)grayify_32(*(ref->data + p));
 		*(rstn_image->data + p) = grey;
 	}
 
