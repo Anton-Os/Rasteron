@@ -27,10 +27,8 @@ typedef struct {
 
 Rasteron_Image* rstnCreate_Base(const Image* image); // Creates an image based on my readers
 Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref);
-// Rasteron_Sprite* createSprite_Rstn(const Rasteron_Image* rstn_image); // Creates a sprite based on rstn image above
 
 void delImage_Rstn(Rasteron_Image* rstn_image);
-//void delSprite_Rstn(Rasteron_Sprite* rstn_sprite);
 
 #ifdef __cplusplus
 }
