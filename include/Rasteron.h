@@ -4,6 +4,8 @@
 extern "C"{
 #endif
 
+// Image functionality and types
+
 typedef struct {
 	uint32_t width;
 	uint32_t height;
@@ -12,6 +14,13 @@ typedef struct {
     char* name;
     uint32_t* data;
 } Rasteron_Image;
+
+Rasteron_Image* rstnCreate_ImgBase(const Image* image); // Creates an image based on my readers
+Rasteron_Image* rstnCreate_ImgGrey(const Rasteron_Image* ref);
+
+void rstnDel_Img(Rasteron_Image* rstn_image);
+
+// Sprite functionality and types
 
 typedef struct {
     float topLeft_Pt[2];
@@ -25,10 +34,24 @@ typedef struct {
     Rasteron_BoxBounds bounds;
 } Rasteron_Sprite;
 
-Rasteron_Image* rstnCreate_Base(const Image* image); // Creates an image based on my readers
-Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref);
+// Color table functionality and types
 
-void delImage_Rstn(Rasteron_Image* rstn_image);
+#define MAX_COLOR_TABLE_VALS 1024
+
+typedef struct {
+    unsigned imgPix_colors[MAX_COLOR_TABLE_VALS]; // Target colors
+    unsigned imgPix_counts[MAX_COLOR_TABLE_VALS]; // Corresponding count of target colors
+    unsigned colorIndex; // Increments as more colors are found
+    unsigned bkIndex; // The index holding the background color
+
+} Rasteron_Palette;
+
+Rasteron_Palette* rstnCreate_Palette(const Rasteron_Image* ref);
+
+void rstnDel_Palette(Rasteron_Palette* palette);
+
+//void del
+
 
 #ifdef __cplusplus
 }

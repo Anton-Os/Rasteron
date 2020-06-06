@@ -16,16 +16,21 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		Image img2 = { 0 };
 		loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
 
-		Rasteron_Image* rImage = rstnCreate_Base(&img2);
-		Rasteron_Image* rImageGrey = rstnCreate_Grey(rImage);
+		Rasteron_Image* rImage = rstnCreate_ImgBase(&img2);
+		// changeSolidColor(rImage->data, rImage->height * rImage->width, 0xFF526870, 0x00FFFFFF);
+		Rasteron_Palette* rPalette = rstnCreate_Palette(rImage);
+
+		Rasteron_Image* rImageGrey = rstnCreate_ImgGrey(rImage);
 
 		BITMAP bmapTiff = createWinBmap(&img2);
-		// drawWinBmap(hwnd, &bmapTiff);
-		BITMAP bmapBase = createWinBmap_Raw(rImageGrey->width, rImageGrey->height, rImageGrey->data);
+		BITMAP bmapBase = createWinBmap_Raw(rImage->width, rImage->height, rImage->data);
+		// BITMAP bmapBase = createWinBmap_Raw(rImageGrey->width, rImageGrey->height, rImageGrey->data);
 		drawWinBmap(hwnd, &bmapBase);
 
-		delImage_Rstn(rImage);
-		delImage_Rstn(rImageGrey);
+		rstnDel_Img(rImage);
+		rstnDel_Img(rImageGrey);
+
+		rstnDel_Palette(rPalette);
 		
         delImage_TIFF(&img2);
 	}

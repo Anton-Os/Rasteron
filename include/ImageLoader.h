@@ -93,6 +93,7 @@ typedef struct _Image {
 // General purpose functions
 void revrsColorBits_RB(uint32_t* raster, unsigned int pCount);// Utility Function
 void makeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal);
+void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, uint32_t oldClr);
 uint32_t grayify_32(uint32_t refClr);
 
 void createImage(const char* fileName, Image* image);

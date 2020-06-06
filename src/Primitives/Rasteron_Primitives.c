@@ -1,6 +1,6 @@
 #include "Rasteron.h"
 
-Rasteron_Image* rstnCreate_Base(const Image* image){
+Rasteron_Image* rstnCreate_ImgBase(const Image* image){
 	if (image == NULL) {
 		puts("Cannot create base image! Null pointer provided!");
 		return NULL;
@@ -53,7 +53,7 @@ Rasteron_Image* rstnCreate_Base(const Image* image){
 	return rstn_image;
 }
 
-Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref) {
+Rasteron_Image* rstnCreate_ImgGrey(const Rasteron_Image* ref) {
 	if (ref == NULL) {
 		puts("Cannot create grey image! Null pointer provided!");
 		return NULL;
@@ -68,6 +68,8 @@ Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref) {
 	uint32_t grey;
 	rstn_image->data = (uint32_t*)malloc(rstn_image->width * rstn_image->height * sizeof(uint32_t));
 	for (unsigned p = 0; p < rstn_image->width * rstn_image->height; p++) {
+		unsigned pixColorDbg = *(ref->data + p); // For testing
+
 		grey = (uint32_t)grayify_32(*(ref->data + p));
 		*(rstn_image->data + p) = grey;
 	}
@@ -75,7 +77,47 @@ Rasteron_Image* rstnCreate_Grey(const Rasteron_Image* ref) {
 	return rstn_image;
 }
 
-void delImage_Rstn(Rasteron_Image* rstn_image){
+void rstnDel_Img(Rasteron_Image* rstn_image) {
     free(rstn_image->data);
     free(rstn_image);
+}
+
+Rasteron_Palette* rstnCreate_Palette(const Rasteron_Image* ref){
+	if (ref == NULL) {
+		puts("Cannot create palette! Null pointer provided!");
+		return NULL;
+	}
+
+	Rasteron_Palette* rstn_palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
+	rstn_palette->colorIndex = 0;
+
+	for (unsigned p = 0; p < ref->width * ref->height; p++) {
+		unsigned pixColorDbg = *(ref->data + p); // For testing
+
+		if (rstn_palette->colorIndex == MAX_COLOR_TABLE_VALS) {
+			puts("Color pallette exceeded max capacity");
+			break; // Image's pallette is too big
+		}
+
+		unsigned colorTargetIdx = 0;
+		while (colorTargetIdx <= rstn_palette->colorIndex) { // Step one is find target color in our palette
+			if (*(ref->data + p) == rstn_palette->imgPix_colors[colorTargetIdx])
+				break;
+			else colorTargetIdx++;
+		}
+
+		if (colorTargetIdx == rstn_palette->colorIndex + 1) { // Match does not exist
+			rstn_palette->imgPix_colors[rstn_palette->colorIndex] = *(ref->data + p);
+			rstn_palette->imgPix_counts[rstn_palette->colorIndex] = 1; // Because there is one pixel
+			rstn_palette->colorIndex++;
+		}
+		else
+			rstn_palette->imgPix_counts[colorTargetIdx]++;
+	}
+
+	return rstn_palette;
+}
+
+void rstnDel_Palette(Rasteron_Palette* palette){
+	free(palette);
 }
