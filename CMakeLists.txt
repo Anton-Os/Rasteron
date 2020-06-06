@@ -114,8 +114,8 @@ add_library(RasteronLib STATIC  ${RASTERON_SRC})
 # add_dependencies(RasteronLib libpng libtiff)
 
 target_include_directories(RasteronLib PRIVATE include )
-target_link_libraries(RasteronLib tiff png)
-target_link_libraries(RasteronLib ${zlib_Target}) # zlib should have export targets
+target_link_libraries(RasteronLib PUBLIC tiff png)
+target_link_libraries(RasteronLib PUBLIC ${zlib_Target}) # zlib should have export targets
 
 target_include_directories(RasteronLib
     INTERFACE
