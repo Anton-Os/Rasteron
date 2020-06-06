@@ -22,6 +22,8 @@ void rstnDel_Img(Rasteron_Image* rstn_image);
 
 // Sprite functionality and types
 
+#define DIMENSION_RATIO_UNSIGNED_TO_FLOAT 1000
+
 typedef struct {
     float topLeft_Pt[2];
     float topRight_Pt[2];
@@ -30,9 +32,13 @@ typedef struct {
 } Rasteron_BoxBounds;
 
 typedef struct {
-    Rasteron_Image images;
+    const Rasteron_Image* image;
     Rasteron_BoxBounds bounds;
 } Rasteron_Sprite;
+
+Rasteron_Sprite* rstnCreate_Sprite(const Rasteron_Image* ref);
+
+void rstnDel_Sprite(Rasteron_Sprite* sprite);
 
 // Color table functionality and types
 
@@ -50,7 +56,19 @@ Rasteron_Palette* rstnCreate_Palette(const Rasteron_Image* ref);
 
 void rstnDel_Palette(Rasteron_Palette* palette);
 
-//void del
+// Outline functionality and types
+
+#define MAX_VERTEX_POS_VALS 32768 // 2 ^ 15
+
+typedef struct {
+    float xVals[MAX_VERTEX_POS_VALS];
+    float yVals[MAX_VERTEX_POS_VALS];
+    unsigned vertexIndex;
+} Rasteron_Outline;
+
+Rasteron_Outline* rstnCreate_Outline(const Rasteron_Image* ref);
+
+void rstnDel_Outline(Rasteron_Outline* outline);
 
 
 #ifdef __cplusplus

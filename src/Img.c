@@ -45,3 +45,17 @@ uint8_t grayify_8(uint32_t refClr){
 	uint8_t greyVal = ((uint32_t)(refClr & 0xFF) + (uint32_t)(refClr & 0xFF00) + (uint32_t)(refClr & 0xFF0000)) / 3;
 	return greyVal;
 }
+
+uint32_t getBkColor(uint32_t* raster, unsigned width, unsigned height){
+	unsigned topLeftPix = *(raster + 0);
+	unsigned topRightPix = *(raster + width - 1);
+	unsigned botLeftPix = *(raster + (width * height) - width - 1);
+	unsigned botRightPix = *(raster + (width * height) - 1);
+
+	if(topLeftPix == topRightPix && botLeftPix == botRightPix && topRightPix == botRightPix)
+		return topLeftPix; // Chose arbitrarily
+	else {
+		puts("Could not find a background color!");
+		return BAD_COLOR_CODE;
+	}
+}

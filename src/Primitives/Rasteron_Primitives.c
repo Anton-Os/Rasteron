@@ -82,6 +82,39 @@ void rstnDel_Img(Rasteron_Image* rstn_image) {
     free(rstn_image);
 }
 
+// Sprite related stuff
+
+Rasteron_Sprite* rstnCreate_Sprite(const Rasteron_Image* ref){
+	if (ref == NULL) {
+		puts("Cannot create palette! Null pointer provided!");
+		return NULL;
+	}
+
+	Rasteron_Sprite* rstn_sprite = (Rasteron_Sprite*)malloc(sizeof(Rasteron_Sprite));
+
+	rstn_sprite->image = ref; // Simply copy a pointer to the image
+
+	rstn_sprite->bounds.topRight_Pt[0] = ref->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+	rstn_sprite->bounds.topRight_Pt[1] = ref->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+
+	rstn_sprite->bounds.topLeft_Pt[0] = -1.0 * (ref->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+	rstn_sprite->bounds.topLeft_Pt[1] = ref->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+
+	rstn_sprite->bounds.botRight_Pt[0] = ref->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+	rstn_sprite->bounds.botRight_Pt[1] = -1.0 * (ref->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+
+	rstn_sprite->bounds.botLeft_Pt[0] = -1.0 * (ref->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+	rstn_sprite->bounds.botLeft_Pt[1] = -1.0 * (ref->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+
+	return rstn_sprite;
+}
+
+void rstnDel_Sprite(Rasteron_Sprite* sprite){
+	free(sprite);
+}
+
+// Palette related stuff
+
 Rasteron_Palette* rstnCreate_Palette(const Rasteron_Image* ref){
 	if (ref == NULL) {
 		puts("Cannot create palette! Null pointer provided!");
@@ -120,4 +153,23 @@ Rasteron_Palette* rstnCreate_Palette(const Rasteron_Image* ref){
 
 void rstnDel_Palette(Rasteron_Palette* palette){
 	free(palette);
+}
+
+// Outline related stuff
+
+Rasteron_Outline* rstnCreate_Outline(const Rasteron_Image* ref){
+	if (ref == NULL) {
+		puts("Cannot create palette! Null pointer provided!");
+		return NULL;
+	}
+
+	Rasteron_Outline* rstn_outline = (Rasteron_Outline*)malloc(sizeof(Rasteron_Outline));
+
+	unsigned bkColor = getBkColor(ref->data, ref->width, ref->height);
+	
+	return rstn_outline;
+}
+
+void rstnDel_Outline(Rasteron_Outline* outline){
+	free(outline);
 }
