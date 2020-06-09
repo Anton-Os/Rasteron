@@ -151,3 +151,9 @@ install(TARGETS RasteronLib
 file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)
 install(EXPORT Rasteron DESTINATION lib/Rasteron FILE RasteronConfig.cmake)
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/findDepends.cmake.in
+    ${CMAKE_INSTALL_PREFIX}/lib/Rasteron/findDepends.cmake
+    @ONLY
+)

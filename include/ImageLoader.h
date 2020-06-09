@@ -1,7 +1,10 @@
 #include "ImageSupport.h"
 
-#ifndef IMAGE_LOADER_H
+#ifdef __cplusplus
+extern "C"{
+#endif
 
+#ifndef IMAGE_LOADER_H
 
 typedef struct _Image Image;
 
@@ -119,3 +122,7 @@ void createImage(const char* fileName, Image* image);
 
 #define IMAGE_LOADER_H
 #endif // IMAGE_LOADER_H
+
+#ifdef __cplusplus
+}
+#endif

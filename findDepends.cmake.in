@@ -1,0 +1,16 @@
+find_package(libpng PATHS @EXTERNAL_INSTALL_DIR@/lib)
+
+if(libpng_FOUND)
+    message(STATUS "PNG Support Enabled, Rasteron dependency found")
+else()
+    message(STATUS "PNG Support Disabled, Rasteron dependency not found")
+endif()
+
+find_package(libtiff PATHS @EXTERNAL_INSTALL_DIR@/lib/libtiff)
+
+if(libtiff_FOUND)
+    message(STATUS "TIFF Support Enabled, Rasteron dependency found")
+else()
+    message(STATUS "TIFF Support Disabled, Rasteron dependency not found")
+endif()
+
