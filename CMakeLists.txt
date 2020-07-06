@@ -79,7 +79,8 @@ set(RASTERON_SRC
     src/ImgBmp.c
 
     src/Cellwise/Cellwise.c
-    src/Primitives/Rasteron_Primitives.c
+    src/Core/Loader.c
+    src/Core/Primitives.c
 )
 
 find_package(libpng PATHS ${EXTERNAL_INSTALL_DIR}/lib)

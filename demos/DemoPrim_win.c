@@ -1,4 +1,3 @@
-#include "ImageLoader.h"
 #include "Rasteron.h"
 
 #include <stdio.h>
@@ -14,10 +13,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 	case (WM_PAINT): {
 		Image img2 = { 0 };
-		loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
+		rstnLoad("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
+		// loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
 
 		Rasteron_Image* rImage = rstnCreate_ImgBase(&img2);
-		// changeSolidColor(rImage->data, rImage->height * rImage->width, 0xFF526870, 0x00FFFFFF);
 		Rasteron_Palette* rPalette = rstnCreate_Palette(rImage);
 		Rasteron_Outline* rOutline = rstnCreate_Outline(rImage);
 		Rasteron_Sprite* rSprite = rstnCreate_Sprite(rImage);
@@ -36,7 +35,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		rstnDel_Outline(rOutline);
 		rstnDel_Sprite(rSprite);
 		
-        delImage_TIFF(&img2);
+		rstnDel(&img2);
 	}
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);

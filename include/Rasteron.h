@@ -1,9 +1,17 @@
+#ifndef RASTERON_H
+
 #include "ImageLoader.h"
 
 #ifdef __cplusplus
 extern "C"{
 #endif
 
+// Loader.c declarations
+
+void rstnLoad(const char* fileName, Image* image); // Image is destination
+void rstnDel(Image* image);
+
+// Primitives.c declarations
 // Image functionality and types
 
 typedef struct {
@@ -73,4 +81,7 @@ void rstnDel_Outline(Rasteron_Outline* outline);
 
 #ifdef __cplusplus
 }
+#endif
+
+#define RASTERON_H
 #endif
