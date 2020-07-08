@@ -8,8 +8,10 @@ extern "C"{
 
 // Loader.c declarations
 
-void rstnLoad(const char* fileName, Image* image); // Image is destination
-void rstnDel(Image* image);
+typedef Image FileImage; // Just makes an easier distinction between Rasteron image and file Image
+
+void rstnLoadFromFile(const char* fileName, FileImage* image); // Image is destination
+void rstnDelFromFile(FileImage* image);
 
 // Primitives.c declarations
 // Image functionality and types

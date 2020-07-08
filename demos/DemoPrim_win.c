@@ -13,7 +13,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 	case (WM_PAINT): {
 		Image img2 = { 0 };
-		rstnLoad("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
+		rstnLoadFromFile("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
 		// loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
 
 		Rasteron_Image* rImage = rstnCreate_ImgBase(&img2);
@@ -35,7 +35,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		rstnDel_Outline(rOutline);
 		rstnDel_Sprite(rSprite);
 		
-		rstnDel(&img2);
+		rstnDelFromFile(&img2);
 	}
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);

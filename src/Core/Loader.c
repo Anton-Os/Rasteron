@@ -25,7 +25,7 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
         return IMG_NonValid;
 }
 
-void rstnLoad(const char* fileName, Image* image){
+void rstnLoadFromFile(const char* fileName, FileImage* image){
     enum IMG_FileFormat format = getFormat(fileName);
     
     switch(format){
@@ -43,7 +43,7 @@ void rstnLoad(const char* fileName, Image* image){
     }
 }
 
-void rstnDel(Image* image) {
+void rstnDelFromFile(FileImage* image) {
 	switch (image->fileFormat) {
 	case IMG_Png:
 		delImage_PNG(image);
