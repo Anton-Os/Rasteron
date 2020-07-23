@@ -22,24 +22,14 @@ list(APPEND EXTERNAL_ARGS "-DCMAKE_BUILD_TYPE:STRING=Debug") # Temporary fix
 
 set(ZLIB_DIR "${EXTERNAL_PROJ_DIR}/zlib")
 ExternalProject_Add(zlib
-    GIT_REPOSITORY "https://github.com/madler/zlib"
-    GIT_TAG "cacf7f1d4e3d44d871b605da3b647f07d718623f"
+    GIT_REPOSITORY "https://github.com/Anton-Os/zlib.git"
+    GIT_TAG "9173889b55bef424266f14e56413aba8e990c00b"
 
     CMAKE_ARGS ${EXTERNAL_ARGS}
 
     PREFIX ${ZLIB_DIR}
     BINARY_DIR ${ZLIB_DIR}/Build
 )
-
-if (CMAKE_BUILD_TYPE EQUAL "Debug")
-    find_library(zlib_Target NAMES zlibstaticd HINTS "${EXTERNAL_INSTALL_DIR}/lib")
-else()
-    find_library(zlib_Target NAMES zlibstatic HINTS "${EXTERNAL_INSTALL_DIR}/lib")
-endif()
-
-message(STATUS "zlib static lib ${zlib_Target}")
-list(APPEND EXTERNAL_ARGS "-DZLIB_LIBRARY:STRING=${zlib_Target}")
-list(APPEND EXTERNAL_ARGS "-DZLIB_INCLUDE_DIR:PATH=${EXTERNAL_INSTALL_DIR}/include")
 
 set(LIBPNG_DIR "${EXTERNAL_PROJ_DIR}/libpng")
 ExternalProject_Add(libpng
@@ -55,7 +45,7 @@ ExternalProject_Add(libpng
 )
 
 add_custom_target(pngconfig # Renames the configuration file from libpng16 to libpng
-    COMMAND ${CMAKE_COMMAND} 
+    COMMAND ${CMAKE_COMMAND}
         -E copy ${EXTERNAL_INSTALL_DIR}/lib/libpng16.cmake ${EXTERNAL_INSTALL_DIR}/lib/libpng-config.cmake
     DEPENDS libpng
 )
@@ -74,8 +64,11 @@ ExternalProject_Add(libtiff
     DEPENDS zlib
 )
 
-set(RASTERON_SRC 
-    src/Img.c 
+
+# Rasteron project sources
+
+set(RASTERON_SRC
+    src/Img.c
     src/ImgBmp.c
 
     src/Cellwise/Cellwise.c
@@ -83,10 +76,18 @@ set(RASTERON_SRC
     src/Core/Primitives.c
 )
 
+# find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
+find_package(zlibstatic PATHS ${EXTERNAL_INSTALL_DIR}/lib)
+if(zlib_FOUND AND zlibstatic_found)
+    message(STATUS "Zlib located")
+else()
+    message(STATUS "Zlib not located, may cause issues")
+endif(zlib_FOUND)
+
 find_package(libpng PATHS ${EXTERNAL_INSTALL_DIR}/lib)
 if(libpng_FOUND)
     set(PNG_SUPPORT_STR "#define USE_IMG_PNG")
-    
+
     message(STATUS "PNG Support Enabled")
     list(APPEND RASTERON_SRC src/ImgPng.c) # Add png functionality
 else(NOT libpng_FOUND)
@@ -107,23 +108,22 @@ else(NOT libtiff_FOUND)
     message(STATUS "TIFF Support Disabled, build tiff")
 endif(libtiff_FOUND)
 
+
+
 if(WIN32) # Conditional OS Sources
     list(APPEND RASTERON_SRC src/NativeImg_win.c)
 endif()
 
 add_library(RasteronLib STATIC  ${RASTERON_SRC})
-# add_dependencies(RasteronLib libpng libtiff)
 
 target_include_directories(RasteronLib PRIVATE include )
-target_link_libraries(RasteronLib PUBLIC tiff png)
-target_link_libraries(RasteronLib PUBLIC ${zlib_Target}) # zlib should have export targets
+target_link_libraries(RasteronLib PUBLIC tiff png zlibstatic)
 
 target_include_directories(RasteronLib
     INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Rasteron>
 )
-
 
 if(WIN32)
     add_executable(DemoImaging demos/DemoImaging_win.c)
@@ -148,6 +148,8 @@ install(TARGETS RasteronLib
 	    ARCHIVE DESTINATION lib
 	    FRAMEWORK DESTINATION lib
 )
+
+add_dependencies(RasteronLib zlib libpng libtiff)
 
 file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)
