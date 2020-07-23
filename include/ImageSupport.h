@@ -1,5 +1,5 @@
 
-#define USE_IMG_TIFF // Enable TIFF Support
+// #define USE_IMG_TIFF // Enable TIFF Support
 
 #define USE_IMG_PNG // Enable PNG Support
 
@@ -10,4 +10,4 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <stdio.h> 
+#include <stdio.h>

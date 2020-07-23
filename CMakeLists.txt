@@ -23,7 +23,7 @@ list(APPEND EXTERNAL_ARGS "-DCMAKE_BUILD_TYPE:STRING=Debug") # Temporary fix
 set(ZLIB_DIR "${EXTERNAL_PROJ_DIR}/zlib")
 ExternalProject_Add(zlib
     GIT_REPOSITORY "https://github.com/Anton-Os/zlib.git"
-    GIT_TAG "9173889b55bef424266f14e56413aba8e990c00b"
+    GIT_TAG "43b390add01360a3d4decde6edf441f920145e33"
 
     CMAKE_ARGS ${EXTERNAL_ARGS}
 
@@ -77,8 +77,8 @@ set(RASTERON_SRC
 )
 
 # find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
-find_package(zlibstatic PATHS ${EXTERNAL_INSTALL_DIR}/lib)
-if(zlib_FOUND AND zlibstatic_found)
+find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
+if(zlib_FOUND)
     message(STATUS "Zlib located")
 else()
     message(STATUS "Zlib not located, may cause issues")

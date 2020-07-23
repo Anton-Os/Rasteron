@@ -1,3 +1,5 @@
+#ifdef USE_IMG_PNG
+
 #include "ImageLoader.h"
 
 #define DEFAULT_PNG_DISPLAY_EXPO 2.2
@@ -13,7 +15,7 @@ void loadImage_PNG(const char* fileName, Image* image) {
 		return;
 	}
 #else
-	if ((bmpFile = fopen(fileName, "rb") == NULL)) {
+	if ((pngFile = fopen(fileName, "rb") == NULL)) {
 		printf("Error opening %s", fileName);
 		return;
 	}
@@ -45,14 +47,14 @@ void loadImage_PNG(const char* fileName, Image* image) {
 		NULL, NULL, NULL);
 	image->imageData.png.rowBytes = png_get_rowbytes(png_ptr, info_ptr);
 
-	// Allocate png specific 
+	// Allocate png specific
 	image->imageData.png.rowPtrs = (png_byte**)malloc(image->imageData.png.height * sizeof(png_byte*));
 	for (unsigned int r = 0; r < image->imageData.png.height; r++)
 		image->imageData.png.rowPtrs[r] = (png_byte*)malloc(image->imageData.png.rowBytes);
 
 	png_read_image(png_ptr, image->imageData.png.rowPtrs);
 	image->imageData.png.rgbaData = (uint32_t*)malloc(sizeof(uint32_t) * image->imageData.png.height * image->imageData.png.width);
-	
+
 	png_byte* srcPtr;
 	uint32_t* destPtr = image->imageData.png.rgbaData;
 	int testIncrementor = 0;
@@ -93,3 +95,5 @@ void delImage_PNG(Image* image) {
 	image->fileFormat = IMG_NonValid;
 	return;
 }
+
+#endif

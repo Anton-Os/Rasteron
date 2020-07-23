@@ -1,3 +1,5 @@
+#ifdef USE_IMG_TIFF
+
 #include "ImageLoader.h"
 
 void loadImage_TIFF(const char* fileName, Image* image) {
@@ -36,3 +38,5 @@ void delImage_TIFF(Image* image){
 	image->fileFormat = IMG_NonValid;
 	return;
 }
+
+#endif

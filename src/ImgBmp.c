@@ -1,8 +1,10 @@
+#ifdef USE_IMG_BMP
+
 #include "ImageLoader.h"
 
 void loadImage_BMP(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Bmp;
-	
+
 	FILE* bmpFile;
 	#ifdef _WIN32
 		errno_t err = fopen_s(&bmpFile, fileName, "rb");
@@ -17,7 +19,7 @@ void loadImage_BMP(const char* fileName, Image* image) {
 		}
 	#endif // _WIN32
 
-	
+
 	fread(&image->imageData.bmp.typeCheck, sizeof(uint16_t), 1, bmpFile);
 	if (image->imageData.bmp.typeCheck != 0x4D42) {
 		printf("%s is not a valid BMP file", fileName);
@@ -55,3 +57,5 @@ void delImage_BMP(Image* image) {
 	image->fileFormat = IMG_NonValid;
 	return;
 }
+
+#endif
