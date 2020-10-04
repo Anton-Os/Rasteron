@@ -89,6 +89,5 @@ nebrCheckFlags check_existNebrs(uint32_t index, uint32_t imgWidth, uint32_t imgH
 
 // NebrTable* gen_nebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight);
 NebrTable_List* gen_nebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight);
-// void del_nebrTables(NebrTable* nebrTable);
 void print_nebrTables(const NebrTable_List* nebrTables); // For debug purposes
 void del_nebrTables(NebrTable_List* nebrTables);
