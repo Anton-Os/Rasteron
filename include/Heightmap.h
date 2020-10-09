@@ -8,8 +8,8 @@ typedef struct {
     
     // double points[MAX_HEIGHTMAP_VALS]; // Raw heightmap data
     double* data;
-    double minBound = 0.0f;
-    double maxBound = 1.0f;
+    double minBound;
+    double maxBound;
 } Rasteron_Heightmap;
 
 Rasteron_Heightmap* rstnCreate_Heightmap(const Rasteron_Image* ref);

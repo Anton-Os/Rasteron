@@ -74,6 +74,7 @@ set(RASTERON_SRC
     src/Cellwise/Cellwise.c
     src/Core/Loader.c
     src/Core/Primitives.c
+    src/Core/Heightmap
 )
 
 # find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)

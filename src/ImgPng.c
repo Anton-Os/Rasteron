@@ -1,3 +1,5 @@
+#include "ImageSupport.h" // Defines USE_IMG_PNG if needed
+
 #ifdef USE_IMG_PNG
 
 #include "ImageLoader.h"

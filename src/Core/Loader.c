@@ -29,31 +29,51 @@ void rstnLoadFromFile(const char* fileName, FileImage* image){
     enum IMG_FileFormat format = getFormat(fileName);
     
     switch(format){
-        case IMG_Png:
-            loadImage_PNG(fileName, image);
-            break;
-        case IMG_Tiff:
-            loadImage_TIFF(fileName, image);
-            break;
-        case IMG_Bmp:
-            loadImage_BMP(fileName, image);
-            break;
-        default:
-            break; // Probably need some kind of error
+
+	case IMG_Png:
+#ifdef USE_IMG_PNG
+		loadImage_PNG(fileName, image);
+#endif // TODO: Error check
+		break;
+
+	case IMG_Tiff:
+#ifdef USE_IMG_TIFF
+		loadImage_TIFF(fileName, image);
+#endif // TODO: Error check
+		break;
+
+	case IMG_Bmp:
+#ifdef USE_IMG_BMP
+		loadImage_BMP(fileName, image);
+#endif // TODO: Error check
+		break;
+
+	default:
+		break;
     }
 }
 
 void rstnDelFromFile(FileImage* image) {
 	switch (image->fileFormat) {
+
 	case IMG_Png:
+#ifdef USE_IMG_PNG
 		delImage_PNG(image);
+#endif // TODO: Error check
 		break;
+
 	case IMG_Tiff:
+#ifdef USE_IMG_TIFF
 		delImage_TIFF(image);
+#endif // TODO: Error check
 		break;
+
 	case IMG_Bmp:
+#ifdef USE_IMG_BMP
 		delImage_BMP(image);
+#endif // TODO: Error check
 		break;
+
 	default:
 		break;
 	}

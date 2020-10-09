@@ -1,4 +1,5 @@
 #include "Rasteron.h"
+#include "Heightmap.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +14,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 	case (WM_PAINT): {
 		Image img2 = { 0 };
-		rstnLoadFromFile("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
+		rstnLoadFromFile("C:\\AntonDocs\\Design\\PurpleCult.png", &img2);
 		// loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
 
 		Rasteron_Image* rImage = rstnCreate_ImgBase(&img2);
@@ -22,6 +23,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		Rasteron_Sprite* rSprite = rstnCreate_Sprite(rImage);
 
 		Rasteron_Image* rImageGrey = rstnCreate_ImgGrey(rImage);
+		Rasteron_Heightmap* heightmap = rstnCreate_Heightmap(rImageGrey); // Heightmap data test
 
 		BITMAP bmapTiff = createWinBmap(&img2);
 		BITMAP bmapBase = createWinBmap_Raw(rImage->width, rImage->height, rImage->data);
@@ -30,6 +32,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 		rstnDel_Img(rImage);
 		rstnDel_Img(rImageGrey);
+		rstnDel_Heightmap(heightmap);
 
 		rstnDel_Palette(rPalette);
 		rstnDel_Outline(rOutline);
