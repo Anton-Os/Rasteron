@@ -71,10 +71,11 @@ set(RASTERON_SRC
     src/Img.c
     src/ImgBmp.c
 
-    src/Cellwise/Cellwise.c
+    src/Core/ImageGen.c
+    src/Core/PrimitiveGen.c
+    src/Core/HeightmapGen.c
     src/Core/Loader.c
-    src/Core/Primitives.c
-    src/Core/Heightmap
+    src/Cellwise/Cellwise.c
 )
 
 # find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
