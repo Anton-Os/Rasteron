@@ -1,17 +1,13 @@
 #include "Heightmap.h"
 
-static double computeHeight(unsigned inputVal, double minBound, double maxBound){
-	uint32_t maxVal = 0x00FFFFFF;
-	double maxClampVal = (double)maxVal / maxBound;
+static double computeHeight(unsigned inputVal, double minBound, double maxBound){;
 
-	uint32_t greyColor = grayify_32((uint32_t)inputVal);
-	greyColor = greyColor & maxVal; // Sets the alpha value to zero to simplify computation
+	uint8_t greyColorRef = grayify_8(inputVal);
+	double heightVal = (double)greyColorRef; // Conversion to double
 
-	double testVal;
-	if(inputVal != 0)
-		testVal = ((double)greyColor / maxClampVal) + minBound;
+	heightVal /= (255.0f / maxBound);
 
-	return ((double)greyColor / maxClampVal) + minBound;
+	return heightVal + minBound;
 }
 
 Rasteron_Heightmap* rstnCreate_Heightmap(const Rasteron_Image* ref){
@@ -29,8 +25,10 @@ Rasteron_Heightmap* rstnCreate_Heightmap(const Rasteron_Image* ref){
 
     rstn_heightmap->data = (double*)malloc(rstn_heightmap->height * rstn_heightmap->width * sizeof(double));
 
+	// for (unsigned p = 0; p < rstn_heightmap->width * rstn_heightmap->height; p++)
+		// *(rstn_heightmap->data + p) = computeHeight(*(ref->data + p), rstn_heightmap->minBound, rstn_heightmap->maxBound);
 	for (unsigned p = 0; p < rstn_heightmap->width * rstn_heightmap->height; p++)
-		*(rstn_heightmap->data + p) = computeHeight(*(ref->data + p), rstn_heightmap->minBound, rstn_heightmap->maxBound);
+		if(p >= (rstn_heightmap->width * rstn_heightmap->height) - rstn_heightmap->width - rstn_heightmap->width) *(rstn_heightmap->data + p) = computeHeight(*(ref->data + p), rstn_heightmap->minBound, rstn_heightmap->maxBound);
 
     return rstn_heightmap;
 }

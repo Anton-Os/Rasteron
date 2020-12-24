@@ -31,19 +31,21 @@ void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, ui
 }
 
 // Produces a 32 bit grey value based on provided reference color
-uint32_t grayify_32(uint32_t refClr){ // Needs fixing!!!
-	uint8_t alpha = 0xFF; // Complete opacity for now
+uint32_t grayify_32(uint32_t refClr){
+	uint8_t alpha = 0xFF; // Complete opacity desired for alpha
 	
-	uint8_t avgClr = ((uint32_t)(refClr & 0xFF0000) + (uint32_t)(refClr & 0xFF00) + (uint32_t)(refClr & 0xFF)) / 3;
+	// Substracting 1 bit at end of equation, otherwise white pixels flip to black
+	uint8_t avgClr = ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16) - 0x00000001) / 3;
+
 	uint32_t result = ((alpha << 24) | (avgClr << 16) | (avgClr << 8) | avgClr);
 	return result;
-	// return (uint32_t)((alpha << 24) | (greyVal << 16) | (greyVal << 8) | greyVal);
 }
 
 // Produces a 8 bit grey value based on provided reference color
 uint8_t grayify_8(uint32_t refClr){
-	uint8_t greyVal = ((uint32_t)(refClr & 0xFF) + (uint32_t)(refClr & 0xFF00) + (uint32_t)(refClr & 0xFF0000)) / 3;
-	return greyVal;
+	uint8_t avgClr = ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16) - 0x00000001) / 3;
+	// Substracting 1 bit at end of equation, otherwise white pixels flip to black
+	return ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16) - 0x00000001) / 3;
 }
 
 uint32_t getBkColor(uint32_t* raster, unsigned width, unsigned height){
