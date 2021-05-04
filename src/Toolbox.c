@@ -1,10 +1,6 @@
 /* Provide general image utilities */
 
-#include "ImageLoader.h"
-
-static enum IMG_FileFormat getFileExtension(const char* filePath) {
-	return IMG_NonValid;
-}
+#include "Toolbox.h"
 
 // Reverses the blue and the red bits of the image
 void revrsColorBits_RB(uint32_t* raster, unsigned int pCount) {
@@ -32,10 +28,12 @@ void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, ui
 
 // Produces a 32 bit grey value based on provided reference color
 uint32_t grayify_32(uint32_t refClr){
+	if (refClr & 0x00FFFFFF == 0xFFFFFF) 
+		return TOTAL_WHITE_COLOR_CODE;
+	
 	uint8_t alpha = 0xFF; // Complete opacity desired for alpha
 	
-	// Substracting 1 bit at end of equation, otherwise white pixels flip to black
-	uint8_t avgClr = ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16) - 0x00000001) / 3;
+	uint8_t avgClr = ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16)) / 3;
 
 	uint32_t result = ((alpha << 24) | (avgClr << 16) | (avgClr << 8) | avgClr);
 	return result;
@@ -43,9 +41,10 @@ uint32_t grayify_32(uint32_t refClr){
 
 // Produces a 8 bit grey value based on provided reference color
 uint8_t grayify_8(uint32_t refClr){
-	uint8_t avgClr = ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16) - 0x00000001) / 3;
-	// Substracting 1 bit at end of equation, otherwise white pixels flip to black
-	return ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16) - 0x00000001) / 3;
+	if (refClr & 0x00FFFFFF == 0xFFFFFF)
+		return 0xFF; 
+
+	return ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16)) / 3;
 }
 
 uint32_t getBkColor(uint32_t* raster, unsigned width, unsigned height){

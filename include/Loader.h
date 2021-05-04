@@ -1,4 +1,4 @@
-#include "ImageSupport.h"
+#include "Support.h"
 
 #ifdef __cplusplus
 extern "C"{
@@ -9,6 +9,8 @@ extern "C"{
 typedef struct _Image Image;
 
 #define BAD_COLOR_CODE 0xFF000000
+#define TOTAL_WHITE_COLOR_CODE 0xFFFFFFFF
+#define TOTAL_BLACK_COLOR_CODE 0x00000000
 
 #define ALPHA_BITS_MASK 0xFF000000 // alpha channel represented by first two bytes
 #define RED_BITS_MASK 0x00FF0000 // red channel represented by second two bytes
@@ -44,7 +46,7 @@ typedef struct {
 	int bitDepth;
 	int colorType;
 	size_t rowBytes;
-	png_byte** rowPtrs;
+	png_byte** row_ptrs;
 	uint32_t* rgbaData;
 } ImageData_Png;
 
@@ -92,37 +94,13 @@ typedef struct _Image {
 	union ImageData imageData;
 } Image;
 
-
-// General purpose functions
-void revrsColorBits_RB(uint32_t* raster, unsigned int pCount);// Utility Function
-
-void makeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal);
-void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, uint32_t oldClr);
-
-uint32_t grayify_32(uint32_t refClr);
-uint32_t getBkColor(uint32_t* raster, unsigned width, unsigned height);
-
-void createImage(const char* fileName, Image* image);
-
-
-#ifdef _WIN32 
-	#ifndef WIN_INCLUDE
-		#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-			#include <Windows.h>
-		#endif
-		#define WIN_INCLUDE
-	#endif
-
-	BITMAP createWinBmap(const Image* image); // Helper for all image types
-	BITMAP createWinBmap_Raw(uint32_t width, uint32_t height, uint32_t* data); // Just dimensions and data are provided
-	void drawWinBmap(HWND hwnd, const BITMAP* bmap);
-	// void drawWinBmap(HWND hwnd, const Image* image);
-#endif // Port later to some Internal.h header
+/* static enum IMG_FileFormat getFileExtension(const char* filePath) {
+	return IMG_NonValid;
+} */
 
 #define IMAGE_LOADER_H
 #endif // IMAGE_LOADER_H
 
 #ifdef __cplusplus
 }
-#endif
+#endif 

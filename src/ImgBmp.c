@@ -1,8 +1,8 @@
-#include "ImageSupport.h" // Defines USE_IMG_BMP if needed
+#include "Support.h" // Defines USE_IMG_BMP if needed
 
 #ifdef USE_IMG_BMP
 
-#include "ImageLoader.h"
+#include "Loader.h"
 
 void loadImage_BMP(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Bmp;

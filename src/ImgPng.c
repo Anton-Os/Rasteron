@@ -1,8 +1,8 @@
-#include "ImageSupport.h" // Defines USE_IMG_PNG if needed
+#include "Support.h" // Defines USE_IMG_PNG if needed
 
 #ifdef USE_IMG_PNG
 
-#include "ImageLoader.h"
+#include "Loader.h"
 
 #define DEFAULT_PNG_DISPLAY_EXPO 2.2
 
@@ -50,28 +50,28 @@ void loadImage_PNG(const char* fileName, Image* image) {
 	image->imageData.png.rowBytes = png_get_rowbytes(png_ptr, info_ptr);
 
 	// Allocate png specific
-	image->imageData.png.rowPtrs = (png_byte**)malloc(image->imageData.png.height * sizeof(png_byte*));
+	image->imageData.png.row_ptrs = (png_byte**)malloc(image->imageData.png.height * sizeof(png_byte*));
 	for (unsigned int r = 0; r < image->imageData.png.height; r++)
-		image->imageData.png.rowPtrs[r] = (png_byte*)malloc(image->imageData.png.rowBytes);
+		image->imageData.png.row_ptrs[r] = (png_byte*)malloc(image->imageData.png.rowBytes);
 
-	png_read_image(png_ptr, image->imageData.png.rowPtrs);
+	png_read_image(png_ptr, image->imageData.png.row_ptrs);
 	image->imageData.png.rgbaData = (uint32_t*)malloc(sizeof(uint32_t) * image->imageData.png.height * image->imageData.png.width);
 
-	png_byte* srcPtr;
-	uint32_t* destPtr = image->imageData.png.rgbaData;
+	png_byte* src_ptr;
+	uint32_t* dest_ptr = image->imageData.png.rgbaData;
 	int testIncrementor = 0;
 	for (unsigned int r = 0; r < image->imageData.png.height; r++) {
-		srcPtr = image->imageData.png.rowPtrs[r];
+		src_ptr = image->imageData.png.row_ptrs[r];
 
 		for (unsigned int c = 0; c < image->imageData.png.width; c++) {
 
-			png_byte red = *srcPtr;
-			png_byte green = *(++srcPtr);
-			png_byte blue = *(++srcPtr);
-			png_byte alpha = *(++srcPtr);
-			*(destPtr) = (alpha << 24) | (red << 16) | (green << 8) | blue;
+			png_byte red = *src_ptr;
+			png_byte green = *(++src_ptr);
+			png_byte blue = *(++src_ptr);
+			png_byte alpha = *(++src_ptr);
+			*(dest_ptr) = (alpha << 24) | (red << 16) | (green << 8) | blue;
 
-			destPtr++; srcPtr++; testIncrementor++;
+			dest_ptr++; src_ptr++; testIncrementor++;
 		}
 	}
 
@@ -90,8 +90,8 @@ void delImage_PNG(Image* image) {
 	}
 
 	for (unsigned int r = 0; r < image->imageData.png.height; r++)
-		free(image->imageData.png.rowPtrs[r]);
-	free(image->imageData.png.rowPtrs);
+		free(image->imageData.png.row_ptrs[r]);
+	free(image->imageData.png.row_ptrs);
 
 	free(image->imageData.png.rgbaData);
 	image->fileFormat = IMG_NonValid;

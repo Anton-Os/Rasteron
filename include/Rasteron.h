@@ -1,6 +1,7 @@
 #ifndef RASTERON_H
 
-#include "ImageLoader.h"
+#include "Loader.h"
+#include "Toolbox.h"
 
 #ifdef __cplusplus
 extern "C"{
@@ -8,7 +9,7 @@ extern "C"{
 
 // Loader.c declarations
 
-typedef Image FileImage; // Just makes an easier distinction between Rasteron image and file Image
+typedef Image FileImage; // Just makes an easier distinction between Rasteron Image and file Image
 
 void rstnLoadFromFile(const char* fileName, FileImage* image); // Image is destination
 void rstnDelFromFile(FileImage* image);

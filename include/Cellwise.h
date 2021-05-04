@@ -1,5 +1,5 @@
 #ifndef IMAGE_LOADER_H
-    #include "ImageLoader.h"
+    #include "Loader.h"
 #endif
 
 /* #define BOT_RIGHT_NBR_FLAG 1

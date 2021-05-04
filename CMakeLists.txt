@@ -68,14 +68,14 @@ ExternalProject_Add(libtiff
 # Rasteron project sources
 
 set(RASTERON_SRC
-    src/Img.c
-    src/ImgBmp.c
+    src/Toolbox.c
+    src/Loader.c
+    src/ImgBmp.c # BMP does not require dependencies
 
-    src/Core/ImageGen.c
-    src/Core/PrimitiveGen.c
-    src/Core/HeightmapGen.c
-    src/Core/Loader.c
-    src/Cellwise/Cellwise.c
+    src/core/ImageGen.c
+    src/core/PrimitiveGen.c
+    src/plugin/Cellwise.c
+    src/plugin/Heightmap.c
 )
 
 # find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
@@ -118,7 +118,7 @@ endif()
 
 add_library(RasteronLib STATIC  ${RASTERON_SRC})
 
-target_include_directories(RasteronLib PRIVATE include )
+target_include_directories(RasteronLib PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
 target_link_libraries(RasteronLib PUBLIC tiff png zlibstatic)
 
 target_include_directories(RasteronLib
@@ -128,17 +128,17 @@ target_include_directories(RasteronLib
 )
 
 if(WIN32)
-    add_executable(DemoImaging demos/DemoImaging_win.c)
-    target_include_directories(DemoImaging PUBLIC include)
-    target_link_libraries(DemoImaging RasteronLib) # Fix zlib static linking!!
+    add_executable(Imaging demos/Imaging_win.c)
+    target_include_directories(Imaging PUBLIC include)
+    target_link_libraries(Imaging RasteronLib) # Fix zlib static linking!!
 
-    add_executable(DemoCellwise demos/DemoCellwise_win.c)
-    target_include_directories(DemoCellwise PUBLIC include)
-    target_link_libraries(DemoCellwise RasteronLib)
+    add_executable(Cellwise demos/Cellwise_win.c)
+    target_include_directories(Cellwise PUBLIC include)
+    target_link_libraries(Cellwise RasteronLib)
 
-    add_executable(DemoPrim demos/DemoPrim_win.c)
-    target_include_directories(DemoPrim PUBLIC include)
-    target_link_libraries(DemoPrim RasteronLib)
+    add_executable(Prim demos/Prim_win.c)
+    target_include_directories(Prim PUBLIC include)
+    target_link_libraries(Prim RasteronLib)
 endif()
 
 

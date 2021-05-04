@@ -1,4 +1,4 @@
-#include "ImageLoader.h"
+#include "Toolbox.h"
 
 BITMAP createWinBmap_Raw(uint32_t width, uint32_t height, uint32_t* data){
 	BITMAP bmap = { 0 };
@@ -42,7 +42,7 @@ BITMAP createWinBmap(const Image* image) {
 	}
 
 	BITMAP bmap = { 0 };
-	puts("Make sure the correct libraries are built and ImageSupport.h has correct macro definitions");
+	puts("Make sure the correct libraries are built and Support.h has correct macro definitions");
 	return bmap;
 }
 

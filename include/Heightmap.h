@@ -6,7 +6,6 @@ typedef struct {
     uint32_t width;
 	uint32_t height;
     
-    // double points[MAX_HEIGHTMAP_VALS]; // Raw heightmap data
     double* data;
     double minBound;
     double maxBound;

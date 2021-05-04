@@ -1,8 +1,8 @@
-#include "ImageSupport.h" // Defines USE_IMG_TIFF if needed
+#include "Support.h" // Defines USE_IMG_TIFF if needed
 
 #ifdef USE_IMG_TIFF
 
-#include "ImageLoader.h"
+#include "Loader.h"
 
 void loadImage_TIFF(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Tiff;
