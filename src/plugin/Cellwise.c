@@ -27,14 +27,6 @@ static void clearFlagBit(nebrCheckFlags* target, enum NBR_CellFlags flagBit){
     return;
 }
 
-// nebrCheckFlags check_colorRangeNebrs_BW(PixelCRange_BW pixCRange, uint8_t greyRef, enum NBR_ColorRange_Mode mode){
-/*    nebrCheckFlags flags = 0x00;
-    
-    switch(mode){
-
-    }
-}*/
-
 nebrCheckFlags check_existNebrs(uint32_t index, uint32_t imgWidth, uint32_t imgHeight){
     nebrCheckFlags flags = 0xFF;
 
@@ -163,7 +155,6 @@ void del_nebrTables(NebrTable_List* nebrTables) {
 	for (NebrTable* nebrTable_current = nebrTables->tables;
 		nebrTable_current != nebrTables->tables + nebrTables->count; 
 		nebrTable_current++) {
-		// free(nebrTables->tables->nebrs); // Free all neighbors
 		free(nebrTable_current->nebrs);
 	}
 	free(nebrTables->tables);

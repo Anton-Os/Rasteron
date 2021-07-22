@@ -1,7 +1,5 @@
 # Rasteron
 
-A raster image loader and manipulation project, 
-this code will be incorporated into making sprites and textures.
-Supports formats exported in Adobe Illustrator in 32 bit RGBA format.
+A raster image loader and manipulation project, this code will be incorporated into making sprites and textures. Supports PNG, TIFF, and BMP file formats
 
-Test builds on Windows and MSYS mingw64
+Builds on Windows with Linux port in progress

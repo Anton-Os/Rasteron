@@ -2,92 +2,81 @@
 
 // Sprite related stuff
 
-Rasteron_Sprite* rstnCreate_Sprite(const Rasteron_Image* ref){
-	if (ref == NULL) {
-		puts("Cannot create palette! Null pointer provided!");
+Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
+	if (refImage == NULL) {
+		puts("Cannot create palette! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	Rasteron_Sprite* rstn_sprite = (Rasteron_Sprite*)malloc(sizeof(Rasteron_Sprite));
+	Rasteron_Sprite* sprite = (Rasteron_Sprite*)malloc(sizeof(Rasteron_Sprite));
 
-	rstn_sprite->image = ref; // Simply copy a pointer to the image
+	sprite->image = refImage; // Simply copy a pointer to the image
 
-	rstn_sprite->bounds.topRight_Pt[0] = ref->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
-	rstn_sprite->bounds.topRight_Pt[1] = ref->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+	sprite->bounds.topRight_Pt[0] = refImage->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+	sprite->bounds.topRight_Pt[1] = refImage->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
 
-	rstn_sprite->bounds.topLeft_Pt[0] = -1.0 * (ref->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
-	rstn_sprite->bounds.topLeft_Pt[1] = ref->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+	sprite->bounds.topLeft_Pt[0] = -1.0 * (refImage->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+	sprite->bounds.topLeft_Pt[1] = refImage->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
 
-	rstn_sprite->bounds.botRight_Pt[0] = ref->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
-	rstn_sprite->bounds.botRight_Pt[1] = -1.0 * (ref->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+	sprite->bounds.botRight_Pt[0] = refImage->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+	sprite->bounds.botRight_Pt[1] = -1.0 * (refImage->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
 
-	rstn_sprite->bounds.botLeft_Pt[0] = -1.0 * (ref->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
-	rstn_sprite->bounds.botLeft_Pt[1] = -1.0 * (ref->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+	sprite->bounds.botLeft_Pt[0] = -1.0 * (refImage->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+	sprite->bounds.botLeft_Pt[1] = -1.0 * (refImage->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
 
-	return rstn_sprite;
+	return sprite;
 }
 
-void rstnDel_Sprite(Rasteron_Sprite* sprite){
+void deleteSprite(Rasteron_Sprite* sprite){
 	free(sprite);
 }
 
 // Palette related stuff
 
-Rasteron_Palette* rstnCreate_Palette(const Rasteron_Image* ref){
-	if (ref == NULL) {
-		puts("Cannot create palette! Null pointer provided!");
+Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
+	if (refImage == NULL) {
+		puts("Cannot create palette! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	Rasteron_Palette* rstn_palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
-	rstn_palette->colorIndex = 0;
+	Rasteron_Palette* palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
+	palette->maxColors = 0;
 
-	for (unsigned p = 0; p < ref->width * ref->height; p++) {
-		unsigned pixColorDbg = *(ref->data + p); // For testing
-
-		if (rstn_palette->colorIndex == MAX_COLOR_TABLE_VALS) {
-			puts("Color pallette exceeded max capacity");
-			break; // Image's pallette is too big
+	for (unsigned p = 0; p < refImage->width * refImage->height; p++) {
+		unsigned targetIndex = 0;
+		while (targetIndex <= palette->maxColors) { // step one is find target color in our palette
+			if (*(refImage->data + p) == palette->colors[targetIndex][COLOR_CODE_OFFSET]) break;
+			else targetIndex++;
 		}
 
-		unsigned colorTargetIdx = 0;
-		while (colorTargetIdx <= rstn_palette->colorIndex) { // Step one is find target color in our palette
-			if (*(ref->data + p) == rstn_palette->imgPix_colors[colorTargetIdx])
-				break;
-			else colorTargetIdx++;
+		if (targetIndex == palette->maxColors + 1) { // match does not exist
+			palette->colors[palette->maxColors][COLOR_CODE_OFFSET] = *(refImage->data + p);
+			palette->colors[palette->maxColors][COLOR_COUNT_OFFSET] = 1; // only one pixel found
+			palette->maxColors++;
 		}
-
-		if (colorTargetIdx == rstn_palette->colorIndex + 1) { // Match does not exist
-			rstn_palette->imgPix_colors[rstn_palette->colorIndex] = *(ref->data + p);
-			rstn_palette->imgPix_counts[rstn_palette->colorIndex] = 1; // Because there is one pixel
-			rstn_palette->colorIndex++;
-		}
-		else
-			rstn_palette->imgPix_counts[colorTargetIdx]++;
+		else palette->colors[targetIndex][COLOR_COUNT_OFFSET]++;
 	}
 
-	return rstn_palette;
+	return palette;
 }
 
-void rstnDel_Palette(Rasteron_Palette* palette){
-	free(palette);
-}
-
-// Outline related stuff
-
-Rasteron_Outline* rstnCreate_Outline(const Rasteron_Image* ref){
-	if (ref == NULL) {
-		puts("Cannot create palette! Null pointer provided!");
+Rasteron_Palette* filterPalette(unsigned minPixelCount, const Rasteron_Palette* refImage){
+	if (refImage == NULL) {
+		puts("Cannot create palette! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	Rasteron_Outline* rstn_outline = (Rasteron_Outline*)malloc(sizeof(Rasteron_Outline));
+	Rasteron_Palette* palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
+	palette->maxColors = 0;
 
-	unsigned bkColor = getBkColor(ref->data, ref->width, ref->height);
+	for(unsigned p = 0; p < refImage->maxColors; p++)
+		if(refImage->colors[p][COLOR_COUNT_OFFSET] >= minPixelCount){
+			palette->colors[palette->maxColors][COLOR_CODE_OFFSET] = refImage->colors[palette->maxColors][COLOR_CODE_OFFSET];
+			palette->colors[palette->maxColors][COLOR_COUNT_OFFSET] = refImage->colors[palette->maxColors][COLOR_COUNT_OFFSET];
+			palette->maxColors++;
+		}
 	
-	return rstn_outline;
+	return palette;
 }
 
-void rstnDel_Outline(Rasteron_Outline* outline){
-	free(outline);
-}
+void deletePalette(Rasteron_Palette* palette){ free(palette); }

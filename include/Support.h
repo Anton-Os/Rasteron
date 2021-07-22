@@ -1,5 +1,5 @@
 
-// #define USE_IMG_TIFF // Enable TIFF Support
+#define USE_IMG_TIFF // Enable TIFF Support
 
 #define USE_IMG_PNG // Enable PNG Support
 

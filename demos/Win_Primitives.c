@@ -17,26 +17,25 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		rstnLoadFromFile("C:\\AntonDocs\\Design\\PurpleCult.png", &img2);
 		// loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img2);
 
-		Rasteron_Image* rImage = rstnCreate_ImgBase(&img2);
-		Rasteron_Palette* rPalette = rstnCreate_Palette(rImage);
-		Rasteron_Outline* rOutline = rstnCreate_Outline(rImage);
-		Rasteron_Sprite* rSprite = rstnCreate_Sprite(rImage);
+		Rasteron_Image* image = createImgBase(&img2);
+		Rasteron_Palette* palette = createPalette(image);
+		Rasteron_Sprite* sprite = createSprite(image);
 
-		Rasteron_Image* rImageGrey = rstnCreate_ImgGrey(rImage);
-		Rasteron_Heightmap* heightmap = rstnCreate_Heightmap(rImageGrey); // Heightmap data test
+		Rasteron_Image* imageGrey = createImgGrey(image);
+		Rasteron_Heightmap* heightmap = createHeightmap(imageGrey); // Heightmap data test
+		Rasteron_Palette* filtered = filterPalette(1024, palette);
 
 		BITMAP bmapTiff = createWinBmap(&img2);
-		BITMAP bmapBase = createWinBmap_Raw(rImage->width, rImage->height, rImage->data);
-		// BITMAP bmapBase = createWinBmap_Raw(rImageGrey->width, rImageGrey->height, rImageGrey->data);
+		BITMAP bmapBase = createWinBmapRaw(image->width, image->height, image->data);
+		// BITMAP bmapBase = createWinBmapRaw(imageGrey->width, imageGrey->height, imageGrey->data);
 		drawWinBmap(hwnd, &bmapBase);
 
-		rstnDel_Img(rImage);
-		rstnDel_Img(rImageGrey);
-		rstnDel_Heightmap(heightmap);
-
-		rstnDel_Palette(rPalette);
-		rstnDel_Outline(rOutline);
-		rstnDel_Sprite(rSprite);
+		deleteSprite(sprite);
+		deleteImg(image);
+		deleteImg(imageGrey);
+		deleteHeightmap(heightmap);
+		deletePalette(palette);
+		deletePalette(filtered);
 		
 		rstnDelFromFile(&img2);
 	}

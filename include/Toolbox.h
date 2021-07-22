@@ -1,12 +1,12 @@
 // #include <inttypes.h>
 #include "Loader.h"
 
-void revrsColorBits_RB(uint32_t* raster, unsigned int pCount);// Utility Function
+void switchBits_RB(uint32_t* raster, unsigned int pCount);// Utility Function
 
 void makeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal);
-void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, uint32_t oldClr);
+void changeToSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, uint32_t oldClr);
 
-uint32_t grayify_32(uint32_t refClr);
+uint32_t grayify32(uint32_t refClr);
 uint32_t getBkColor(uint32_t* raster, unsigned width, unsigned height);
 
 // void createImage(const char* fileName, Image* image);
@@ -21,7 +21,7 @@ uint32_t getBkColor(uint32_t* raster, unsigned width, unsigned height);
 	#endif
 
 	BITMAP createWinBmap(const Image* image); // Helper for all image types
-	BITMAP createWinBmap_Raw(uint32_t width, uint32_t height, uint32_t* data); // Just dimensions and data are provided
+	BITMAP createWinBmapRaw(uint32_t width, uint32_t height, uint32_t* data); // Just dimensions and data are provided
 	void drawWinBmap(HWND hwnd, const BITMAP* bmap);
 	// void drawWinBmap(HWND hwnd, const Image* image);
 #endif // Port later to some Internal.h header

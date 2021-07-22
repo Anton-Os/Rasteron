@@ -18,18 +18,16 @@ void rstnDelFromFile(FileImage* image);
 // Rasteron specific image type, based on file image with a name (label) attached
 
 typedef struct {
-	uint32_t width;
-	uint32_t height;
-
-    // Base of the image
     char* name;
+    uint32_t width;
+	uint32_t height;
     uint32_t* data;
 } Rasteron_Image;
 
-Rasteron_Image* rstnCreate_ImgBase(const Image* image); // Creates an image based on my readers
-Rasteron_Image* rstnCreate_ImgGrey(const Rasteron_Image* ref);
+Rasteron_Image* createImgBase(const Image* image); // Creates an image based on my readers
+Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // Creates greyscale version of target image
 
-void rstnDel_Img(Rasteron_Image* rstn_image);
+void deleteImg(Rasteron_Image* rstn_image);
 
 // Sprite is a wrapper around a base image and coordinates
 
@@ -47,40 +45,27 @@ typedef struct {
     Rasteron_BoxBounds bounds;
 } Rasteron_Sprite;
 
-Rasteron_Sprite* rstnCreate_Sprite(const Rasteron_Image* ref);
+Rasteron_Sprite* createSprite(const Rasteron_Image* refImage);
 
-void rstnDel_Sprite(Rasteron_Sprite* sprite);
+void deleteSprite(Rasteron_Sprite* sprite);
 
 // Palette holds the frequencies of colors that appear in an image
 
-#define MAX_COLOR_TABLE_VALS 65536 // 2 ^ 16
+#define MAX_COLOR_TABLE_VALS 1048576 // 2 ^ 20
+#define MIN_COLOR_PIXEL_COUNTS 1024 // 2 ^ 10
+#define COLOR_CODE_OFFSET 0
+#define COLOR_COUNT_OFFSET 1
 
 typedef struct {
-    unsigned imgPix_colors[MAX_COLOR_TABLE_VALS]; // Target colors
-    unsigned imgPix_counts[MAX_COLOR_TABLE_VALS]; // Corresponding count of target colors
-    unsigned colorIndex; // Increments as more colors are found
+    unsigned colors[MAX_COLOR_TABLE_VALS][2];  // 2D array of colors and cooresponding color count
+    unsigned maxColors; // Increments as more colors are found
     unsigned bkIndex; // The index holding the background color
 } Rasteron_Palette;
 
-Rasteron_Palette* rstnCreate_Palette(const Rasteron_Image* ref);
+Rasteron_Palette* createPalette(const Rasteron_Image* refImage);
+Rasteron_Palette* filterPalette(const Rasteron_Palette* refImage);
 
-void rstnDel_Palette(Rasteron_Palette* palette);
-
-// Outline should approximately trace the target image
-
-#define MAX_VERTEX_POS_VALS 32768 // 2 ^ 15
-
-typedef struct {
-    float xVals[MAX_VERTEX_POS_VALS];
-    float yVals[MAX_VERTEX_POS_VALS];
-    unsigned vertexIndex;
-} Rasteron_Outline;
-
-Rasteron_Outline* rstnCreate_Outline(const Rasteron_Image* ref);
-// Rasteron_Outline* rstnCreate_OutlineColor(const Rasteron_Image* ref, unsigned color); // Colored outline
-
-void rstnDel_Outline(Rasteron_Outline* outline);
-
+void deletePalette(Rasteron_Palette* palette);
 
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@
 #include "Toolbox.h"
 
 // Reverses the blue and the red bits of the image
-void revrsColorBits_RB(uint32_t* raster, unsigned int pCount) {
+void switchBits_RB(uint32_t* raster, unsigned int pCount) {
 	unsigned int bCount = pCount * 8;
 	for (unsigned int i = 0; i < pCount; i++) {
 		unsigned int val = *(raster + i);
@@ -19,32 +19,32 @@ void makeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal) {
 	return;
 }
 
-void changeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, uint32_t oldClr) {
+void changeToSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor) {
 	for (unsigned int i = 0; i < pCount; i++)
-		if (*(raster + i) == oldClr) 
-			*(raster + i) = newClr;
+		if (*(raster + i) == oldColor) 
+			*(raster + i) = newColor;
 	return;
 }
 
 // Produces a 32 bit grey value based on provided reference color
-uint32_t grayify_32(uint32_t refClr){
-	if (refClr & 0x00FFFFFF == 0xFFFFFF) 
+uint32_t grayify32(uint32_t refColor){
+	if (refColor & 0x00FFFFFF == 0xFFFFFF) 
 		return TOTAL_WHITE_COLOR_CODE;
 	
 	uint8_t alpha = 0xFF; // Complete opacity desired for alpha
 	
-	uint8_t avgClr = ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16)) / 3;
+	uint8_t avgColor = ((uint32_t)((refColor & 0xFF0000) << 16) + (uint32_t)((refColor & 0xFF00) << 16) + (uint32_t)((refColor & 0xFF) << 16)) / 3;
 
-	uint32_t result = ((alpha << 24) | (avgClr << 16) | (avgClr << 8) | avgClr);
+	uint32_t result = ((alpha << 24) | (avgColor << 16) | (avgColor << 8) | avgColor);
 	return result;
 }
 
 // Produces a 8 bit grey value based on provided reference color
-uint8_t grayify_8(uint32_t refClr){
-	if (refClr & 0x00FFFFFF == 0xFFFFFF)
+uint8_t grayify8(uint32_t refColor){
+	if (refColor & 0x00FFFFFF == 0xFFFFFF)
 		return 0xFF; 
 
-	return ((uint32_t)((refClr & 0xFF0000) << 16) + (uint32_t)((refClr & 0xFF00) << 16) + (uint32_t)((refClr & 0xFF) << 16)) / 3;
+	return ((uint32_t)((refColor & 0xFF0000) << 16) + (uint32_t)((refColor & 0xFF00) << 16) + (uint32_t)((refColor & 0xFF) << 16)) / 3;
 }
 
 uint32_t getBkColor(uint32_t* raster, unsigned width, unsigned height){

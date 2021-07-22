@@ -30,25 +30,23 @@ void rstnLoadFromFile(const char* fileName, FileImage* image){
     
     switch(format){
 
-	case IMG_Png:
 #ifdef USE_IMG_PNG
+	case IMG_Png:
 		loadImage_PNG(fileName, image);
-#endif // TODO: Error check
 		break;
-
-	case IMG_Tiff:
+#endif
 #ifdef USE_IMG_TIFF
+	case IMG_Tiff:
 		loadImage_TIFF(fileName, image);
-#endif // TODO: Error check
 		break;
-
-	case IMG_Bmp:
+#endif
 #ifdef USE_IMG_BMP
+	case IMG_Bmp:
 		loadImage_BMP(fileName, image);
-#endif // TODO: Error check
 		break;
-
+#endif
 	default:
+		puts("Image Format not yet supported!!!");
 		break;
     }
 }
@@ -56,25 +54,23 @@ void rstnLoadFromFile(const char* fileName, FileImage* image){
 void rstnDelFromFile(FileImage* image) {
 	switch (image->fileFormat) {
 
-	case IMG_Png:
 #ifdef USE_IMG_PNG
+	case IMG_Png:
 		delImage_PNG(image);
-#endif // TODO: Error check
 		break;
-
-	case IMG_Tiff:
+#endif
 #ifdef USE_IMG_TIFF
+	case IMG_Tiff:
 		delImage_TIFF(image);
-#endif // TODO: Error check
 		break;
-
-	case IMG_Bmp:
+#endif
 #ifdef USE_IMG_BMP
+	case IMG_Bmp:
 		delImage_BMP(image);
-#endif // TODO: Error check
 		break;
-
+#endif
 	default:
+		puts("Image Format not yet supported!!!");
 		break;
 	}
 }

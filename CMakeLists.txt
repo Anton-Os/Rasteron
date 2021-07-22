@@ -113,7 +113,7 @@ endif(libtiff_FOUND)
 
 
 if(WIN32) # Conditional OS Sources
-    list(APPEND RASTERON_SRC src/NativeImg_win.c)
+    list(APPEND RASTERON_SRC src/Win_NativeImg.c)
 endif()
 
 add_library(RasteronLib STATIC  ${RASTERON_SRC})
@@ -128,17 +128,17 @@ target_include_directories(RasteronLib
 )
 
 if(WIN32)
-    add_executable(Imaging demos/Imaging_win.c)
+    add_executable(Imaging demos/Win_Imaging.c)
     target_include_directories(Imaging PUBLIC include)
     target_link_libraries(Imaging RasteronLib) # Fix zlib static linking!!
 
-    add_executable(Cellwise demos/Cellwise_win.c)
+    add_executable(Cellwise demos/Win_Cellwise.c)
     target_include_directories(Cellwise PUBLIC include)
     target_link_libraries(Cellwise RasteronLib)
 
-    add_executable(Prim demos/Prim_win.c)
-    target_include_directories(Prim PUBLIC include)
-    target_link_libraries(Prim RasteronLib)
+    add_executable(Primitives demos/Win_Primitives.c)
+    target_include_directories(Primitives PUBLIC include)
+    target_link_libraries(Primitives RasteronLib)
 endif()
 
 
