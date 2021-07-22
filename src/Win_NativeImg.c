@@ -19,7 +19,7 @@ BITMAP createWinBmap(const Image* image) {
 
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
-		switchRasterGB(image->imageData.tiff.raster, image->imageData.tiff.width * image->imageData.tiff.length); // Should maybe move to ImgTIFF
+		switchRasterRB(image->imageData.tiff.raster, image->imageData.tiff.width * image->imageData.tiff.length); // Should maybe move to ImgTIFF
 		return createWinBmapRaw(image->imageData.tiff.width, image->imageData.tiff.length, image->imageData.tiff.raster);
 #endif
 #ifdef USE_IMG_BMP
