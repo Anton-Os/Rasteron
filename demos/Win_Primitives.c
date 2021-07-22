@@ -24,7 +24,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		rstnLoadFromFile("C:\\AntonDocs\\Design\\PurpleCult.png", &img);
+		loadFileImage("C:\\AntonDocs\\Design\\PurpleCult.png", &img);
 
 		imageBase = createImgBase(&img);
 		imageGrey = createImgGrey(imageBase);
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 	deleteHeightmap(heightmap);
 	deletePalette(palette);
 
-	rstnDelFromFile(&img);
+	delFileImage(&img);
 
 	return 0;
 }

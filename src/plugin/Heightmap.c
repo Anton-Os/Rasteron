@@ -4,7 +4,7 @@ static double computeHeight(unsigned inputVal, double minBound, double maxBound)
 	uint8_t greyColorRef = grayify8(inputVal);
 	double heightVal = (double)greyColorRef; // Conversion to double
 
-	heightVal /= (255.0f / maxBound);
+	heightVal /= (255.0 / maxBound);
 
 	return heightVal + minBound;
 }
@@ -31,6 +31,6 @@ Rasteron_Heightmap* createHeightmap(const Rasteron_Image* refImage){
 }
 
 void deleteHeightmap(Rasteron_Heightmap* heightmap){
-    free(heightmap->data);
-    free(heightmap);
+    if(heightmap->data != NULL) free(heightmap->data);
+    if(heightmap != NULL) free(heightmap);
 }

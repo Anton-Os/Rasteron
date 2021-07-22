@@ -12,17 +12,17 @@ Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
 
 	sprite->image = refImage; // Simply copy a pointer to the image
 
-	sprite->bounds.topRight_Pt[0] = refImage->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
-	sprite->bounds.topRight_Pt[1] = refImage->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+	sprite->bounds.topRight_Pt[0] = refImage->width / 2.0f / SPRITE_DIM_RATIO ;
+	sprite->bounds.topRight_Pt[1] = refImage->height / 2.0f / SPRITE_DIM_RATIO ;
 
-	sprite->bounds.topLeft_Pt[0] = -1.0 * (refImage->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
-	sprite->bounds.topLeft_Pt[1] = refImage->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
+	sprite->bounds.topLeft_Pt[0] = -1.0 * (refImage->width / 2.0f / SPRITE_DIM_RATIO );
+	sprite->bounds.topLeft_Pt[1] = refImage->height / 2.0f / SPRITE_DIM_RATIO ;
 
-	sprite->bounds.botRight_Pt[0] = refImage->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT;
-	sprite->bounds.botRight_Pt[1] = -1.0 * (refImage->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+	sprite->bounds.botRight_Pt[0] = refImage->width / 2.0f / SPRITE_DIM_RATIO ;
+	sprite->bounds.botRight_Pt[1] = -1.0 * (refImage->height / 2.0f / SPRITE_DIM_RATIO );
 
-	sprite->bounds.botLeft_Pt[0] = -1.0 * (refImage->width / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
-	sprite->bounds.botLeft_Pt[1] = -1.0 * (refImage->height / 2.0f / DIMENSION_RATIO_UNSIGNED_TO_FLOAT);
+	sprite->bounds.botLeft_Pt[0] = -1.0 * (refImage->width / 2.0f / SPRITE_DIM_RATIO );
+	sprite->bounds.botLeft_Pt[1] = -1.0 * (refImage->height / 2.0f / SPRITE_DIM_RATIO );
 
 	return sprite;
 }

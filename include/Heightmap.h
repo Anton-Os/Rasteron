@@ -12,4 +12,4 @@ typedef struct {
 } Rasteron_Heightmap;
 
 Rasteron_Heightmap* createHeightmap(const Rasteron_Image* ref);
-void deleteHeightmap(Rasteron_Heightmap* rstn_heightmap);
+void deleteHeightmap(Rasteron_Heightmap* rast_heightmap);

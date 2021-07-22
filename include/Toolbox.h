@@ -10,6 +10,7 @@ uint32_t getRasterBkColor(uint32_t* raster, unsigned width, unsigned height);
 
 uint32_t grayify32(uint32_t refColor);
 uint8_t grayify8(uint32_t refColor);
+uint32_t interpolateColor(uint32_t color1, uint32_t color2, double iVal);
 
 #ifdef _WIN32 
 	#ifndef WIN_INCLUDE

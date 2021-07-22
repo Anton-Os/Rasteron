@@ -1,8 +1,6 @@
-#include "support.h" // Defines USE_IMG_TIFF if needed
+#include "Rasteron.h"
 
 #ifdef USE_IMG_TIFF
-
-#include "Loader.h"
 
 void loadImage_TIFF(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Tiff;
@@ -29,6 +27,10 @@ void loadImage_TIFF(const char* fileName, Image* image) {
 		0);
 	TIFFClose(*(tiff));
 	return;
+}
+
+void writeImage_TIFF(const char* fileName, Rasteron_Image* image){
+	// TODO: Implement Writing Code
 }
 
 void delImage_TIFF(Image* image){

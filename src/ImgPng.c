@@ -1,8 +1,6 @@
-#include "support.h" // Defines USE_IMG_PNG if needed
+#include "Rasteron.h"
 
 #ifdef USE_IMG_PNG
-
-#include "Loader.h"
 
 #define DEFAULT_PNG_DISPLAY_EXPO 2.2
 
@@ -82,6 +80,9 @@ void loadImage_PNG(const char* fileName, Image* image) {
 
 }
 
+void writeImage_PNG(const char* fileName, Rasteron_Image* image){
+	// TODO: Implement Writing Code
+}
 
 void delImage_PNG(Image* image) {
 	if (image->fileFormat != IMG_Png) {

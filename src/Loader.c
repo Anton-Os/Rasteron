@@ -1,6 +1,6 @@
-#include "string.h"
+#include <string.h>
 
-#include "Rasteron.h"
+#include "Loader.h"
 
 static enum IMG_FileFormat getFormat(const char* fileName) {
     size_t len = strlen(fileName);
@@ -25,7 +25,7 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
         return IMG_NonValid;
 }
 
-void rstnLoadFromFile(const char* fileName, FileImage* image){
+void loadFileImage(const char* fileName, FileImage* image){
     enum IMG_FileFormat format = getFormat(fileName);
     
     switch(format){
@@ -51,7 +51,7 @@ void rstnLoadFromFile(const char* fileName, FileImage* image){
     }
 }
 
-void rstnDelFromFile(FileImage* image) {
+void delFileImage(FileImage* image) {
 	switch (image->fileFormat) {
 
 #ifdef USE_IMG_PNG

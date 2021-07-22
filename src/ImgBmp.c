@@ -1,8 +1,6 @@
-#include "support.h" // Defines USE_IMG_BMP if needed
+#include "Rasteron.h"
 
 #ifdef USE_IMG_BMP
-
-#include "Loader.h"
 
 void loadImage_BMP(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Bmp;
@@ -48,6 +46,10 @@ void loadImage_BMP(const char* fileName, Image* image) {
 
 	fclose(bmpFile);
 	return;
+}
+
+void writeImage_BMP(const char* fileName, Rasteron_Image* image){
+	// TODO: Implement Writing Code
 }
 
 void delImage_BMP(Image* image) {

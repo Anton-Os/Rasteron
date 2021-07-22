@@ -43,7 +43,6 @@ uint32_t getRasterBkColor(uint32_t* raster, unsigned width, unsigned height){
 	return BAD_COLOR_CODE;
 }
 
-
 // Produces a 32 bit grey value based on provided reference color
 uint32_t grayify32(uint32_t refColor){
 	if (refColor & 0x00FFFFFF == 0xFFFFFF) 
@@ -63,4 +62,30 @@ uint8_t grayify8(uint32_t refColor){
 		return 0xFF; 
 
 	return ((uint32_t)((refColor & 0xFF0000) << 16) + (uint32_t)((refColor & 0xFF00) << 16) + (uint32_t)((refColor & 0xFF) << 16)) / 3;
+}
+
+
+// Interpolates between 2 colors
+uint32_t interpolateColor(uint32_t color1, uint32_t color2, double iVal){
+	uint8_t loAlphaBit = ((color1 & ALPHA_BITS_MASK) < (color2 & ALPHA_BITS_MASK)) ? color1 & ALPHA_BITS_MASK : color2 & ALPHA_BITS_MASK;
+	uint8_t loRedBit = ((color1 & RED_BITS_MASK) < (color2 & RED_BITS_MASK)) ? color1 & RED_BITS_MASK : color2 & RED_BITS_MASK;
+    uint8_t loGreenBit = ((color1 & GREEN_BITS_MASK) < (color2 & GREEN_BITS_MASK)) ? color1 & GREEN_BITS_MASK : color2 & GREEN_BITS_MASK;
+    uint8_t loBlueBit = ((color1 & BLUE_BITS_MASK) < (color2 & BLUE_BITS_MASK)) ? color1 & BLUE_BITS_MASK : color2 & BLUE_BITS_MASK;
+	uint8_t hiAlphaBit = ((color1 & ALPHA_BITS_MASK) > (color2 & ALPHA_BITS_MASK)) ? color1 & ALPHA_BITS_MASK : color2 & ALPHA_BITS_MASK;
+    uint8_t hiRedBit = ((color1 & RED_BITS_MASK) > (color2 & RED_BITS_MASK)) ? color1 & RED_BITS_MASK : color2 & RED_BITS_MASK;
+    uint8_t hiGreenBit = ((color1 & GREEN_BITS_MASK) > (color2 & GREEN_BITS_MASK)) ? color1 & GREEN_BITS_MASK : color2 & GREEN_BITS_MASK;
+    uint8_t hiBlueBit = ((color1 & BLUE_BITS_MASK) > (color2 & BLUE_BITS_MASK)) ? color1 & BLUE_BITS_MASK : color2 & BLUE_BITS_MASK;
+
+	uint32_t loColor = (loAlphaBit << 24) + (loRedBit << 16) + (loGreenBit << 8) + loBlueBit;
+	if(iVal <= 0.0) return loColor;
+
+	uint32_t hiColor = (hiAlphaBit << 24) + (hiRedBit << 16) + (hiGreenBit << 8) + hiBlueBit;
+	if(iVal <= 0.0) return hiColor;
+
+	uint32_t diffColor = hiColor - loColor;
+	/* double iAlphaBit = (uint8_t)(((diffColor & ALPHA_BITS_MASK) * iVal) * 255.0);
+	double iRed = (diffColor & RED_BITS_MASK) * iVal;
+	double iGreen = (diffColor & GREEN_BITS_MASK) * iVal;
+	double iBlue = (diffColor & BLUE_BITS_MASK) * iVal; */
+	return loColor + (uint32_t)(diffColor * iVal * 255.0); // multiplies by fraction and adjusts back to normal value
 }

@@ -7,15 +7,9 @@
 extern "C"{
 #endif
 
-// Loader.c declarations
+// Image Generation Functions, see ImageGen.c
 
-typedef Image FileImage; // Just makes an easier distinction between Rasteron Image and file Image
-
-void rstnLoadFromFile(const char* fileName, FileImage* image); // Image is destination
-void rstnDelFromFile(FileImage* image);
-
-// Primitives.c declarations
-// Rasteron specific image type, based on file image with a name (label) attached
+// Rasteron Image
 
 typedef struct {
     char* name;
@@ -28,11 +22,25 @@ Rasteron_Image* createImgBase(const Image* image); // Creates an image based on 
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // Creates greyscale version of reference image
 Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type channel); // Creates single channel version of reference image
 
-void deleteImg(Rasteron_Image* rstn_image);
+void deleteImg(Rasteron_Image* rast_image);
 
-// Sprite is a wrapper around a base image and coordinates
+// Image Writing Functions, see ImgTIFF.c, ImgPng.c, and ImgBmp.c
 
-#define DIMENSION_RATIO_UNSIGNED_TO_FLOAT 1000
+#ifdef USE_IMG_TIFF
+void writeImage_TIFF(const char* fileName, Rasteron_Image* image);
+#endif
+#ifdef USE_IMG_PNG
+void writeImage_PNG(const char* fileName, Rasteron_Image* image);
+#endif
+#ifdef USE_IMG_BMP
+void writeImage_BMP(const char* fileName, Rasteron_Image* image);
+#endif
+
+// Primitive Generation Functions, see PrimitiveGen.c
+
+// Sprite
+
+#define SPRITE_DIM_RATIO 1000 // dimentions used for conversion to floating points
 
 typedef struct {
     float topLeft_Pt[2];
@@ -47,10 +55,9 @@ typedef struct {
 } Rasteron_Sprite;
 
 Rasteron_Sprite* createSprite(const Rasteron_Image* refImage);
-
 void deleteSprite(Rasteron_Sprite* sprite);
 
-// Palette holds the frequencies of colors that appear in an image
+// Palette
 
 #define MAX_COLOR_TABLE_VALS 1048576 // 2 ^ 20
 #define MIN_COLOR_PIXEL_COUNTS 1024 // 2 ^ 10
@@ -65,7 +72,6 @@ typedef struct {
 
 Rasteron_Palette* createPalette(const Rasteron_Image* refImage);
 Rasteron_Palette* filterPalette(const Rasteron_Palette* refImage);
-
 void deletePalette(Rasteron_Palette* palette);
 
 #ifdef __cplusplus
