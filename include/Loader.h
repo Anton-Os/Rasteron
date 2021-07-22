@@ -1,4 +1,4 @@
-#include "Support.h"
+#include "support.h"
 
 #ifdef __cplusplus
 extern "C"{

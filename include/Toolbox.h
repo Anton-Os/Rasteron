@@ -1,15 +1,15 @@
 // #include <inttypes.h>
 #include "Loader.h"
 
-void switchBits_RB(uint32_t* raster, unsigned int pCount);// Utility Function
+void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal);
+void changeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor);
+void switchRasterRB(uint32_t* raster, unsigned int pCount); // switch red and blue bits
+void switchRasterGB(uint32_t* raster, unsigned int pCount); // switch green and blue bits
+void switchRasterRG(uint32_t* raster, unsigned int pCount); // swotch red and green bits
+uint32_t getRasterBkColor(uint32_t* raster, unsigned width, unsigned height);
 
-void makeSolidColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal);
-void changeToSolidColor(uint32_t* raster, unsigned int pCount, uint32_t newClr, uint32_t oldClr);
-
-uint32_t grayify32(uint32_t refClr);
-uint32_t getBkColor(uint32_t* raster, unsigned width, unsigned height);
-
-// void createImage(const char* fileName, Image* image);
+uint32_t grayify32(uint32_t refColor);
+uint8_t grayify8(uint32_t refColor);
 
 #ifdef _WIN32 
 	#ifndef WIN_INCLUDE

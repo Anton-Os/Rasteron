@@ -19,7 +19,7 @@ BITMAP createWinBmap(const Image* image) {
 
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
-		switchBits_RB(image->imageData.tiff.raster, image->imageData.tiff.width * image->imageData.tiff.length); // Should maybe move to ImgTIFF
+		switchRasterGB(image->imageData.tiff.raster, image->imageData.tiff.width * image->imageData.tiff.length); // Should maybe move to ImgTIFF
 		return createWinBmapRaw(image->imageData.tiff.width, image->imageData.tiff.length, image->imageData.tiff.raster);
 #endif
 #ifdef USE_IMG_BMP
@@ -27,7 +27,8 @@ BITMAP createWinBmap(const Image* image) {
 		return createWinBmapRaw(abs(image->imageData.bmp.width), abs(image->imageData.bmp.height), image->imageData.bmp.data);
 #endif
 #ifdef USE_IMG_PNG
-	case(IMG_Png): return createWinBmapRaw(image->imageData.png.width, image->imageData.png.height, image->imageData.png.rgbaData);
+	case(IMG_Png): 
+		return createWinBmapRaw(image->imageData.png.width, image->imageData.png.height, image->imageData.png.rgbaData);
 #endif
 	default:
 		puts("Image Format not yet supported!!!");

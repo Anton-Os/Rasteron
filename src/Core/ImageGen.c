@@ -17,7 +17,7 @@ Rasteron_Image* createImgBase(const Image* refImage){
         baseImage->height = refImage->imageData.tiff.length;
         baseImage->data = (uint32_t*)malloc(baseImage->width * baseImage->height * sizeof(uint32_t));
         
-		switchBits_RB(refImage->imageData.tiff.raster, refImage->imageData.tiff.width * refImage->imageData.tiff.length);
+		switchRasterRB(refImage->imageData.tiff.raster, refImage->imageData.tiff.width * refImage->imageData.tiff.length);
 		for(unsigned i = 0; i < baseImage->width * baseImage->height; i++)
 		   *(baseImage->data + i) = *(refImage->imageData.tiff.raster + i); // Fix the color inversion!!!
 		break;

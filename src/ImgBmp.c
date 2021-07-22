@@ -1,4 +1,4 @@
-#include "Support.h" // Defines USE_IMG_BMP if needed
+#include "support.h" // Defines USE_IMG_BMP if needed
 
 #ifdef USE_IMG_BMP
 

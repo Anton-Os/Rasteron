@@ -19,6 +19,7 @@
 #define BLUE_BITS_MASK 0x000000FF // blue channel represented by last two bytes
 
 typedef enum {
+    CHANNEL_Alpha,
     CHANNEL_Red,
     CHANNEL_Green,
     CHANNEL_Blue
