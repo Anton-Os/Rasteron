@@ -24,8 +24,9 @@ typedef struct {
     uint32_t* data;
 } Rasteron_Image;
 
-Rasteron_Image* createImgBase(const Image* image); // Creates an image based on my readers
-Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // Creates greyscale version of target image
+Rasteron_Image* createImgBase(const Image* image); // Creates an image based on target image format
+Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // Creates greyscale version of reference image
+Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type channel); // Creates single channel version of reference image
 
 void deleteImg(Rasteron_Image* rstn_image);
 

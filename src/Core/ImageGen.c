@@ -58,24 +58,58 @@ Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
 
 	Rasteron_Image* greyImage = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	greyImage->name = "grey";
-
 	greyImage->height = refImage->height;
 	greyImage->width = refImage->width;
 	greyImage->data = (uint32_t*)malloc(greyImage->width * greyImage->height * sizeof(uint32_t));
 	
-	// Grey Image Logic
+	// Generation Logic
 	uint32_t grey;
 	for (unsigned p = 0; p < greyImage->width * greyImage->height; p++) {
-		unsigned pixColorDbg = *(refImage->data + p); // For testing
-
-		grey = (uint32_t)grayify32(*(refImage->data + p));
+		grey = grayify32(*(refImage->data + p));
 		*(greyImage->data + p) = grey;
 	}
 
 	return greyImage;
 }
 
+Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+	if (refImage == NULL) {
+		puts("Cannot create filter image! Null pointer provided as reference image!");
+		return NULL;
+	}
+
+	Rasteron_Image* filterImage = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	uint32_t colorMask; // used for isolating a specific color value
+	switch(channel){
+		case CHANNEL_Red:
+			filterImage->name = "red";
+			colorMask = RED_BITS_MASK;
+			break;
+		case CHANNEL_Green:
+			filterImage->name = "green";
+			colorMask = GREEN_BITS_MASK;
+			break;
+		case CHANNEL_Blue:
+			filterImage->name = "blue";
+			colorMask = BLUE_BITS_MASK;
+			break;
+	}
+	filterImage->height = refImage->height;
+	filterImage->width = refImage->width;
+	filterImage->data = (uint32_t*)malloc(filterImage->width * filterImage->height * sizeof(uint32_t));
+	
+	// Generation Logic
+	uint32_t color;
+	for (unsigned p = 0; p < filterImage->width * filterImage->height; p++) {
+		color = (*(refImage->data + p) & ALPHA_BITS_MASK) + (*(refImage->data + p) & colorMask) ;
+		*(filterImage->data + p) = color;
+	}
+
+	return filterImage;
+}
+
+
 void deleteImg(Rasteron_Image* image) {
-    free(image->data);
-    free(image);
+    if(image->data != NULL) free(image->data);
+    if(image != NULL) free(image);
 }

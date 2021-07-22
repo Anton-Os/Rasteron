@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Global Definitions
+Image img1 = { 0 };
+BITMAP winBmap1;
+Image img2 = { 0 };
+BITMAP winBmap2;
+
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hDC = GetDC(hwnd);
@@ -10,23 +16,15 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
+		loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img1);
+        winBmap1 = createWinBmap(&img1);
+		loadImage_BMP("C:\\AntonDocs\\Design\\PurpleCult2.bmp", &img2);
+		winBmap2 = createWinBmap(&img2);
 	}
 	case (WM_PAINT): {
-		Image img1 = { 0 };
-		loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img1);
-		// makeSolidColor(img1.imageData.tiff.raster,
-		//	img1.imageData.tiff.length * img1.imageData.tiff.width,
-		//	0x00FFFF00);
-        BITMAP bmap1 = createWinBmap(&img1);
-        drawWinBmap(hwnd, &bmap1);
-		delImage_TIFF(&img1); // FIX THIS!!! Unresolved?
-
-		Image img2 = { 0 };
-		loadImage_BMP("C:\\AntonDocs\\Design\\PurpleCult2.bmp", &img2);
-		BITMAP bmap2 = createWinBmap(&img2);
-        // drawWinBmap(hwnd, &bmap2);
-        delImage_BMP(&img2);
+        drawWinBmap(hwnd, &winBmap1);    
 	}
+	case (WM_DESTROY): {  }
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
@@ -56,6 +54,19 @@ int main(int argc, char** argv) {
 	MSG wndMessage;
 	BOOL bRet;
 
+	while (1) {
+		bRet = GetMessage(&wndMessage, NULL, 0, 0);
+		if (bRet > 0){  // (bRet > 0 indicates a message that must be processed.)
+			TranslateMessage(&wndMessage);
+			DispatchMessage(&wndMessage);
+		}  // (bRet == -1 indicates an error.)
+		else break;  // (bRet == 0 indicates "exit program".)
+	}
+
+	// Cleanup Step
+
+	delImage_TIFF(&img1);
+	delImage_BMP(&img2);
 
 	return 0;
 }

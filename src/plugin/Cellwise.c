@@ -2,7 +2,7 @@
 
 #include "stdio.h" // For debug purposes
 
-void print_nebrTables(const NebrTable_List* nebrTables) {
+void printNebrTables(const NebrTable_List* nebrTables) {
 	for (NebrTable* nebrTable_current = nebrTables->tables;
 		nebrTable_current != nebrTables->tables + nebrTables->count;
 		nebrTable_current++) {
@@ -27,7 +27,7 @@ static void clearFlagBit(nebrCheckFlags* target, enum NBR_CellFlags flagBit){
     return;
 }
 
-nebrCheckFlags check_existNebrs(uint32_t index, uint32_t imgWidth, uint32_t imgHeight){
+nebrCheckFlags checkExistNebrs(uint32_t index, uint32_t imgWidth, uint32_t imgHeight){
     nebrCheckFlags flags = 0xFF;
 
     if(index < imgWidth){
@@ -81,7 +81,7 @@ static uint32_t* findNeighbor(const uint32_t* raster, uint32_t index,
 }
 
 
-NebrTable_List* gen_nebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight) {
+NebrTable_List* genNebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight) {
 	NebrTable_List* list = (NebrTable_List*)malloc(sizeof(NebrTable_List));
 	list->count = imgWidth * imgHeight;
 	list->tables = NULL;
@@ -94,7 +94,7 @@ NebrTable_List* gen_nebrTables(const uint32_t* raster, uint32_t imgWidth, uint32
 		nebrTable_current++){ // move to next table pointer
 
 		nebrTable_current->target = rasterPix_current;
-		nebrTable_current->nebrExistFlags = check_existNebrs(rasterPix_index, imgWidth, imgHeight);
+		nebrTable_current->nebrExistFlags = checkExistNebrs(rasterPix_index, imgWidth, imgHeight);
 
 		unsigned short nebrCount = 0;
 		for (unsigned short n = 0; n < 8; n++) // Determine number of neighbors based on nebrExistFlags
@@ -150,7 +150,7 @@ NebrTable_List* gen_nebrTables(const uint32_t* raster, uint32_t imgWidth, uint32
 	return list; // Return the structure that we generated
 }
 
-void del_nebrTables(NebrTable_List* nebrTables) {
+void delNebrTables(NebrTable_List* nebrTables) {
 	NebrTable* nebrTable_current = nebrTables->tables;
 	for (NebrTable* nebrTable_current = nebrTables->tables;
 		nebrTable_current != nebrTables->tables + nebrTables->count; 
