@@ -1,13 +1,15 @@
-#include "Toolbox.h"
+#include "Rasteron.h"
+#include "Lattice.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 // Global Definitions
-Image img1 = { 0 };
-BITMAP winBmap1;
-Image img2 = { 0 };
-BITMAP winBmap2;
+
+Rasteron_Image* randNoiseImg;
+Rasteron_Image* latticeNoiseImg;
+
+BITMAP bmap;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -16,15 +18,15 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		loadImage_TIFF("C:\\AntonDocs\\Design\\PurpleCult.tif", &img1);
-        winBmap1 = createWinBmap(&img1);
-		loadImage_BMP("C:\\AntonDocs\\Design\\PurpleCult2.bmp", &img2);
-		winBmap2 = createWinBmap(&img2);
+		// loadFileImage("C:\\AntonDocs\\Design\\PurpleCult.png", &img);
+
+		// bmap = createWinBmapRaw(imageRed->width, imageRed->height, imageRed->data);
 	}
 	case (WM_PAINT): {
-        drawWinBmap(hwnd, &winBmap1);    
+		drawWinBmap(hwnd, &bmap2);
 	}
-	case (WM_DESTROY): {  }
+	case (WM_CLOSE): {
+	}
 	default:
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
@@ -37,11 +39,11 @@ int main(int argc, char** argv) {
 	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
 	wndClass.lpfnWndProc = wndProc;
-	wndClass.lpszClassName = "Default Class";
+	wndClass.lpszClassName = "Rasteron";
 	RegisterClass(&wndClass);
 
 	HWND wndWindow = CreateWindow(
-		"Default Class",
+		"Rasteron",
 		"Team Purple",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
@@ -64,9 +66,6 @@ int main(int argc, char** argv) {
 	}
 
 	// Cleanup Step
-
-	delImage_TIFF(&img1);
-	delImage_BMP(&img2);
 
 	return 0;
 }

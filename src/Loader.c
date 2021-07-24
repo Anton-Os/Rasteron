@@ -32,17 +32,17 @@ void loadFileImage(const char* fileName, FileImage* image){
 
 #ifdef USE_IMG_PNG
 	case IMG_Png:
-		loadImage_PNG(fileName, image);
+		loadFileImage_PNG(fileName, image);
 		break;
 #endif
 #ifdef USE_IMG_TIFF
 	case IMG_Tiff:
-		loadImage_TIFF(fileName, image);
+		loadFileImage_TIFF(fileName, image);
 		break;
 #endif
 #ifdef USE_IMG_BMP
 	case IMG_Bmp:
-		loadImage_BMP(fileName, image);
+		loadFileImage_BMP(fileName, image);
 		break;
 #endif
 	default:
@@ -56,17 +56,17 @@ void delFileImage(FileImage* image) {
 
 #ifdef USE_IMG_PNG
 	case IMG_Png:
-		delImage_PNG(image);
+		delFileImage_PNG(image);
 		break;
 #endif
 #ifdef USE_IMG_TIFF
 	case IMG_Tiff:
-		delImage_TIFF(image);
+		delFileImage_TIFF(image);
 		break;
 #endif
 #ifdef USE_IMG_BMP
 	case IMG_Bmp:
-		delImage_BMP(image);
+		delFileImage_BMP(image);
 		break;
 #endif
 	default:

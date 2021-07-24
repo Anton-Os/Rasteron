@@ -1,8 +1,8 @@
-#include "Rasteron.h"
+#include "Loader.h"
 
 #ifdef USE_IMG_TIFF
 
-void loadImage_TIFF(const char* fileName, Image* image) {
+void loadFileImage_TIFF(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Tiff;
 	TIFF** tiff = &image->imageData.tiff.tiff; // For less typing, points to tiff file type
 
@@ -29,11 +29,7 @@ void loadImage_TIFF(const char* fileName, Image* image) {
 	return;
 }
 
-void writeImage_TIFF(const char* fileName, Rasteron_Image* image){
-	// TODO: Implement Writing Code
-}
-
-void delImage_TIFF(Image* image){
+void delFileImage_TIFF(Image* image){
 	if (image->fileFormat != IMG_Tiff) {
 		puts("Image provided for deletion is not TIFF type");
 		return;

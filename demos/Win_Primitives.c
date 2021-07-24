@@ -1,5 +1,5 @@
 #include "Rasteron.h"
-#include "Heightmap.h"
+#include "Lattice.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +12,7 @@ Rasteron_Image* imageRed;
 Rasteron_Image* imageBlue;
 Rasteron_Palette* palette;
 Rasteron_Sprite* sprite;
-Rasteron_Heightmap* heightmap;
+Rasteron_Lattice* heightmap;
 
 BITMAP bmap1;
 BITMAP bmap2;
@@ -32,7 +32,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		imageBlue = createImgFilter(imageBase, CHANNEL_Blue);
 		palette = createPalette(imageBase);
 		sprite = createSprite(imageBase);
-		heightmap = createHeightmap(imageGrey); // Heightmap data test
+		heightmap = createLattice(imageGrey); // Lattice data test
 
 		bmap1 = createWinBmap(&img);
 		bmap2 = createWinBmapRaw(imageRed->width, imageRed->height, imageRed->data);
@@ -54,11 +54,11 @@ int main(int argc, char** argv) {
 	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
 	wndClass.lpfnWndProc = wndProc;
-	wndClass.lpszClassName = "Default Class";
+	wndClass.lpszClassName = "Rasteron";
 	RegisterClass(&wndClass);
 
 	HWND wndWindow = CreateWindow(
-		"Default Class",
+		"Rasteron",
 		"Team Purple",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
 	deleteImg(imageGrey);
 	deleteImg(imageRed);
 	deleteImg(imageBlue);
-	deleteHeightmap(heightmap);
+	deleteLattice(heightmap);
 	deletePalette(palette);
 
 	delFileImage(&img);

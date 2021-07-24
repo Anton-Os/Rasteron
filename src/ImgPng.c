@@ -1,10 +1,10 @@
-#include "Rasteron.h"
+#include "Loader.h"
 
 #ifdef USE_IMG_PNG
 
 #define DEFAULT_PNG_DISPLAY_EXPO 2.2
 
-void loadImage_PNG(const char* fileName, Image* image) {
+void loadFileImage_PNG(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Png;
 
 	FILE* pngFile;
@@ -80,11 +80,7 @@ void loadImage_PNG(const char* fileName, Image* image) {
 
 }
 
-void writeImage_PNG(const char* fileName, Rasteron_Image* image){
-	// TODO: Implement Writing Code
-}
-
-void delImage_PNG(Image* image) {
+void delFileImage_PNG(Image* image) {
 	if (image->fileFormat != IMG_Png) {
 		puts("Image provided for deletion is not PNG type");
 		return;

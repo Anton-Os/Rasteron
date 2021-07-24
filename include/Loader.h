@@ -23,9 +23,9 @@ typedef struct {
 	uint32* raster;
 } ImageData_Tiff; // TIFF-specific Data Structure
 
-void loadImage_TIFF(const char* fileName, Image* image);
-// void writeImage_TIFF(const char* fileName, Rasteron_Image* image)
-void delImage_TIFF(Image* image);
+void loadFileImage_TIFF(const char* fileName, Image* image);
+// void writeFileImage_TIFF(const char* fileName, Rasteron_Image* image)
+void delFileImage_TIFF(Image* image);
 #endif // USE_IMG_TIFF
 
 
@@ -42,9 +42,9 @@ typedef struct {
 	uint32_t* rgbaData;
 } ImageData_Png;
 
-void loadImage_PNG(const char* fileName, Image* image);
-// void writeImage_PNG(const char* fileName, Rasteron_Image* image)
-void delImage_PNG(Image* image);
+void loadFileImage_PNG(const char* fileName, Image* image);
+// void writeFileImage_PNG(const char* fileName, Rasteron_Image* image)
+void delFileImage_PNG(Image* image);
 #endif // USE_IMG_PNG
 
 
@@ -58,9 +58,9 @@ typedef struct {
 	uint32_t* data;
 } ImageData_Bmp;
 
-void loadImage_BMP(const char* fileName, Image* image);
-// void writeImage_BMP(const char* fileName, Rasteron_Image* image);
-void delImage_BMP(Image* image);
+void loadFileImage_BMP(const char* fileName, Image* image);
+// void writeFileImage_BMP(const char* fileName, Rasteron_Image* image);
+void delFileImage_BMP(Image* image);
 #endif // USE_IMG_BMP
 
 
@@ -87,10 +87,6 @@ typedef struct _Image {
 	enum IMG_FileFormat fileFormat;
 	union ImageData imageData;
 } Image;
-
-/* static enum IMG_FileFormat getFileExtension(const char* filePath) {
-	return IMG_NonValid;
-} */
 
 // Loader Functions, see Loader.c
 

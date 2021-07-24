@@ -1,8 +1,8 @@
-#include "Rasteron.h"
+#include "Loader.h"
 
 #ifdef USE_IMG_BMP
 
-void loadImage_BMP(const char* fileName, Image* image) {
+void loadFileImage_BMP(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Bmp;
 
 	FILE* bmpFile;
@@ -48,11 +48,7 @@ void loadImage_BMP(const char* fileName, Image* image) {
 	return;
 }
 
-void writeImage_BMP(const char* fileName, Rasteron_Image* image){
-	// TODO: Implement Writing Code
-}
-
-void delImage_BMP(Image* image) {
+void delFileImage_BMP(Image* image) {
 	if (image->fileFormat != IMG_Bmp) {
 		puts("Image provided for deletion is not BMP type!");
 		return;

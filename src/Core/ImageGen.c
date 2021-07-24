@@ -1,22 +1,26 @@
 #include "Rasteron.h"
 
-Rasteron_Image* createImgBase(const Image* refImage){
+Rasteron_Image* allocNewImg(const char* name, uint32_t width, uint32_t height){
+	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	image->name = name;
+	image->width = width;
+	image->height = height;
+	image->data = (uint32_t*)malloc(width * height * sizeof(uint32_t));
+
+	return image;
+}
+
+Rasteron_Image* createImgBase(const FileImage* refImage){
 	if (refImage == NULL) {
 		puts("Cannot create base image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-    Rasteron_Image* baseImage = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
-    baseImage->name = "base";
-
+    Rasteron_Image* baseImage;
     switch(refImage->fileFormat){
-
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
-		baseImage->width = refImage->imageData.tiff.width;
-        baseImage->height = refImage->imageData.tiff.length;
-        baseImage->data = (uint32_t*)malloc(baseImage->width * baseImage->height * sizeof(uint32_t));
-        
+		baseImage = allocNewImg("base", refImage->imageData.tiff.width, refImage->imageData.tiff.length);
 		switchRasterRB(refImage->imageData.tiff.raster, refImage->imageData.tiff.width * refImage->imageData.tiff.length);
 		for(unsigned i = 0; i < baseImage->width * baseImage->height; i++)
 		   *(baseImage->data + i) = *(refImage->imageData.tiff.raster + i);
@@ -24,20 +28,14 @@ Rasteron_Image* createImgBase(const Image* refImage){
 #endif
 #ifdef USE_IMG_BMP
 	case(IMG_Bmp):
-		baseImage->width = abs(refImage->imageData.bmp.width);
-        baseImage->height = abs(refImage->imageData.bmp.height);
-        baseImage->data = (uint32_t*)malloc(baseImage->width * baseImage->height * sizeof(uint32_t));
-
+		baseImage = allocNewImg("base", abs(refImage->imageData.bmp.width), abs(refImage->imageData.bmp.height));
 		for (unsigned i = 0; i < baseImage->width * baseImage->height; i++)
 			*(baseImage->data + i) = *(refImage->imageData.bmp.data + i);
 		break;
 #endif
 #ifdef USE_IMG_PNG
 	case(IMG_Png):
-		baseImage->width = refImage->imageData.png.width;
-        baseImage->height = refImage->imageData.png.height;
-        baseImage->data = (uint32_t*)malloc(baseImage->width * baseImage->height * sizeof(uint32_t));
-		
+		baseImage = allocNewImg("base", refImage->imageData.png.width, refImage->imageData.png.height);
 		for (unsigned i = 0; i < baseImage->width * baseImage->height; i++)
 			*(baseImage->data + i) = *(refImage->imageData.png.rgbaData + i);
 		break;
@@ -56,11 +54,7 @@ Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
 		return NULL;
 	}
 
-	Rasteron_Image* greyImage = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
-	greyImage->name = "grey";
-	greyImage->height = refImage->height;
-	greyImage->width = refImage->width;
-	greyImage->data = (uint32_t*)malloc(greyImage->width * greyImage->height * sizeof(uint32_t));
+	Rasteron_Image* greyImage = allocNewImg("grey", refImage->width, refImage->height);
 	
 	// Generation Logic
 	uint32_t grey;
@@ -78,25 +72,22 @@ Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type cha
 		return NULL;
 	}
 
-	Rasteron_Image* filterImage = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	Rasteron_Image* filterImage;
 	uint32_t colorMask; // used for isolating a specific color value
 	switch(channel){
 		case CHANNEL_Red:
-			filterImage->name = "red";
+			filterImage = allocNewImg("red", refImage->width, refImage->height);
 			colorMask = RED_BITS_MASK;
 			break;
 		case CHANNEL_Green:
-			filterImage->name = "green";
+			filterImage = allocNewImg("green", refImage->width, refImage->height);
 			colorMask = GREEN_BITS_MASK;
 			break;
 		case CHANNEL_Blue:
-			filterImage->name = "blue";
+			filterImage = allocNewImg("blue", refImage->width, refImage->height);
 			colorMask = BLUE_BITS_MASK;
 			break;
 	}
-	filterImage->height = refImage->height;
-	filterImage->width = refImage->width;
-	filterImage->data = (uint32_t*)malloc(filterImage->width * filterImage->height * sizeof(uint32_t));
 	
 	// Generation Logic
 	uint32_t color;

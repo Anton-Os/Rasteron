@@ -18,23 +18,13 @@ typedef struct {
     uint32_t* data;
 } Rasteron_Image;
 
-Rasteron_Image* createImgBase(const Image* image); // Creates an image based on target image format
+Rasteron_Image* allocNewImg(const char* name, uint32_t width, uint32_t height); // Image allocation helper
+
+Rasteron_Image* createImgBase(const FileImage* image); // Creates an image based on target file image
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // Creates greyscale version of reference image
 Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type channel); // Creates single channel version of reference image
 
 void deleteImg(Rasteron_Image* rast_image);
-
-// Image Writing Functions, see ImgTIFF.c, ImgPng.c, and ImgBmp.c
-
-#ifdef USE_IMG_TIFF
-void writeImage_TIFF(const char* fileName, Rasteron_Image* image);
-#endif
-#ifdef USE_IMG_PNG
-void writeImage_PNG(const char* fileName, Rasteron_Image* image);
-#endif
-#ifdef USE_IMG_BMP
-void writeImage_BMP(const char* fileName, Rasteron_Image* image);
-#endif
 
 // Primitive Generation Functions, see PrimitiveGen.c
 
@@ -61,17 +51,19 @@ void deleteSprite(Rasteron_Sprite* sprite);
 
 #define MAX_COLOR_TABLE_VALS 1048576 // 2 ^ 20
 #define MIN_COLOR_PIXEL_COUNTS 1024 // 2 ^ 10
+#define PALETTE_DEFAULT_FILTER 10000
 #define COLOR_CODE_OFFSET 0
 #define COLOR_COUNT_OFFSET 1
 
 typedef struct {
     unsigned colors[MAX_COLOR_TABLE_VALS][2];  // 2D array of colors and cooresponding color count
-    unsigned maxColors; // Increments as more colors are found
-    unsigned bkIndex; // The index holding the background color
+    unsigned colorCount; // Increments as more colors are found
+    // unsigned bkIndex; // The index holding the background color
 } Rasteron_Palette;
 
-Rasteron_Palette* createPalette(const Rasteron_Image* refImage);
-Rasteron_Palette* filterPalette(const Rasteron_Palette* refImage);
+Rasteron_Palette* createFixedPalette(const uint32_t* colorsPtr, uint16_t colorCount); // Creates a palette based on a fixed list of values
+Rasteron_Palette* createPalette(const Rasteron_Image* refImage); // Creates a palette based on an existing image
+Rasteron_Palette* createLimPalette(unsigned minColorCount, const Rasteron_Palette* refPalette); // Filters a palette to a more limited subset
 void deletePalette(Rasteron_Palette* palette);
 
 #ifdef __cplusplus

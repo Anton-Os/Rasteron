@@ -16,7 +16,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		loadImage_BMP("C:\\AntonDocs\\Design\\Small.bmp", &image);
+		loadFileImage_BMP("C:\\AntonDocs\\Design\\Small.bmp", &image);
 		neighborTable = genNebrTables(
 			image.imageData.bmp.data, 
 			abs(image.imageData.bmp.width), // abs is bmp specific
@@ -42,11 +42,11 @@ int main(int argc, char** argv) {
 	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
 	wndClass.lpfnWndProc = wndProc;
-	wndClass.lpszClassName = "Default Class";
+	wndClass.lpszClassName = "Rasteron";
 	RegisterClass(&wndClass);
 
 	HWND wndWindow = CreateWindow(
-		"Default Class",
+		"Rasteron",
 		"Team Purple",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
 	// Cleanup Step
 
 	delNebrTables(neighborTable);
-	delImage_BMP(&image);
+	delFileImage_BMP(&image);
 
 	return 0;
 }

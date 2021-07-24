@@ -40,19 +40,19 @@ Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
 	}
 
 	Rasteron_Palette* palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
-	palette->maxColors = 0;
+	palette->colorCount = 0;
 
 	for (unsigned p = 0; p < refImage->width * refImage->height; p++) {
 		unsigned targetIndex = 0;
-		while (targetIndex <= palette->maxColors) { // step one is find target color in our palette
+		while (targetIndex <= palette->colorCount) { // step one is find target color in our palette
 			if (*(refImage->data + p) == palette->colors[targetIndex][COLOR_CODE_OFFSET]) break;
 			else targetIndex++;
 		}
 
-		if (targetIndex == palette->maxColors + 1) { // match does not exist
-			palette->colors[palette->maxColors][COLOR_CODE_OFFSET] = *(refImage->data + p);
-			palette->colors[palette->maxColors][COLOR_COUNT_OFFSET] = 1; // only one pixel found
-			palette->maxColors++;
+		if (targetIndex == palette->colorCount + 1) { // if a match does not exist
+			palette->colors[palette->colorCount][COLOR_CODE_OFFSET] = *(refImage->data + p);
+			palette->colors[palette->colorCount][COLOR_COUNT_OFFSET] = 1; // only one pixel found
+			palette->colorCount++;
 		}
 		else palette->colors[targetIndex][COLOR_COUNT_OFFSET]++;
 	}
@@ -60,20 +60,35 @@ Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
 	return palette;
 }
 
-Rasteron_Palette* filterPalette(unsigned minPixelCount, const Rasteron_Palette* refImage){
+Rasteron_Palette* createFixedPalette(const uint32_t* colorsPtr, uint16_t colorCount){
+	if (colorsPtr == NULL) {
+		puts("Cannot create palette! Null colors pointer provided!");
+		return NULL;
+	}
+
+	Rasteron_Palette* palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
+	palette->colorCount = colorCount;
+
+	for(unsigned p = 0; p < colorCount; p++){
+		palette->colors[p][COLOR_CODE_OFFSET] = *(colorsPtr + p);
+		palette->colors[p][COLOR_COUNT_OFFSET] = 1; // only one pixel needed
+	}
+}
+
+Rasteron_Palette* createLimPalette(unsigned minColorCount, const Rasteron_Palette* refImage){
 	if (refImage == NULL) {
 		puts("Cannot create palette! Null pointer provided as reference image!");
 		return NULL;
 	}
 
 	Rasteron_Palette* palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
-	palette->maxColors = 0;
+	palette->colorCount = 0;
 
-	for(unsigned p = 0; p < refImage->maxColors; p++)
-		if(refImage->colors[p][COLOR_COUNT_OFFSET] >= minPixelCount){
-			palette->colors[palette->maxColors][COLOR_CODE_OFFSET] = refImage->colors[palette->maxColors][COLOR_CODE_OFFSET];
-			palette->colors[palette->maxColors][COLOR_COUNT_OFFSET] = refImage->colors[palette->maxColors][COLOR_COUNT_OFFSET];
-			palette->maxColors++;
+	for(unsigned p = 0; p < refImage->colorCount; p++)
+		if(refImage->colors[p][COLOR_COUNT_OFFSET] >= minColorCount){
+			palette->colors[palette->colorCount][COLOR_CODE_OFFSET] = refImage->colors[palette->colorCount][COLOR_CODE_OFFSET];
+			palette->colors[palette->colorCount][COLOR_COUNT_OFFSET] = refImage->colors[palette->colorCount][COLOR_COUNT_OFFSET];
+			palette->colorCount++;
 		}
 	
 	return palette;

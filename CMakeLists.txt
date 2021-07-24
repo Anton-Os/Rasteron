@@ -75,7 +75,7 @@ set(RASTERON_SRC
     src/core/ImageGen.c
     src/core/PrimitiveGen.c
     src/plugin/Cellwise.c
-    src/plugin/Heightmap.c
+    src/plugin/Lattice.c
 )
 
 # find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
@@ -128,10 +128,6 @@ target_include_directories(RasteronLib
 )
 
 if(WIN32)
-    add_executable(Imaging demos/Win_Imaging.c)
-    target_include_directories(Imaging PUBLIC include)
-    target_link_libraries(Imaging RasteronLib) # Fix zlib static linking!!
-
     add_executable(Cellwise demos/Win_Cellwise.c)
     target_include_directories(Cellwise PUBLIC include)
     target_link_libraries(Cellwise RasteronLib)
