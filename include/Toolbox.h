@@ -21,6 +21,8 @@ uint32_t interpolateColor(uint32_t color1, uint32_t color2, double iVal);
 		#define WIN_INCLUDE
 	#endif
 
+	void createWindow(LPCTSTR name); // Window creation
+	void eventLoop(); // Event loop
 	BITMAP createWinBmap(const Image* image); // Helper for all image types
 	BITMAP createWinBmapRaw(uint32_t width, uint32_t height, uint32_t* data); // Just dimensions and data are provided
 	void drawWinBmap(HWND hwnd, const BITMAP* bmap);

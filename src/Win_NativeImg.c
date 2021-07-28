@@ -1,5 +1,39 @@
 #include "Toolbox.h"
 
+void createWindow(WNDPROC wndProc, LPCTSTR name){
+	WNDCLASS wndClass = { 0 };
+	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
+	wndClass.hInstance = GetModuleHandle(NULL);
+	wndClass.lpfnWndProc = wndProc;
+	wndClass.lpszClassName = "Rasteron";
+	RegisterClass(&wndClass);
+
+	HWND wndWindow = CreateWindow(
+		"Rasteron",
+		name,
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
+		NULL, NULL, GetModuleHandle(NULL), NULL
+	);
+
+	ShowWindow(wndWindow, 1);
+	UpdateWindow(wndWindow);
+}
+
+void eventLoop(){
+	MSG message;
+	BOOL bRet;
+
+	while (1) {
+		bRet = GetMessage(&message, NULL, 0, 0);
+		if (bRet > 0){  // (bRet > 0 indicates a message that must be processed.)
+			TranslateMessage(&message);
+			DispatchMessage(&message);
+		}  // (bRet == -1 indicates an error.)
+		else break;  // (bRet == 0 indicates "exit program".)
+	}
+}
+
 BITMAP createWinBmapRaw(uint32_t width, uint32_t height, uint32_t* data){
 	BITMAP bmap = { 0 };
 	bmap.bmWidth = width;

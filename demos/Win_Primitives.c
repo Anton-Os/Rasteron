@@ -17,6 +17,18 @@ Rasteron_Lattice* heightmap;
 BITMAP bmap1;
 BITMAP bmap2;
 
+void cleanup() {
+	deleteSprite(sprite);
+	deleteImg(imageBase);
+	deleteImg(imageGrey);
+	deleteImg(imageRed);
+	deleteImg(imageBlue);
+	deleteLattice(heightmap);
+	deletePalette(palette);
+
+	delFileImage(&img);
+}
+
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hDC = GetDC(hwnd);
@@ -50,47 +62,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 int main(int argc, char** argv) {
 
-	WNDCLASS wndClass = { 0 };
-	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
-	wndClass.hInstance = GetModuleHandle(NULL);
-	wndClass.lpfnWndProc = wndProc;
-	wndClass.lpszClassName = "Rasteron";
-	RegisterClass(&wndClass);
+	createWindow(wndProc, "Primitives");
+	eventLoop();
 
-	HWND wndWindow = CreateWindow(
-		"Rasteron",
-		"Team Purple",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
-		NULL, NULL, GetModuleHandle(NULL), NULL
-	);
-
-	ShowWindow(wndWindow, 1);
-	UpdateWindow(wndWindow);
-
-	MSG wndMessage;
-	BOOL bRet;
-
-	while (1) {
-		bRet = GetMessage(&wndMessage, NULL, 0, 0);
-		if (bRet > 0){  // (bRet > 0 indicates a message that must be processed.)
-			TranslateMessage(&wndMessage);
-			DispatchMessage(&wndMessage);
-		}  // (bRet == -1 indicates an error.)
-		else break;  // (bRet == 0 indicates "exit program".)
-	}
-
-	// Cleanup Step
-
-	deleteSprite(sprite);
-	deleteImg(imageBase);
-	deleteImg(imageGrey);
-	deleteImg(imageRed);
-	deleteImg(imageBlue);
-	deleteLattice(heightmap);
-	deletePalette(palette);
-
-	delFileImage(&img);
+	cleanup(); // cleanup step
 
 	return 0;
 }

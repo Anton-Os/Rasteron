@@ -135,6 +135,10 @@ if(WIN32)
     add_executable(Primitives demos/Win_Primitives.c)
     target_include_directories(Primitives PUBLIC include)
     target_link_libraries(Primitives RasteronLib)
+
+    add_executable(Noise demos/Win_Noise.c)
+    target_include_directories(Noise PUBLIC include)
+    target_link_libraries(Noise RasteronLib)
 endif()
 
 

@@ -6,10 +6,15 @@
 
 // Global Definitions
 
+Rasteron_Image* blankImg;
 Rasteron_Image* randNoiseImg;
 Rasteron_Image* latticeNoiseImg;
 
 BITMAP bmap;
+
+void cleanup() {
+	deleteImg(blankImg);
+}
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -19,11 +24,12 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	switch (message) {
 	case (WM_CREATE): {
 		// loadFileImage("C:\\AntonDocs\\Design\\PurpleCult.png", &img);
+		blankImg = createImgBlank(400, 400, 0xFF73e5ff);
 
-		// bmap = createWinBmapRaw(imageRed->width, imageRed->height, imageRed->data);
+		bmap = createWinBmapRaw(blankImg->width, blankImg->height, blankImg->data);
 	}
 	case (WM_PAINT): {
-		drawWinBmap(hwnd, &bmap2);
+		drawWinBmap(hwnd, &bmap);
 	}
 	case (WM_CLOSE): {
 	}
@@ -35,37 +41,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 int main(int argc, char** argv) {
 
-	WNDCLASS wndClass = { 0 };
-	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
-	wndClass.hInstance = GetModuleHandle(NULL);
-	wndClass.lpfnWndProc = wndProc;
-	wndClass.lpszClassName = "Rasteron";
-	RegisterClass(&wndClass);
+	createWindow(wndProc, "Noise");
+	eventLoop();
 
-	HWND wndWindow = CreateWindow(
-		"Rasteron",
-		"Team Purple",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
-		NULL, NULL, GetModuleHandle(NULL), NULL
-	);
-
-	ShowWindow(wndWindow, 1);
-	UpdateWindow(wndWindow);
-
-	MSG wndMessage;
-	BOOL bRet;
-
-	while (1) {
-		bRet = GetMessage(&wndMessage, NULL, 0, 0);
-		if (bRet > 0){  // (bRet > 0 indicates a message that must be processed.)
-			TranslateMessage(&wndMessage);
-			DispatchMessage(&wndMessage);
-		}  // (bRet == -1 indicates an error.)
-		else break;  // (bRet == 0 indicates "exit program".)
-	}
-
-	// Cleanup Step
-
+	cleanup(); // cleanup step
+	
 	return 0;
 }
