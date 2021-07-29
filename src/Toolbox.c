@@ -2,6 +2,18 @@
 
 #include "Toolbox.h"
 
+
+void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal) {
+	for (unsigned int i = 0; i < pCount; i++)
+		*(raster + i) = colorVal;
+}
+
+void changeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor) {
+	for (unsigned int i = 0; i < pCount; i++)
+		if (*(raster + i) == oldColor) 
+			*(raster + i) = newColor;
+}
+
 void switchRasterRB(uint32_t* raster, unsigned int pCount) {
 	for (unsigned int i = 0; i < pCount; i++) {
 		unsigned int val = *(raster + i);
@@ -27,23 +39,31 @@ void switchRasterRG(uint32_t* raster, unsigned int pCount) {
 	}
 }
 
-void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal) {
-	for (unsigned int i = 0; i < pCount; i++)
-		*(raster + i) = colorVal;
+uint8_t getLoColorBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+	uint32_t mask, shift;
+	switch(channel){
+		case CHANNEL_Alpha: mask = ALPHA_BITS_MASK; shift = 24; break;
+		case CHANNEL_Red: mask = RED_BITS_MASK; shift = 16; break;
+		case CHANNEL_Green: mask = GREEN_BITS_MASK; shift = 8; break;
+		case CHANNEL_Blue: mask = BLUE_BITS_MASK; shift = 0; break;
+	}
+
+	return ((color1 & mask) < (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
 }
 
-void changeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor) {
-	for (unsigned int i = 0; i < pCount; i++)
-		if (*(raster + i) == oldColor) 
-			*(raster + i) = newColor;
+uint8_t getHiColorBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+	uint32_t mask, shift;
+	switch(channel){
+		case CHANNEL_Alpha: mask = ALPHA_BITS_MASK; shift = 24; break;
+		case CHANNEL_Red: mask = RED_BITS_MASK; shift = 16; break;
+		case CHANNEL_Green: mask = GREEN_BITS_MASK; shift = 8; break;
+		case CHANNEL_Blue: mask = BLUE_BITS_MASK; shift = 0; break;
+	}
+
+	return ((color1 & mask) > (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
 }
 
-uint32_t getRasterBkColor(uint32_t* raster, unsigned width, unsigned height){
-	// TODO: Implement this
-	return BAD_COLOR_CODE;
-}
 
-// Produces a 32 bit grey value based on provided reference color
 uint32_t grayify32(uint32_t refColor){
 	if (refColor & 0x00FFFFFF == 0xFFFFFF) 
 		return TOTAL_WHITE_COLOR_CODE;
@@ -56,7 +76,6 @@ uint32_t grayify32(uint32_t refColor){
 	return result;
 }
 
-// Produces a 8 bit grey value based on provided reference color
 uint8_t grayify8(uint32_t refColor){
 	if (refColor & 0x00FFFFFF == 0xFFFFFF)
 		return 0xFF; 
@@ -64,17 +83,23 @@ uint8_t grayify8(uint32_t refColor){
 	return ((uint32_t)((refColor & 0xFF0000) << 16) + (uint32_t)((refColor & 0xFF00) << 16) + (uint32_t)((refColor & 0xFF) << 16)) / 3;
 }
 
+uint8_t fract8(uint8_t refColor, double frac){
+	if(frac >= 1.0) return refColor;
+	else if(frac <= 0.0) return 0x00;
+	else return ((double)refColor / 255.0) * frac * 255.0;
+}
 
 // Interpolates between 2 colors
 uint32_t interpolateColor(uint32_t color1, uint32_t color2, double iVal){
-	uint8_t loAlphaBit = ((color1 & ALPHA_BITS_MASK) < (color2 & ALPHA_BITS_MASK)) ? color1 & ALPHA_BITS_MASK : color2 & ALPHA_BITS_MASK;
-	uint8_t loRedBit = ((color1 & RED_BITS_MASK) < (color2 & RED_BITS_MASK)) ? color1 & RED_BITS_MASK : color2 & RED_BITS_MASK;
-    uint8_t loGreenBit = ((color1 & GREEN_BITS_MASK) < (color2 & GREEN_BITS_MASK)) ? color1 & GREEN_BITS_MASK : color2 & GREEN_BITS_MASK;
-    uint8_t loBlueBit = ((color1 & BLUE_BITS_MASK) < (color2 & BLUE_BITS_MASK)) ? color1 & BLUE_BITS_MASK : color2 & BLUE_BITS_MASK;
-	uint8_t hiAlphaBit = ((color1 & ALPHA_BITS_MASK) > (color2 & ALPHA_BITS_MASK)) ? color1 & ALPHA_BITS_MASK : color2 & ALPHA_BITS_MASK;
-    uint8_t hiRedBit = ((color1 & RED_BITS_MASK) > (color2 & RED_BITS_MASK)) ? color1 & RED_BITS_MASK : color2 & RED_BITS_MASK;
-    uint8_t hiGreenBit = ((color1 & GREEN_BITS_MASK) > (color2 & GREEN_BITS_MASK)) ? color1 & GREEN_BITS_MASK : color2 & GREEN_BITS_MASK;
-    uint8_t hiBlueBit = ((color1 & BLUE_BITS_MASK) > (color2 & BLUE_BITS_MASK)) ? color1 & BLUE_BITS_MASK : color2 & BLUE_BITS_MASK;
+
+	uint8_t loAlphaBit = getLoColorBit(color1, color2, CHANNEL_Alpha);
+	uint8_t loRedBit = getLoColorBit(color1, color2, CHANNEL_Red);
+    uint8_t loGreenBit = getLoColorBit(color1, color2, CHANNEL_Green);
+    uint8_t loBlueBit = getLoColorBit(color1, color2, CHANNEL_Blue);
+	uint8_t hiAlphaBit = getHiColorBit(color1, color2, CHANNEL_Alpha);
+    uint8_t hiRedBit = getHiColorBit(color1, color2, CHANNEL_Red);
+    uint8_t hiGreenBit = getHiColorBit(color1, color2, CHANNEL_Green);
+    uint8_t hiBlueBit = getHiColorBit(color1, color2, CHANNEL_Blue);
 
 	uint32_t loColor = (loAlphaBit << 24) + (loRedBit << 16) + (loGreenBit << 8) + loBlueBit;
 	if(iVal <= 0.0) return loColor;
@@ -82,10 +107,11 @@ uint32_t interpolateColor(uint32_t color1, uint32_t color2, double iVal){
 	uint32_t hiColor = (hiAlphaBit << 24) + (hiRedBit << 16) + (hiGreenBit << 8) + hiBlueBit;
 	if(iVal <= 0.0) return hiColor;
 
-	uint32_t diffColor = hiColor - loColor;
-	/* double iAlphaBit = (uint8_t)(((diffColor & ALPHA_BITS_MASK) * iVal) * 255.0);
-	double iRed = (diffColor & RED_BITS_MASK) * iVal;
-	double iGreen = (diffColor & GREEN_BITS_MASK) * iVal;
-	double iBlue = (diffColor & BLUE_BITS_MASK) * iVal; */
-	return loColor + (uint32_t)(diffColor * iVal * 255.0); // multiplies by fraction and adjusts back to normal value
+	uint32_t diffColor = (hiColor - loColor);
+	uint8_t finalAlphaBit = 0xFF;
+	uint8_t finalRedBit = fract8((diffColor & RED_BITS_MASK) >> 16, iVal);
+	uint8_t finalGreenBit = fract8((diffColor & GREEN_BITS_MASK) >> 8, iVal);
+	uint8_t finalBlueBit = fract8(diffColor & BLUE_BITS_MASK, iVal);
+
+	return loColor + (uint32_t)((finalAlphaBit << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
 }

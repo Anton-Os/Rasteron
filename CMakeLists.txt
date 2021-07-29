@@ -76,6 +76,7 @@ set(RASTERON_SRC
     src/core/PrimitiveGen.c
     src/plugin/Cellwise.c
     src/plugin/Lattice.c
+    src/plugin/Noise.c
 )
 
 # find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)

@@ -2,14 +2,17 @@
 #include "Loader.h"
 
 void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal);
-void changeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor);
+void changeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor); // switches oldColor to newColor in image
 void switchRasterRB(uint32_t* raster, unsigned int pCount); // switch red and blue bits
 void switchRasterGB(uint32_t* raster, unsigned int pCount); // switch green and blue bits
 void switchRasterRG(uint32_t* raster, unsigned int pCount); // swotch red and green bits
-uint32_t getRasterBkColor(uint32_t* raster, unsigned width, unsigned height);
+uint8_t getLoColorBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
+uint8_t getHiColorBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
 
-uint32_t grayify32(uint32_t refColor);
-uint8_t grayify8(uint32_t refColor);
+uint32_t grayify32(uint32_t refColor); // produces a 32 bit grey value based on provided reference color
+uint8_t grayify8(uint32_t refColor); // produces a 8 bit grey value based on provided reference color
+// uint32_t fract32(uint32_t refColor, double frac) // produces an 32 bit color value based on fraction of reference color
+uint8_t fract8(uint8_t refColor, double frac); // produces an 8 bit color value based on fraction of reference color
 uint32_t interpolateColor(uint32_t color1, uint32_t color2, double iVal);
 
 #ifdef _WIN32 

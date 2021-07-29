@@ -6,7 +6,7 @@ void seedRandGen(){
     srand (time(NULL));
 }
 
-Rasteron_Image* createRandNoiseImg(uin32_t color1, uint32_t color2, const Rasteron_Image* refImage){
+Rasteron_Image* createRandNoiseImg(uint32_t color1, uint32_t color2, const Rasteron_Image* refImage){
     if (refImage == NULL) {
 		puts("Cannot create random noise! Null pointer provided as reference image!");
 		return NULL;
@@ -16,11 +16,10 @@ Rasteron_Image* createRandNoiseImg(uin32_t color1, uint32_t color2, const Raster
 
     // Noise Generation Logic
     double noiseVal;
-    for (unsigned p = 0; p < heightmap->width * heightmap->height; p++){
-        // noiseVal = (double)rand() / (double)RAND_MAX;
-        noiseVal = 0.0; // for testing
-        noiseVal = 1.0; // for testing
-        *(filterImage->data + p) = interpolateColor(color1, color2, noiseVal); // see if this works
+    for (unsigned p = 0; p < randNoiseImg->width * randNoiseImg->height; p++){
+        noiseVal = (double)rand() / (double)RAND_MAX;
+		uint32_t color = interpolateColor(color1, color2, noiseVal);
+		*(randNoiseImg->data + p) = color; // see if this works
     }
 
     return randNoiseImg;
