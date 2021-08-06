@@ -2,10 +2,6 @@
 
 #include "Noise.h"
 
-void seedRandGen(){
-    srand (time(NULL));
-}
-
 Rasteron_Image* createRandNoiseImg(uint32_t color1, uint32_t color2, const Rasteron_Image* refImage){
     if (refImage == NULL) {
 		puts("Cannot create random noise! Null pointer provided as reference image!");

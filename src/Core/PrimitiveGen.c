@@ -12,17 +12,17 @@ Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
 
 	sprite->image = refImage; // Simply copy a pointer to the image
 
-	sprite->bounds.topRight_Pt[0] = refImage->width / 2.0f / SPRITE_DIM_RATIO ;
-	sprite->bounds.topRight_Pt[1] = refImage->height / 2.0f / SPRITE_DIM_RATIO ;
+	sprite->bounds.topRight_point[0] = refImage->width / 2.0f / SPRITE_DIM_RATIO ;
+	sprite->bounds.topRight_point[1] = refImage->height / 2.0f / SPRITE_DIM_RATIO ;
 
-	sprite->bounds.topLeft_Pt[0] = -1.0 * (refImage->width / 2.0f / SPRITE_DIM_RATIO );
-	sprite->bounds.topLeft_Pt[1] = refImage->height / 2.0f / SPRITE_DIM_RATIO ;
+	sprite->bounds.topLeft_point[0] = -1.0 * (refImage->width / 2.0f / SPRITE_DIM_RATIO );
+	sprite->bounds.topLeft_point[1] = refImage->height / 2.0f / SPRITE_DIM_RATIO ;
 
-	sprite->bounds.botRight_Pt[0] = refImage->width / 2.0f / SPRITE_DIM_RATIO ;
-	sprite->bounds.botRight_Pt[1] = -1.0 * (refImage->height / 2.0f / SPRITE_DIM_RATIO );
+	sprite->bounds.botRight_point[0] = refImage->width / 2.0f / SPRITE_DIM_RATIO ;
+	sprite->bounds.botRight_point[1] = -1.0 * (refImage->height / 2.0f / SPRITE_DIM_RATIO );
 
-	sprite->bounds.botLeft_Pt[0] = -1.0 * (refImage->width / 2.0f / SPRITE_DIM_RATIO );
-	sprite->bounds.botLeft_Pt[1] = -1.0 * (refImage->height / 2.0f / SPRITE_DIM_RATIO );
+	sprite->bounds.botLeft_point[0] = -1.0 * (refImage->width / 2.0f / SPRITE_DIM_RATIO );
+	sprite->bounds.botLeft_point[1] = -1.0 * (refImage->height / 2.0f / SPRITE_DIM_RATIO );
 
 	return sprite;
 }
@@ -58,21 +58,6 @@ Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
 	}
 
 	return palette;
-}
-
-Rasteron_Palette* createFixedPalette(const uint32_t* colorsPtr, uint16_t colorCount){
-	if (colorsPtr == NULL) {
-		puts("Cannot create palette! Null colors pointer provided!");
-		return NULL;
-	}
-
-	Rasteron_Palette* palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
-	palette->colorCount = colorCount;
-
-	for(unsigned p = 0; p < colorCount; p++){
-		palette->colors[p][COLOR_CODE_OFFSET] = *(colorsPtr + p);
-		palette->colors[p][COLOR_COUNT_OFFSET] = 1; // only one pixel needed
-	}
 }
 
 Rasteron_Palette* createLimPalette(unsigned minColorCount, const Rasteron_Palette* refImage){

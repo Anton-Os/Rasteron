@@ -1,7 +1,8 @@
 // #include <inttypes.h>
 #include "Loader.h"
 
-void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal);
+void seedRandGen(); // seeds the random number generator
+void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal); // makes image data into uniform color
 void changeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor); // switches oldColor to newColor in image
 void switchRasterRB(uint32_t* raster, unsigned int pCount); // switch red and blue bits
 void switchRasterGB(uint32_t* raster, unsigned int pCount); // switch green and blue bits

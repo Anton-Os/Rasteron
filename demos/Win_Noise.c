@@ -5,10 +5,13 @@
 
 // Global Definitions
 
+Rasteron_SeedTable seedTable;
 Rasteron_Image* blankImg;
 Rasteron_Image* randNoiseImg;
 Rasteron_Image* randNoiseImg2;
 Rasteron_Image* latticeNoiseImg;
+Rasteron_Image* scatterImg;
+Rasteron_Image* splatterImg;
 
 BITMAP bmap;
 
@@ -16,6 +19,7 @@ void cleanup() {
 	deleteImg(blankImg);
 	deleteImg(randNoiseImg);
 	deleteImg(randNoiseImg2);
+	deleteImg(scatterImg);
 }
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -29,10 +33,11 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		seedRandGen();
 		// randNoiseImg = createRandNoiseImg(0xFFFFFF00, 0xFF73e5ff, blankImg);
 		randNoiseImg = createRandNoiseImg(0xFFFFFFFF, 0xFF000000, blankImg);
-		randNoiseImg2 = createRandNoiseImg(0xFFFFFFFF, 0xFF0000FF, blankImg);
+		randNoiseImg2 = createRandNoiseImg(0xFFFFFFFF, 0xFF00FFFF, blankImg);
+		scatterImg = createImgScatter(randNoiseImg2, 0xFFFF00FF, 0.1);
 
 		// bmap = createWinBmapRaw(blankImg->width, blankImg->height, blankImg->data);
-		bmap = createWinBmapRaw(randNoiseImg2->width, randNoiseImg2->height, randNoiseImg2->data);
+		bmap = createWinBmapRaw(scatterImg->width, scatterImg->height, scatterImg->data);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap);

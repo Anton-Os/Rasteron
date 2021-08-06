@@ -107,6 +107,64 @@ Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type cha
 	return filterImage;
 }
 
+Rasteron_Image* createImgScatter(const Rasteron_Image* refImage, uint32_t color, double prob){
+	if (refImage == NULL) {
+		puts("Cannot create scatter image! Null pointer provided as reference image!");
+		return NULL;
+	}
+
+	Rasteron_Image* scatterImage = allocNewImg("scatter", refImage->width, refImage->height);
+	// *scatterImage->data = *refImage->data; // copies original image
+	if(prob >= 1.0){
+		makeRasterColor(scatterImage->data, scatterImage->width * scatterImage->height, color);
+		return scatterImage;
+	} else if(prob <= 0.0) return scatterImage; // no modifications
+
+	double chance = 0.0;
+	for (unsigned p = 0; p < scatterImage->width * scatterImage->height; p++) {
+		chance = (double)rand() / (double)RAND_MAX;
+		if (chance <= prob) *(scatterImage->data + p) = color; // if chance is less than probability change to target color
+		else *(scatterImage->data + p) = *(refImage->data + p); // otherwise copy ref contents
+	}
+
+	return scatterImage;
+}
+
+Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable){
+	if (refImage == NULL) {
+		puts("Cannot create splash image! Null pointer provided as reference image!");
+		return NULL;
+	}
+
+	Rasteron_Image* splashImage = allocNewImg("splash", refImage->width, refImage->height);
+	*splashImage->data = *refImage->data; // copies original image
+	const float defaultSeedWeight = 1.0f / (seedTable->seedCount + 1); // leaves less covered as seed count increases
+
+	double chance = 0.0f;
+	double seedRanges[MAX_COLOR_SEEDS][2];
+	double seedWeightTotal = 0.0f;
+
+	for(unsigned s = 0; s < seedTable->seedCount; s++){
+		double currentWeight = (seedTable->seeds[s].weight == DEFAULT_SEED_WEIGHT) ? defaultSeedWeight : seedTable->seeds[s].weight;
+		seedRanges[s][0] = seedWeightTotal; // lower bound is the running weight total
+		seedRanges[s][1] = seedWeightTotal + currentWeight; // upper bound is the added weight
+		seedWeightTotal += currentWeight;
+	}
+
+	for (unsigned p = 0; p < splashImage->width * splashImage->height; p++) {
+		chance = (rand() /  RAND_MAX) * seedWeightTotal;
+		unsigned color = *(refImage->data + p);
+		for(unsigned s = 0; s < seedTable->seedCount; s++)
+			if(chance > seedRanges[s][0] && chance < seedRanges[s][1]){ // checks if rand number is within bounds
+				color = seedTable->seeds[s].color; // sets new color if range is satisfied
+				break;
+			}
+		(*(splashImage->data + p) = color);
+	}
+
+	return splashImage;
+}
+
 
 void deleteImg(Rasteron_Image* image) {
     if(image->data != NULL) free(image->data);

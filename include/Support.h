@@ -26,6 +26,8 @@ typedef enum {
     CHANNEL_Blue
 } CHANNEL_Type;
 
+#define TWOPOWER(x) (1 << (x))
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>

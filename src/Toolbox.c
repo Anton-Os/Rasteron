@@ -2,6 +2,9 @@
 
 #include "Toolbox.h"
 
+void seedRandGen(){
+    srand (time(NULL));
+}
 
 void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal) {
 	for (unsigned int i = 0; i < pCount; i++)
