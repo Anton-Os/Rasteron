@@ -1,4 +1,6 @@
-#include "Rasteron.h"
+#include "Image.h"
+
+// Image Operations
 
 Rasteron_Image* allocNewImg(const char* name, uint32_t width, uint32_t height){
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
@@ -137,13 +139,14 @@ Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_S
 	}
 
 	Rasteron_Image* splashImage = allocNewImg("splash", refImage->width, refImage->height);
-	*splashImage->data = *refImage->data; // copies original image
+	// *splashImage->data = *refImage->data; // copies original image
 	const float defaultSeedWeight = 1.0f / (seedTable->seedCount + 1); // leaves less covered as seed count increases
 
 	double chance = 0.0f;
 	double seedRanges[MAX_COLOR_SEEDS][2];
 	double seedWeightTotal = 0.0f;
 
+	// calculating weights
 	for(unsigned s = 0; s < seedTable->seedCount; s++){
 		double currentWeight = (seedTable->seeds[s].weight == DEFAULT_SEED_WEIGHT) ? defaultSeedWeight : seedTable->seeds[s].weight;
 		seedRanges[s][0] = seedWeightTotal; // lower bound is the running weight total
@@ -151,6 +154,7 @@ Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_S
 		seedWeightTotal += currentWeight;
 	}
 
+	// setting proper colors
 	for (unsigned p = 0; p < splashImage->width * splashImage->height; p++) {
 		chance = (rand() /  RAND_MAX) * seedWeightTotal;
 		unsigned color = *(refImage->data + p);
@@ -165,8 +169,72 @@ Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_S
 	return splashImage;
 }
 
+Rasteron_Image* createImgProxCell(const Rasteron_Image* refImage, const Rasteron_ColorPointTable* colorPointTable){
+	if (refImage == NULL) {
+		puts("Cannot create splash image! Null pointer provided as reference image!");
+		return NULL;
+	}
+
+	unsigned* targetPixels = malloc(colorPointTable->pixelPointCount * sizeof(unsigned));
+
+	for(unsigned t = 0; t < colorPointTable->pixelPointCount; t++)
+		*(targetPixels + t) = getPixIndexFromPos(&colorPointTable->positions[t].pos, refImage);
+
+	Rasteron_Image* proxCellImage = allocNewImg("prox-cell", refImage->width, refImage->height);
+
+	for (unsigned p = 0; p < proxCellImage->width * proxCellImage->height; p++) {
+		// unsigned xOffset = p % proxCellImage->width;
+        // unsigned yOffset = p / proxCellImage->width;
+		unsigned color = 0xFF448844; // some default color!
+		double minDist = (double)(proxCellImage->width * proxCellImage->height);
+
+		for(unsigned t = 0; t < colorPointTable->pixelPointCount; t++){
+			// unsigned xTarget = *(targetPixels + t) % proxCellImage->width;
+			// unsigned yTarget = *(targetPixels + t) % proxCellImage->width;
+			// double dist = sqrt(((xTarget - xOffset)*(xTarget - xOffset))+((yTarget - yOffset)*(yTarget - yOffset))); // distance formula
+			double dist = getPixDist(p, *(targetPixels + t), proxCellImage->width);
+			if(dist < minDist){
+				minDist = dist;
+				color = colorPointTable->positions[t].color;
+			}
+			*(proxCellImage->data + p) = color;
+		}
+	}
+
+	free(targetPixels);
+	return proxCellImage;
+}
+
 
 void deleteImg(Rasteron_Image* image) {
     if(image->data != NULL) free(image->data);
     if(image != NULL) free(image);
+}
+
+// Additional Types operations
+
+// Color Seed operations
+
+void addColorToSeeds(Rasteron_SeedTable* seeds, uint32_t color, double weight){
+	unsigned offset = seeds->seedCount;
+	seeds->seeds[offset].color = color;
+	seeds->seeds[offset].weight = weight;
+	seeds->seedCount++;
+}
+
+// Pixel Point operations
+
+unsigned getPixIndexFromPos(Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage){
+	unsigned xOffset;
+	if(pixPos->xFrac <= 0.0) xOffset = 0;
+	else if(pixPos->xFrac >= 1.0) xOffset = refImage->width - 1;
+	else xOffset = (unsigned)((double)refImage->width * pixPos->xFrac);
+
+	unsigned yOffset;
+	if(pixPos->yFrac <= 0.0) yOffset = 0;
+	else if(pixPos->yFrac >= 1.0) yOffset = refImage->height;
+	else yOffset = (unsigned)((double)refImage->height * pixPos->yFrac);
+
+	unsigned pixIndex = (yOffset * refImage->width) + xOffset;
+	return pixIndex;
 }

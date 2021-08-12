@@ -1,4 +1,5 @@
-// #include <inttypes.h>
+#include <math.h>
+
 #include "Loader.h"
 
 void seedRandGen(); // seeds the random number generator
@@ -9,6 +10,7 @@ void switchRasterGB(uint32_t* raster, unsigned int pCount); // switch green and 
 void switchRasterRG(uint32_t* raster, unsigned int pCount); // swotch red and green bits
 uint8_t getLoColorBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
 uint8_t getHiColorBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
+double getPixDist(unsigned p1, unsigned p2, unsigned imageWidth);
 
 uint32_t grayify32(uint32_t refColor); // produces a 32 bit grey value based on provided reference color
 uint8_t grayify8(uint32_t refColor); // produces a 8 bit grey value based on provided reference color

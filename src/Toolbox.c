@@ -66,6 +66,14 @@ uint8_t getHiColorBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	return ((color1 & mask) > (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
 }
 
+double getPixDist(unsigned p1, unsigned p2, unsigned imageWidth){
+	unsigned x1 = p1 % imageWidth;
+    unsigned y1 = p1 / imageWidth;
+	unsigned x2 = p2 % imageWidth;
+	unsigned y2 = p2 / imageWidth;
+	return sqrt(((x2-x1)*(x2-x1))+((y2-y1)*(y2-y1)));
+}
+
 
 uint32_t grayify32(uint32_t refColor){
 	if (refColor & 0x00FFFFFF == 0xFFFFFF) 

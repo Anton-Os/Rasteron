@@ -114,7 +114,7 @@ endif(libtiff_FOUND)
 
 
 if(WIN32) # Conditional OS Sources
-    list(APPEND RASTERON_SRC src/Win_NativeImg.c)
+    list(APPEND RASTERON_SRC src/Win_Util.c)
 endif()
 
 add_library(RasteronLib STATIC  ${RASTERON_SRC})

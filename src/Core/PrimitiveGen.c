@@ -1,6 +1,6 @@
 #include "Rasteron.h"
 
-// Sprite related stuff
+// Sprite related operations
 
 Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
 	if (refImage == NULL) {
@@ -31,7 +31,7 @@ void deleteSprite(Rasteron_Sprite* sprite){
 	free(sprite);
 }
 
-// Palette related stuff
+// Palette related operations
 
 Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
 	if (refImage == NULL) {
