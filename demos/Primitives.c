@@ -14,9 +14,6 @@ Rasteron_Palette* palette;
 Rasteron_Sprite* sprite;
 Rasteron_Lattice* heightmap;
 
-BITMAP bmap1;
-BITMAP bmap2;
-
 void cleanup() {
 	deleteSprite(sprite);
 	deleteImg(imageBase);
@@ -28,6 +25,11 @@ void cleanup() {
 
 	delFileImage(&img);
 }
+
+#ifdef _WIN32
+
+BITMAP bmap1;
+BITMAP bmap2;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -60,9 +62,34 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
+#elif defined __linux__
+
+void draw(UnixContext* context){
+	loadFileImage("C:\\AntonDocs\\Design\\PurpleCult.png", &img);
+
+	imageBase = createImgBase(&img);
+	imageGrey = createImgGrey(imageBase);
+	imageRed = createImgFilter(imageBase, CHANNEL_Red);
+	imageBlue = createImgFilter(imageBase, CHANNEL_Blue);
+	palette = createPalette(imageBase);
+	sprite = createSprite(imageBase);
+	heightmap = createLattice(imageGrey); // Lattice data test
+
+	XImage* unixBmap = createUnixBmapRaw(context, imageRed->width, imageRed->height, imageRed->data);
+	drawUnixBmap(context, unixBmap);
+}
+
+#endif
+
 int main(int argc, char** argv) {
 
+#ifdef _WIN32
 	createWindow(wndProc, "Primitives");
+#elif defined __linux__
+	UnixContext context;
+	createWindow("Primitives", &context);
+	draw(&context);
+#endif
 	eventLoop();
 
 	cleanup(); // cleanup step

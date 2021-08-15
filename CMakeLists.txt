@@ -114,7 +114,9 @@ endif(libtiff_FOUND)
 
 
 if(WIN32) # Conditional OS Sources
-    list(APPEND RASTERON_SRC src/Win_NativeImg.c)
+    list(APPEND RASTERON_SRC src/Win_Util.c)
+elseif(UNIX)
+    list(APPEND RASTERON_SRC src/Unix_Util.c)
 endif()
 
 add_library(RasteronLib STATIC  ${RASTERON_SRC})
@@ -129,15 +131,15 @@ target_include_directories(RasteronLib
 )
 
 if(WIN32)
-    add_executable(Cellwise demos/Win_Cellwise.c)
+    add_executable(Cellwise demos/Cellwise.c)
     target_include_directories(Cellwise PUBLIC include)
     target_link_libraries(Cellwise RasteronLib)
 
-    add_executable(Primitives demos/Win_Primitives.c)
+    add_executable(Primitives demos/Primitives.c)
     target_include_directories(Primitives PUBLIC include)
     target_link_libraries(Primitives RasteronLib)
 
-    add_executable(Noise demos/Win_Noise.c)
+    add_executable(Noise demos/Noise.c)
     target_include_directories(Noise PUBLIC include)
     target_link_libraries(Noise RasteronLib)
 endif()
