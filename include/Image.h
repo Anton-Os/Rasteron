@@ -16,6 +16,9 @@ typedef struct {
 	unsigned seedCount; // = 0;
 } Rasteron_SeedTable;
 
+void addSeed(Rasteron_SeedTable* table, unsigned color);
+void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight);
+
 // Rasteron Pixel Points
 
 typedef struct {
@@ -39,6 +42,8 @@ typedef struct {
     Rasteron_ColorPoint positions[MAX_PIXEL_POS];
     unsigned pixelPointCount; // = 0;
 } Rasteron_ColorPointTable;
+
+void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac, double yFrac);
 
 // Rasteron Image
 

@@ -2,6 +2,8 @@
 
 #include "Noise.h"
 
+// Noise Image Operations
+
 Rasteron_Image* createRandNoiseImg(uint32_t color1, uint32_t color2, const Rasteron_Image* refImage){
     if (refImage == NULL) {
 		puts("Cannot create random noise! Null pointer provided as reference image!");
@@ -33,30 +35,29 @@ Rasteron_Image* createPerlinNoiseImg( const Rasteron_NoiseGradientLattice* latti
     const unsigned yCellPoints = lattice->yCellDivs + 1;
     const unsigned xSwitchOffset = perlinNoiseImg->width / lattice->xCellDivs;
     const unsigned ySwitchOffset = perlinNoiseImg->height / lattice->yCellDivs;
-    Rasteron_NoiseGradient noiseVal_topLeft = lattice->gradients[0];
-    Rasteron_NoiseGradient noiseVal_topRight = lattice->gradients[1];
-    Rasteron_NoiseGradient noiseVal_botLeft = lattice->gradients[xCellPoints];
-    Rasteron_NoiseGradient noiseVal_botRight = lattice->gradients[xCellPoints + 1];
 
-    /* for(unsigned cellCount = 0; cellCount < xCellPoints * yCellPoints; cellCount++){
-        noiseVal_topLeft = lattice->gradients[cellCount];
-        noiseVal_topRight = lattice->gradients[cellCount + 1];
-        noiseVal_botLeft = lattice->gradients[cellCount + xCellPoints];
-        noiseVal_topRight = lattice->gradients[cellCount + xCellPoints + 1];
+    unsigned noiseIndex_topLeft = 0;
+    unsigned noiseIndex_topRight = 1;
+    unsigned noiseIndex_botLeft = xCellPoints;
+    unsigned noiseIndex_botRight = xCellPoints + 1;
+    Rasteron_NoiseGradient noiseVal_topLeft = lattice->gradients[noiseIndex_topLeft];
+    Rasteron_NoiseGradient noiseVal_topRight = lattice->gradients[noiseIndex_topRight];
+    Rasteron_NoiseGradient noiseVal_botLeft = lattice->gradients[noiseIndex_botLeft];
+    Rasteron_NoiseGradient noiseVal_botRight = lattice->gradients[noiseIndex_botRight];
 
-        // iterate through cooresponding chunk of the new image!
-    } */
-
-    unsigned outColor = 0xFF00000;
+    unsigned outColor = 0xFFFF0000; // for testing
     for(unsigned p = 0; p < perlinNoiseImg->width * perlinNoiseImg->height; p++){
         unsigned xOffset = p % perlinNoiseImg->width;
         unsigned yOffset = p / perlinNoiseImg->width;
 
-        // calculate updated gradients for current points
-
-        if(xOffset % xSwitchOffset == 0) outColor = 0xFF00FF00; // for testing
-        if(yOffset % ySwitchOffset == 0) outColor = 0xFF0000FF; // for testing
-        // assign pixel value based on gradient
+		if (yOffset % ySwitchOffset == 0 && xOffset == 0) { // requires the grid shift far left and down 1
+			outColor = 0xFF00FF00; // for testing
+		}
+		else if (xOffset % xSwitchOffset == 0) { // requires the grid shift right 1
+			outColor = (outColor == 0xFF0000FF)? 0xFFFF0000 : 0xFF0000FF; // for testing
+		}
+        
+        *(perlinNoiseImg->data + p) = outColor;
     }
 
     return perlinNoiseImg;

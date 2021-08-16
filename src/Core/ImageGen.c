@@ -1,5 +1,24 @@
 #include "Image.h"
 
+// Helper Types Operations
+
+void addSeed(Rasteron_SeedTable* table, unsigned color){
+	addWeightedSeed(table, color, 0.0);
+}
+
+void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight){
+	table->seeds[table->seedCount].color = color;
+	table->seeds[table->seedCount].weight = weight;
+	table->seedCount++;
+}
+
+void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac, double yFrac){
+	table->positions[table->pixelPointCount].pos.xFrac = xFrac;
+	table->positions[table->pixelPointCount].pos.yFrac = yFrac;
+	table->positions[table->pixelPointCount].color = color;
+	table->pixelPointCount++;
+}
+
 // Image Operations
 
 Rasteron_Image* allocNewImg(const char* name, uint32_t width, uint32_t height){
@@ -183,15 +202,10 @@ Rasteron_Image* createImgProxCell(const Rasteron_Image* refImage, const Rasteron
 	Rasteron_Image* proxCellImage = allocNewImg("prox-cell", refImage->width, refImage->height);
 
 	for (unsigned p = 0; p < proxCellImage->width * proxCellImage->height; p++) {
-		// unsigned xOffset = p % proxCellImage->width;
-        // unsigned yOffset = p / proxCellImage->width;
 		unsigned color = 0xFF448844; // some default color!
 		double minDist = (double)(proxCellImage->width * proxCellImage->height);
 
 		for(unsigned t = 0; t < colorPointTable->pixelPointCount; t++){
-			// unsigned xTarget = *(targetPixels + t) % proxCellImage->width;
-			// unsigned yTarget = *(targetPixels + t) % proxCellImage->width;
-			// double dist = sqrt(((xTarget - xOffset)*(xTarget - xOffset))+((yTarget - yOffset)*(yTarget - yOffset))); // distance formula
 			double dist = getPixDist(p, *(targetPixels + t), proxCellImage->width);
 			if(dist < minDist){
 				minDist = dist;
