@@ -7,12 +7,26 @@
 // Global Definitions
 Image image = { 0 };
 NebrTable_List* neighborTable;
-BITMAP winBmap;
+
+void genData(){
+	loadFileImage_BMP("C:\\AntonDocs\\Design\\Small.bmp", &image); // fix this
+	neighborTable = genNebrTables(
+		image.imageData.bmp.data, 
+		abs(image.imageData.bmp.width), // abs is bmp specific
+		abs(image.imageData.bmp.height) // abs is bmp specific
+	);
+
+	printNebrTables(neighborTable);
+}
 
 void cleanup() {
 	delNebrTables(neighborTable);
 	delFileImage_BMP(&image);
 }
+
+#ifdef _WIN32
+
+BITMAP winBmap;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -21,18 +35,11 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		loadFileImage_BMP("C:\\AntonDocs\\Design\\Small.bmp", &image);
-		neighborTable = genNebrTables(
-			image.imageData.bmp.data, 
-			abs(image.imageData.bmp.width), // abs is bmp specific
-			abs(image.imageData.bmp.height) // abs is bmp specific
-		);
-		winBmap = createWinBmap(&image);
-
-		printNebrTables(neighborTable);
+		genData();
+		// winBmap = createWinBmap(&image);
 	}
 	case (WM_PAINT): {
-        drawWinBmap(hwnd, &winBmap);
+        // Implement Draw Call
 	}
 	case (WM_DESTROY): { }
 	default:
@@ -41,8 +48,28 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
+#elif defined __linux__
+
+void draw(UnixContext* context){
+	// Implement Draw Call
+}
+
+void unixProc(){
+	UnixContext context;
+	createWindow(&context, "Cellwise");
+	genData();
+	draw(&context);
+}
+
+#endif
+
 int main(int argc, char** argv) {
+
+#ifdef _WIN32
 	createWindow(wndProc, "Cellwise");
+#elif defined __linux__
+	unixProc();
+#endif
 	eventLoop();
 
 	cleanup(); // cleanup step

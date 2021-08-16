@@ -13,6 +13,7 @@ endif()
 message(STATUS "Build Type ${CMAKE_BUILD_TYPE}")
 
 include(ExternalProject)
+include(FindX11)
 
 set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 set(EXTERNAL_INSTALL_DIR "${EXTERNAL_PROJ_DIR}/Install")
@@ -119,34 +120,37 @@ elseif(UNIX)
     list(APPEND RASTERON_SRC src/Unix_Util.c)
 endif()
 
-add_library(RasteronLib STATIC  ${RASTERON_SRC})
+add_library(Rasteron STATIC  ${RASTERON_SRC})
 
-target_include_directories(RasteronLib PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
-target_link_libraries(RasteronLib PUBLIC tiff png zlibstatic)
+target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
+target_link_libraries(Rasteron PUBLIC tiff png zlibstatic)
+if(X11_FOUND)
+    target_link_libraries(Rasteron PUBLIC ${X11_LIBRARIES})
+endif()
 
-target_include_directories(RasteronLib
+target_include_directories(Rasteron
     INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Rasteron>
 )
 
-if(WIN32)
-    add_executable(Cellwise demos/Cellwise.c)
-    target_include_directories(Cellwise PUBLIC include)
-    target_link_libraries(Cellwise RasteronLib)
+# Adding executables
 
-    add_executable(Primitives demos/Primitives.c)
-    target_include_directories(Primitives PUBLIC include)
-    target_link_libraries(Primitives RasteronLib)
+add_executable(Cellwise demos/Cellwise.c)
+target_include_directories(Cellwise PUBLIC include)
+target_link_libraries(Cellwise Rasteron)
 
-    add_executable(Noise demos/Noise.c)
-    target_include_directories(Noise PUBLIC include)
-    target_link_libraries(Noise RasteronLib)
-endif()
+add_executable(Noise demos/Noise.c)
+target_include_directories(Noise PUBLIC include)
+target_link_libraries(Noise Rasteron)
+
+add_executable(Primitives demos/Primitives.c)
+target_include_directories(Primitives PUBLIC include)
+target_link_libraries(Primitives Rasteron)
 
 
 # Install Procedures
-install(TARGETS RasteronLib
+install(TARGETS Rasteron
         EXPORT Rasteron
         RUNTIME DESTINATION bin
 	    LIBRARY DESTINATION lib
@@ -154,7 +158,7 @@ install(TARGETS RasteronLib
 	    FRAMEWORK DESTINATION lib
 )
 
-add_dependencies(RasteronLib zlib libpng libtiff)
+add_dependencies(Rasteron zlib libpng libtiff)
 
 file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)

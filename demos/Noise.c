@@ -13,7 +13,13 @@ Rasteron_Image* latticeNoiseImg;
 Rasteron_Image* scatterImg;
 Rasteron_Image* splatterImg;
 
-BITMAP bmap;
+void genImages(){
+	blankImg = createImgBlank(1200, 1000, 0xFF73e5ff);
+	// randNoiseImg = createRandNoiseImg(0xFFFFFF00, 0xFF73e5ff, blankImg);
+	randNoiseImg = createRandNoiseImg(0xFFFFFFFF, 0xFF000000, blankImg);
+	randNoiseImg2 = createRandNoiseImg(0xFFFFFFFF, 0xFF00FFFF, blankImg);
+	scatterImg = createImgScatter(randNoiseImg2, 0xFFFF00FF, 0.1);
+}
 
 void cleanup() {
 	deleteImg(blankImg);
@@ -22,6 +28,10 @@ void cleanup() {
 	deleteImg(scatterImg);
 }
 
+#ifdef _WIN32
+
+BITMAP bmap;
+
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hDC = GetDC(hwnd);
@@ -29,12 +39,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		blankImg = createImgBlank(1200, 1000, 0xFF73e5ff);
 		seedRandGen();
-		// randNoiseImg = createRandNoiseImg(0xFFFFFF00, 0xFF73e5ff, blankImg);
-		randNoiseImg = createRandNoiseImg(0xFFFFFFFF, 0xFF000000, blankImg);
-		randNoiseImg2 = createRandNoiseImg(0xFFFFFFFF, 0xFF00FFFF, blankImg);
-		scatterImg = createImgScatter(randNoiseImg2, 0xFFFF00FF, 0.1);
+		genImages();
 
 		// bmap = createWinBmapRaw(blankImg->width, blankImg->height, blankImg->data);
 		bmap = createWinBmapRaw(scatterImg->width, scatterImg->height, scatterImg->data);
@@ -50,12 +56,33 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
+#elif defined __linux__
+
+void draw(UnixContext* context){
+	// genImages();
+	XImage* unixBmap = createUnixBmapRaw(context, scatterImg->width, scatterImg->height, scatterImg->data);
+	drawUnixBmap(context, unixBmap);
+}
+
+void unixProc(){
+	UnixContext context;
+	createWindow(&context, "Noise");
+	seedRandGen();
+	genImages();
+	draw(&context);
+}
+
+#endif
+
 int main(int argc, char** argv) {
 
+#ifdef _WIN32
 	createWindow(wndProc, "Noise");
+#elif defined __linux__
+	unixProc();
+#endif
 	eventLoop();
 
 	cleanup(); // cleanup step
-	
 	return 0;
 }

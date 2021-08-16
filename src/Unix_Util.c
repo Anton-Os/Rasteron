@@ -1,6 +1,6 @@
 #include "Toolbox.h"
 
-void createUnixWindow(UnixContext* context, const char* name){
+void createWindow(UnixContext* context, const char* name){
 	context->display = XOpenDisplay(NULL);
 	unsigned long whitePix = WhitePixel(context->display, DefaultScreen(context->display));
 	unsigned long blackPix = BlackPixel(context->display, DefaultScreen(context->display));
@@ -10,7 +10,7 @@ void createUnixWindow(UnixContext* context, const char* name){
 	visualInfoTemplate.screen = XGetVisualInfo(context->display, VisualScreenMask, &visualInfoTemplate, &visualCount);
 
 	context->window = XCreateSimpleWindow(
-		context->display, context->window,
+		context->display, DefaultRootWindow(context->display),
 		100, 100, 1200, 1100,
 		1, blackPix, whitePix
 	);

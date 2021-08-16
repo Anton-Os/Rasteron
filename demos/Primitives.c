@@ -14,6 +14,18 @@ Rasteron_Palette* palette;
 Rasteron_Sprite* sprite;
 Rasteron_Lattice* heightmap;
 
+void genImages(){
+	// loadFileImage("C:\\AntonDocs\\Design\\PurpleCult.png", &img); // hard coded file path
+	loadFileImage("/home/antonos/AntonDocs/Design/Wallpaper/night.png", &img); // hard coded file path
+	imageBase = createImgBase(&img);
+	imageGrey = createImgGrey(imageBase);
+	imageRed = createImgFilter(imageBase, CHANNEL_Red);
+	imageBlue = createImgFilter(imageBase, CHANNEL_Blue);
+	palette = createPalette(imageBase);
+	sprite = createSprite(imageBase);
+	heightmap = createLattice(imageGrey); // Lattice data test
+}
+
 void cleanup() {
 	deleteSprite(sprite);
 	deleteImg(imageBase);
@@ -38,15 +50,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		loadFileImage("C:\\AntonDocs\\Design\\PurpleCult.png", &img);
-
-		imageBase = createImgBase(&img);
-		imageGrey = createImgGrey(imageBase);
-		imageRed = createImgFilter(imageBase, CHANNEL_Red);
-		imageBlue = createImgFilter(imageBase, CHANNEL_Blue);
-		palette = createPalette(imageBase);
-		sprite = createSprite(imageBase);
-		heightmap = createLattice(imageGrey); // Lattice data test
+		genImages();
 
 		bmap1 = createWinBmap(&img);
 		bmap2 = createWinBmapRaw(imageRed->width, imageRed->height, imageRed->data);
@@ -65,18 +69,16 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 #elif defined __linux__
 
 void draw(UnixContext* context){
-	loadFileImage("C:\\AntonDocs\\Design\\PurpleCult.png", &img);
-
-	imageBase = createImgBase(&img);
-	imageGrey = createImgGrey(imageBase);
-	imageRed = createImgFilter(imageBase, CHANNEL_Red);
-	imageBlue = createImgFilter(imageBase, CHANNEL_Blue);
-	palette = createPalette(imageBase);
-	sprite = createSprite(imageBase);
-	heightmap = createLattice(imageGrey); // Lattice data test
-
+	// genImages();
 	XImage* unixBmap = createUnixBmapRaw(context, imageRed->width, imageRed->height, imageRed->data);
 	drawUnixBmap(context, unixBmap);
+}
+
+void unixProc(){
+	UnixContext context;
+	createWindow(&context, "Primitives");
+	genImages();
+	draw(&context);
 }
 
 #endif
@@ -86,13 +88,10 @@ int main(int argc, char** argv) {
 #ifdef _WIN32
 	createWindow(wndProc, "Primitives");
 #elif defined __linux__
-	UnixContext context;
-	createWindow("Primitives", &context);
-	draw(&context);
+	unixProc();
 #endif
 	eventLoop();
 
 	cleanup(); // cleanup step
-
 	return 0;
 }
