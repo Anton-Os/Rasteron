@@ -31,23 +31,15 @@ void loadFileImage(const char* fileName, FileImage* image){
     switch(format){
 
 #ifdef USE_IMG_PNG
-	case IMG_Png:
-		loadFileImage_PNG(fileName, image);
-		break;
+	case IMG_Png: loadFileImage_PNG(fileName, image); break;
 #endif
 #ifdef USE_IMG_TIFF
-	case IMG_Tiff:
-		loadFileImage_TIFF(fileName, image);
-		break;
+	case IMG_Tiff: loadFileImage_TIFF(fileName, image); break;
 #endif
 #ifdef USE_IMG_BMP
-	case IMG_Bmp:
-		loadFileImage_BMP(fileName, image);
-		break;
+	case IMG_Bmp: loadFileImage_BMP(fileName, image);break;
 #endif
-	default:
-		puts("Image Format not yet supported!!!");
-		break;
+	default: puts("Image Format not yet supported!!!"); break;
     }
 }
 

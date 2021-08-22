@@ -3,6 +3,8 @@
 #include "Loader.h"
 #include "Toolbox.h"
 
+// Helper Containers for Images
+
 #define MAX_COLOR_SEEDS TWOPOWER(11) // 2046
 #define DEFAULT_SEED_WEIGHT 0.0
 

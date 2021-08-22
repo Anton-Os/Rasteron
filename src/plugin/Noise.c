@@ -2,6 +2,26 @@
 
 #include "Noise.h"
 
+// Helper Operations
+
+void addGradient(Rasteron_NoiseGradientTable* noiseGradientTable, double x, double y){
+    addColorGradient(
+        noiseGradientTable, x, y,
+        TOTAL_BLACK_COLOR_CODE, TOTAL_WHITE_COLOR_CODE
+    );
+}
+
+void addColorGradient(Rasteron_NoiseGradientTable* noiseGradientTable, double x, double y, uint32_t startColor, uint32_t endColor){
+    Rasteron_NoiseGradient gradient;
+    gradient.startColor = startColor;
+    gradient.endColor = endColor;
+    gradient.x = x;
+    gradient.y = y;
+
+    noiseGradientTable->gradients[noiseGradientTable->gradientsCount] = gradient;
+    noiseGradientTable->gradientsCount++;
+}
+
 // Noise Image Operations
 
 Rasteron_Image* createRandNoiseImg(uint32_t color1, uint32_t color2, const Rasteron_Image* refImage){
@@ -23,7 +43,7 @@ Rasteron_Image* createRandNoiseImg(uint32_t color1, uint32_t color2, const Raste
     return randNoiseImg;
 }
 
-Rasteron_Image* createPerlinNoiseImg( const Rasteron_NoiseGradientLattice* lattice, const Rasteron_Image* refImage){
+Rasteron_Image* createPerlinNoiseImg( const Rasteron_NoiseGradientTable* lattice, const Rasteron_Image* refImage){
     if(lattice == NULL || refImage == NULL){
         puts("Cannot create lattice noise! Null pointers provided as inputs!");
         return NULL;

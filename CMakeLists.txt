@@ -4,11 +4,9 @@ project(Rasteron DESCRIPTION "Image Loading and Experiments")
 set(default_build_type "Debug")
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
-  set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
-      STRING "Choose the type of build." FORCE)
+  set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
   # Set the possible values of build type for cmake-gui
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 message(STATUS "Build Type ${CMAKE_BUILD_TYPE}")
 
@@ -64,10 +62,22 @@ ExternalProject_Add(libtiff
     DEPENDS zlib
 )
 
+set(SUPPORT_FONT_BAKING true CACHE BOOL "Include font baking module" FORCE)
+if(SUPPORT_FONT_BAKING)
+ExternalProject_Add(FreeType # Font Loading
+    GIT_REPOSITORY "https://gitlab.freedesktop.org/freetype/freetype.git"
+    GIT_TAG "801cd842e27c85cb1d5000f6397f382ffe295daa"
+
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+    PREFIX ${EXTERNAL_PROJ_DIR}/FreeType
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    )
+endif()
 
 # Rasteron project sources
 
-set(RASTERON_SRC
+set(Rasteron_Src
     src/Toolbox.c
     src/Loader.c
     src/ImgBmp.c # BMP does not require dependencies
@@ -75,9 +85,12 @@ set(RASTERON_SRC
     src/core/ImageGen.c
     src/core/PrimitiveGen.c
     src/plugin/Cellwise.c
-    src/plugin/Lattice.c
+    src/plugin/Heightmap.c
     src/plugin/Noise.c
 )
+if(SUPPORT_FONT_BAKING)
+    list(APPEND Rasteron_Src src/plugin/Font.c)
+endif()
 
 # find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
 find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
@@ -92,7 +105,7 @@ if(libpng_FOUND)
     set(PNG_SUPPORT_STR "#define USE_IMG_PNG")
 
     message(STATUS "PNG Support Enabled")
-    list(APPEND RASTERON_SRC src/ImgPng.c) # Add png functionality
+    list(APPEND Rasteron_Src src/ImgPng.c) # Add png functionality
 else(NOT libpng_FOUND)
     set(PNG_SUPPORT_STR "// #define USE_IMG_PNG")
 
@@ -104,47 +117,67 @@ if(libtiff_FOUND)
     set(TIFF_SUPPORT_STR "#define USE_IMG_TIFF")
 
     message(STATUS "TIFF Support Enabled")
-    list(APPEND RASTERON_SRC src/ImgTIFF.c) # add tiff functionality
+    list(APPEND Rasteron_Src src/ImgTIFF.c) # add tiff functionality
 else(NOT libtiff_FOUND)
     set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
 
     message(STATUS "TIFF Support Disabled, build tiff")
 endif(libtiff_FOUND)
 
+if(SUPPORT_FONT_BAKING)
+    find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
+    set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
+    message(STATUS "freetype_lib variable: ${freetype_lib}")
+endif()
+
 
 
 if(WIN32) # Conditional OS Sources
-    list(APPEND RASTERON_SRC src/Win_Util.c)
+    list(APPEND Rasteron_Src src/Win_Util.c)
+elseif(UNIX)
+    list(APPEND Rasteron_Src src/Unix_Util.c)
 endif()
 
-add_library(RasteronLib STATIC  ${RASTERON_SRC})
+add_library(Rasteron STATIC ${Rasteron_Src})
 
-target_include_directories(RasteronLib PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
-target_link_libraries(RasteronLib PUBLIC tiff png zlibstatic)
+target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
+target_link_libraries(Rasteron PUBLIC tiff png zlibstatic)
+if(SUPPORT_FONT_BAKING)
+    # target_link_libraries(Rasteron PUBLIC freetype)
+    target_include_directories(Rasteron PUBLIC ${freetype_h})
+    target_link_libraries(Rasteron PUBLIC ${freetype_lib})
+endif()
+if(X11_FOUND)
+    target_link_libraries(Rasteron PUBLIC ${X11_LIBRARIES})
+endif()
 
-target_include_directories(RasteronLib
+target_include_directories(Rasteron
     INTERFACE
     $<BUILD_INTERFACE:${interfaceHeaders}>
     $<INSTALL_INTERFACE:include/Rasteron>
 )
 
 if(WIN32)
-    add_executable(Cellwise demos/Win_Cellwise.c)
+    add_executable(Cellwise demos/Cellwise.c)
     target_include_directories(Cellwise PUBLIC include)
-    target_link_libraries(Cellwise RasteronLib)
+    target_link_libraries(Cellwise Rasteron)
 
-    add_executable(Primitives demos/Win_Primitives.c)
+    add_executable(Primitives demos/Primitives.c)
     target_include_directories(Primitives PUBLIC include)
-    target_link_libraries(Primitives RasteronLib)
+    target_link_libraries(Primitives Rasteron)
 
-    add_executable(Noise demos/Win_Noise.c)
+    add_executable(Noise demos/Noise.c)
     target_include_directories(Noise PUBLIC include)
-    target_link_libraries(Noise RasteronLib)
+    target_link_libraries(Noise Rasteron)
+
+    add_executable(Typo demos/Typo.c)
+    target_include_directories(Typo PUBLIC include)
+    target_link_libraries(Typo Rasteron)
 endif()
 
 
 # Install Procedures
-install(TARGETS RasteronLib
+install(TARGETS Rasteron
         EXPORT Rasteron
         RUNTIME DESTINATION bin
 	    LIBRARY DESTINATION lib
@@ -152,7 +185,7 @@ install(TARGETS RasteronLib
 	    FRAMEWORK DESTINATION lib
 )
 
-add_dependencies(RasteronLib zlib libpng libtiff)
+add_dependencies(Rasteron zlib libpng libtiff)
 
 file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)
