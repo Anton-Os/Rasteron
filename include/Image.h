@@ -20,6 +20,7 @@ typedef struct {
 
 void addSeed(Rasteron_SeedTable* table, unsigned color);
 void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight);
+// void addColorToSeeds(Rasteron_SeedTable* seeds, uint32_t color, double weight);
 
 // Rasteron Pixel Points
 
@@ -71,8 +72,9 @@ Rasteron_Image* createImgProxCell(const Rasteron_Image* refImage, const Rasteron
 
 void deleteImg(Rasteron_Image* rast_image);
 
-void addColorToSeeds(Rasteron_SeedTable* seeds, uint32_t color, double weight);
-unsigned getPixIndexFromPos(Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage);
+// Additional Functions
+
+unsigned getPixIndexFromPos(Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage); 
 
 #define RASTERON_IMAGE_H
 #endif

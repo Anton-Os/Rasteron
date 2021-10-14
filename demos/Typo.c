@@ -13,11 +13,11 @@ Rasteron_Image* imageFont;
 void genData(){
 	initFreeType(&freetypeLib);
 	// Set font properties and perform font/baking operations
-	textObj.bkColor = 0xFFFFFF00;
+	textObj.bkColor = 0xFF00DDFF;
 	textObj.fgColor = 0xFF0000AA;
 	textObj.fontFileName = targetFont;
 	textObj.text = "Hello World";
-	imageFont = bakeImgText(&textObj, &freetypeLib, 20, 100);
+	imageFont = bakeImgText(&textObj, &freetypeLib, 80, 400);
 }
 
 void cleanup() {
@@ -37,14 +37,14 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	switch (message) {
 	case (WM_CREATE): {
 		genData();
-		// winBmap = createWinBmap(&image);
+
+		winBmap = createWinBmapRaw(imageFont->height, imageFont->width, imageFont->data);
 	}
 	case (WM_PAINT): {
-        // Implement Draw Call
+		drawWinBmap(hwnd, &winBmap);
 	}
 	case (WM_DESTROY): { }
-	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
+	default: return DefWindowProc(hwnd, message, wParam, lParam); 
 	}
 	return 0;
 }
@@ -69,6 +69,5 @@ int main(int argc, char** argv) {
 	eventLoop();
 
 	cleanup(); // cleanup step
-
 	return 0;
 }

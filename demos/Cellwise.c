@@ -42,8 +42,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         // Implement Draw Call
 	}
 	case (WM_DESTROY): { }
-	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
+	default: return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 	return 0;
 }

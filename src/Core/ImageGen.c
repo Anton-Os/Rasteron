@@ -12,11 +12,33 @@ void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight){
 	table->seedCount++;
 }
 
+/* void addColorToSeeds(Rasteron_SeedTable* seeds, uint32_t color, double weight){
+	unsigned offset = seeds->seedCount;
+	seeds->seeds[offset].color = color;
+	seeds->seeds[offset].weight = weight;
+	seeds->seedCount++;
+} */
+
 void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac, double yFrac){
 	table->positions[table->pixelPointCount].pos.xFrac = xFrac;
 	table->positions[table->pixelPointCount].pos.yFrac = yFrac;
 	table->positions[table->pixelPointCount].color = color;
 	table->pixelPointCount++;
+}
+
+unsigned getPixIndexFromPos(Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage){
+	unsigned xOffset;
+	if(pixPos->xFrac <= 0.0) xOffset = 0;
+	else if(pixPos->xFrac >= 1.0) xOffset = refImage->width - 1;
+	else xOffset = (unsigned)((double)refImage->width * pixPos->xFrac);
+
+	unsigned yOffset;
+	if(pixPos->yFrac <= 0.0) yOffset = 0;
+	else if(pixPos->yFrac >= 1.0) yOffset = refImage->height;
+	else yOffset = (unsigned)((double)refImage->height * pixPos->yFrac);
+
+	unsigned pixIndex = (yOffset * refImage->width) + xOffset;
+	return pixIndex;
 }
 
 // Image Operations
@@ -223,32 +245,4 @@ Rasteron_Image* createImgProxCell(const Rasteron_Image* refImage, const Rasteron
 void deleteImg(Rasteron_Image* image) {
     if(image->data != NULL) free(image->data);
     if(image != NULL) free(image);
-}
-
-// Additional Types operations
-
-// Color Seed operations
-
-void addColorToSeeds(Rasteron_SeedTable* seeds, uint32_t color, double weight){
-	unsigned offset = seeds->seedCount;
-	seeds->seeds[offset].color = color;
-	seeds->seeds[offset].weight = weight;
-	seeds->seedCount++;
-}
-
-// Pixel Point operations
-
-unsigned getPixIndexFromPos(Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage){
-	unsigned xOffset;
-	if(pixPos->xFrac <= 0.0) xOffset = 0;
-	else if(pixPos->xFrac >= 1.0) xOffset = refImage->width - 1;
-	else xOffset = (unsigned)((double)refImage->width * pixPos->xFrac);
-
-	unsigned yOffset;
-	if(pixPos->yFrac <= 0.0) yOffset = 0;
-	else if(pixPos->yFrac >= 1.0) yOffset = refImage->height;
-	else yOffset = (unsigned)((double)refImage->height * pixPos->yFrac);
-
-	unsigned pixIndex = (yOffset * refImage->width) + xOffset;
-	return pixIndex;
 }

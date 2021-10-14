@@ -42,16 +42,13 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		seedRandGen();
 		genImages();
 
-		// bmap = createWinBmapRaw(blankImg->width, blankImg->height, blankImg->data);
 		bmap = createWinBmapRaw(scatterImg->width, scatterImg->height, scatterImg->data);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap);
 	}
-	case (WM_CLOSE): {
-	}
-	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
+	case (WM_CLOSE): {}
+	default: return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 	return 0;
 }

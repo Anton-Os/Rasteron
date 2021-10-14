@@ -57,10 +57,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap2);
 	}
-	case (WM_CLOSE): {
-	}
-	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
+	case (WM_CLOSE): {}
+	default: return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 	return 0;
 }

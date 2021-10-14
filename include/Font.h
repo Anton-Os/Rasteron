@@ -18,5 +18,5 @@ typedef struct {
 } Rasteron_FormatText;
 
 void initFreeType(FT_Library* library);
-Rasteron_Image* bakeImgText(const Rasteron_FormatText* text, FT_Library* library, uint32_t width, uint32_t height);
+Rasteron_Image* bakeImgText(const Rasteron_FormatText* text, FT_Library* library, int x, int y);
 void cleanupFreeType(FT_Library* library);

@@ -72,7 +72,7 @@ ExternalProject_Add(FreeType # Font Loading
 
     PREFIX ${EXTERNAL_PROJ_DIR}/FreeType
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    )
+)
 endif()
 
 # Rasteron project sources
