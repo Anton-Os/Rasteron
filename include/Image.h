@@ -57,7 +57,7 @@ typedef struct {
     uint32_t* data;
 } Rasteron_Image;
 
-// Image Generation Functions, see ImageGen.c
+// Image Generation Functions, see Image.c
 
 Rasteron_Image* allocNewImg(const char* name, uint32_t width, uint32_t height); // Image allocation helper
 

@@ -3,6 +3,8 @@
 
 #include "Image.h"
 
+#define FONT_RES 300
+
 typedef struct {
     uint32_t xOffset;
     // uint32_t yOffset;
@@ -18,5 +20,5 @@ typedef struct {
 } Rasteron_FormatText;
 
 void initFreeType(FT_Library* library);
-Rasteron_Image* bakeImgText(const Rasteron_FormatText* text, FT_Library* library, int x, int y);
+Rasteron_Image* bakeImgText(const Rasteron_FormatText* text, FT_Library* library, uint32_t width, uint32_t height);
 void cleanupFreeType(FT_Library* library);

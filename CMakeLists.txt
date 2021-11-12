@@ -82,8 +82,8 @@ set(Rasteron_Src
     src/Loader.c
     src/ImgBmp.c # BMP does not require dependencies
 
-    src/core/ImageGen.c
-    src/core/PrimitiveGen.c
+    src/core/Image.c
+    src/core/Primitive.c
     src/plugin/Cellwise.c
     src/plugin/Heightmap.c
     src/plugin/Noise.c

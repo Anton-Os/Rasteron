@@ -70,12 +70,11 @@ Rasteron_Image* createPerlinNoiseImg( const Rasteron_NoiseGradientTable* lattice
         unsigned xOffset = p % perlinNoiseImg->width;
         unsigned yOffset = p / perlinNoiseImg->width;
 
-		if (yOffset % ySwitchOffset == 0 && xOffset == 0) { // requires the grid shift far left and down 1
+		if (yOffset % ySwitchOffset == 0 && xOffset == 0) // requires the grid shift far left and down 1
 			outColor = 0xFF00FF00; // for testing
-		}
-		else if (xOffset % xSwitchOffset == 0) { // requires the grid shift right 1
+		
+		else if (xOffset % xSwitchOffset == 0) // requires the grid shift right 1
 			outColor = (outColor == 0xFF0000FF)? 0xFFFF0000 : 0xFF0000FF; // for testing
-		}
         
         *(perlinNoiseImg->data + p) = outColor;
     }

@@ -1,4 +1,5 @@
 #include "Noise.h"
+#include "Pattern.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +13,7 @@ Rasteron_Image* randNoiseImg2;
 Rasteron_Image* latticeNoiseImg;
 Rasteron_Image* scatterImg;
 Rasteron_Image* splatterImg;
+Rasteron_Image* patternImg;
 
 void genImages(){
 	blankImg = createImgBlank(1200, 1000, 0xFF73e5ff);
@@ -19,6 +21,7 @@ void genImages(){
 	randNoiseImg = createRandNoiseImg(0xFFFFFFFF, 0xFF000000, blankImg);
 	randNoiseImg2 = createRandNoiseImg(0xFFFFFFFF, 0xFF00FFFF, blankImg);
 	scatterImg = createImgScatter(randNoiseImg2, 0xFFFF00FF, 0.1);
+	patternImg = createPatternImg();
 }
 
 void cleanup() {
@@ -26,6 +29,7 @@ void cleanup() {
 	deleteImg(randNoiseImg);
 	deleteImg(randNoiseImg2);
 	deleteImg(scatterImg);
+	deleteImg(patternImg);
 }
 
 #ifdef _WIN32

@@ -17,7 +17,8 @@ void initFreeType(FT_Library* library){
 Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* library, uint32_t width, uint32_t height){
     FT_Face face;
     int error = FT_New_Face(*library, textObj->fontFileName, 0, &face);
-    error = FT_Set_Char_Size(face, 50 * 64, 0, 100, 0); // scale size based on FreeType example
+	error = FT_Set_Char_Size(face, 0, 16 * 64, FONT_RES, FONT_RES);
+    // error = FT_Set_Char_Size(face, 50 * 64, 0, 100, 0); // scale size based on FreeType example
     if(error) puts("Error occured baking text");
 
     Rasteron_Image* textImage = createImgBlank(width, height, textObj->bkColor);
@@ -25,6 +26,7 @@ Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* libr
     
     FT_Matrix matrix = {0, 0, 0, 0}; // no transform
     FT_Vector pen = {0, 0}; // no offset
+    pen.x = 20; pen.y = 20; 
 
     for(unsigned t = 0; t < strlen(textObj->text); t++){
         FT_Set_Transform(face, &matrix, &pen);
@@ -32,7 +34,7 @@ Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* libr
         error = FT_Load_Char(face, textObj->text[t], FT_LOAD_RENDER);
         if(error) puts("error loading glyph!");
 
-        drawFontOffset(textImage, &face->glyph->bitmap, face->glyph->bitmap_left, face->glyph->bitmap_top);
+        drawFontOffset(textImage, &face->glyph->bitmap, face->glyph->bitmap_left, height - face->glyph->bitmap_top);
         
         pen.x += face->glyph->advance.x;
         pen.y += face->glyph->advance.y;
