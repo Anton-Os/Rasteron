@@ -6,6 +6,11 @@ void seedRandGen(){
     srand (time(NULL));
 }
 
+uint32_t genRandColorVal(){
+	uint32_t color = rand();
+	return 0x00FFFFFF & color; // set alpha to zero
+}
+
 void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal) {
 	for (unsigned int i = 0; i < pCount; i++)
 		*(raster + i) = colorVal;
@@ -101,7 +106,7 @@ uint8_t fract8(uint8_t refColor, double frac){
 }
 
 // Interpolates between 2 colors
-uint32_t interpolateColor(uint32_t color1, uint32_t color2, double iVal){
+uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
 
 	uint8_t loAlphaBit = getLoColorBit(color1, color2, CHANNEL_Alpha);
 	uint8_t loRedBit = getLoColorBit(color1, color2, CHANNEL_Red);

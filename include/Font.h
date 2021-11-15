@@ -4,6 +4,7 @@
 #include "Image.h"
 
 #define FONT_RES 300
+#define FONT_PEN_OFF 5 // default starting pen offset
 
 typedef struct {
     uint32_t xOffset;

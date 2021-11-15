@@ -31,6 +31,7 @@ typedef enum {
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #define RASTERON_SUPPORT_H
 #endif

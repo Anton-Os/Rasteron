@@ -8,7 +8,7 @@
 Image image = { 0 };
 NebrTable_List* neighborTable;
 
-void genData(){
+void init(){
 	loadFileImage_BMP("C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\Logo.bmp", &image); // hard path
 	neighborTable = genNebrTables(
 		image.imageData.bmp.data, 
@@ -35,7 +35,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		genData();
+		init();
 		// winBmap = createWinBmap(&image);
 	}
 	case (WM_PAINT): {
@@ -52,7 +52,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 void unixProc(){
 	UnixContext context;
 	createWindow(&context, "Cellwise");
-	genData();
+	init();
 }
 
 #endif

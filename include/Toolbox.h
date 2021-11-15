@@ -3,6 +3,7 @@
 #include "Loader.h"
 
 void seedRandGen(); // seeds the random number generator
+uint32_t genRandColorVal();
 void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal); // makes image data into uniform color
 void changeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor); // switches oldColor to newColor in image
 void switchRasterRB(uint32_t* raster, unsigned int pCount); // switch red and blue bits
@@ -16,7 +17,7 @@ uint32_t grayify32(uint32_t refColor); // produces a 32 bit grey value based on 
 uint8_t grayify8(uint32_t refColor); // produces a 8 bit grey value based on provided reference color
 // uint32_t fract32(uint32_t refColor, double frac) // produces an 32 bit color value based on fraction of reference color
 uint8_t fract8(uint8_t refColor, double frac); // produces an 8 bit color value based on fraction of reference color
-uint32_t interpolateColor(uint32_t color1, uint32_t color2, double iVal);
+uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal);
 
 #ifdef _WIN32 
 	#define WIN32_LEAN_AND_MEAN

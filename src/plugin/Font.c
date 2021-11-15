@@ -1,12 +1,18 @@
 #include "Font.h"
 
-static void drawFontOffset(Rasteron_Image* image, FT_Bitmap* ftBitmap, int x, int y){
-    int x_max = x + ftBitmap->width;
-    int y_max = y + ftBitmap->rows;
+static void drawFontOffset(Rasteron_Image* image, FT_Bitmap* ftBmap, int x, int y){
 
-	// Implement drawing call
-
-    return;
+	uint32_t randColor = genRandColorVal(); // for testing
+	uint32_t imageOff = x + (image->width * y); // starting pixel for drawing
+	if(ftBmap->rows > 0 && ftBmap->width > 0)
+		for (unsigned r = 0; r < ftBmap->rows; r++) {
+			for (unsigned w = 0; w < ftBmap->width; w++) {
+				*(image->data + imageOff) = randColor;
+				imageOff++; // move to adjascent pixel
+			}
+			imageOff += image->width; // move to next row
+		}
+	else return; // space detected, perform processing here
 }
 
 void initFreeType(FT_Library* library){
@@ -24,20 +30,21 @@ Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* libr
     Rasteron_Image* textImage = createImgBlank(width, height, textObj->bkColor);
     textImage->name = "text";
     
-    FT_Matrix matrix = {0, 0, 0, 0}; // no transform
-    FT_Vector pen = {0, 0}; // no offset
-    pen.x = 20; pen.y = 20; 
+	int pen_x = FONT_PEN_OFF;
+	int pen_y = 0; // int pen_y = FONT_PEN_OFF;
 
     for(unsigned t = 0; t < strlen(textObj->text); t++){
-        FT_Set_Transform(face, &matrix, &pen);
-
-        error = FT_Load_Char(face, textObj->text[t], FT_LOAD_RENDER);
+		char glyphRef = textObj->text[t]; // for viewing current character being processed
+        error = FT_Load_Char(face, (FT_ULong)glyphRef, FT_LOAD_RENDER);
         if(error) puts("error loading glyph!");
 
-        drawFontOffset(textImage, &face->glyph->bitmap, face->glyph->bitmap_left, height - face->glyph->bitmap_top);
-        
-        pen.x += face->glyph->advance.x;
-        pen.y += face->glyph->advance.y;
+		drawFontOffset(
+			textImage, 
+			&face->glyph->bitmap, 
+			pen_x + face->glyph->bitmap_left, 
+			(pen_y + (height / 2)) - face->glyph->bitmap_top // making text centered
+		);
+		pen_x += face->glyph->advance.x >> 6; // increment pen to next position
     }
 
     FT_Done_Face(face);

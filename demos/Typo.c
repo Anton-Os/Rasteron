@@ -10,14 +10,14 @@ const char* targetFont = "C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\as
 Rasteron_FormatText textObj;
 Rasteron_Image* imageFont;
 
-void genData(){
+void init(){
 	initFreeType(&freetypeLib);
 	// Set font properties and perform font/baking operations
 	textObj.bkColor = 0xFF00DDFF;
 	textObj.fgColor = 0xFF0000AA;
 	textObj.fontFileName = targetFont;
 	textObj.text = "Hello World";
-	imageFont = bakeImgText(&textObj, &freetypeLib, 80, 400);
+	imageFont = bakeImgText(&textObj, &freetypeLib, 200, 1100);
 }
 
 void cleanup() {
@@ -35,8 +35,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	RECT rect;
 
 	switch (message) {
-	case (WM_CREATE): {
-		genData();
+	case (WM_CREATE): {		
+		init();
 
 		winBmap = createWinBmapRaw(imageFont->height, imageFont->width, imageFont->data);
 	}
@@ -54,13 +54,14 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 void unixProc(){
 	UnixContext context;
 	createWindow(&context, "Typo");
-	genData();
+	init();
 }
 
 #endif
 
 int main(int argc, char** argv) {
 
+	srand(time(NULL));
 #ifdef _WIN32
 	createWindow(wndProc, "Typo");
 #elif defined __linux__

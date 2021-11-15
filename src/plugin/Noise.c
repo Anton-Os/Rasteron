@@ -36,7 +36,7 @@ Rasteron_Image* createRandNoiseImg(uint32_t color1, uint32_t color2, const Raste
     double noiseVal;
     for (unsigned p = 0; p < randNoiseImg->width * randNoiseImg->height; p++){
         noiseVal = (double)rand() / (double)RAND_MAX;
-		uint32_t color = interpolateColor(color1, color2, noiseVal);
+		uint32_t color = itrpolate(color1, color2, noiseVal);
 		*(randNoiseImg->data + p) = color; // see if this works
     }
 
