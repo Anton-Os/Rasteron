@@ -14,9 +14,9 @@ void init(){
 	initFreeType(&freetypeLib);
 	// Set font properties and perform font/baking operations
 	textObj.bkColor = 0xFF00DDFF;
-	textObj.fgColor = 0xFF0000AA;
+	textObj.fgColor = 0xFFAA00AA;
 	textObj.fontFileName = targetFont;
-	textObj.text = "Hello World";
+	textObj.text = "A";
 	imageFont = bakeImgText(&textObj, &freetypeLib, 200, 1100);
 }
 

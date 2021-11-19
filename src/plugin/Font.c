@@ -1,16 +1,15 @@
 #include "Font.h"
 
-static void drawFontOffset(Rasteron_Image* image, FT_Bitmap* ftBmap, int x, int y){
-
-	uint32_t randColor = genRandColorVal(); // for testing
+static void drawFontOffset(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t color, int x, int y){
 	uint32_t imageOff = x + (image->width * y); // starting pixel for drawing
 	if(ftBmap->rows > 0 && ftBmap->width > 0)
 		for (unsigned r = 0; r < ftBmap->rows; r++) {
 			for (unsigned w = 0; w < ftBmap->width; w++) {
-				*(image->data + imageOff) = randColor;
+				*(image->data + imageOff) = color;
 				imageOff++; // move to adjascent pixel
 			}
-			imageOff += image->width; // move to next row
+			// imageOff += image->width - ftBmap->width; // sw
+			imageOff += image->width - ftBmap->width; // move to start of next row
 		}
 	else return; // space detected, perform processing here
 }
@@ -20,7 +19,7 @@ void initFreeType(FT_Library* library){
     if(error) puts("Error occured initializing freetype library!");
 }
 
-Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* library, uint32_t width, uint32_t height){
+Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* library, uint32_t height, uint32_t width){
     FT_Face face;
     int error = FT_New_Face(*library, textObj->fontFileName, 0, &face);
 	error = FT_Set_Char_Size(face, 0, 16 * 64, FONT_RES, FONT_RES);
@@ -39,9 +38,10 @@ Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* libr
         if(error) puts("error loading glyph!");
 
 		drawFontOffset(
-			textImage, 
-			&face->glyph->bitmap, 
-			pen_x + face->glyph->bitmap_left, 
+			textImage,
+			&face->glyph->bitmap,
+			textObj->fgColor,
+			pen_x + face->glyph->bitmap_left,
 			(pen_y + (height / 2)) - face->glyph->bitmap_top // making text centered
 		);
 		pen_x += face->glyph->advance.x >> 6; // increment pen to next position

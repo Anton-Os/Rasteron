@@ -11,7 +11,7 @@ typedef struct {
     double* data;
 } Rasteron_Heightmap;
 
-Rasteron_Heightmap* allocNewLattice(uint32_t width, uint32_t height, double minBound, double maxBound);
+Rasteron_Heightmap* allocNewLattice(uint32_t height, uint32_t width, double minBound, double maxBound);
 Rasteron_Heightmap* createLattice(const Rasteron_Image* ref); // create lattice from an image file
 
 void deleteLattice(Rasteron_Heightmap* lattice);

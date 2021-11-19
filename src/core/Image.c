@@ -43,7 +43,7 @@ unsigned getPixIndexFromPos(Rasteron_PixelPoint* pixPos, Rasteron_Image* refImag
 
 // Image Operations
 
-Rasteron_Image* allocNewImg(const char* name, uint32_t width, uint32_t height){
+Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width){
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	image->name = name;
 	image->width = width;
@@ -53,7 +53,7 @@ Rasteron_Image* allocNewImg(const char* name, uint32_t width, uint32_t height){
 	return image;
 }
 
-Rasteron_Image* createImgBlank(uint32_t width, uint32_t height, uint32_t solidColor){
+Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor){
 	Rasteron_Image* blankImage = allocNewImg("blank", width, height);
 
 	makeRasterColor(blankImage->data, blankImage->width * blankImage->height, solidColor);

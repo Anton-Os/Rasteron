@@ -26,7 +26,7 @@ uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal);
 	void createWindow(WNDPROC wndProc, LPCTSTR name); // Window creation
 	void eventLoop(); // Event loop
 	BITMAP createWinBmap(const Image* image); // formatted data call
-	BITMAP createWinBmapRaw(uint32_t width, uint32_t height, uint32_t* data); // raw data call
+	BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data); // raw data call
 	void drawWinBmap(HWND hwnd, const BITMAP* bmap);
 	// void drawWinBmap(HWND hwnd, const Image* image);
 #elif defined __linux__
@@ -48,6 +48,6 @@ uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal);
 	void createWindow(UnixContext* context, const char* name); // Window creatiom
 	void eventLoop(); // Event loop
 	// XImage createUnixBmap(const Image* image); // formatted data call
-	XImage* createUnixBmapRaw(UnixContext* context, uint32_t width, uint32_t height, uint32_t* data); // raw data call
+	XImage* createUnixBmapRaw(UnixContext* context, uint32_t height, uint32_t width, uint32_t* data); // raw data call
 	void drawUnixBmap(UnixContext* context, XImage* image);
 #endif // Port later to some Internal.h header

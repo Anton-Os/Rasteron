@@ -8,7 +8,7 @@ static double computeHeight(unsigned inputColor, double minBound, double maxBoun
 	return heightVal + minBound;
 }
 
-Rasteron_Heightmap* allocNewLattice(uint32_t width, uint32_t height, double minBound, double maxBound){
+Rasteron_Heightmap* allocNewLattice(uint32_t height, uint32_t width, double minBound, double maxBound){
 	Rasteron_Heightmap* lattice = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
     lattice->height = height;
     lattice->width = width;

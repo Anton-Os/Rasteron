@@ -35,7 +35,7 @@ void eventLoop(){
     }
 }
 
-XImage* createUnixBmapRaw(UnixContext* context, uint32_t width, uint32_t height, uint32_t* data){
+XImage* createUnixBmapRaw(UnixContext* context, uint32_t height, uint32_t width, uint32_t* data){
 	XImage* image;
 
 	size_t dataSize = width * height * sizeof(char) * 4;

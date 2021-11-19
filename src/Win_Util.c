@@ -34,7 +34,7 @@ void eventLoop(){
 	}
 }
 
-BITMAP createWinBmapRaw(uint32_t width, uint32_t height, uint32_t* data){
+BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data){
 	BITMAP bmap = { 0 };
 	bmap.bmWidth = width;
 	bmap.bmHeight = height;

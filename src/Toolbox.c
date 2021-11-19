@@ -7,8 +7,9 @@ void seedRandGen(){
 }
 
 uint32_t genRandColorVal(){
-	uint32_t color = rand();
-	return 0x00FFFFFF & color; // set alpha to zero
+	// uint32_t color = rand();
+	// return 0x00FFFFFF & color; // set alpha to zero
+	return rand();
 }
 
 void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal) {

@@ -59,9 +59,9 @@ typedef struct {
 
 // Image Generation Functions, see Image.c
 
-Rasteron_Image* allocNewImg(const char* name, uint32_t width, uint32_t height); // Image allocation helper
+Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width); // Image allocation helper
 
-Rasteron_Image* createImgBlank(uint32_t width, uint32_t height, uint32_t solidColor); // Creates a blank image
+Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor); // Creates a blank image
 Rasteron_Image* createImgBase(const FileImage* image); // Creates an image based on target file image
 
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // Creates greyscale version of reference image
