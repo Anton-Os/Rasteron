@@ -5,7 +5,9 @@ static void drawFontOffset(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t co
 	if(ftBmap->rows > 0 && ftBmap->width > 0)
 		for (unsigned r = 0; r < ftBmap->rows; r++) {
 			for (unsigned w = 0; w < ftBmap->width; w++) {
-				*(image->data + imageOff) = color;
+				uint32_t bmapColor = ftBmap->buffer[(w * ftBmap->width) + r];
+				if(bmapColor > 0)
+					*(image->data + imageOff) = color;
 				imageOff++; // move to adjascent pixel
 			}
 			// imageOff += image->width - ftBmap->width; // sw

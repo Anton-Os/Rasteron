@@ -16,7 +16,7 @@ void init(){
 	textObj.bkColor = 0xFF00DDFF;
 	textObj.fgColor = 0xFFAA00AA;
 	textObj.fontFileName = targetFont;
-	textObj.text = "A";
+	textObj.text = "Hello World";
 	imageFont = bakeImgText(&textObj, &freetypeLib, 200, 1100);
 }
 
