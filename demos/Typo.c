@@ -6,7 +6,9 @@
 
 // Global Definitions
 FT_Library freetypeLib;
-const char* targetFont = "C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\Tw-Cen-MT.ttf"; // hard path
+const char* targetFont = "C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\fonts\\Tw-Cen-MT.ttf"; // hard path
+// const char* targetFont = "C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\fonts\\New-Tegomin.ttf"; // hard path
+// const char* targetFont = "C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\fonts\\MajorMonoDisplay.ttf"; // hard path
 Rasteron_FormatText textObj;
 Rasteron_Image* imageFont;
 

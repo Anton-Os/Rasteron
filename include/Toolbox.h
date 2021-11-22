@@ -2,8 +2,11 @@
 
 #include "Loader.h"
 
+const char* genFilePath(const char* path, const char* fileName);
+
 void seedRandGen(); // seeds the random number generator
 uint32_t genRandColorVal();
+
 void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal); // makes image data into uniform color
 void changeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor); // switches oldColor to newColor in image
 void switchRasterRB(uint32_t* raster, unsigned int pCount); // switch red and blue bits

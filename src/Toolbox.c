@@ -1,10 +1,20 @@
-/* Provide general image utilities */
+/* Image utilities and helper functions */
 
 #include "Toolbox.h"
 
-void seedRandGen(){
-    srand (time(NULL));
+const char* genFilePath(const char* path, const char* fileName){
+	unsigned pathLen = strlen(path);
+	unsigned fileNameLen = strlen(fileName);
+	/* char filePath[pathLen + fileNameLen + 1];
+
+	filePath = path;
+	strcat(filePath, "\\");
+	strcat(filePath, fileName);
+	return filePath; */
+	return "";
 }
+
+void seedRandGen(){ srand (time(NULL)); }
 
 uint32_t genRandColorVal(){
 	// uint32_t color = rand();

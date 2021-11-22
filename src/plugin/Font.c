@@ -5,15 +5,14 @@ static void drawFontOffset(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t co
 	if(ftBmap->rows > 0 && ftBmap->width > 0)
 		for (unsigned r = 0; r < ftBmap->rows; r++) {
 			for (unsigned w = 0; w < ftBmap->width; w++) {
-				uint32_t bmapColor = ftBmap->buffer[(w * ftBmap->width) + r];
+				uint32_t bmapColor = ftBmap->buffer[(r * ftBmap->width) + w];
 				if(bmapColor > 0)
 					*(image->data + imageOff) = color;
 				imageOff++; // move to adjascent pixel
 			}
-			// imageOff += image->width - ftBmap->width; // sw
 			imageOff += image->width - ftBmap->width; // move to start of next row
 		}
-	else return; // space detected, perform processing here
+	else return; // skips space
 }
 
 void initFreeType(FT_Library* library){
@@ -25,7 +24,7 @@ Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* libr
     FT_Face face;
     int error = FT_New_Face(*library, textObj->fontFileName, 0, &face);
 	error = FT_Set_Char_Size(face, 0, 16 * 64, FONT_RES, FONT_RES);
-    // error = FT_Set_Char_Size(face, 50 * 64, 0, 100, 0); // scale size based on FreeType example
+	// error = FT_Set_Char_Size(face, 0, width, FONT_RES, FONT_RES);
     if(error) puts("Error occured baking text");
 
     Rasteron_Image* textImage = createImgBlank(width, height, textObj->bkColor);
