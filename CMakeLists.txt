@@ -196,3 +196,7 @@ configure_file(
     ${CMAKE_INSTALL_PREFIX}/lib/Rasteron/findDepends.cmake
     @ONLY
 )
+
+set(IMAGE_DIR "${CMAKE_SOURCE_DIR}/assets/image")
+set(FONTS_DIR "${CMAKE_SOURCE_DIR}/assets/fonts")
+configure_file("${CMAKE_SOURCE_DIR}/include/support.h.in" "${CMAKE_SOURCE_DIR}/include/support.h")
