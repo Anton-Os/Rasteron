@@ -23,6 +23,8 @@ void initFreeType(FT_Library* library){
 Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* library, uint32_t height, uint32_t width){
     FT_Face face;
     int error = FT_New_Face(*library, textObj->fontFileName, 0, &face);
+
+	FT_Size_Metrics size = face->size->metrics;
 	error = FT_Set_Char_Size(face, 0, 16 * 64, FONT_RES, FONT_RES);
 	// error = FT_Set_Char_Size(face, 0, width, FONT_RES, FONT_RES);
     if(error) puts("Error occured baking text");

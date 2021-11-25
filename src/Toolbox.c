@@ -2,24 +2,18 @@
 
 #include "Toolbox.h"
 
-const char* genFilePath(const char* path, const char* fileName){
-	unsigned pathLen = strlen(path);
-	unsigned fileNameLen = strlen(fileName);
-	/* char filePath[pathLen + fileNameLen + 1];
-
-	filePath = path;
-	strcat(filePath, "\\");
-	strcat(filePath, fileName);
-	return filePath; */
-	return "";
+void fixPathDashes(char* str){
+	unsigned len = strlen(str);
+	for(unsigned l = 0; l < len; l++) if(*(str + l) == '/') *(str + l) = '\\'; // switch the dash type
 }
 
 void seedRandGen(){ srand (time(NULL)); }
 
 uint32_t genRandColorVal(){
-	// uint32_t color = rand();
-	// return 0x00FFFFFF & color; // set alpha to zero
-	return rand();
+	uint8_t redBit = rand() % 255;
+	uint8_t greenBit = rand() % 255;
+	uint8_t blueBit = rand() % 255;
+	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
 }
 
 void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal) {

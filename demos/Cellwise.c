@@ -1,27 +1,28 @@
 #include "Toolbox.h"
+#include "Rasteron.h"
 #include "Cellwise.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 // Global Definitions
-Image image = { 0 };
+Rasteron_Image* blankImg;
 NebrTable_List* neighborTable;
 
-void init(){
-	loadFileImage_BMP("C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\Logo.bmp", &image); // hard path
+void init()
+	blankImg = createImgBlank(1200, 1000, 0xFF73e5ff);
 	neighborTable = genNebrTables(
-		image.imageData.bmp.data, 
-		abs(image.imageData.bmp.width), // abs is bmp specific
-		abs(image.imageData.bmp.height) // abs is bmp specific
+		blankImg->data, 
+		abs(blankImg->width), // abs is bmp specific
+		abs(blankImg->height) // abs is bmp specific
 	);
 
 	printNebrTables(neighborTable);
 }
 
 void cleanup() {
+	deleteImg(blankImg);
 	delNebrTables(neighborTable);
-	delFileImage_BMP(&image);
 }
 
 #ifdef _WIN32

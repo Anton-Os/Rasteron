@@ -17,9 +17,9 @@ Rasteron_Image* patternImg;
 
 void genImages(){
 	blankImg = createImgBlank(1200, 1000, 0xFF73e5ff);
-	// randNoiseImg = createRandNoiseImg(0xFFFFFF00, 0xFF73e5ff, blankImg);
-	randNoiseImg = createRandNoiseImg(0xFFFFFFFF, 0xFF000000, blankImg);
-	randNoiseImg2 = createRandNoiseImg(0xFFFFFFFF, 0xFF00FFFF, blankImg);
+	// randNoiseImg = createWhiteNoiseImg(0xFFFFFF00, 0xFF73e5ff, blankImg);
+	randNoiseImg = createWhiteNoiseImg(0xFFFFFFFF, 0xFF000000, blankImg);
+	randNoiseImg2 = createWhiteNoiseImg(0xFFFFFFFF, 0xFF00FFFF, blankImg);
 	scatterImg = createImgScatter(randNoiseImg2, 0xFFFF00FF, 0.1);
 	// patternImg = createPatternImg();
 }

@@ -20,7 +20,6 @@ typedef struct {
 
 void addSeed(Rasteron_SeedTable* table, unsigned color);
 void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight);
-// void addColorToSeeds(Rasteron_SeedTable* seeds, uint32_t color, double weight);
 
 // Rasteron Pixel Points
 
@@ -62,7 +61,7 @@ typedef struct {
 Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width); // Image allocation helper
 
 Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor); // Creates a blank image
-Rasteron_Image* createImgBase(const FileImage* image); // Creates an image based on target file image
+Rasteron_Image* createImgRef(const FileImage* image); // Creates an image based on target file image
 
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // Creates greyscale version of reference image
 Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type channel); // Creates single channel version of reference image
@@ -70,7 +69,7 @@ Rasteron_Image* createImgScatter(const Rasteron_Image* refImage, uint32_t color,
 Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable); // Splashes colors over image based on weights
 Rasteron_Image* createImgProxCell(const Rasteron_Image* refImage, const Rasteron_ColorPointTable* colorPointTable); // Creates a cell layout based on closest points
 
-void deleteImg(Rasteron_Image* rast_image);
+void deleteImg(Rasteron_Image* image);
 
 // Additional Functions
 

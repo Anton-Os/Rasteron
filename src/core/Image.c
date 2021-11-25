@@ -12,13 +12,6 @@ void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight){
 	table->seedCount++;
 }
 
-/* void addColorToSeeds(Rasteron_SeedTable* seeds, uint32_t color, double weight){
-	unsigned offset = seeds->seedCount;
-	seeds->seeds[offset].color = color;
-	seeds->seeds[offset].weight = weight;
-	seeds->seedCount++;
-} */
-
 void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac, double yFrac){
 	table->positions[table->pixelPointCount].pos.xFrac = xFrac;
 	table->positions[table->pixelPointCount].pos.yFrac = yFrac;
@@ -61,7 +54,7 @@ Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidCo
 	return blankImage;
 }
 
-Rasteron_Image* createImgBase(const FileImage* refImage){
+Rasteron_Image* createImgRef(const FileImage* refImage){
 	if (refImage == NULL) {
 		puts("Cannot create base image! Null pointer provided as reference image!");
 		return NULL;

@@ -1,8 +1,9 @@
 #include <math.h>
+#include <string.h>
 
 #include "Loader.h"
 
-const char* genFilePath(const char* path, const char* fileName);
+void fixPathDashes(char* str); // a utility for replacing forward-slashes with back-slashes
 
 void seedRandGen(); // seeds the random number generator
 uint32_t genRandColorVal();

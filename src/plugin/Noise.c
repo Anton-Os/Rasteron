@@ -4,27 +4,27 @@
 
 // Helper Operations
 
-void addGradient(Rasteron_NoiseGradientTable* noiseGradientTable, double x, double y){
+void addGradient(Rasteron_NoiseGradientTable* table, double x, double y){
     addColorGradient(
-        noiseGradientTable, x, y,
+        table, x, y,
         TOTAL_BLACK_COLOR_CODE, TOTAL_WHITE_COLOR_CODE
     );
 }
 
-void addColorGradient(Rasteron_NoiseGradientTable* noiseGradientTable, double x, double y, uint32_t startColor, uint32_t endColor){
+void addColorGradient(Rasteron_NoiseGradientTable* table, double x, double y, uint32_t color1, uint32_t color2){
     Rasteron_NoiseGradient gradient;
-    gradient.startColor = startColor;
-    gradient.endColor = endColor;
+    gradient.color1 = color1;
+    gradient.color2 = color2;
     gradient.x = x;
     gradient.y = y;
 
-    noiseGradientTable->gradients[noiseGradientTable->gradientsCount] = gradient;
-    noiseGradientTable->gradientsCount++;
+    table->gradients[table->gradientsCount] = gradient;
+    table->gradientsCount++;
 }
 
 // Noise Image Operations
 
-Rasteron_Image* createRandNoiseImg(uint32_t color1, uint32_t color2, const Rasteron_Image* refImage){
+Rasteron_Image* createWhiteNoiseImg(uint32_t color1, uint32_t color2, const Rasteron_Image* refImage){
     if (refImage == NULL) {
 		puts("Cannot create random noise! Null pointer provided as reference image!");
 		return NULL;

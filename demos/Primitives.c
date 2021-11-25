@@ -5,6 +5,10 @@
 #include <stdlib.h>
 
 // Global Definitions
+const char* imagePath = IMAGE_DIR;
+const char* imageName = "Logo.png";
+char targetImagePath[1024];
+
 Image img = { 0 };
 Rasteron_Image* imageBase;
 Rasteron_Image* imageGrey;
@@ -14,9 +18,18 @@ Rasteron_Palette* palette;
 Rasteron_Sprite* sprite;
 Rasteron_Heightmap* heightmap;
 
+void genImageFilePath() {
+	strcpy(targetImagePath, imagePath);
+	strcat(targetImagePath, "\\");
+	strcat(targetImagePath, imageName);
+	fixPathDashes(&targetImagePath);
+}
+
 void genImages(){
-	loadFileImage("C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\Logo.png", &img); // hard path
-	imageBase = createImgBase(&img);
+	genImageFilePath();
+
+	loadFileImage(targetImagePath, &img); // hard path
+	imageBase = createImgRef(&img);
 	imageGrey = createImgGrey(imageBase);
 	imageRed = createImgFilter(imageBase, CHANNEL_Red);
 	imageBlue = createImgFilter(imageBase, CHANNEL_Blue);

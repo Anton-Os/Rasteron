@@ -6,18 +6,29 @@
 
 // Global Definitions
 FT_Library freetypeLib;
-const char* targetFont = "C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\fonts\\Tw-Cen-MT.ttf"; // hard path
-// const char* targetFont = "C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\fonts\\New-Tegomin.ttf"; // hard path
-// const char* targetFont = "C:\\AntonDocs\\Codex\\Ao-Project\\Rasteron\\master\\assets\\fonts\\MajorMonoDisplay.ttf"; // hard path
+const char* fontPath = FONTS_DIR;
+const char* fontName = "Tw-Cen-MT.ttf";
+// const char* fontName = "New-Tegomin.ttf";
+// const char* fontName = "MajorMonoDisplay.ttf";
+char targetFontPath[1024];
 Rasteron_FormatText textObj;
 Rasteron_Image* imageFont;
 
+void genFontFilePath() {
+	strcpy(targetFontPath, fontPath);
+	strcat(targetFontPath, "\\");
+	strcat(targetFontPath, fontName);
+	fixPathDashes(&targetFontPath);
+}
+
 void init(){
+	genFontFilePath();
+
 	initFreeType(&freetypeLib);
 	// Set font properties and perform font/baking operations
 	textObj.bkColor = 0xFF00DDFF;
 	textObj.fgColor = 0xFFAA00AA;
-	textObj.fontFileName = targetFont;
+	textObj.fontFileName = &targetFontPath;
 	textObj.text = "Hello World";
 	imageFont = bakeImgText(&textObj, &freetypeLib, 200, 1100);
 }
