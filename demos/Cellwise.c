@@ -9,12 +9,12 @@
 Rasteron_Image* blankImg;
 NebrTable_List* neighborTable;
 
-void init()
+void init(){
 	blankImg = createImgBlank(1200, 1000, 0xFF73e5ff);
 	neighborTable = genNebrTables(
 		blankImg->data, 
-		abs(blankImg->width), // abs is bmp specific
-		abs(blankImg->height) // abs is bmp specific
+		abs(blankImg->width),
+		abs(blankImg->height)
 	);
 
 	printNebrTables(neighborTable);

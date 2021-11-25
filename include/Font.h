@@ -3,14 +3,14 @@
 
 #include "Image.h"
 
-#define FONT_RES 250
-#define FONT_PEN_OFF 5 // default starting pen offset
+#define FONT_RES 3000
+#define FONT_PEN_OFF 200 // default starting pen offset
 
 typedef struct {
-    uint32_t xOffset;
-    // uint32_t yOffset;
-    uint32_t width;
-    uint32_t height;
+    unsigned xMin;
+    unsigned xMax;
+    unsigned yMin;
+    unsigned yMax;
 } Rasteron_TextSizeParams;
 
 typedef struct {
@@ -21,5 +21,5 @@ typedef struct {
 } Rasteron_FormatText;
 
 void initFreeType(FT_Library* library);
-Rasteron_Image* bakeImgText(const Rasteron_FormatText* text, FT_Library* library, uint32_t height, uint32_t width);
+Rasteron_Image* bakeImgText(const Rasteron_FormatText* text, FT_Library* library, unsigned scale);
 void cleanupFreeType(FT_Library* library);

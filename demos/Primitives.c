@@ -21,7 +21,7 @@ Rasteron_Heightmap* heightmap;
 void genImageFilePath() {
 	strcpy(targetImagePath, imagePath);
 	strcat(targetImagePath, "\\");
-	strcat(targetImagePath, imageName);
+	strcat(targetImagePath, imageName);	
 	fixPathDashes(&targetImagePath);
 }
 

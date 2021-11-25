@@ -25,12 +25,11 @@ void init(){
 	genFontFilePath();
 
 	initFreeType(&freetypeLib);
-	// Set font properties and perform font/baking operations
-	textObj.bkColor = 0xFF00DDFF;
-	textObj.fgColor = 0xFFAA00AA;
+	textObj.bkColor = genRandColorVal();
+	textObj.fgColor = genRandColorVal();
 	textObj.fontFileName = &targetFontPath;
 	textObj.text = "Hello World";
-	imageFont = bakeImgText(&textObj, &freetypeLib, 200, 1100);
+	imageFont = bakeImgText(&textObj, &freetypeLib, 200);
 }
 
 void cleanup() {
