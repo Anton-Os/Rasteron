@@ -21,7 +21,7 @@ static void cropTextImage(Rasteron_Image* refImage, Rasteron_Image* textImage, R
 
 	for (unsigned r = 0; r < refImage->height; r++)
 		for (unsigned c = 0; c < refImage->width; c++)
-			if (r > sizeParams.yMin&& r < sizeParams.yMax && c > sizeParams.xMin && c < sizeParams.xMax && writeOffset < (textImage->width * textImage->height)) {
+			if (r >= sizeParams.yMin && r < sizeParams.yMax && c >= sizeParams.xMin && c < sizeParams.xMax && writeOffset < (textImage->width * textImage->height)) {
 				*(textImage->data + writeOffset) = *(refImage->data + (r * refImage->width) + c);
 				writeOffset++;
 			}
