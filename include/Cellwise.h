@@ -1,4 +1,4 @@
-#include "Loader.h"
+#include "Image.h"
 
 // Start from zero to index arrays easily
 enum NBR_CellFlags {
@@ -26,7 +26,12 @@ typedef struct {
 	NebrTable* tables;
 } NebrTable_List;
 
-nebrCheckFlags checkExistNebrs(uint32_t index, uint32_t imgWidth, uint32_t imgHeight); // checks which cell neighbors exist
-NebrTable_List* genNebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight);
-void printNebrTables(const NebrTable_List* nebrTables); // For debug purposes
-void delNebrTables(NebrTable_List* nebrTables);
+
+NebrTable* genNebrTables(Rasteron_Image* image);
+void delNebrTables(NebrTable* nebrTables);
+
+typedef unsigned (*fourNebrCallback)(unsigned, unsigned, unsigned, unsigned); // takes bottom, right, left, and top neighbors as input, returns result color
+typedef unsigned (*nineNebrCallback)(unsigned, unsigned, unsigned, unsigned); // takes all neighbors in order as input, returns result color
+
+Rasteron_Image* createFourNebrImg(fourNebrCallback callback, const Rasteron_Image* image);
+Rasteron_Image* createNineNebrImg(nineNebrCallback callback, const Rasteron_Image* image);

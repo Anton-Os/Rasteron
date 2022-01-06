@@ -162,9 +162,9 @@ if(WIN32)
     target_include_directories(Cellwise PUBLIC include)
     target_link_libraries(Cellwise Rasteron)
 
-    add_executable(Primitives demos/Primitives.c)
-    target_include_directories(Primitives PUBLIC include)
-    target_link_libraries(Primitives Rasteron)
+    add_executable(Generation demos/Generation.c)
+    target_include_directories(Generation PUBLIC include)
+    target_link_libraries(Generation Rasteron)
 
     add_executable(Noise demos/Noise.c)
     target_include_directories(Noise PUBLIC include)
@@ -185,7 +185,7 @@ install(TARGETS Rasteron
 	    FRAMEWORK DESTINATION lib
 )
 
-add_dependencies(Rasteron zlib libpng libtiff)
+# add_dependencies(Rasteron zlib libpng libtiff)
 
 file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)

@@ -85,14 +85,14 @@ union ImageData {
 
 typedef struct _Image {
 	enum IMG_FileFormat fileFormat;
-	union ImageData imageData;
+	union ImageData data;
 } Image;
 
 // Loader Functions, see Loader.c
 
 typedef Image FileImage; // just makes an easier distinction between Rasteron Image and file Image
 
-void loadFileImage(const char* fileName, FileImage* image); // image is destination
+void loadFileImage(const char* fileName, FileImage* image);
 void delFileImage(FileImage* image);
 
 #define IMAGE_LOADER_H

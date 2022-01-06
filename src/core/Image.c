@@ -54,42 +54,41 @@ Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidCo
 	return blankImage;
 }
 
-Rasteron_Image* createImgRef(const FileImage* refImage){
-	if (refImage == NULL) {
-		puts("Cannot create base image! Null pointer provided as reference image!");
-		return NULL;
-	}
+Rasteron_Image* createImgRef(const char* fileName){
+	FileImage fileImage;
+	loadFileImage(fileName, &fileImage);
 
-    Rasteron_Image* baseImage;
-    switch(refImage->fileFormat){
+    Rasteron_Image* refImage;
+    switch(fileImage.fileFormat){
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
-		baseImage = allocNewImg("base", refImage->imageData.tiff.width, refImage->imageData.tiff.length);
-		switchRasterRB(refImage->imageData.tiff.raster, refImage->imageData.tiff.width * refImage->imageData.tiff.length);
-		for(unsigned i = 0; i < baseImage->width * baseImage->height; i++)
-		   *(baseImage->data + i) = *(refImage->imageData.tiff.raster + i);
+		refImage = allocNewImg("ref-tiff", fileImage.data.tiff.length, fileImage.data.tiff.width);
+		switchRasterRB(fileImage.data.tiff.raster, fileImage.data.tiff.width * fileImage.data.tiff.length);
+		for(unsigned i = 0; i < refImage->width * refImage->height; i++)
+		   *(refImage->data + i) = *(fileImage.data.tiff.raster + i); // copying operation
 		break;
 #endif
 #ifdef USE_IMG_BMP
 	case(IMG_Bmp):
-		baseImage = allocNewImg("base", abs(refImage->imageData.bmp.width), abs(refImage->imageData.bmp.height));
-		for (unsigned i = 0; i < baseImage->width * baseImage->height; i++)
-			*(baseImage->data + i) = *(refImage->imageData.bmp.data + i);
+		refImage = allocNewImg("ref-bmp", abs(fileImage.data.bmp.height), abs(fileImage.data.bmp.width));
+		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
+			*(refImage->data + i) = *(fileImage.data.bmp.data + i); // copying operation
 		break;
 #endif
 #ifdef USE_IMG_PNG
 	case(IMG_Png):
-		baseImage = allocNewImg("base", refImage->imageData.png.width, refImage->imageData.png.height);
-		for (unsigned i = 0; i < baseImage->width * baseImage->height; i++)
-			*(baseImage->data + i) = *(refImage->imageData.png.rgbaData + i);
+		refImage = allocNewImg("ref-png", fileImage.data.png.width, fileImage.data.png.height);
+		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
+			*(refImage->data + i) = *(fileImage.data.png.rgbaData + i); // copying operation
 		break;
 #endif
 	default:
 		puts("Image Format not yet supported!!!");
-		break;
+		return NULL;
 	}
 
-	return baseImage;
+	delFileImage(&fileImage);
+	return refImage;
 }
 
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
@@ -98,7 +97,7 @@ Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
 		return NULL;
 	}
 
-	Rasteron_Image* greyImage = allocNewImg("grey", refImage->width, refImage->height);
+	Rasteron_Image* greyImage = allocNewImg("grey", refImage->height, refImage->width);
 	
 	// Generation Logic
 	uint32_t grey;
@@ -120,15 +119,15 @@ Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type cha
 	uint32_t colorMask; // used for isolating a specific color value
 	switch(channel){
 		case CHANNEL_Red:
-			filterImage = allocNewImg("red", refImage->width, refImage->height);
+			filterImage = allocNewImg("red", refImage->height, refImage->width);
 			colorMask = RED_BITS_MASK;
 			break;
 		case CHANNEL_Green:
-			filterImage = allocNewImg("green", refImage->width, refImage->height);
+			filterImage = allocNewImg("green", refImage->height, refImage->width);
 			colorMask = GREEN_BITS_MASK;
 			break;
 		case CHANNEL_Blue:
-			filterImage = allocNewImg("blue", refImage->width, refImage->height);
+			filterImage = allocNewImg("blue", refImage->height, refImage->width);
 			colorMask = BLUE_BITS_MASK;
 			break;
 	}
@@ -149,7 +148,7 @@ Rasteron_Image* createImgScatter(const Rasteron_Image* refImage, uint32_t color,
 		return NULL;
 	}
 
-	Rasteron_Image* scatterImage = allocNewImg("scatter", refImage->width, refImage->height);
+	Rasteron_Image* scatterImage = allocNewImg("scatter", refImage->height, refImage->width);
 	// *scatterImage->data = *refImage->data; // copies original image
 	if(prob >= 1.0){
 		makeRasterColor(scatterImage->data, scatterImage->width * scatterImage->height, color);
@@ -172,7 +171,7 @@ Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_S
 		return NULL;
 	}
 
-	Rasteron_Image* splashImage = allocNewImg("splash", refImage->width, refImage->height);
+	Rasteron_Image* splashImage = allocNewImg("splash", refImage->height, refImage->width);
 	// *splashImage->data = *refImage->data; // copies original image
 	const float defaultSeedWeight = 1.0f / (seedTable->seedCount + 1); // leaves less covered as seed count increases
 
@@ -190,14 +189,14 @@ Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_S
 
 	// setting proper colors
 	for (unsigned p = 0; p < splashImage->width * splashImage->height; p++) {
-		chance = (rand() /  RAND_MAX) * seedWeightTotal;
+		chance = ((double)rand() / (double)RAND_MAX) * seedWeightTotal;
 		unsigned color = *(refImage->data + p);
 		for(unsigned s = 0; s < seedTable->seedCount; s++)
 			if(chance > seedRanges[s][0] && chance < seedRanges[s][1]){ // checks if rand number is within bounds
 				color = seedTable->seeds[s].color; // sets new color if range is satisfied
 				break;
 			}
-		(*(splashImage->data + p) = color);
+		*(splashImage->data + p) = color;
 	}
 
 	return splashImage;
@@ -214,7 +213,7 @@ Rasteron_Image* createImgProxCell(const Rasteron_Image* refImage, const Rasteron
 	for(unsigned t = 0; t < colorPointTable->pixelPointCount; t++)
 		*(targetPixels + t) = getPixIndexFromPos(&colorPointTable->positions[t].pos, refImage);
 
-	Rasteron_Image* proxCellImage = allocNewImg("prox-cell", refImage->width, refImage->height);
+	Rasteron_Image* proxCellImage = allocNewImg("prox-cell", refImage->height, refImage->width);
 
 	for (unsigned p = 0; p < proxCellImage->width * proxCellImage->height; p++) {
 		unsigned color = 0xFF448844; // some default color!

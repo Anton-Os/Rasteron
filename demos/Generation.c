@@ -9,7 +9,7 @@ const char* imagePath = IMAGE_DIR;
 const char* imageName = "Logo.png";
 char targetImagePath[1024];
 
-Image img = { 0 };
+// Image img = { 0 };
 Rasteron_Image* imageBase;
 Rasteron_Image* imageGrey;
 Rasteron_Image* imageRed;
@@ -28,8 +28,8 @@ void genImageFilePath() {
 void genImages(){
 	genImageFilePath();
 
-	loadFileImage(targetImagePath, &img); // hard path
-	imageBase = createImgRef(&img);
+	//loadFileImage(targetImagePath, &img); // hard path
+	imageBase = createImgRef(targetImagePath);
 	imageGrey = createImgGrey(imageBase);
 	imageRed = createImgFilter(imageBase, CHANNEL_Red);
 	imageBlue = createImgFilter(imageBase, CHANNEL_Blue);
@@ -47,7 +47,7 @@ void cleanup() {
 	deleteLattice(heightmap);
 	deletePalette(palette);
 
-	delFileImage(&img);
+	// delFileImage(&img);
 }
 
 #ifdef _WIN32
@@ -64,7 +64,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case (WM_CREATE): {
 		genImages();
 
-		bmap1 = createWinBmap(&img);
+		// bmap1 = createWinBmap(&img);
 		bmap2 = createWinBmapRaw(imageRed->width, imageRed->height, imageRed->data);
 	}
 	case (WM_PAINT): {

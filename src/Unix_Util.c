@@ -65,16 +65,16 @@ XImage* createUnixBmapRaw(UnixContext* context, uint32_t height, uint32_t width,
 	switch (image->fileFormat) {
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
-		switchRasterRB(image->imageData.tiff.raster, image->imageData.tiff.width * image->imageData.tiff.length); // Should maybe move to ImgTIFF
-		return createUnixBmapRaw(image->imageData.tiff.width, image->imageData.tiff.length, image->imageData.tiff.raster);
+		switchRasterRB(image->data.tiff.raster, image->data.tiff.width * image->data.tiff.length); // Should maybe move to ImgTIFF
+		return createUnixBmapRaw(image->data.tiff.width, image->data.tiff.length, image->data.tiff.raster);
 #endif
 #ifdef USE_IMG_BMP
 	case(IMG_Bmp):
-		return createUnixBmapRaw(abs(image->imageData.bmp.width), abs(image->imageData.bmp.height), image->imageData.bmp.data);
+		return createUnixBmapRaw(abs(image->data.bmp.width), abs(image->data.bmp.height), image->data.bmp.data);
 #endif
 #ifdef USE_IMG_PNG
 	case(IMG_Png): 
-		return createUnixBmapRaw(image->imageData.png.width, image->imageData.png.height, image->imageData.png.rgbaData);
+		return createUnixBmapRaw(image->data.png.width, image->data.png.height, image->data.png.rgbaData);
 #endif
 	default:
 		puts("Image Format not yet supported!!!");

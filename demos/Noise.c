@@ -7,21 +7,37 @@
 // Global Definitions
 
 Rasteron_SeedTable seedTable;
+Rasteron_ColorPointTable colorPtTable;
+Rasteron_NoiseGradientTable noiseGradientTable;
+
 Rasteron_Image* blankImg;
 Rasteron_Image* randNoiseImg;
 Rasteron_Image* randNoiseImg2;
 Rasteron_Image* latticeNoiseImg;
 Rasteron_Image* scatterImg;
-Rasteron_Image* splatterImg;
-Rasteron_Image* patternImg;
+Rasteron_Image* splashImg;
+Rasteron_Image* proxCellImg;
 
 void genImages(){
-	blankImg = createImgBlank(1200, 1000, 0xFF73e5ff);
-	// randNoiseImg = createWhiteNoiseImg(0xFFFFFF00, 0xFF73e5ff, blankImg);
+	addWeightedSeed(&seedTable, 0xFFFFEECC, 0.1f);
+	addWeightedSeed(&seedTable, 0xFFAADDEE, 0.2f);
+	addWeightedSeed(&seedTable, 0xFFAADDEE, 0.3f);
+	addWeightedSeed(&seedTable, 0xFFAAAAFF, 0.4f);
+
+	addColorPoint(&colorPtTable, 0xFFFFEECC, 0.1f, 0.1f);
+	addColorPoint(&colorPtTable, 0xFFAADDEE, 0.2f, 0.5f);
+	addColorPoint(&colorPtTable, 0xFFDDEECC, 0.5f, 0.2f); 
+	addColorPoint(&colorPtTable, 0xFFAAAAFF, 0.4f, 0.4f);
+
+	noiseGradientTable.xCellDivs = 5;
+	noiseGradientTable.yCellDivs = 5;
+
+	blankImg = createImgBlank(1200, 1100, 0xFF73e5ff);
 	randNoiseImg = createWhiteNoiseImg(0xFFFFFFFF, 0xFF000000, blankImg);
-	randNoiseImg2 = createWhiteNoiseImg(0xFFFFFFFF, 0xFF00FFFF, blankImg);
-	scatterImg = createImgScatter(randNoiseImg2, 0xFFFF00FF, 0.1);
-	// patternImg = createPatternImg();
+	randNoiseImg2 = createGradientNoiseImg(0xFFFFFFFF, 0xFF00FFFF, blankImg);
+	scatterImg = createImgScatter(blankImg, 0xFFFF00FF, 0.1);
+	splashImg = createImgSplash(blankImg, &seedTable);
+	proxCellImg = createImgProxCell(blankImg, &colorPtTable);
 }
 
 void cleanup() {
@@ -29,7 +45,8 @@ void cleanup() {
 	deleteImg(randNoiseImg);
 	deleteImg(randNoiseImg2);
 	deleteImg(scatterImg);
-	// deleteImg(patternImg);
+	deleteImg(splashImg);
+	deleteImg(proxCellImg);
 }
 
 #ifdef _WIN32
@@ -46,7 +63,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		seedRandGen();
 		genImages();
 
-		bmap = createWinBmapRaw(scatterImg->width, scatterImg->height, scatterImg->data);
+		bmap = createWinBmapRaw(randNoiseImg->height, randNoiseImg->width, randNoiseImg->data);
+		// bmap = createWinBmapRaw(scatterImg->height, scatterImg->width, scatterImg->data);
+		// bmap = createWinBmapRaw(splashImg->height, splashImg->width, splashImg->data);
+		// bmap = createWinBmapRaw(proxCellImg->height, proxCellImg->width, proxCellImg->data);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap);

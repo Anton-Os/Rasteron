@@ -1,3 +1,5 @@
+#ifndef RASTERON_FONT_H
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -14,12 +16,15 @@ typedef struct {
 } Rasteron_TextSizeParams;
 
 typedef struct {
+    const char* fileName; // file used as font
+    const char* text; // text to display
     uint32_t bkColor; // background color
     uint32_t fgColor; // foreground color
-    const char* fontFileName; // file used as font
-    const char* text; // text to display
 } Rasteron_FormatText;
 
 void initFreeType(FT_Library* library);
 Rasteron_Image* bakeImgText(const Rasteron_FormatText* text, FT_Library* library, unsigned scale);
 void cleanupFreeType(FT_Library* library);
+
+#define RASTERON_FONT_H
+#endif

@@ -7,7 +7,7 @@
 
 // Global Definitions
 Rasteron_Image* blankImg;
-NebrTable_List* neighborTable;
+NebrTable* neighborTable;
 
 void init(){
 	blankImg = createImgBlank(1200, 1000, 0xFF73e5ff);
@@ -16,8 +16,6 @@ void init(){
 		abs(blankImg->width),
 		abs(blankImg->height)
 	);
-
-	printNebrTables(neighborTable);
 }
 
 void cleanup() {

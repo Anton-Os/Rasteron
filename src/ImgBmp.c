@@ -20,8 +20,8 @@ void loadFileImage_BMP(const char* fileName, Image* image) {
 	#endif // _WIN32
 
 
-	fread(&image->imageData.bmp.typeCheck, sizeof(uint16_t), 1, bmpFile);
-	if (image->imageData.bmp.typeCheck != 0x4D42) {
+	fread(&image->data.bmp.typeCheck, sizeof(uint16_t), 1, bmpFile);
+	if (image->data.bmp.typeCheck != 0x4D42) {
 		printf("%s is not a valid BMP file", fileName);
 		return;
 	}
@@ -30,18 +30,18 @@ void loadFileImage_BMP(const char* fileName, Image* image) {
 	// I used the link above to calculate the positions of each of the data members
 
 	fseek(bmpFile, 10, SEEK_SET);
-	fread(&image->imageData.bmp.offset, sizeof(uint32_t), 1, bmpFile);
+	fread(&image->data.bmp.offset, sizeof(uint32_t), 1, bmpFile);
 
 	fseek(bmpFile, 18, SEEK_SET);
-	fread(&image->imageData.bmp.width, sizeof(int32_t), 1, bmpFile);
+	fread(&image->data.bmp.width, sizeof(int32_t), 1, bmpFile);
 	fseek(bmpFile, 22, SEEK_SET);
-	fread(&image->imageData.bmp.height, sizeof(int32_t), 1, bmpFile);
+	fread(&image->data.bmp.height, sizeof(int32_t), 1, bmpFile);
 
 	// Data Reading Time!!!
 
-	image->imageData.bmp.data = (uint32_t*)malloc(abs(image->imageData.bmp.width) * abs(image->imageData.bmp.height) * (uint32_t)sizeof(uint32_t));
-	fseek(bmpFile, image->imageData.bmp.offset, SEEK_SET);
-	fread((uint32_t*)image->imageData.bmp.data, sizeof(uint32_t), abs(image->imageData.bmp.width) * abs(image->imageData.bmp.height), bmpFile);
+	image->data.bmp.data = (uint32_t*)malloc(abs(image->data.bmp.width) * abs(image->data.bmp.height) * (uint32_t)sizeof(uint32_t));
+	fseek(bmpFile, image->data.bmp.offset, SEEK_SET);
+	fread((uint32_t*)image->data.bmp.data, sizeof(uint32_t), abs(image->data.bmp.width) * abs(image->data.bmp.height), bmpFile);
 
 
 	fclose(bmpFile);
@@ -53,7 +53,7 @@ void delFileImage_BMP(Image* image) {
 		puts("Image provided for deletion is not BMP type!");
 		return;
 	}
-	free(image->imageData.bmp.data);
+	free(image->data.bmp.data);
 	image->fileFormat = IMG_NonValid;
 	return;
 }

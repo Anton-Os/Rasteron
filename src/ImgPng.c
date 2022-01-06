@@ -42,26 +42,26 @@ void loadFileImage_PNG(const char* fileName, Image* image) {
 	png_read_info(png_ptr, info_ptr);
 
 	png_get_IHDR(png_ptr, info_ptr,
-		&image->imageData.png.width, &image->imageData.png.height,
-		&image->imageData.png.bitDepth, &image->imageData.png.colorType,
+		&image->data.png.width, &image->data.png.height,
+		&image->data.png.bitDepth, &image->data.png.colorType,
 		NULL, NULL, NULL);
-	image->imageData.png.rowBytes = png_get_rowbytes(png_ptr, info_ptr);
+	image->data.png.rowBytes = png_get_rowbytes(png_ptr, info_ptr);
 
 	// Allocate png specific
-	image->imageData.png.row_ptrs = (png_byte**)malloc(image->imageData.png.height * sizeof(png_byte*));
-	for (unsigned int r = 0; r < image->imageData.png.height; r++)
-		image->imageData.png.row_ptrs[r] = (png_byte*)malloc(image->imageData.png.rowBytes);
+	image->data.png.row_ptrs = (png_byte**)malloc(image->data.png.height * sizeof(png_byte*));
+	for (unsigned int r = 0; r < image->data.png.height; r++)
+		image->data.png.row_ptrs[r] = (png_byte*)malloc(image->data.png.rowBytes);
 
-	png_read_image(png_ptr, image->imageData.png.row_ptrs);
-	image->imageData.png.rgbaData = (uint32_t*)malloc(sizeof(uint32_t) * image->imageData.png.height * image->imageData.png.width);
+	png_read_image(png_ptr, image->data.png.row_ptrs);
+	image->data.png.rgbaData = (uint32_t*)malloc(sizeof(uint32_t) * image->data.png.height * image->data.png.width);
 
 	png_byte* src_ptr;
-	uint32_t* dest_ptr = image->imageData.png.rgbaData;
+	uint32_t* dest_ptr = image->data.png.rgbaData;
 	int testIncrementor = 0;
-	for (unsigned int r = 0; r < image->imageData.png.height; r++) {
-		src_ptr = image->imageData.png.row_ptrs[r];
+	for (unsigned int r = 0; r < image->data.png.height; r++) {
+		src_ptr = image->data.png.row_ptrs[r];
 
-		for (unsigned int c = 0; c < image->imageData.png.width; c++) {
+		for (unsigned int c = 0; c < image->data.png.width; c++) {
 
 			png_byte red = *src_ptr;
 			png_byte green = *(++src_ptr);
@@ -86,11 +86,11 @@ void delFileImage_PNG(Image* image) {
 		return;
 	}
 
-	for (unsigned int r = 0; r < image->imageData.png.height; r++)
-		free(image->imageData.png.row_ptrs[r]);
-	free(image->imageData.png.row_ptrs);
+	for (unsigned int r = 0; r < image->data.png.height; r++)
+		free(image->data.png.row_ptrs[r]);
+	free(image->data.png.row_ptrs);
 
-	free(image->imageData.png.rgbaData);
+	free(image->data.png.rgbaData);
 	image->fileFormat = IMG_NonValid;
 	return;
 }

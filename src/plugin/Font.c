@@ -49,7 +49,7 @@ void initFreeType(FT_Library* library){
 
 Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* library, unsigned scale){
     FT_Face face;
-    int error = FT_New_Face(*library, textObj->fontFileName, 0, &face);
+    int error = FT_New_Face(*library, textObj->fileName, 0, &face);
 
 	int bboxWidth = face->bbox.xMax - face->bbox.xMin;
 	int bboxHeight = face->bbox.yMax - face->bbox.yMin;

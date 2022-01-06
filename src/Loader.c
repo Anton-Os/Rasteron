@@ -15,21 +15,16 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
     char extension_tiff[] = "tif";
     char extension_bmp[] = "bmp";
 
-    if(! strcmp(extensionTarget, extension_png))
-        return IMG_Png;
-    else if(! strcmp(extensionTarget, extension_tiff))
-        return IMG_Tiff;
-    else if(! strcmp(extensionTarget, extension_bmp))
-        return IMG_Bmp;
-    else
-        return IMG_NonValid;
+    if(! strcmp(extensionTarget, extension_png)) return IMG_Png;
+    else if(! strcmp(extensionTarget, extension_tiff)) return IMG_Tiff;
+    else if(! strcmp(extensionTarget, extension_bmp)) return IMG_Bmp;
+    else return IMG_NonValid;
 }
 
 void loadFileImage(const char* fileName, FileImage* image){
     enum IMG_FileFormat format = getFormat(fileName);
     
     switch(format){
-
 #ifdef USE_IMG_PNG
 	case IMG_Png: loadFileImage_PNG(fileName, image); break;
 #endif
@@ -45,24 +40,15 @@ void loadFileImage(const char* fileName, FileImage* image){
 
 void delFileImage(FileImage* image) {
 	switch (image->fileFormat) {
-
 #ifdef USE_IMG_PNG
-	case IMG_Png:
-		delFileImage_PNG(image);
-		break;
+	case IMG_Png: delFileImage_PNG(image); break;
 #endif
 #ifdef USE_IMG_TIFF
-	case IMG_Tiff:
-		delFileImage_TIFF(image);
-		break;
+	case IMG_Tiff: delFileImage_TIFF(image); break;
 #endif
 #ifdef USE_IMG_BMP
-	case IMG_Bmp:
-		delFileImage_BMP(image);
-		break;
+	case IMG_Bmp: delFileImage_BMP(image); break;
 #endif
-	default:
-		puts("Image Format not yet supported!!!");
-		break;
+	default: puts("Image Format not yet supported!!!"); break;
 	}
 }

@@ -27,7 +27,7 @@ void init(){
 	initFreeType(&freetypeLib);
 	textObj.bkColor = genRandColorVal();
 	textObj.fgColor = genRandColorVal();
-	textObj.fontFileName = &targetFontPath;
+	textObj.fileName = &targetFontPath;
 	textObj.text = "Hello World";
 	imageFont = bakeImgText(&textObj, &freetypeLib, 200);
 }

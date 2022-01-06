@@ -2,21 +2,6 @@
 
 #include "stdio.h" // For debug purposes
 
-void printNebrTables(const NebrTable_List* nebrTables) {
-	for (NebrTable* nebrTable_current = nebrTables->tables;
-		nebrTable_current != nebrTables->tables + nebrTables->count;
-		nebrTable_current++) {
-
-		unsigned short nebrCount = 0;
-		for (unsigned short n = 0; n < 8; n++) // Determine number of neighbors based on nebrExistFlags
-			if (nebrTable_current->nebrExistFlags & (1 << (n))) // Traverse through all flags and increment if present
-				nebrCount++;
-
-		if (nebrCount < 8) printf("N:%d ", nebrCount);
-		if (nebrCount == 3) puts("\n");
-	}	
-}
-
 static void setFlagBit(nebrCheckFlags* target, enum NBR_CellFlags flagBit){
     *(target) = (*(target) | (1 << (flagBit)));
     return;
@@ -27,24 +12,24 @@ static void clearFlagBit(nebrCheckFlags* target, enum NBR_CellFlags flagBit){
     return;
 }
 
-nebrCheckFlags checkExistNebrs(uint32_t index, uint32_t imgWidth, uint32_t imgHeight){
+static nebrCheckFlags checkExistNebrs(uint32_t index, uint32_t width, uint32_t height){
     nebrCheckFlags flags = 0xFF;
 
-    if(index < imgWidth){
+    if(index < width){
         clearFlagBit(&flags, NBR_Top_Left);
         clearFlagBit(&flags, NBR_Top);
         clearFlagBit(&flags, NBR_Top_Right);
-    } else if((imgWidth * imgHeight) - index - 1 < imgWidth){
+    } else if((width * height) - index - 1 < width){
         clearFlagBit(&flags, NBR_Bot_Left);
         clearFlagBit(&flags, NBR_Bot);
         clearFlagBit(&flags, NBR_Bot_Right);
     }
 
-	if(index % imgWidth == 0){
+	if(index % width == 0){
         clearFlagBit(&flags, NBR_Top_Left);
         clearFlagBit(&flags, NBR_Left);
         clearFlagBit(&flags, NBR_Bot_Left);
-    } else if(index % imgWidth == imgWidth - 1){
+    } else if(index % width == width - 1){
         clearFlagBit(&flags, NBR_Top_Right);
         clearFlagBit(&flags, NBR_Right);
         clearFlagBit(&flags, NBR_Bot_Right);
@@ -53,109 +38,88 @@ nebrCheckFlags checkExistNebrs(uint32_t index, uint32_t imgWidth, uint32_t imgHe
     return flags;
 }
 
-static uint32_t* findNeighbor(const uint32_t* raster, uint32_t index, 
-                              uint32_t imgWidth, uint32_t imgHeight,
-                              enum NBR_CellFlags whichNebr){
-    const uint32_t* rasterPixCurrent = raster + index;
+static uint32_t* findNeighbor(Rasteron_Image* refImage, uint32_t index, enum NBR_CellFlags whichNebr){
+    const uint32_t* target = refImage->data + index;
 
 	switch (whichNebr) {
-		case NBR_Bot_Right:
-			return rasterPixCurrent + imgWidth + 1;
-		case NBR_Bot:
-			return rasterPixCurrent + imgWidth;
-		case NBR_Bot_Left:
-			return rasterPixCurrent + imgWidth - 1;
-		case NBR_Right:
-			return rasterPixCurrent + 1;
-		case NBR_Left:
-			return rasterPixCurrent - 1;
-		case NBR_Top_Right:
-			return rasterPixCurrent - imgWidth + 1;
-		case NBR_Top:
-			return rasterPixCurrent - imgWidth;
-		case NBR_Top_Left:
-			return rasterPixCurrent - imgWidth - 1;
-
+		case NBR_Bot_Right: return target + refImage->width + 1;
+		case NBR_Bot: return target + refImage->width;
+		case NBR_Bot_Left: return target + refImage->width - 1;
+		case NBR_Right: return target + 1;
+		case NBR_Left: return target - 1;
+		case NBR_Top_Right: return target - refImage->width + 1;
+		case NBR_Top: return target - refImage->width;
+		case NBR_Top_Left: return target - refImage->width - 1;
 	}
-    return 0;
+    return NULL;
 }
 
 
-NebrTable_List* genNebrTables(const uint32_t* raster, uint32_t imgWidth, uint32_t imgHeight) {
+// NebrTable_List* genNebrTable_Lists(const uint32_t* refImage->data, uint32_t refImage->width, uint32_t refImage->height) {
+NebrTable_List* genNebrTable_Lists(Rasteron_Image* refImage){
 	NebrTable_List* list = (NebrTable_List*)malloc(sizeof(NebrTable_List));
-	list->count = imgWidth * imgHeight;
+	list->count = refImage->width * refImage->height;
 	list->tables = NULL;
-	list->tables = (NebrTable*)malloc(imgWidth * imgHeight * sizeof(NebrTable));
+	list->tables = (NebrTable_List*)malloc(refImage->width * refImage->height * sizeof(NebrTable_List));
 	
-	const uint32_t* rasterPix_current = raster; // start with the first raster pixel
-	uint32_t rasterPix_index = 0;
-	for (NebrTable* nebrTable_current = list->tables; // start with the first table
-		nebrTable_current != list->tables + (imgWidth * imgHeight); // pointer to end on in the mem space
-		nebrTable_current++){ // move to next table pointer
+	const uint32_t* target = refImage->data; // start with the first refImage->data pixel
+	uint32_t index = 0;
+	for (NebrTable* currentTable = list->tables; // start with the first table
+		currentTable != list->tables + (refImage->width * refImage->height); // pointer to end on in the mem space
+		currentTable++){ // move to next table pointer
 
-		nebrTable_current->target = rasterPix_current;
-		nebrTable_current->nebrExistFlags = checkExistNebrs(rasterPix_index, imgWidth, imgHeight);
+		currentTable->target = target;
+		currentTable->nebrExistFlags = checkExistNebrs(index, refImage->width, refImage->height);
 
 		unsigned short nebrCount = 0;
 		for (unsigned short n = 0; n < 8; n++) // Determine number of neighbors based on nebrExistFlags
-			if (nebrTable_current->nebrExistFlags & (1 << (n))) // Traverse through all flags and increment if present
+			if (currentTable->nebrExistFlags & (1 << (n))) // Traverse through all flags and increment if present
 				nebrCount++; 
 
-		nebrTable_current->nebrs = (uint32_t**)malloc(nebrCount * sizeof(uint32_t*));
+		currentTable->nebrs = (uint32_t**)malloc(nebrCount * sizeof(uint32_t*));
 		unsigned short nIndex = 0; // maps n (neighbor) to the correct location in the nebrs structure
 		for (unsigned short n = 0; n < 8; n++) // Determine number of neighbors based on nebrExistFlags
-			if (nebrTable_current->nebrExistFlags & (1 << (n))) // If neighbor exists we determine which neighbor it is
+			if (currentTable->nebrExistFlags & (1 << (n))) // If neighbor exists we determine which neighbor it is
 				switch (n) {
 				case NBR_Bot_Right:
-					*(nebrTable_current->nebrs + nIndex) = findNeighbor(raster, rasterPix_index, imgWidth, imgHeight, NBR_Bot_Right);
-					nIndex++;
-					break;
+					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Bot_Right);
+					nIndex++; break;
 				case NBR_Bot:
-					*(nebrTable_current->nebrs + nIndex) = findNeighbor(raster, rasterPix_index, imgWidth, imgHeight, NBR_Bot);
-					nIndex++;
-					break;
+					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Bot);
+					nIndex++; break;
 				case NBR_Bot_Left:
-					*(nebrTable_current->nebrs + nIndex) = findNeighbor(raster, rasterPix_index, imgWidth, imgHeight, NBR_Bot_Left);
-					nIndex++;
-					break;
+					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Bot_Left);
+					nIndex++; break;
 				case NBR_Right:
-					*(nebrTable_current->nebrs + nIndex) = findNeighbor(raster, rasterPix_index, imgWidth, imgHeight, NBR_Right);
-					nIndex++;
-					break;
+					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Right);
+					nIndex++; break;
 				case NBR_Left :
-					*(nebrTable_current->nebrs + nIndex) = findNeighbor(raster, rasterPix_index, imgWidth, imgHeight, NBR_Left);
-					nIndex++;
-					break;
+					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Left);
+					nIndex++; break;
 				case NBR_Top_Right:
-					*(nebrTable_current->nebrs + nIndex) = findNeighbor(raster, rasterPix_index, imgWidth, imgHeight, NBR_Top_Right);
-					nIndex++;
-					break;
+					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Top_Right);
+					nIndex++; break;
 				case NBR_Top:
-					*(nebrTable_current->nebrs + nIndex) = findNeighbor(raster, rasterPix_index, imgWidth, imgHeight, NBR_Top);
-					nIndex++;
-					break;
+					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Top);
+					nIndex++; break;
 				case NBR_Top_Left:
-					*(nebrTable_current->nebrs + nIndex) = findNeighbor(raster, rasterPix_index, imgWidth, imgHeight, NBR_Top_Left);
-					nIndex++;
-					break;
-				default:
-					break;
+					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Top_Left);
+					nIndex++; break;
+				default: break;
 				}
-			else
-				continue;
+			else continue;
 
-		rasterPix_index++;
-		rasterPix_current++; // move to next pixel pointer
+		index++;
+		target++; // move to next pixel
 	}
 	return list; // Return the structure that we generated
 }
 
-void delNebrTables(NebrTable_List* nebrTables) {
-	NebrTable* nebrTable_current = nebrTables->tables;
-	for (NebrTable* nebrTable_current = nebrTables->tables;
-		nebrTable_current != nebrTables->tables + nebrTables->count; 
-		nebrTable_current++) {
-		free(nebrTable_current->nebrs);
+void delNebrTable_Lists(NebrTable_List* nebrTables) {
+	for (NebrTable* currentTable = nebrTables->tables;
+		currentTable != nebrTables->tables + nebrTables->count; 
+		currentTable++) {
+		free(currentTable->nebrs);
 	}
 	free(nebrTables->tables);
 	free(nebrTables);
