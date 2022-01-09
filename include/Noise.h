@@ -9,13 +9,10 @@ typedef struct {
 	unsigned yCellDivs; // = 1; // y axis cell divisions
 	unsigned color1;
 	unsigned color2;
-} Rasteron_NoiseGradientTable;
+} Rasteron_GradientNoise;
 
-// void addGradient(Rasteron_NoiseGradientTable* table, double x, double y);
-// void addColorGradient(Rasteron_NoiseGradientTable* table, double x, double y, uint32_t color1, uint32_t color2);
-
-Rasteron_Image* createWhiteNoiseImg(uint32_t color1, uint32_t color2, const Rasteron_Image* ref); // creates interpolated white noise
+Rasteron_Image* createWhiteNoiseImg(const Rasteron_Image* ref, uint32_t color1, uint32_t color2); // creates interpolated white noise
 Rasteron_Image* createGradientNoiseImg(
-    const Rasteron_NoiseGradientTable* lattice,
-    const Rasteron_Image* refImage
+	const Rasteron_Image* refImage,
+    const Rasteron_GradientNoise* lattice
 );

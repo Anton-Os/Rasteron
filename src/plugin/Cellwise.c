@@ -55,18 +55,18 @@ static uint32_t* findNeighbor(Rasteron_Image* refImage, uint32_t index, enum NBR
 }
 
 
-// NebrTable_List* genNebrTable_Lists(const uint32_t* refImage->data, uint32_t refImage->width, uint32_t refImage->height) {
-NebrTable_List* genNebrTable_Lists(Rasteron_Image* refImage){
+// NebrTable_List* genNebrTables(const uint32_t* refImage->data, uint32_t refImage->width, uint32_t refImage->height) {
+NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 	NebrTable_List* list = (NebrTable_List*)malloc(sizeof(NebrTable_List));
 	list->count = refImage->width * refImage->height;
 	list->tables = NULL;
-	list->tables = (NebrTable_List*)malloc(refImage->width * refImage->height * sizeof(NebrTable_List));
+	list->tables = (NebrTable*)malloc(refImage->width * refImage->height * sizeof(NebrTable));
 	
 	const uint32_t* target = refImage->data; // start with the first refImage->data pixel
 	uint32_t index = 0;
 	for (NebrTable* currentTable = list->tables; // start with the first table
 		currentTable != list->tables + (refImage->width * refImage->height); // pointer to end on in the mem space
-		currentTable++){ // move to next table pointer
+		currentTable++) { // move to next table pointer
 
 		currentTable->target = target;
 		currentTable->nebrExistFlags = checkExistNebrs(index, refImage->width, refImage->height);
@@ -74,10 +74,10 @@ NebrTable_List* genNebrTable_Lists(Rasteron_Image* refImage){
 		unsigned short nebrCount = 0;
 		for (unsigned short n = 0; n < 8; n++) // Determine number of neighbors based on nebrExistFlags
 			if (currentTable->nebrExistFlags & (1 << (n))) // Traverse through all flags and increment if present
-				nebrCount++; 
+				nebrCount++;
 
 		currentTable->nebrs = (uint32_t**)malloc(nebrCount * sizeof(uint32_t*));
-		unsigned short nIndex = 0; // maps n (neighbor) to the correct location in the nebrs structure
+		/* unsigned short nIndex = 0; // maps n (neighbor) to the correct location in the nebrs structure
 		for (unsigned short n = 0; n < 8; n++) // Determine number of neighbors based on nebrExistFlags
 			if (currentTable->nebrExistFlags & (1 << (n))) // If neighbor exists we determine which neighbor it is
 				switch (n) {
@@ -111,11 +111,43 @@ NebrTable_List* genNebrTable_Lists(Rasteron_Image* refImage){
 
 		index++;
 		target++; // move to next pixel
+	} */
 	}
 	return list; // Return the structure that we generated
 }
 
-void delNebrTable_Lists(NebrTable_List* nebrTables) {
+Rasteron_Image* createPatternImg4(const Rasteron_Image* refImage, fourNebrCallback callback){
+	if(refImage == NULL){
+		puts("Cannot create pattern image! Null pointer provided as input");
+		return NULL;
+	}
+
+	NebrTable_List* nebrTables = genNebrTables(refImage);
+	Rasteron_Image* fourNebrImg = allocNewImg("four-pattern", refImage->height, refImage->width);
+
+	for(unsigned p = 0; p < refImage->height * refImage->width; p++){
+		NebrTable currentTable = *(nebrTables->tables + p);
+		unsigned bottom, right, left, top;
+	}
+
+	delNebrTables(nebrTables);
+	return fourNebrImg;
+}
+
+Rasteron_Image* createPatternImg8(const Rasteron_Image* refImage, eightNebrCallback callback){
+	if(refImage == NULL){
+		puts("Cannot create pattern image! Null pointer provided as input");
+		return NULL;
+	}
+
+	NebrTable_List* nebrTables = genNebrTables(refImage);
+	Rasteron_Image* eightNebrImg = allocNewImg("eight-pattern", refImage->height, refImage->width);
+
+	delNebrTables(nebrTables);
+	return eightNebrImg;
+}
+
+void delNebrTables(NebrTable_List* nebrTables) {
 	for (NebrTable* currentTable = nebrTables->tables;
 		currentTable != nebrTables->tables + nebrTables->count; 
 		currentTable++) {

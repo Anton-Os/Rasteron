@@ -8,34 +8,33 @@ static double computeHeight(unsigned inputColor, double minBound, double maxBoun
 	return heightVal + minBound;
 }
 
-Rasteron_Heightmap* allocNewLattice(uint32_t height, uint32_t width, double minBound, double maxBound){
-	Rasteron_Heightmap* lattice = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
-    lattice->height = height;
-    lattice->width = width;
-	lattice->minBound = minBound; // Default value lower is zero
-	lattice->maxBound = maxBound; // Default value upper is one
-    lattice->data = (double*)malloc(lattice->height * lattice->width * sizeof(double));
+Rasteron_Heightmap* allocNewHeightmap(uint32_t height, uint32_t width, double minBound, double maxBound){
+	Rasteron_Heightmap* heightmap = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
+    heightmap->height = height;
+    heightmap->width = width;
+	heightmap->minBound = minBound; // Default value lower is zero
+	heightmap->maxBound = maxBound; // Default value upper is one
+    heightmap->data = (double*)malloc(heightmap->height * heightmap->width * sizeof(double));
 
-	return lattice;
+	return heightmap;
 }
 
-Rasteron_Heightmap* createLattice(const Rasteron_Image* refImage){
+Rasteron_Heightmap* createHeightmap(const Rasteron_Image* refImage){
     if (refImage == NULL) {
-		puts("Cannot create lattice! Null pointer provided!");
+		puts("Cannot create heightmap! Null pointer provided!");
 		return NULL;
 	}
 
-    Rasteron_Heightmap* lattice = allocNewLattice(refImage->width, refImage->height, 0.0, 1.0);
+    Rasteron_Heightmap* heightmap = allocNewHeightmap(refImage->width, refImage->height, 0.0, 1.0);
 
-	// Lattice Generation Logic
-	for (unsigned p = 0; p < lattice->width * lattice->height; p++)
-		*(lattice->data + p) = computeHeight(*(refImage->data + p), lattice->minBound, lattice->maxBound);
-		// if(p >= (lattice->width * lattice->height) - lattice->width - lattice->width) 
+	// Heightmap Generation Logic
+	for (unsigned p = 0; p < heightmap->width * heightmap->height; p++)
+		*(heightmap->data + p) = computeHeight(*(refImage->data + p), heightmap->minBound, heightmap->maxBound);
 
-    return lattice;
+    return heightmap;
 }
 
-void deleteLattice(Rasteron_Heightmap* lattice){
-    if(lattice->data != NULL) free(lattice->data);
-    if(lattice != NULL) free(lattice);
+void deleteHeightmap(Rasteron_Heightmap* heightmap){
+    if(heightmap->data != NULL) free(heightmap->data);
+    if(heightmap != NULL) free(heightmap);
 }

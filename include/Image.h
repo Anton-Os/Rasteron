@@ -61,7 +61,6 @@ typedef struct {
 Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width); // Image allocation helper
 
 Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor); // Creates a blank image
-// Rasteron_Image* createImgRef(const FileImage* image); // Creates an image based on target file image
 Rasteron_Image* createImgRef(const char* fileName);
 
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // Creates greyscale version of reference image

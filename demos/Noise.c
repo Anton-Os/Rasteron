@@ -1,5 +1,4 @@
 #include "Noise.h"
-#include "Pattern.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,12 +7,11 @@
 
 Rasteron_SeedTable seedTable;
 Rasteron_ColorPointTable colorPtTable;
-Rasteron_NoiseGradientTable noiseGradientTable;
+Rasteron_GradientNoise noiseGradientTable = { 2, 2, 0xFF0000FF, 0xFFFF0000 };
 
 Rasteron_Image* blankImg;
 Rasteron_Image* randNoiseImg;
 Rasteron_Image* randNoiseImg2;
-Rasteron_Image* latticeNoiseImg;
 Rasteron_Image* scatterImg;
 Rasteron_Image* splashImg;
 Rasteron_Image* proxCellImg;
@@ -29,12 +27,9 @@ void genImages(){
 	addColorPoint(&colorPtTable, 0xFFDDEECC, 0.5f, 0.2f); 
 	addColorPoint(&colorPtTable, 0xFFAAAAFF, 0.4f, 0.4f);
 
-	noiseGradientTable.xCellDivs = 5;
-	noiseGradientTable.yCellDivs = 5;
-
 	blankImg = createImgBlank(1200, 1100, 0xFF73e5ff);
-	randNoiseImg = createWhiteNoiseImg(0xFFFFFFFF, 0xFF000000, blankImg);
-	randNoiseImg2 = createGradientNoiseImg(0xFFFFFFFF, 0xFF00FFFF, blankImg);
+	randNoiseImg = createWhiteNoiseImg(blankImg, 0xFFFF0000, 0xFF0000FF);
+	randNoiseImg2 = createGradientNoiseImg(blankImg, &noiseGradientTable);
 	scatterImg = createImgScatter(blankImg, 0xFFFF00FF, 0.1);
 	splashImg = createImgSplash(blankImg, &seedTable);
 	proxCellImg = createImgProxCell(blankImg, &colorPtTable);
@@ -63,7 +58,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		seedRandGen();
 		genImages();
 
-		bmap = createWinBmapRaw(randNoiseImg->height, randNoiseImg->width, randNoiseImg->data);
+		// bmap = createWinBmapRaw(randNoiseImg->height, randNoiseImg->width, randNoiseImg->data);
+		bmap = createWinBmapRaw(randNoiseImg2->height, randNoiseImg2->width, randNoiseImg2->data);
 		// bmap = createWinBmapRaw(scatterImg->height, scatterImg->width, scatterImg->data);
 		// bmap = createWinBmapRaw(splashImg->height, splashImg->width, splashImg->data);
 		// bmap = createWinBmapRaw(proxCellImg->height, proxCellImg->width, proxCellImg->data);

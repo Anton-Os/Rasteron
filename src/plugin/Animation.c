@@ -14,9 +14,9 @@ Rasteron_Animation* allocNewAnim(const char* prefix, uint32_t height, uint32_t w
     return animation;
 }
 
-void addFrameData(Rasteron_Animation* animation, const Rasteron_Image *const ref, unsigned frameIndex){
+void addFrameData(Rasteron_Animation* animation, const Rasteron_Image *const refImage, unsigned frameIndex){
     if(frameIndex >= animation->frameCount) return;
-    // else statement copy image contents into existing image
+    *(animation->data + frameIndex) = refImage;
 }
 
 void deleteAnim(Rasteron_Animation* animation){

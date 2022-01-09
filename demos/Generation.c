@@ -35,7 +35,7 @@ void genImages(){
 	imageBlue = createImgFilter(imageBase, CHANNEL_Blue);
 	palette = createPalette(imageBase);
 	sprite = createSprite(imageBase);
-	heightmap = createLattice(imageGrey); // Lattice data test
+	heightmap = createHeightmap(imageGrey); // Lattice data test
 }
 
 void cleanup() {
@@ -44,7 +44,7 @@ void cleanup() {
 	deleteImg(imageGrey);
 	deleteImg(imageRed);
 	deleteImg(imageBlue);
-	deleteLattice(heightmap);
+	deleteHeightmap(heightmap);
 	deletePalette(palette);
 
 	// delFileImage(&img);

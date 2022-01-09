@@ -27,11 +27,11 @@ typedef struct {
 } NebrTable_List;
 
 
-NebrTable* genNebrTables(Rasteron_Image* image);
-void delNebrTables(NebrTable* nebrTables);
+NebrTable_List* genNebrTables(Rasteron_Image* image);
+void delNebrTables(NebrTable_List* nebrTables);
 
 typedef unsigned (*fourNebrCallback)(unsigned, unsigned, unsigned, unsigned); // takes bottom, right, left, and top neighbors as input, returns result color
-typedef unsigned (*nineNebrCallback)(unsigned, unsigned, unsigned, unsigned); // takes all neighbors in order as input, returns result color
+typedef unsigned (*eightNebrCallback)(unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned); // takes all neighbors in order as input, returns result color
 
-Rasteron_Image* createFourNebrImg(fourNebrCallback callback, const Rasteron_Image* image);
-Rasteron_Image* createNineNebrImg(nineNebrCallback callback, const Rasteron_Image* image);
+Rasteron_Image* createPatternImg4(const Rasteron_Image* refImage, fourNebrCallback callback);
+Rasteron_Image* createPatternImg8(const Rasteron_Image* refImage, eightNebrCallback callback);

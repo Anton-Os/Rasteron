@@ -7,20 +7,32 @@
 
 // Global Definitions
 Rasteron_Image* blankImg;
-NebrTable* neighborTable;
+Rasteron_Image* scatterImg;
+Rasteron_Image* fourPatternImg;
+Rasteron_Image* eightPatternImg;
 
-void init(){
-	blankImg = createImgBlank(1200, 1000, 0xFF73e5ff);
-	neighborTable = genNebrTables(
-		blankImg->data, 
-		abs(blankImg->width),
-		abs(blankImg->height)
-	);
+unsigned callback4(unsigned bottom, unsigned right, unsigned left, unsigned top) {
+	return 0xFF0000FF; // returns blue
+}
+
+unsigned callback8(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l, unsigned tr, unsigned t, unsigned tl) {
+	return 0xFFFF0000; // returns red
+}
+
+void genImages() {
+	blankImg = createImgBlank(1200, 1000, 0xFF000000);
+	scatterImg = createImgScatter(blankImg, 0xFFFFFFFF, 0.05);
+
+	// fourPatternImg = createPatternImg4(scatterImg, callback4);
+	fourPatternImg = createPatternImg4(scatterImg, callback4);
+	eightPatternImg = createPatternImg8(scatterImg, callback8);
 }
 
 void cleanup() {
 	deleteImg(blankImg);
-	delNebrTables(neighborTable);
+	deleteImg(scatterImg);
+	deleteImg(fourPatternImg);
+	deleteImg(eightPatternImg);
 }
 
 #ifdef _WIN32
@@ -34,7 +46,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		init();
+		genImages();
 		// winBmap = createWinBmap(&image);
 	}
 	case (WM_PAINT): {
@@ -51,7 +63,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 void unixProc(){
 	UnixContext context;
 	createWindow(&context, "Cellwise");
-	init();
+	genImages;
 }
 
 #endif
