@@ -59,17 +59,16 @@ static uint32_t* findNeighbor(Rasteron_Image* refImage, uint32_t index, enum NBR
 NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 	NebrTable_List* list = (NebrTable_List*)malloc(sizeof(NebrTable_List));
 	list->count = refImage->width * refImage->height;
-	list->tables = NULL;
 	list->tables = (NebrTable*)malloc(refImage->width * refImage->height * sizeof(NebrTable));
 	
-	const uint32_t* target = refImage->data; // start with the first refImage->data pixel
-	uint32_t index = 0;
+	// const uint32_t* target = refImage->data; // target is a pointer to the first pixel
+	unsigned pIndex = 0; // index to the pixel being processed
 	for (NebrTable* currentTable = list->tables; // start with the first table
 		currentTable != list->tables + (refImage->width * refImage->height); // pointer to end on in the mem space
 		currentTable++) { // move to next table pointer
 
-		currentTable->target = target;
-		currentTable->nebrExistFlags = checkExistNebrs(index, refImage->width, refImage->height);
+		currentTable->target = refImage->data + pIndex;
+		currentTable->nebrExistFlags = checkExistNebrs(pIndex, refImage->width, refImage->height);
 
 		unsigned short nebrCount = 0;
 		for (unsigned short n = 0; n < 8; n++) // Determine number of neighbors based on nebrExistFlags
@@ -77,41 +76,25 @@ NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 				nebrCount++;
 
 		currentTable->nebrs = (uint32_t**)malloc(nebrCount * sizeof(uint32_t*));
-		/* unsigned short nIndex = 0; // maps n (neighbor) to the correct location in the nebrs structure
-		for (unsigned short n = 0; n < 8; n++) // Determine number of neighbors based on nebrExistFlags
-			if (currentTable->nebrExistFlags & (1 << (n))) // If neighbor exists we determine which neighbor it is
+		unsigned short i = 0; // index to keep track of neighbor
+		for (unsigned short n = 0; n < 8; n++) {
+			if (currentTable->nebrExistFlags & (1 << n)) {
+				// unsigned* nebr = *(currentTable->nebrs + i);
 				switch (n) {
-				case NBR_Bot_Right:
-					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Bot_Right);
-					nIndex++; break;
-				case NBR_Bot:
-					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Bot);
-					nIndex++; break;
-				case NBR_Bot_Left:
-					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Bot_Left);
-					nIndex++; break;
-				case NBR_Right:
-					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Right);
-					nIndex++; break;
-				case NBR_Left :
-					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Left);
-					nIndex++; break;
-				case NBR_Top_Right:
-					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Top_Right);
-					nIndex++; break;
-				case NBR_Top:
-					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Top);
-					nIndex++; break;
-				case NBR_Top_Left:
-					*(currentTable->nebrs + nIndex) = findNeighbor(refImage->data, index, refImage->width, refImage->height, NBR_Top_Left);
-					nIndex++; break;
-				default: break;
+				case NBR_Bot_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Bot_Right); break;
+				case NBR_Bot: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Bot); break;
+				case NBR_Bot_Left: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Bot_Left); break;
+				case NBR_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Right); break;
+				case NBR_Left : *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Left); break;
+				case NBR_Top_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Top_Right); break;
+				case NBR_Top: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Top); break;
+				case NBR_Top_Left: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Top_Left); break;
 				}
-			else continue;
+				i++;
+			}
+		}
 
-		index++;
-		target++; // move to next pixel
-	} */
+		pIndex++;
 	}
 	return list; // Return the structure that we generated
 }
@@ -126,8 +109,24 @@ Rasteron_Image* createPatternImg4(const Rasteron_Image* refImage, fourNebrCallba
 	Rasteron_Image* fourNebrImg = allocNewImg("four-pattern", refImage->height, refImage->width);
 
 	for(unsigned p = 0; p < refImage->height * refImage->width; p++){
-		NebrTable currentTable = *(nebrTables->tables + p);
+		NebrTable* currentTable = nebrTables->tables + p;
 		unsigned bottom, right, left, top;
+
+		unsigned short i = 0; // index to keep track of neighbor
+		if (currentTable->nebrExistFlags & (1 << NBR_Bot)) {
+			bottom = *(currentTable->nebrs + i); i++;
+		} else bottom = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Right)) {
+			right = *(currentTable->nebrs + i); i++;
+		} else right = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Left)) {
+			left = *(currentTable->nebrs + i); i++;
+		} else left = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Top)) {
+			top = *(currentTable->nebrs + i); i++;
+		} else top = BAD_COLOR_CODE;
+
+		*(fourNebrImg->data + p) = callback(bottom, right, left, top);
 	}
 
 	delNebrTables(nebrTables);
@@ -142,6 +141,39 @@ Rasteron_Image* createPatternImg8(const Rasteron_Image* refImage, eightNebrCallb
 
 	NebrTable_List* nebrTables = genNebrTables(refImage);
 	Rasteron_Image* eightNebrImg = allocNewImg("eight-pattern", refImage->height, refImage->width);
+
+	for (unsigned p = 0; p < refImage->height * refImage->width; p++) {
+		NebrTable* currentTable = nebrTables->tables + p;
+		unsigned br, b, bl, r, l, tr, t, tl;
+
+		unsigned short i = 0; // index to keep track of neighbor
+		if (currentTable->nebrExistFlags & (1 << NBR_Bot_Right)) {
+			br = *(currentTable->nebrs + i); i++;
+		} else br = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Bot)) {
+			b = *(currentTable->nebrs + i); i++;
+		} else b = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Bot_Left)) {
+			bl = *(currentTable->nebrs + i); i++;
+		} else bl = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Right)) {
+			r = *(currentTable->nebrs + i); i++;
+		} else r = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Left)) {
+			l = *(currentTable->nebrs + i); i++;
+		} else l = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Top_Right)) {
+			tr = *(currentTable->nebrs + i); i++;
+		} else tr = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Top)) {
+			t = *(currentTable->nebrs + i); i++;
+		} else t = BAD_COLOR_CODE;
+		if (currentTable->nebrExistFlags & (1 << NBR_Top_Left)) {
+			tl = *(currentTable->nebrs + i); i++;
+		} else tl = BAD_COLOR_CODE;
+
+		*(eightNebrImg->data + p) = callback(br, b, bl, r, l, tr, t, tl);
+	}
 
 	delNebrTables(nebrTables);
 	return eightNebrImg;

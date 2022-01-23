@@ -7,7 +7,8 @@
 
 Rasteron_SeedTable seedTable;
 Rasteron_ColorPointTable colorPtTable;
-Rasteron_GradientNoise noiseGradientTable = { 2, 2, 0xFF0000FF, 0xFFFF0000 };
+// Rasteron_GradientNoise noiseGradientTable = { 3, 3, 0xFF0000FF, 0xFFFF0000 };
+Rasteron_GradientNoise noiseGradientTable = { 3, 3, 0xFF0000FF, 0xFFFF0000 };
 
 Rasteron_Image* blankImg;
 Rasteron_Image* randNoiseImg;

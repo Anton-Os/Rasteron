@@ -32,58 +32,53 @@ Rasteron_Image* createGradientNoiseImg(const Rasteron_Image* refImage, const Ras
 
     const unsigned xCellPoints = noise->xCellDivs + 1; // includes leftmost and rightmost vertices +1
     const unsigned yCellPoints = noise->yCellDivs + 1; // includes topmost and bottommost vertices +1
-    const unsigned xSwitch = gradientNoiseImg->width / noise->xCellDivs;
-    const unsigned ySwitch = gradientNoiseImg->height / noise->yCellDivs;
 
 	Rasteron_Image* latticeCells = allocNewImg("cell-points", yCellPoints, xCellPoints);
 	double noiseVal;
 	for (unsigned p = 0; p < latticeCells->width * latticeCells->height; p++) {
 		noiseVal = (double)rand() / (double)RAND_MAX;
-		// *(latticeCells->data + p) = itrpolate(noise->color1, noise->color2, noiseVal); // use this instead
-		switch (p % 4) {
-		case 0: *(latticeCells->data + p) = /* 0xFFFFFFFF; */ 0x00000001; break;
-		case 1: *(latticeCells->data + p) = /* 0xFF00FFFF; */ 0x00000002; break;
-		case 2: *(latticeCells->data + p) = /* 0xFFFF00FF; */ 0x00000003; break;
-		case 3: *(latticeCells->data + p) = /* 0xFFFFFF00; */ 0x00000004; break;
-		}
+		*(latticeCells->data + p) = itrpolate(noise->color1, noise->color2, noiseVal); // use this instead
+		// switch (p % 4) {
+		// case 0: *(latticeCells->data + p) = 0xFFFFFFFF; /* 0x00000001; */ break;
+		// case 1: *(latticeCells->data + p) = 0xFF00FFFF; /* 0x00000002; */ break;
+		// case 2: *(latticeCells->data + p) = 0xFFFF00FF; /* 0x00000003; */ break;
+		// case 3: *(latticeCells->data + p) = 0xFFFFFF00; /* 0x00000004; */ break;
+		// }
 	}
 
-	unsigned* topLeft = latticeCells->data;
-	unsigned* topRight = latticeCells->data + 1;
-	unsigned* botLeft = latticeCells->data + latticeCells->width;
-	unsigned* botRight = latticeCells->data + latticeCells->width + 1;
+	// tracks position of the current gradient cell
+	unsigned* topLeft; unsigned* topRight; unsigned* botLeft; unsigned* botRight;
 
-	unsigned color = *topLeft;
+	unsigned color = 0xFFFFFFFF;
+	const unsigned xSwitch = gradientNoiseImg->width / noise->xCellDivs;
+	const unsigned ySwitch = gradientNoiseImg->height / noise->yCellDivs;
+
     for(unsigned p = 0; p < gradientNoiseImg->width * gradientNoiseImg->height; p++){
-        unsigned xOffset = p % gradientNoiseImg->width;
-        unsigned yOffset = p / gradientNoiseImg->width;
+        unsigned xOffset = p % gradientNoiseImg->width; // absolute offset along width
+        unsigned yOffset = p / gradientNoiseImg->width; // absolute offset along height
+		double xFrac = (double)(xOffset % xSwitch) / (double)xSwitch; // fractional offset relative to current cell along width
+		double yFrac = (double)(yOffset % ySwitch) / (double)ySwitch; // fractional offset relative to current cell along height
 
-		if (yOffset % ySwitch == 0 && xOffset == 0 && p > 0) {
-			color = 0xFF00FF00; // for testing
-			// topLeft += 2; topRight += 2; botLeft += 2; botRight += 2; // shift to next row
+		if(xOffset == 0){
+			unsigned short yInc = (yOffset / ySwitch) * latticeCells->width;
+
+			// resets to the beginning of the correct row
+			topLeft = latticeCells->data + yInc;
+			topRight = latticeCells->data + 1 + yInc;
+			botLeft = latticeCells->data + latticeCells->width + yInc;
+			botRight = latticeCells->data + latticeCells->width + 1 + yInc;
 		}
-		else if (yOffset % ySwitch == 0 && p > 0) { // reset to the start of the row
-			topLeft = latticeCells->data;
-			topRight = latticeCells->data + 1;
-			botLeft = latticeCells->data + latticeCells->width;
-			botRight = latticeCells->data + latticeCells->width + 1;
+		else if (xOffset % xSwitch == 0 && p > 0) { // increment to next gradient cell
+			topLeft++; topRight++; botLeft++; botRight++;
 		}
-		else if (xOffset % xSwitch == 0 && p > 0) {
-			// color = *topLeft;
-			// color = (color == 0xFF0000FF) ? 0xFFFF0000 : 0xFF0000FF; // for testing
-			topLeft++; topRight++; botLeft++; botRight++; // shift to next column
-		}
-		else {
-			double xFrac = (double)(xOffset % xSwitch) / (double)xSwitch;
-			double yFrac = (double)(yOffset % ySwitch) / (double)ySwitch;
-			color = itrpolate(
-				itrpolate(0xFFFFFFFF, 0xFF00FFFF, xFrac), 
-				itrpolate(0xFFFF00FF, 0xFFFFFF00, xFrac), 
-				yFrac
-			);
-			// color = *topLeft;
-			// color = itrpolate(itrpolate(*topLeft, *topRight, xFrac), itrpolate(*botLeft, *botRight, xFrac), yFrac);
-		}
+
+		/* color = itrpolate(
+			itrpolate(*topLeft, *topRight, xFrac), 
+			itrpolate(*botLeft, *botRight, xFrac), 
+			yFrac
+		); */
+		color = *topLeft; // for testing
+		color = itrpolate(*topLeft, *botLeft, xFrac);
         
         *(gradientNoiseImg->data + p) = color;
     }

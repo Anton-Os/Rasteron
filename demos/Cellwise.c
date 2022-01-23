@@ -12,11 +12,11 @@ Rasteron_Image* fourPatternImg;
 Rasteron_Image* eightPatternImg;
 
 unsigned callback4(unsigned bottom, unsigned right, unsigned left, unsigned top) {
-	return 0xFF0000FF; // returns blue
+	return 1; // for testing
 }
 
 unsigned callback8(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l, unsigned tr, unsigned t, unsigned tl) {
-	return 0xFFFF0000; // returns red
+	return 1; // for testing
 }
 
 void genImages() {
