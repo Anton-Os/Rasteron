@@ -1,3 +1,4 @@
+#include "Image.h"
 #include "Toolbox.h"
 
 void createWindow(WNDPROC wndProc, LPCTSTR name){
@@ -34,6 +35,10 @@ void eventLoop(){
 	}
 }
 
+BITMAP createWinBmap(Rasteron_Image* image){
+	createWinBmapRaw(image->height, image->width, image->data);
+}
+
 BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data){
 	BITMAP bmap = { 0 };
 	bmap.bmWidth = width;
@@ -45,31 +50,6 @@ BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data){
 
 	bmap.bmBits = data;
 
-	return bmap;
-}
-
-BITMAP createWinBmap(const Image* image) {
-	switch (image->fileFormat) {
-
-#ifdef USE_IMG_TIFF
-	case(IMG_Tiff):
-		switchRasterRB(image->data.tiff.raster, image->data.tiff.width * image->data.tiff.length); // Should maybe move to ImgTIFF
-		return createWinBmapRaw(image->data.tiff.width, image->data.tiff.length, image->data.tiff.raster);
-#endif
-#ifdef USE_IMG_BMP
-	case(IMG_Bmp):
-		return createWinBmapRaw(abs(image->data.bmp.width), abs(image->data.bmp.height), image->data.bmp.data);
-#endif
-#ifdef USE_IMG_PNG
-	case(IMG_Png): 
-		return createWinBmapRaw(image->data.png.width, image->data.png.height, image->data.png.rgbaData);
-#endif
-	default:
-		puts("Image Format not yet supported!!!");
-		break;
-	}
-
-	BITMAP bmap = { 0 };
 	return bmap;
 }
 

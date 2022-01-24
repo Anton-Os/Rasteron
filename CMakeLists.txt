@@ -87,6 +87,7 @@ set(Rasteron_Src
     src/plugin/Cellwise.c
     src/plugin/Heightmap.c
     src/plugin/Noise.c
+    src/plugin/Animation.c
 )
 if(SUPPORT_FONT_BAKING)
     list(APPEND Rasteron_Src src/plugin/Font.c)
@@ -173,6 +174,10 @@ if(WIN32)
     add_executable(Typo demos/Typo.c)
     target_include_directories(Typo PUBLIC include)
     target_link_libraries(Typo Rasteron)
+
+    add_executable(Sequence demos/Sequence.c)
+    target_include_directories(Sequence PUBLIC include)
+    target_link_libraries(Sequence Rasteron)
 endif()
 
 

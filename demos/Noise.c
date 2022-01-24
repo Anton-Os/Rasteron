@@ -59,11 +59,11 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		seedRandGen();
 		genImages();
 
-		// bmap = createWinBmapRaw(randNoiseImg->height, randNoiseImg->width, randNoiseImg->data);
-		bmap = createWinBmapRaw(randNoiseImg2->height, randNoiseImg2->width, randNoiseImg2->data);
-		// bmap = createWinBmapRaw(scatterImg->height, scatterImg->width, scatterImg->data);
-		// bmap = createWinBmapRaw(splashImg->height, splashImg->width, splashImg->data);
-		// bmap = createWinBmapRaw(proxCellImg->height, proxCellImg->width, proxCellImg->data);
+		// bmap = createWinBmap(randNoiseImg);
+		bmap = createWinBmap(randNoiseImg2);
+		// bmap = createWinBmap(scatterImg);
+		// bmap = createWinBmap(splashImg);
+		// bmap = createWinBmap(proxCellImg);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap);

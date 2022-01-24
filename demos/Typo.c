@@ -50,7 +50,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case (WM_CREATE): {		
 		init();
 
-		winBmap = createWinBmapRaw(imageFont->height, imageFont->width, imageFont->data);
+		winBmap = createWinBmapRaw(imageFont);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &winBmap);

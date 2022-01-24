@@ -65,7 +65,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		genImages();
 
 		// bmap1 = createWinBmap(&img);
-		bmap2 = createWinBmapRaw(imageRed->width, imageRed->height, imageRed->data);
+		bmap2 = createWinBmap(imageRed);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap2);

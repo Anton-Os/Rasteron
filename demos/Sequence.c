@@ -1,37 +1,38 @@
 #include "Toolbox.h"
 #include "Rasteron.h"
-#include "Cellwise.h"
+#include "Animation.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 // Global Definitions
-Rasteron_Image* blankImg;
-Rasteron_Image* scatterImg;
-Rasteron_Image* fourPatternImg;
-Rasteron_Image* eightPatternImg;
+#define ANIM_HEIGHT 600
+#define ANIM_WIDTH 500
 
-unsigned callback4(unsigned bottom, unsigned right, unsigned left, unsigned top) {
-	return 1; // for testing
-}
-
-unsigned callback8(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l, unsigned tr, unsigned t, unsigned tl) {
-	return 1; // for testing
-}
+Rasteron_Animation* animation;
+Rasteron_Image* frame1;
+Rasteron_Image* frame2;
+Rasteron_Image* frame3;
+Rasteron_Image* frame4;
 
 void genImages() {
-	blankImg = createImgBlank(1200, 1000, 0xFF000000);
-	scatterImg = createImgScatter(blankImg, 0xFFFFFFFF, 0.05);
+	frame1 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFFFFFFFF);
+    frame2 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFFFF0000);
+    frame3 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF00FF00);
+    frame4 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF0000FF);
 
-	fourPatternImg = createPatternImg4(scatterImg, callback4);
-	eightPatternImg = createPatternImg8(scatterImg, callback8);
+    animation = allocNewAnim("sequence", ANIM_HEIGHT, ANIM_WIDTH, 4);
+    addFrameData(animation, frame1, 0);
+    addFrameData(animation, frame2, 0);
+    addFrameData(animation, frame3, 0);
+    addFrameData(animation, frame4, 0);
 }
 
 void cleanup() {
-	deleteImg(blankImg);
-	deleteImg(scatterImg);
-	deleteImg(fourPatternImg);
-	deleteImg(eightPatternImg);
+	deleteImg(frame1);
+	deleteImg(frame2);
+	deleteImg(frame3);
+	deleteImg(frame4);
 }
 
 #ifdef _WIN32
