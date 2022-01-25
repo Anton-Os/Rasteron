@@ -21,7 +21,8 @@ uint32_t grayify32(uint32_t refColor); // produces a 32 bit grey value based on 
 uint8_t grayify8(uint32_t refColor); // produces a 8 bit grey value based on provided reference color
 // uint32_t fract32(uint32_t refColor, double frac) // produces an 32 bit color value based on fraction of reference color
 uint8_t fract8(uint8_t refColor, double frac); // produces an 8 bit color value based on fraction of reference color
-uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal);
+uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal); // interpolate between 2 colors
+uint32_t blend(uint32_t color1, uint32_t color2, double bVal); // blend between 2 colors
 
 #ifdef _WIN32 
 	#define WIN32_LEAN_AND_MEAN

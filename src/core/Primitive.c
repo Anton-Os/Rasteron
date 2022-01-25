@@ -4,7 +4,7 @@
 
 Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
 	if (refImage == NULL) {
-		puts("Cannot create palette! Null pointer provided as reference image!");
+		perror("Cannot create palette! Null pointer provided as reference image!");
 		return NULL;
 	}
 
@@ -28,14 +28,15 @@ Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
 }
 
 void deleteSprite(Rasteron_Sprite* sprite){
-	free(sprite);
+	if(sprite != NULL) free(sprite);
+	sprite = NULL;
 }
 
 // Palette related operations
 
 Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
 	if (refImage == NULL) {
-		puts("Cannot create palette! Null pointer provided as reference image!");
+		perror("Cannot create palette! Null pointer provided as reference image!");
 		return NULL;
 	}
 
@@ -62,7 +63,7 @@ Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
 
 Rasteron_Palette* createLimPalette(unsigned minColorCount, const Rasteron_Palette* refImage){
 	if (refImage == NULL) {
-		puts("Cannot create palette! Null pointer provided as reference image!");
+		perror("Cannot create palette! Null pointer provided as reference image!");
 		return NULL;
 	}
 
@@ -79,4 +80,7 @@ Rasteron_Palette* createLimPalette(unsigned minColorCount, const Rasteron_Palett
 	return palette;
 }
 
-void deletePalette(Rasteron_Palette* palette){ free(palette); }
+void deletePalette(Rasteron_Palette* palette){ 
+	if(palette != NULL) free(palette); 
+	palette = NULL;
+}

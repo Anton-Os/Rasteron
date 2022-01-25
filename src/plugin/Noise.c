@@ -6,7 +6,7 @@
 
 Rasteron_Image* createWhiteNoiseImg(const Rasteron_Image* refImage, uint32_t color1, uint32_t color2){
     if (refImage == NULL) {
-		puts("Cannot create white noise! Null pointer provided as reference image!");
+		perror("Cannot create white noise! Null pointer provided as reference image!");
 		return NULL;
 	}
 
@@ -24,7 +24,7 @@ Rasteron_Image* createWhiteNoiseImg(const Rasteron_Image* refImage, uint32_t col
 
 Rasteron_Image* createGradientNoiseImg(const Rasteron_Image* refImage, const Rasteron_GradientNoise* noise){
     if(noise == NULL || refImage == NULL){
-        puts("Cannot create gradient noise! Null pointers provided as inputs!");
+        perror("Cannot create gradient noise! Null pointers provided as inperror!");
         return NULL;
     }
 
@@ -37,13 +37,13 @@ Rasteron_Image* createGradientNoiseImg(const Rasteron_Image* refImage, const Ras
 	double noiseVal;
 	for (unsigned p = 0; p < latticeCells->width * latticeCells->height; p++) {
 		noiseVal = (double)rand() / (double)RAND_MAX;
-		*(latticeCells->data + p) = itrpolate(noise->color1, noise->color2, noiseVal); // use this instead
-		// switch (p % 4) {
-		// case 0: *(latticeCells->data + p) = 0xFFFFFFFF; /* 0x00000001; */ break;
-		// case 1: *(latticeCells->data + p) = 0xFF00FFFF; /* 0x00000002; */ break;
-		// case 2: *(latticeCells->data + p) = 0xFFFF00FF; /* 0x00000003; */ break;
-		// case 3: *(latticeCells->data + p) = 0xFFFFFF00; /* 0x00000004; */ break;
-		// }
+		*(latticeCells->data + p) = blend(noise->color1, noise->color2, noiseVal); // use this instead
+		/* switch (p % 4) {
+		case 0: *(latticeCells->data + p) = 0xFFFFFFFF; break;
+		case 1: *(latticeCells->data + p) = 0xFF00FFFF; break;
+		case 2: *(latticeCells->data + p) = 0xFFFF00FF; break;
+		case 3: *(latticeCells->data + p) = 0xFFFFFF00; break;
+		} */
 	}
 
 	// tracks position of the current gradient cell
@@ -72,13 +72,12 @@ Rasteron_Image* createGradientNoiseImg(const Rasteron_Image* refImage, const Ras
 			topLeft++; topRight++; botLeft++; botRight++;
 		}
 
-		/* color = itrpolate(
-			itrpolate(*topLeft, *topRight, xFrac), 
-			itrpolate(*botLeft, *botRight, xFrac), 
+		color = *botRight; // for testing
+		color = blend(
+			blend(*topLeft, *topRight, xFrac),
+			blend(*botLeft, *botRight, xFrac),
 			yFrac
-		); */
-		color = *topLeft; // for testing
-		color = itrpolate(*topLeft, *botLeft, xFrac);
+		);
         
         *(gradientNoiseImg->data + p) = color;
     }

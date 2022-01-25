@@ -7,8 +7,9 @@
 
 Rasteron_SeedTable seedTable;
 Rasteron_ColorPointTable colorPtTable;
-// Rasteron_GradientNoise noiseGradientTable = { 3, 3, 0xFF0000FF, 0xFFFF0000 };
-Rasteron_GradientNoise noiseGradientTable = { 3, 3, 0xFF0000FF, 0xFFFF0000 };
+// Rasteron_GradientNoise noiseGradientTable = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
+// Rasteron_GradientNoise noiseGradientTable = { 12, 12, 0xFFFF00FF, 0xFF00FFFF };
+Rasteron_GradientNoise noiseGradientTable = { 64, 64, 0xFF000000, 0xFFFFFFFF };
 
 Rasteron_Image* blankImg;
 Rasteron_Image* randNoiseImg;
@@ -28,7 +29,7 @@ void genImages(){
 	addColorPoint(&colorPtTable, 0xFFDDEECC, 0.5f, 0.2f); 
 	addColorPoint(&colorPtTable, 0xFFAAAAFF, 0.4f, 0.4f);
 
-	blankImg = createImgBlank(1200, 1100, 0xFF73e5ff);
+	blankImg = createImgBlank(1100, 1200, 0xFF73e5ff);
 	randNoiseImg = createWhiteNoiseImg(blankImg, 0xFFFF0000, 0xFF0000FF);
 	randNoiseImg2 = createGradientNoiseImg(blankImg, &noiseGradientTable);
 	scatterImg = createImgScatter(blankImg, 0xFFFF00FF, 0.1);

@@ -47,8 +47,7 @@ Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width){
 }
 
 Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor){
-	// Rasteron_Image* blankImage = allocNewImg("blank", width, height); // height and width are switched
-	Rasteron_Image* blankImage = allocNewImg("blank", height, width); // height and width are switched
+	Rasteron_Image* blankImage = allocNewImg("blank", height, width);
 	makeRasterColor(blankImage->data, blankImage->width * blankImage->height, solidColor);
 	return blankImage;
 }
@@ -82,7 +81,7 @@ Rasteron_Image* createImgRef(const char* fileName){
 		break;
 #endif
 	default:
-		puts("Image Format not yet supported!!!");
+		perror("Image Format not yet supported!!!");
 		return NULL;
 	}
 
@@ -92,7 +91,7 @@ Rasteron_Image* createImgRef(const char* fileName){
 
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
 	if (refImage == NULL) {
-		puts("Cannot create grey image! Null pointer provided as reference image!");
+		perror("Cannot create grey image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
@@ -110,7 +109,7 @@ Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
 
 Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
-		puts("Cannot create filter image! Null pointer provided as reference image!");
+		perror("Cannot create filter image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
@@ -143,7 +142,7 @@ Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type cha
 
 Rasteron_Image* createImgScatter(const Rasteron_Image* refImage, uint32_t color, double prob){
 	if (refImage == NULL) {
-		puts("Cannot create scatter image! Null pointer provided as reference image!");
+		perror("Cannot create scatter image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
@@ -166,7 +165,7 @@ Rasteron_Image* createImgScatter(const Rasteron_Image* refImage, uint32_t color,
 
 Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable){
 	if (refImage == NULL) {
-		puts("Cannot create splash image! Null pointer provided as reference image!");
+		perror("Cannot create splash image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
@@ -203,7 +202,7 @@ Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_S
 
 Rasteron_Image* createImgProxCell(const Rasteron_Image* refImage, const Rasteron_ColorPointTable* colorPointTable){
 	if (refImage == NULL) {
-		puts("Cannot create splash image! Null pointer provided as reference image!");
+		perror("Cannot create splash image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
@@ -236,4 +235,5 @@ Rasteron_Image* createImgProxCell(const Rasteron_Image* refImage, const Rasteron
 void deleteImg(Rasteron_Image* image) {
     if(image->data != NULL) free(image->data);
     if(image != NULL) free(image);
+	image = NULL; // set address to null
 }

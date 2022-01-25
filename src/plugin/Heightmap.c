@@ -21,7 +21,7 @@ Rasteron_Heightmap* allocNewHeightmap(uint32_t height, uint32_t width, double mi
 
 Rasteron_Heightmap* createHeightmap(const Rasteron_Image* refImage){
     if (refImage == NULL) {
-		puts("Cannot create heightmap! Null pointer provided!");
+		perror("Cannot create heightmap! Null pointer provided!");
 		return NULL;
 	}
 
@@ -37,4 +37,5 @@ Rasteron_Heightmap* createHeightmap(const Rasteron_Image* refImage){
 void deleteHeightmap(Rasteron_Heightmap* heightmap){
     if(heightmap->data != NULL) free(heightmap->data);
     if(heightmap != NULL) free(heightmap);
+	heightmap = NULL;
 }

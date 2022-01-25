@@ -12,5 +12,6 @@ typedef struct {
 } Rasteron_Animation;
 
 Rasteron_Animation* allocNewAnim(const char* prefix, uint32_t height, uint32_t width, unsigned frameCount);
+Rasteron_Image* getFrame(Rasteron_Animation* animation, unsigned short frameIndex);
 void addFrameData(Rasteron_Animation* anim, const Rasteron_Image *const ref, unsigned frameIndex); // copies target image into index of animation struct
 void deleteAnim(Rasteron_Animation* anim);

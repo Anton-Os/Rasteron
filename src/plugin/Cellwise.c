@@ -101,7 +101,7 @@ NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 
 Rasteron_Image* createPatternImg4(const Rasteron_Image* refImage, fourNebrCallback callback){
 	if(refImage == NULL){
-		puts("Cannot create pattern image! Null pointer provided as input");
+		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
 	}
 
@@ -135,7 +135,7 @@ Rasteron_Image* createPatternImg4(const Rasteron_Image* refImage, fourNebrCallba
 
 Rasteron_Image* createPatternImg8(const Rasteron_Image* refImage, eightNebrCallback callback){
 	if(refImage == NULL){
-		puts("Cannot create pattern image! Null pointer provided as input");
+		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
 	}
 

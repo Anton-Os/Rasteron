@@ -90,7 +90,6 @@ uint32_t grayify32(uint32_t refColor){
 		return TOTAL_WHITE_COLOR_CODE;
 	
 	uint8_t alpha = 0xFF; // Complete opacity desired for alpha
-	
 	uint8_t avgColor = ((uint32_t)((refColor & 0xFF0000) << 16) + (uint32_t)((refColor & 0xFF00) << 16) + (uint32_t)((refColor & 0xFF) << 16)) / 3;
 
 	uint32_t result = ((alpha << 24) | (avgColor << 16) | (avgColor << 8) | avgColor);
@@ -110,9 +109,17 @@ uint8_t fract8(uint8_t refColor, double frac){
 	else return ((double)refColor / 255.0) * frac * 255.0;
 }
 
-// Interpolates between 2 colors
-uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
+uint32_t fract32(uint32_t refColor, double frac){
+	uint8_t alpha = fract8((refColor & ALPHA_BITS_MASK) >> 24, frac);
+	uint8_t red = fract8((refColor & RED_BITS_MASK) >> 16, frac);
+	uint8_t green = fract8((refColor & GREEN_BITS_MASK) >> 8, frac);
+	uint8_t blue = fract8(refColor & BLUE_BITS_MASK, frac);
 
+	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
+	return result;
+}
+
+uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
 	uint8_t loAlphaBit = getLoColorBit(color1, color2, CHANNEL_Alpha);
 	uint8_t loRedBit = getLoColorBit(color1, color2, CHANNEL_Red);
     uint8_t loGreenBit = getLoColorBit(color1, color2, CHANNEL_Green);
@@ -126,7 +133,7 @@ uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
 	if(iVal <= 0.0) return loColor;
 
 	uint32_t hiColor = (hiAlphaBit << 24) + (hiRedBit << 16) + (hiGreenBit << 8) + hiBlueBit;
-	if(iVal <= 0.0) return hiColor;
+	if(iVal >= 1.0) return hiColor;
 
 	uint32_t diffColor = (hiColor - loColor);
 	uint8_t finalAlphaBit = 0xFF;
@@ -135,4 +142,14 @@ uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
 	uint8_t finalBlueBit = fract8(diffColor & BLUE_BITS_MASK, iVal);
 
 	return loColor + (uint32_t)((finalAlphaBit << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
+}
+
+uint32_t blend(uint32_t color1, uint32_t color2, double bVal){
+	if(bVal <= 0.0) return color1;
+	else if(bVal >= 1.0) return color2;
+	
+	uint32_t bColor1 = fract32(color1, 1.0 -bVal);
+	uint32_t bColor2 = fract32(color2, bVal);
+
+	return bColor1 + bColor2; 
 }
