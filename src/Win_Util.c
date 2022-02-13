@@ -19,6 +19,8 @@ void createWindow(WNDPROC wndProc, LPCTSTR name){
 
 	ShowWindow(wndWindow, 1);
 	UpdateWindow(wndWindow);
+
+	SetTimer(wndWindow, TIMER_EVENT_ID, 1000, NULL); // creates timer event for every second
 }
 
 void eventLoop(){

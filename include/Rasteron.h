@@ -4,10 +4,8 @@
 extern "C"{
 #endif
 
-#include "Loader.h"
 #include "Primitive.h"
-#include "Toolbox.h"
-#include "Image.h"
+#include "Image.h" // includes Toolbox and Loader
 
 #ifdef __cplusplus
 }

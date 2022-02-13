@@ -186,5 +186,7 @@ void delNebrTables(NebrTable_List* nebrTables) {
 		free(currentTable->nebrs);
 	}
 	free(nebrTables->tables);
+	nebrTables->tables = NULL;
 	free(nebrTables);
+	nebrTables = NULL;
 }

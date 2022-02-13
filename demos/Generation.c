@@ -15,6 +15,7 @@ Rasteron_Image* imageGrey;
 Rasteron_Image* imageRed;
 Rasteron_Image* imageBlue;
 Rasteron_Palette* palette;
+Rasteron_Palette* palette2;
 Rasteron_Sprite* sprite;
 Rasteron_Heightmap* heightmap;
 
@@ -34,6 +35,7 @@ void genImages(){
 	imageRed = createImgFilter(imageBase, CHANNEL_Red);
 	imageBlue = createImgFilter(imageBase, CHANNEL_Blue);
 	palette = createPalette(imageBase);
+	palette2 = filterPalette(DEFAULT_PALETTE_FILTER, palette);
 	sprite = createSprite(imageBase);
 	heightmap = createHeightmap(imageGrey); // Lattice data test
 }
@@ -46,7 +48,7 @@ void cleanup() {
 	deleteImg(imageBlue);
 	deleteHeightmap(heightmap);
 	deletePalette(palette);
-
+	deletePalette(palette2);
 	// delFileImage(&img);
 }
 

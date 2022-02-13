@@ -9,6 +9,7 @@
 #define ANIM_HEIGHT 600
 #define ANIM_WIDTH 500
 
+unsigned long ticker = 0;
 Rasteron_Animation* animation;
 Rasteron_Image* frame1;
 Rasteron_Image* frame2;
@@ -16,7 +17,7 @@ Rasteron_Image* frame3;
 Rasteron_Image* frame4;
 
 void genImages() {
-	frame1 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF111111);
+	frame1 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF00FFFF);
     frame2 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFFFF0000);
     frame3 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF00FF00);
     frame4 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF0000FF);
@@ -38,7 +39,8 @@ void cleanup() {
 
 #ifdef _WIN32
 
-BITMAP bmap;
+BITMAP bmap1, bmap2, bmap3, bmap4;
+BITMAP* bmap_active;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -48,10 +50,22 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	switch (message) {
 	case (WM_CREATE): {
 		genImages();
-		bmap = createWinBmap(getFrame(animation, 3));
+		bmap1 = createWinBmap(getFrame(animation, 0));
+		bmap2 = createWinBmap(getFrame(animation, 1));
+		bmap3 = createWinBmap(getFrame(animation, 2));
+		bmap4 = createWinBmap(getFrame(animation, 3));
 	}
 	case (WM_PAINT): {
-		drawWinBmap(hwnd, &bmap);
+		// drawWinBmap(hwnd, bmap_active);
+		switch (ticker % 4) {
+		case 0: drawWinBmap(hwnd, &bmap1); break;
+		case 1: drawWinBmap(hwnd, &bmap2); break;
+		case 2: drawWinBmap(hwnd, &bmap3); break;
+		case 3: drawWinBmap(hwnd, &bmap4); break;
+		}
+	}
+	case (WM_TIMER): {
+		ticker++; // increment the ticker
 	}
 	case (WM_DESTROY): { }
 	default: return DefWindowProc(hwnd, message, wParam, lParam);

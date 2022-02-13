@@ -41,19 +41,19 @@ Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
 	}
 
 	Rasteron_Palette* palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
-	palette->colorCount = 0;
+	palette->colorsFound = 0;
 
 	for (unsigned p = 0; p < refImage->width * refImage->height; p++) {
 		unsigned targetIndex = 0;
-		while (targetIndex <= palette->colorCount) { // step one is find target color in our palette
+		while (targetIndex <= palette->colorsFound) { // step one is find target color in our palette
 			if (*(refImage->data + p) == palette->colors[targetIndex][COLOR_CODE_OFFSET]) break;
 			else targetIndex++;
 		}
 
-		if (targetIndex == palette->colorCount + 1) { // if a match does not exist
-			palette->colors[palette->colorCount][COLOR_CODE_OFFSET] = *(refImage->data + p);
-			palette->colors[palette->colorCount][COLOR_COUNT_OFFSET] = 1; // only one pixel found
-			palette->colorCount++;
+		if (targetIndex == palette->colorsFound + 1) { // if a match does not exist
+			palette->colors[palette->colorsFound][COLOR_CODE_OFFSET] = *(refImage->data + p);
+			palette->colors[palette->colorsFound][COLOR_COUNT_OFFSET] = 1; // only one pixel found
+			palette->colorsFound++;
 		}
 		else palette->colors[targetIndex][COLOR_COUNT_OFFSET]++;
 	}
@@ -61,20 +61,20 @@ Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
 	return palette;
 }
 
-Rasteron_Palette* createLimPalette(unsigned minColorCount, const Rasteron_Palette* refImage){
+Rasteron_Palette* filterPalette(unsigned minColorCount, const Rasteron_Palette* refImage){
 	if (refImage == NULL) {
 		perror("Cannot create palette! Null pointer provided as reference image!");
 		return NULL;
 	}
 
 	Rasteron_Palette* palette = (Rasteron_Palette*)malloc(sizeof(Rasteron_Palette));
-	palette->colorCount = 0;
+	palette->colorsFound = 0;
 
-	for(unsigned p = 0; p < refImage->colorCount; p++)
+	for(unsigned p = 0; p < refImage->colorsFound; p++)
 		if(refImage->colors[p][COLOR_COUNT_OFFSET] >= minColorCount){
-			palette->colors[palette->colorCount][COLOR_CODE_OFFSET] = refImage->colors[palette->colorCount][COLOR_CODE_OFFSET];
-			palette->colors[palette->colorCount][COLOR_COUNT_OFFSET] = refImage->colors[palette->colorCount][COLOR_COUNT_OFFSET];
-			palette->colorCount++;
+			palette->colors[palette->colorsFound][COLOR_CODE_OFFSET] = refImage->colors[palette->colorsFound][COLOR_CODE_OFFSET];
+			palette->colors[palette->colorsFound][COLOR_COUNT_OFFSET] = refImage->colors[palette->colorsFound][COLOR_COUNT_OFFSET];
+			palette->colorsFound++;
 		}
 	
 	return palette;

@@ -120,28 +120,22 @@ uint32_t fract32(uint32_t refColor, double frac){
 }
 
 uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
-	uint8_t loAlphaBit = getLoColorBit(color1, color2, CHANNEL_Alpha);
-	uint8_t loRedBit = getLoColorBit(color1, color2, CHANNEL_Red);
-    uint8_t loGreenBit = getLoColorBit(color1, color2, CHANNEL_Green);
-    uint8_t loBlueBit = getLoColorBit(color1, color2, CHANNEL_Blue);
-	uint8_t hiAlphaBit = getHiColorBit(color1, color2, CHANNEL_Alpha);
-    uint8_t hiRedBit = getHiColorBit(color1, color2, CHANNEL_Red);
-    uint8_t hiGreenBit = getHiColorBit(color1, color2, CHANNEL_Green);
-    uint8_t hiBlueBit = getHiColorBit(color1, color2, CHANNEL_Blue);
+	uint8_t loRedBit = getLoColorBit(color1, color2, CHANNEL_Red); uint8_t hiRedBit = getHiColorBit(color1, color2, CHANNEL_Red);
+    uint8_t loGreenBit = getLoColorBit(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = getHiColorBit(color1, color2, CHANNEL_Green);
+    uint8_t loBlueBit = getLoColorBit(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = getHiColorBit(color1, color2, CHANNEL_Blue);
 
-	uint32_t loColor = (loAlphaBit << 24) + (loRedBit << 16) + (loGreenBit << 8) + loBlueBit;
+	uint32_t loColor = (0 << 24) + (loRedBit << 16) + (loGreenBit << 8) + loBlueBit;
 	if(iVal <= 0.0) return loColor;
 
-	uint32_t hiColor = (hiAlphaBit << 24) + (hiRedBit << 16) + (hiGreenBit << 8) + hiBlueBit;
+	uint32_t hiColor = (0 << 24) + (hiRedBit << 16) + (hiGreenBit << 8) + hiBlueBit;
 	if(iVal >= 1.0) return hiColor;
 
 	uint32_t diffColor = (hiColor - loColor);
-	uint8_t finalAlphaBit = 0xFF;
 	uint8_t finalRedBit = fract8((diffColor & RED_BITS_MASK) >> 16, iVal);
 	uint8_t finalGreenBit = fract8((diffColor & GREEN_BITS_MASK) >> 8, iVal);
 	uint8_t finalBlueBit = fract8(diffColor & BLUE_BITS_MASK, iVal);
 
-	return loColor + (uint32_t)((finalAlphaBit << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
+	return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
 }
 
 uint32_t blend(uint32_t color1, uint32_t color2, double bVal){

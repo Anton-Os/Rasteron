@@ -1,6 +1,8 @@
-#include "Rasteron.h"
+#ifndef RASTERON_HEIGHTMAP_H
 
-#define MAX_HEIGHTMAP_VALS 1048576 // 2 ^ 20
+#include "Image.h"
+
+#define MAX_HEIGHTMAP_VALS TWOPOWER(16) // 262144
 
 typedef struct {
     uint32_t width;
@@ -15,3 +17,6 @@ Rasteron_Heightmap* allocNewHeightmap(uint32_t height, uint32_t width, double mi
 Rasteron_Heightmap* createHeightmap(const Rasteron_Image* ref); // create heightmap from an image file
 
 void deleteHeightmap(Rasteron_Heightmap* lattice);
+
+#define RASTERON_HEIGHTMAP_H
+#endif

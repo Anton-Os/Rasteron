@@ -6,7 +6,7 @@ Rasteron_Animation* allocNewAnim(const char* prefix, uint32_t height, uint32_t w
     animation->height = height;
     animation->width = width;
     animation->frameCount = frameCount;
-    animation->bkColor = 0xFF00FFFF; // cyan background by default
+    animation->bkColor = ANIM_BACKGROUND; // cyan background by default
 
     animation->data = (Rasteron_Image**)malloc(frameCount * sizeof(Rasteron_Image*));
     for(unsigned f = 0; f < frameCount; f++)

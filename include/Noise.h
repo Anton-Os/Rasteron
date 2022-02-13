@@ -1,4 +1,6 @@
-#include "Rasteron.h"
+#ifndef RASTERON_NOISE_H
+
+#include "Image.h"
 #include "Heightmap.h"
 
 #define MAX_NOISE_WEIGHTS TWOPOWER(20) // 1048576
@@ -16,3 +18,6 @@ Rasteron_Image* createGradientNoiseImg(
 	const Rasteron_Image* refImage,
     const Rasteron_GradientNoise* lattice
 );
+
+#define RASTERON_NOISE_H
+#endif

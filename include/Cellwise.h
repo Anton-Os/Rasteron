@@ -1,3 +1,5 @@
+#ifndef RASTERON_CELLWISE_H
+
 #include "Image.h"
 
 // Start from zero to index arrays easily
@@ -35,3 +37,6 @@ typedef unsigned (*eightNebrCallback)(unsigned, unsigned, unsigned, unsigned, un
 
 Rasteron_Image* createPatternImg4(const Rasteron_Image* refImage, fourNebrCallback callback);
 Rasteron_Image* createPatternImg8(const Rasteron_Image* refImage, eightNebrCallback callback);
+
+#define RASTERON_CELLWISE_H
+#endif
