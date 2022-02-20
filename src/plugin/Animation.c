@@ -15,6 +15,10 @@ Rasteron_Animation* allocNewAnim(const char* prefix, uint32_t height, uint32_t w
 }
 
 Rasteron_Image* getFrame(Rasteron_Animation* animation, unsigned short frameIndex){
+    if (frameIndex >= animation->frameCount) {
+		perror("Frame index out of range!");
+		return NULL;
+	}
     return *(animation->data + frameIndex);
 }
 
@@ -29,10 +33,12 @@ void addFrameData(Rasteron_Animation* animation, const Rasteron_Image *const ref
 	}
 	// else (*(animation->data + frameIndex))->name = strcat(animation->prefix, "-frame"); // rename image as part of animation prefix
 
-	if (refImage->width == animation->width && refImage->height == animation->height) // checks for size compatability
+	if (refImage->width == (*(animation->data + frameIndex))->width && refImage->height == (*(animation->data + frameIndex))->height) // checks for size compatability
 		for (unsigned p = 0; p < refImage->width * refImage->height; p++)
-			*((*(animation->data + frameIndex))->data + p) = *(refImage->data + p); // copies pixel by pixel
-    else perror("Animation frame sizes incompatible!");
+			*((*(animation->data + frameIndex))->data + p) = *(refImage->data + p); // copies data pixel by pixel
+    else {
+        // TODO: Delete the old image and create anew
+    }
 }
 
 void deleteAnim(Rasteron_Animation* animation){

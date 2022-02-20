@@ -11,7 +11,7 @@ typedef struct {
     uint32_t height; // each child inherits the height
     unsigned bkColor; // each child has a starting background color
 
-    unsigned frameCount;
+    unsigned short frameCount;
     Rasteron_Image** data;
 } Rasteron_Animation;
 
