@@ -1,7 +1,5 @@
-#include "Noise.h"
-
-#include <stdio.h>
-#include <stdlib.h>
+#define RASTERON_ENABLE_PLUGIN
+#include "Rasteron.h"
 
 // Global Definitions
 

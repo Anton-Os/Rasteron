@@ -1,9 +1,6 @@
-#include "Toolbox.h"
-#include "Font.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-
+#define RASTERON_ENABLE_PLUGIN
+#define RASTERON_ENABLE_FONT
+#include "Rasteron.h"
 // Global Definitions
 FT_Library freetypeLib;
 const char* fontPath = FONTS_DIR;

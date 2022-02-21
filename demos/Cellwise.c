@@ -1,9 +1,5 @@
-#include "Toolbox.h"
+#define RASTERON_ENABLE_PLUGIN
 #include "Rasteron.h"
-#include "Cellwise.h"
-
-#include <stdio.h>
-#include <stdlib.h>
 
 // Global Definitions
 Rasteron_Image* blankImg;

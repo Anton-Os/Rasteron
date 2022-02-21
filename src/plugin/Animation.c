@@ -1,5 +1,14 @@
 #include "Animation.h"
 
+static char* getFrameName(char* prefix, unsigned frameIndex) {
+	// Naming the Image by Frame
+	char* name = "";
+	strcpy(name, prefix);
+	char* suffix = (char)frameIndex + '0';
+	strcat(name, &suffix);
+	return name;
+}
+
 Rasteron_Animation* allocNewAnim(const char* prefix, uint32_t height, uint32_t width, unsigned frameCount){
     Rasteron_Animation* animation = (Rasteron_Animation*)malloc(sizeof(Rasteron_Animation));
     animation->prefix = prefix;
@@ -27,17 +36,21 @@ void addFrameData(Rasteron_Animation* animation, const Rasteron_Image *const ref
 		perror("Frame index out of range!");
 		return;
 	}
-	else {
-		char* name = animation->prefix; strcat(name, "-frame");
-		(*(animation->data + frameIndex))->name = name;
-	}
-	// else (*(animation->data + frameIndex))->name = strcat(animation->prefix, "-frame"); // rename image as part of animation prefix
 
-	if (refImage->width == (*(animation->data + frameIndex))->width && refImage->height == (*(animation->data + frameIndex))->height) // checks for size compatability
-		for (unsigned p = 0; p < refImage->width * refImage->height; p++)
-			*((*(animation->data + frameIndex))->data + p) = *(refImage->data + p); // copies data pixel by pixel
+	char* name = getFrameName(animation->prefix, frameIndex);
+
+    // Copying Image Contents
+    Rasteron_Image* targetImage = *(animation->data + frameIndex);
+	if (refImage->width == (targetImage)->width && refImage->height == targetImage->height){ // checks for size compatability
+		targetImage->name = name;
+        for (unsigned p = 0; p < refImage->width * refImage->height; p++)
+			*(targetImage->data + p) = *(refImage->data + p); // copies data pixel by pixel
+    }
     else {
-        // TODO: Delete the old image and create anew
+        deleteImg(targetImage); // deletes old image contents
+        targetImage = allocNewImg(name, refImage->height, refImage->width);
+        for (unsigned p = 0; p < refImage->width * refImage->height; p++)
+			*(targetImage->data + p) = *(refImage->data + p); // copies data pixel by pixel
     }
 }
 

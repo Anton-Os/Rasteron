@@ -1,8 +1,4 @@
 #include "Rasteron.h"
-#include "Heightmap.h"
-
-#include <stdio.h>
-#include <stdlib.h>
 
 // Global Definitions
 const char* imagePath = IMAGE_DIR;
@@ -17,7 +13,7 @@ Rasteron_Image* imageBlue;
 Rasteron_Palette* palette;
 Rasteron_Palette* palette2;
 Rasteron_Sprite* sprite;
-Rasteron_Heightmap* heightmap;
+// Rasteron_Heightmap* heightmap;
 
 void genImageFilePath() {
 	strcpy(targetImagePath, imagePath);
@@ -37,7 +33,7 @@ void genImages(){
 	palette = createPalette(imageBase);
 	palette2 = filterPalette(DEFAULT_PALETTE_FILTER, palette);
 	sprite = createSprite(imageBase);
-	heightmap = createHeightmap(imageGrey); // Lattice data test
+	// heightmap = createHeightmap(imageGrey); // Lattice data test
 }
 
 void cleanup() {
@@ -46,7 +42,7 @@ void cleanup() {
 	deleteImg(imageGrey);
 	deleteImg(imageRed);
 	deleteImg(imageBlue);
-	deleteHeightmap(heightmap);
+	// deleteHeightmap(heightmap);
 	deletePalette(palette);
 	deletePalette(palette2);
 	// delFileImage(&img);

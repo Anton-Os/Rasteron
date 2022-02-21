@@ -3,7 +3,7 @@
 
 void createWindow(WNDPROC wndProc, LPCTSTR name){
 	WNDCLASS wndClass = { 0 };
-	// wndClass.style = CS_HREDRAW | CS_VREDRAW;
+	wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
 	wndClass.lpfnWndProc = wndProc;
 	wndClass.lpszClassName = "Rasteron";

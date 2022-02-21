@@ -10,27 +10,25 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build Type ${CMAKE_BUILD_TYPE}")
 
-include(externalTargets.cmake)
+# include(externalTargets.cmake)
 
-# Rasteron project sources
+# Rasteron Core Sources
 
-set(Rasteron_Src
+set(Core_src
     src/Toolbox.c
     src/Loader.c
     src/ImgBmp.c # BMP does not require dependencies
 
     src/core/Image.c
     src/core/Primitive.c
-    src/plugin/Cellwise.c
-    src/plugin/Heightmap.c
-    src/plugin/Noise.c
-    src/plugin/Animation.c
 )
-if(SUPPORT_FONT_BAKING)
-    list(APPEND Rasteron_Src src/plugin/Font.c)
+
+if(WIN32) # OS Specific Sources
+    list(APPEND Core_src src/Win_Util.c)
+elseif(UNIX)
+    list(APPEND Core_src src/Unix_Util.c)
 endif()
 
-# find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
 find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
 if(zlib_FOUND)
     message(STATUS "Zlib located")
@@ -43,7 +41,7 @@ if(libpng_FOUND)
     set(PNG_SUPPORT_STR "#define USE_IMG_PNG")
 
     message(STATUS "PNG Support Enabled")
-    list(APPEND Rasteron_Src src/ImgPng.c) # Add png functionality
+    list(APPEND Core_src src/ImgPng.c) # Add png functionality
 else(NOT libpng_FOUND)
     set(PNG_SUPPORT_STR "// #define USE_IMG_PNG")
 
@@ -55,28 +53,33 @@ if(libtiff_FOUND)
     set(TIFF_SUPPORT_STR "#define USE_IMG_TIFF")
 
     message(STATUS "TIFF Support Enabled")
-    list(APPEND Rasteron_Src src/ImgTIFF.c) # add tiff functionality
+    list(APPEND Core_src src/ImgTIFF.c) # add tiff functionality
 else(NOT libtiff_FOUND)
     set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
 
     message(STATUS "TIFF Support Disabled, build tiff")
 endif(libtiff_FOUND)
 
+# Rasteron Plugin Sources
+
+set(Plugin_src
+    src/plugin/Animation.c
+    src/plugin/Cellwise.c
+    src/plugin/Heightmap.c
+    src/plugin/Noise.c
+)
+
 if(SUPPORT_FONT_BAKING)
     find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     message(STATUS "freetype_lib variable: ${freetype_lib}")
+
+    list(APPEND Plugin_src src/plugin/Font.c)
 endif()
 
 
 
-if(WIN32) # Conditional OS Sources
-    list(APPEND Rasteron_Src src/Win_Util.c)
-elseif(UNIX)
-    list(APPEND Rasteron_Src src/Unix_Util.c)
-endif()
-
-add_library(Rasteron STATIC ${Rasteron_Src})
+add_library(Rasteron STATIC ${Core_src} ${Plugin_src})
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
 target_link_libraries(Rasteron PUBLIC tiff png zlibstatic)

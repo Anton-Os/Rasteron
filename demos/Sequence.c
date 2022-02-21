@@ -1,13 +1,9 @@
-#include "Toolbox.h"
+#define RASTERON_ENABLE_PLUGIN
 #include "Rasteron.h"
-#include "Animation.h"
-
-#include <stdio.h>
-#include <stdlib.h>
 
 // Global Definitions
-#define ANIM_HEIGHT 600
-#define ANIM_WIDTH 500
+#define ANIM_HEIGHT 1100
+#define ANIM_WIDTH 1200
 
 unsigned long ticker = 0;
 Rasteron_Animation* animation;
@@ -17,7 +13,7 @@ Rasteron_Image* frame3;
 Rasteron_Image* frame4;
 
 void genImages() {
-	frame1 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF00FFFF);
+	frame1 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF000000);
     frame2 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFFFF0000);
     frame3 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF00FF00);
     frame4 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF0000FF);
@@ -56,16 +52,19 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		bmap4 = createWinBmap(getFrame(animation, 3));
 	}
 	case (WM_PAINT): {
-		// drawWinBmap(hwnd, bmap_active);
-		switch (ticker % 4) {
-		case 0: drawWinBmap(hwnd, &bmap1); break;
-		case 1: drawWinBmap(hwnd, &bmap2); break;
-		case 2: drawWinBmap(hwnd, &bmap3); break;
-		case 3: drawWinBmap(hwnd, &bmap4); break;
+		switch (ticker % 8) { // Extending duration per Frame
+		case 0: case 1: drawWinBmap(hwnd, &bmap1); break;
+		case 2: case 3: drawWinBmap(hwnd, &bmap2); break;
+		case 4: case 5: drawWinBmap(hwnd, &bmap3); break;
+		case 6: case 7: drawWinBmap(hwnd, &bmap4); break;
 		}
 	}
 	case (WM_TIMER): {
+		puts(" tick ");
 		ticker++; // increment the ticker
+
+		GetClientRect(hwnd, &rect);
+		InvalidateRect(hwnd, &rect, FALSE);
 	}
 	case (WM_DESTROY): { }
 	default: return DefWindowProc(hwnd, message, wParam, lParam);
