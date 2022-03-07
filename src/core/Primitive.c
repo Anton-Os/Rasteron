@@ -46,12 +46,12 @@ Rasteron_Palette* createPalette(const Rasteron_Image* refImage){
 	for (unsigned p = 0; p < refImage->width * refImage->height; p++) {
 		unsigned targetIndex = 0;
 		while (targetIndex <= palette->colorsFound) { // step one is find target color in our palette
-			if (*(refImage->data + p) == palette->colors[targetIndex][COLOR_CODE_OFFSET]) break;
+			if (*(refImage->data + p) == palette->colors[targetIndex][COLOR_OFFSET]) break;
 			else targetIndex++;
 		}
 
 		if (targetIndex == palette->colorsFound + 1) { // if a match does not exist
-			palette->colors[palette->colorsFound][COLOR_CODE_OFFSET] = *(refImage->data + p);
+			palette->colors[palette->colorsFound][COLOR_OFFSET] = *(refImage->data + p);
 			palette->colors[palette->colorsFound][COLOR_COUNT_OFFSET] = 1; // only one pixel found
 			palette->colorsFound++;
 		}
@@ -72,7 +72,7 @@ Rasteron_Palette* filterPalette(unsigned minColorCount, const Rasteron_Palette* 
 
 	for(unsigned p = 0; p < refImage->colorsFound; p++)
 		if(refImage->colors[p][COLOR_COUNT_OFFSET] >= minColorCount){
-			palette->colors[palette->colorsFound][COLOR_CODE_OFFSET] = refImage->colors[palette->colorsFound][COLOR_CODE_OFFSET];
+			palette->colors[palette->colorsFound][COLOR_OFFSET] = refImage->colors[palette->colorsFound][COLOR_OFFSET];
 			palette->colors[palette->colorsFound][COLOR_COUNT_OFFSET] = refImage->colors[palette->colorsFound][COLOR_COUNT_OFFSET];
 			palette->colorsFound++;
 		}

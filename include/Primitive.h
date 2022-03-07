@@ -29,7 +29,7 @@ void deleteSprite(Rasteron_Sprite* sprite);
 
 #define MAX_COLOR_TABLE_VALS TWOPOWER(16) // 262144
 #define DEFAULT_PALETTE_FILTER TWOPOWER(10) // 1024
-#define COLOR_CODE_OFFSET 0
+#define COLOR_OFFSET 0
 #define COLOR_COUNT_OFFSET 1
 
 typedef struct {

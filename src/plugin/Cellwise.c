@@ -4,12 +4,10 @@
 
 static void setFlagBit(nebrCheckFlags* target, enum NBR_CellFlags flagBit){
     *(target) = (*(target) | (1 << (flagBit)));
-    return;
 }
 
 static void clearFlagBit(nebrCheckFlags* target, enum NBR_CellFlags flagBit){
     *(target) = (*(target) & (~(1 << (flagBit))));
-    return;
 }
 
 static nebrCheckFlags checkExistNebrs(uint32_t index, uint32_t width, uint32_t height){
@@ -93,20 +91,56 @@ NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 				i++;
 			}
 		}
-
 		pIndex++;
 	}
 	return list; // Return the structure that we generated
 }
 
-Rasteron_Image* createPatternImg4(const Rasteron_Image* refImage, fourNebrCallback callback){
+Rasteron_Image* createScanPatImg(const Rasteron_Image* refImage, nebrCallback2 callback){
 	if(refImage == NULL){
 		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
 	}
 
 	NebrTable_List* nebrTables = genNebrTables(refImage);
-	Rasteron_Image* fourNebrImg = allocNewImg("four-pattern", refImage->height, refImage->width);
+	Rasteron_Image* twoNebrImg = allocNewImg("scan-pattern", refImage->height, refImage->width);
+
+	for(unsigned r = 0; r < refImage->height; r++){
+		for(unsigned c = 0; c < refImage->width; c++){
+			unsigned o = (r * refImage->width) + c; // compute o
+
+			NebrTable* currentTable = nebrTables->tables + o;
+			unsigned right, left;
+
+			unsigned short i = 0; // index to keep track of neighbor
+			if (currentTable->nebrExistFlags & (1 << NBR_Right)) {
+				right = *(currentTable->nebrs + i); i++;
+			} else right = ZERO_COLOR;
+			if (currentTable->nebrExistFlags & (1 << NBR_Left)) {
+				left = *(currentTable->nebrs + i); i++;
+			} else left = ZERO_COLOR;
+
+			// Fix Code Below!!!
+
+			*(twoNebrImg->data + o) = callback(right, left);
+
+			if(r < refImage->height - 1) 
+				*(twoNebrImg->data + o + refImage->width) = *(twoNebrImg->data + o); // copy pixel into next row
+		}
+	}
+
+	delNebrTables(nebrTables);
+	return twoNebrImg;
+}
+
+Rasteron_Image* createCellPatImg4(const Rasteron_Image* refImage, nebrCallback4 callback){
+	if(refImage == NULL){
+		perror("Cannot create pattern image! Null pointer provided as input");
+		return NULL;
+	}
+
+	NebrTable_List* nebrTables = genNebrTables(refImage);
+	Rasteron_Image* patternImg = allocNewImg("cell-pattern", refImage->height, refImage->width);
 
 	for(unsigned p = 0; p < refImage->height * refImage->width; p++){
 		NebrTable* currentTable = nebrTables->tables + p;
@@ -115,32 +149,34 @@ Rasteron_Image* createPatternImg4(const Rasteron_Image* refImage, fourNebrCallba
 		unsigned short i = 0; // index to keep track of neighbor
 		if (currentTable->nebrExistFlags & (1 << NBR_Bot)) {
 			bottom = *(currentTable->nebrs + i); i++;
-		} else bottom = BAD_COLOR_CODE;
+		} else bottom = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Right)) {
 			right = *(currentTable->nebrs + i); i++;
-		} else right = BAD_COLOR_CODE;
+		} else right = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Left)) {
 			left = *(currentTable->nebrs + i); i++;
-		} else left = BAD_COLOR_CODE;
+		} else left = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Top)) {
 			top = *(currentTable->nebrs + i); i++;
-		} else top = BAD_COLOR_CODE;
+		} else top = ZERO_COLOR;
 
-		*(fourNebrImg->data + p) = callback(bottom, right, left, top);
+		unsigned newColor = callback(bottom, right, left, top);
+		if(newColor != ZERO_COLOR) // preserve original color on false
+			*(patternImg->data + p) = newColor;
 	}
 
 	delNebrTables(nebrTables);
-	return fourNebrImg;
+	return patternImg;
 }
 
-Rasteron_Image* createPatternImg8(const Rasteron_Image* refImage, eightNebrCallback callback){
+Rasteron_Image* createCellPatImg8(const Rasteron_Image* refImage, nebrCallback8 callback){
 	if(refImage == NULL){
 		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
 	}
 
 	NebrTable_List* nebrTables = genNebrTables(refImage);
-	Rasteron_Image* eightNebrImg = allocNewImg("eight-pattern", refImage->height, refImage->width);
+	Rasteron_Image* patternImg = allocNewImg("cell-pattern", refImage->height, refImage->width);
 
 	for (unsigned p = 0; p < refImage->height * refImage->width; p++) {
 		NebrTable* currentTable = nebrTables->tables + p;
@@ -149,34 +185,36 @@ Rasteron_Image* createPatternImg8(const Rasteron_Image* refImage, eightNebrCallb
 		unsigned short i = 0; // index to keep track of neighbor
 		if (currentTable->nebrExistFlags & (1 << NBR_Bot_Right)) {
 			br = *(currentTable->nebrs + i); i++;
-		} else br = BAD_COLOR_CODE;
+		} else br = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Bot)) {
 			b = *(currentTable->nebrs + i); i++;
-		} else b = BAD_COLOR_CODE;
+		} else b = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Bot_Left)) {
 			bl = *(currentTable->nebrs + i); i++;
-		} else bl = BAD_COLOR_CODE;
+		} else bl = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Right)) {
 			r = *(currentTable->nebrs + i); i++;
-		} else r = BAD_COLOR_CODE;
+		} else r = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Left)) {
 			l = *(currentTable->nebrs + i); i++;
-		} else l = BAD_COLOR_CODE;
+		} else l = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Top_Right)) {
 			tr = *(currentTable->nebrs + i); i++;
-		} else tr = BAD_COLOR_CODE;
+		} else tr = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Top)) {
 			t = *(currentTable->nebrs + i); i++;
-		} else t = BAD_COLOR_CODE;
+		} else t = ZERO_COLOR;
 		if (currentTable->nebrExistFlags & (1 << NBR_Top_Left)) {
 			tl = *(currentTable->nebrs + i); i++;
-		} else tl = BAD_COLOR_CODE;
+		} else tl = ZERO_COLOR;
 
-		*(eightNebrImg->data + p) = callback(br, b, bl, r, l, tr, t, tl);
+		unsigned newColor = callback(br, b, bl, r, l, tr, t, tl);
+		if(newColor != ZERO_COLOR) // preserve original color on false
+			*(patternImg->data + p) = newColor;
 	}
 
 	delNebrTables(nebrTables);
-	return eightNebrImg;
+	return patternImg;
 }
 
 void delNebrTables(NebrTable_List* nebrTables) {

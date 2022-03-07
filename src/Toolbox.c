@@ -16,61 +16,61 @@ uint32_t genRandColorVal(){
 	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
 }
 
-void makeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t colorVal) {
-	for (unsigned int i = 0; i < pCount; i++)
+void makeColor(uint32_t* raster, unsigned pixels, uint32_t colorVal) {
+	for (unsigned i = 0; i < pixels; i++)
 		*(raster + i) = colorVal;
 }
 
-void changeRasterColor(uint32_t* raster, unsigned int pCount, uint32_t newColor, uint32_t oldColor) {
-	for (unsigned int i = 0; i < pCount; i++)
+void changeColor(uint32_t* raster, unsigned pixels, uint32_t newColor, uint32_t oldColor) {
+	for (unsigned i = 0; i < pixels; i++)
 		if (*(raster + i) == oldColor) 
 			*(raster + i) = newColor;
 }
 
-void switchRasterRB(uint32_t* raster, unsigned int pCount) {
-	for (unsigned int i = 0; i < pCount; i++) {
-		unsigned int val = *(raster + i);
-		unsigned int res = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
-		// unsigned int res = (val & RED_BITS_MASK) + (val & GREEN_BITS_MASK) + (val & BLUE_BITS_MASK);
+void switchRB(uint32_t* raster, unsigned pixels) {
+	for (unsigned i = 0; i < pixels; i++) {
+		unsigned val = *(raster + i);
+		unsigned res = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
+		// unsigned res = (val & RED_CHANNEL) + (val & GREEN_CHANNEL) + (val & BLUE_CHANNEL);
 		*(raster + i) = res;
 	}
 }
 
-void switchRasterGB(uint32_t* raster, unsigned int pCount) {
-	for (unsigned int i = 0; i < pCount; i++) {
-		unsigned int val = *(raster + i);
-		unsigned int res = (val & 0xFF0000) + ((val & 0xFF) << 8) + ((val >> 8) & 0xFF);
+void switchGB(uint32_t* raster, unsigned pixels) {
+	for (unsigned i = 0; i < pixels; i++) {
+		unsigned val = *(raster + i);
+		unsigned res = (val & 0xFF0000) + ((val & 0xFF) << 8) + ((val >> 8) & 0xFF);
 		*(raster + i) = res;
 	}
 }
 
-void switchRasterRG(uint32_t* raster, unsigned int pCount) {
-	for (unsigned int i = 0; i < pCount; i++) {
-		unsigned int val = *(raster + i);
-		unsigned int res = ((val & 0xFF00) << 8) + ((val >> 8) & 0xFF00) + (val & 0xFF);
+void switchRG(uint32_t* raster, unsigned pixels) {
+	for (unsigned i = 0; i < pixels; i++) {
+		unsigned val = *(raster + i);
+		unsigned res = ((val & 0xFF00) << 8) + ((val >> 8) & 0xFF00) + (val & 0xFF);
 		*(raster + i) = res;
 	}
 }
 
-uint8_t getLoColorBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+uint8_t getLoChannelBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask, shift;
 	switch(channel){
-		case CHANNEL_Alpha: mask = ALPHA_BITS_MASK; shift = 24; break;
-		case CHANNEL_Red: mask = RED_BITS_MASK; shift = 16; break;
-		case CHANNEL_Green: mask = GREEN_BITS_MASK; shift = 8; break;
-		case CHANNEL_Blue: mask = BLUE_BITS_MASK; shift = 0; break;
+		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
+		case CHANNEL_Red: mask = RED_CHANNEL; shift = 16; break;
+		case CHANNEL_Green: mask = GREEN_CHANNEL; shift = 8; break;
+		case CHANNEL_Blue: mask = BLUE_CHANNEL; shift = 0; break;
 	}
 
 	return ((color1 & mask) < (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
 }
 
-uint8_t getHiColorBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+uint8_t getHiChannelBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask, shift;
 	switch(channel){
-		case CHANNEL_Alpha: mask = ALPHA_BITS_MASK; shift = 24; break;
-		case CHANNEL_Red: mask = RED_BITS_MASK; shift = 16; break;
-		case CHANNEL_Green: mask = GREEN_BITS_MASK; shift = 8; break;
-		case CHANNEL_Blue: mask = BLUE_BITS_MASK; shift = 0; break;
+		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
+		case CHANNEL_Red: mask = RED_CHANNEL; shift = 16; break;
+		case CHANNEL_Green: mask = GREEN_CHANNEL; shift = 8; break;
+		case CHANNEL_Blue: mask = BLUE_CHANNEL; shift = 0; break;
 	}
 
 	return ((color1 & mask) > (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
@@ -87,7 +87,7 @@ double getPixDist(unsigned p1, unsigned p2, unsigned imageWidth){
 
 uint32_t grayify32(uint32_t refColor){
 	if (refColor & 0x00FFFFFF == 0xFFFFFF) 
-		return TOTAL_WHITE_COLOR_CODE;
+		return WHITE_COLOR;
 	
 	uint8_t alpha = 0xFF; // Complete opacity desired for alpha
 	uint8_t avgColor = ((uint32_t)((refColor & 0xFF0000) << 16) + (uint32_t)((refColor & 0xFF00) << 16) + (uint32_t)((refColor & 0xFF) << 16)) / 3;
@@ -110,19 +110,19 @@ uint8_t fract8(uint8_t refColor, double frac){
 }
 
 uint32_t fract32(uint32_t refColor, double frac){
-	uint8_t alpha = fract8((refColor & ALPHA_BITS_MASK) >> 24, frac);
-	uint8_t red = fract8((refColor & RED_BITS_MASK) >> 16, frac);
-	uint8_t green = fract8((refColor & GREEN_BITS_MASK) >> 8, frac);
-	uint8_t blue = fract8(refColor & BLUE_BITS_MASK, frac);
+	uint8_t alpha = fract8((refColor & ALPHA_CHANNEL) >> 24, frac);
+	uint8_t red = fract8((refColor & RED_CHANNEL) >> 16, frac);
+	uint8_t green = fract8((refColor & GREEN_CHANNEL) >> 8, frac);
+	uint8_t blue = fract8(refColor & BLUE_CHANNEL, frac);
 
 	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
 	return result;
 }
 
 uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
-	uint8_t loRedBit = getLoColorBit(color1, color2, CHANNEL_Red); uint8_t hiRedBit = getHiColorBit(color1, color2, CHANNEL_Red);
-    uint8_t loGreenBit = getLoColorBit(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = getHiColorBit(color1, color2, CHANNEL_Green);
-    uint8_t loBlueBit = getLoColorBit(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = getHiColorBit(color1, color2, CHANNEL_Blue);
+	uint8_t loRedBit = getLoChannelBit(color1, color2, CHANNEL_Red); uint8_t hiRedBit = getHiChannelBit(color1, color2, CHANNEL_Red);
+    uint8_t loGreenBit = getLoChannelBit(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = getHiChannelBit(color1, color2, CHANNEL_Green);
+    uint8_t loBlueBit = getLoChannelBit(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = getHiChannelBit(color1, color2, CHANNEL_Blue);
 
 	uint32_t loColor = (0 << 24) + (loRedBit << 16) + (loGreenBit << 8) + loBlueBit;
 	if(iVal <= 0.0) return loColor;
@@ -131,9 +131,9 @@ uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
 	if(iVal >= 1.0) return hiColor;
 
 	uint32_t diffColor = (hiColor - loColor);
-	uint8_t finalRedBit = fract8((diffColor & RED_BITS_MASK) >> 16, iVal);
-	uint8_t finalGreenBit = fract8((diffColor & GREEN_BITS_MASK) >> 8, iVal);
-	uint8_t finalBlueBit = fract8(diffColor & BLUE_BITS_MASK, iVal);
+	uint8_t finalRedBit = fract8((diffColor & RED_CHANNEL) >> 16, iVal);
+	uint8_t finalGreenBit = fract8((diffColor & GREEN_CHANNEL) >> 8, iVal);
+	uint8_t finalBlueBit = fract8(diffColor & BLUE_CHANNEL, iVal);
 
 	return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
 }

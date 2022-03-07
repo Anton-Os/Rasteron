@@ -28,8 +28,8 @@ void genImages(){
 	//loadFileImage(targetImagePath, &img); // hard path
 	imageBase = createImgRef(targetImagePath);
 	imageGrey = createImgGrey(imageBase);
-	imageRed = createImgFilter(imageBase, CHANNEL_Red);
-	imageBlue = createImgFilter(imageBase, CHANNEL_Blue);
+	imageRed = createImgFltCh(imageBase, CHANNEL_Red);
+	imageBlue = createImgFltCh(imageBase, CHANNEL_Blue);
 	palette = createPalette(imageBase);
 	palette2 = filterPalette(DEFAULT_PALETTE_FILTER, palette);
 	sprite = createSprite(imageBase);

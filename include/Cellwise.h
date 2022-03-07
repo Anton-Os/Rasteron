@@ -32,11 +32,13 @@ typedef struct {
 NebrTable_List* genNebrTables(Rasteron_Image* image);
 void delNebrTables(NebrTable_List* nebrTables);
 
-typedef unsigned (*fourNebrCallback)(unsigned, unsigned, unsigned, unsigned); // takes bottom, right, left, and top neighbors as input, returns result color
-typedef unsigned (*eightNebrCallback)(unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned); // takes all neighbors in order as input, returns result color
+typedef unsigned (*nebrCallback2)(unsigned, unsigned); // takes only right and left neighbors as input, returns result color
+typedef unsigned (*nebrCallback4)(unsigned, unsigned, unsigned, unsigned); // takes bottom, right, left, and top neighbors as input, returns result color
+typedef unsigned (*nebrCallback8)(unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned); // takes all neighbors in order as input, returns result color
 
-Rasteron_Image* createPatternImg4(const Rasteron_Image* refImage, fourNebrCallback callback);
-Rasteron_Image* createPatternImg8(const Rasteron_Image* refImage, eightNebrCallback callback);
+Rasteron_Image* createScanPatImg(const Rasteron_Image* refImage, nebrCallback2 callback); // creates image from two neighbors
+Rasteron_Image* createCellPatImg4(const Rasteron_Image* refImage, nebrCallback4 callback); // creates image from four neightbors
+Rasteron_Image* createCellPatImg8(const Rasteron_Image* refImage, nebrCallback8 callback); // creates an image from nine neighbors
 
 #define RASTERON_CELLWISE_H
 #endif

@@ -43,10 +43,10 @@ XImage* createUnixBmapRaw(UnixContext* context, uint32_t height, uint32_t width,
 	for(unsigned p = 0; p < dataSize; p++)
 		switch (p % 4) // Copies data from cooresponding input data
 		{
-			case 0: *(newData + p) = *(data + (p / 4)) & ALPHA_BITS_MASK; break;
-			case 1: *(newData + p) = *(data + (p / 4)) & RED_BITS_MASK; break;
-			case 2: *(newData + p) = *(data + (p / 4)) & GREEN_BITS_MASK; break;
-			case 3: *(newData + p) = *(data + (p / 4)) & BLUE_BITS_MASK; break;
+			case 0: *(newData + p) = *(data + (p / 4)) & ALPHA_CHANNEL; break;
+			case 1: *(newData + p) = *(data + (p / 4)) & RED_CHANNEL; break;
+			case 2: *(newData + p) = *(data + (p / 4)) & GREEN_CHANNEL; break;
+			case 3: *(newData + p) = *(data + (p / 4)) & BLUE_CHANNEL; break;
 		}
 
 	int bytesPerLine = 8 * ((width + 7) / 8);
@@ -65,7 +65,7 @@ XImage* createUnixBmapRaw(UnixContext* context, uint32_t height, uint32_t width,
 	switch (image->fileFormat) {
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
-		switchRasterRB(image->data.tiff.raster, image->data.tiff.width * image->data.tiff.length); // Should maybe move to ImgTIFF
+		switchRB(image->data.tiff.raster, image->data.tiff.width * image->data.tiff.length); // Should maybe move to ImgTIFF
 		return createUnixBmapRaw(image->data.tiff.width, image->data.tiff.length, image->data.tiff.raster);
 #endif
 #ifdef USE_IMG_BMP

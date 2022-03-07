@@ -48,7 +48,7 @@ Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width){
 
 Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor){
 	Rasteron_Image* blankImage = allocNewImg("blank", height, width);
-	makeRasterColor(blankImage->data, blankImage->width * blankImage->height, solidColor);
+	makeColor(blankImage->data, blankImage->width * blankImage->height, solidColor);
 	return blankImage;
 }
 
@@ -61,7 +61,7 @@ Rasteron_Image* createImgRef(const char* fileName){
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
 		refImage = allocNewImg("ref-tiff", fileImage.data.tiff.length, fileImage.data.tiff.width);
-		switchRasterRB(fileImage.data.tiff.raster, fileImage.data.tiff.width * fileImage.data.tiff.length);
+		switchRB(fileImage.data.tiff.raster, fileImage.data.tiff.width * fileImage.data.tiff.length);
 		for(unsigned i = 0; i < refImage->width * refImage->height; i++)
 		   *(refImage->data + i) = *(fileImage.data.tiff.raster + i); // copying operation
 		break;
@@ -107,7 +107,7 @@ Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
 	return greyImage;
 }
 
-Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+Rasteron_Image* createImgFltCh(const Rasteron_Image* refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
 		perror("Cannot create filter image! Null pointer provided as reference image!");
 		return NULL;
@@ -118,59 +118,59 @@ Rasteron_Image* createImgFilter(const Rasteron_Image* refImage, CHANNEL_Type cha
 	switch(channel){
 		case CHANNEL_Red:
 			filterImage = allocNewImg("red", refImage->height, refImage->width);
-			colorMask = RED_BITS_MASK;
+			colorMask = RED_CHANNEL;
 			break;
 		case CHANNEL_Green:
 			filterImage = allocNewImg("green", refImage->height, refImage->width);
-			colorMask = GREEN_BITS_MASK;
+			colorMask = GREEN_CHANNEL;
 			break;
 		case CHANNEL_Blue:
 			filterImage = allocNewImg("blue", refImage->height, refImage->width);
-			colorMask = BLUE_BITS_MASK;
+			colorMask = BLUE_CHANNEL;
 			break;
 	}
 	
 	// Generation Logic
 	uint32_t color;
 	for (unsigned p = 0; p < filterImage->width * filterImage->height; p++) {
-		color = (*(refImage->data + p) & ALPHA_BITS_MASK) + (*(refImage->data + p) & colorMask) ;
+		color = (*(refImage->data + p) & ALPHA_CHANNEL) + (*(refImage->data + p) & colorMask) ;
 		*(filterImage->data + p) = color;
 	}
 
 	return filterImage;
 }
 
-Rasteron_Image* createImgScatter(const Rasteron_Image* refImage, uint32_t color, double prob){
+Rasteron_Image* createImgSeedRaw(const Rasteron_Image* refImage, uint32_t color, double prob){
 	if (refImage == NULL) {
-		perror("Cannot create scatter image! Null pointer provided as reference image!");
+		perror("Cannot create seeded image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	Rasteron_Image* scatterImage = allocNewImg("scatter", refImage->height, refImage->width);
-	// *scatterImage->data = *refImage->data; // copies original image
+	Rasteron_Image* seededImage = allocNewImg("seeded", refImage->height, refImage->width);
+	// *seededImage->data = *refImage->data; // copies original image
 	if(prob >= 1.0){
-		makeRasterColor(scatterImage->data, scatterImage->width * scatterImage->height, color);
-		return scatterImage;
-	} else if(prob <= 0.0) return scatterImage; // no modifications
+		makeColor(seededImage->data, seededImage->width * seededImage->height, color);
+		return seededImage;
+	} else if(prob <= 0.0) return seededImage; // no modifications
 
 	double chance = 0.0;
-	for (unsigned p = 0; p < scatterImage->width * scatterImage->height; p++) {
+	for (unsigned p = 0; p < seededImage->width * seededImage->height; p++) {
 		chance = (double)rand() / (double)RAND_MAX;
-		if (chance <= prob) *(scatterImage->data + p) = color; // if chance is less than probability change to target color
-		else *(scatterImage->data + p) = *(refImage->data + p); // otherwise copy ref contents
+		if (chance <= prob) *(seededImage->data + p) = color; // if chance is less than probability change to target color
+		else *(seededImage->data + p) = *(refImage->data + p); // otherwise copy ref contents
 	}
 
-	return scatterImage;
+	return seededImage;
 }
 
-Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable){
+Rasteron_Image* createImgSeedWeighted(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable){
 	if (refImage == NULL) {
-		perror("Cannot create splash image! Null pointer provided as reference image!");
+		perror("Cannot create palette image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	Rasteron_Image* splashImage = allocNewImg("splash", refImage->height, refImage->width);
-	// *splashImage->data = *refImage->data; // copies original image
+	Rasteron_Image* paletteImage = allocNewImg("palette", refImage->height, refImage->width);
+	// *paletteImage->data = *refImage->data; // copies original image
 	const float defaultSeedWeight = 1.0f / (seedTable->seedCount + 1); // leaves less covered as seed count increases
 
 	double chance = 0.0f;
@@ -186,7 +186,7 @@ Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_S
 	}
 
 	// setting proper colors
-	for (unsigned p = 0; p < splashImage->width * splashImage->height; p++) {
+	for (unsigned p = 0; p < paletteImage->width * paletteImage->height; p++) {
 		chance = ((double)rand() / (double)RAND_MAX) * seedWeightTotal;
 		unsigned color = *(refImage->data + p);
 		for(unsigned s = 0; s < seedTable->seedCount; s++)
@@ -194,15 +194,15 @@ Rasteron_Image* createImgSplash(const Rasteron_Image* refImage, const Rasteron_S
 				color = seedTable->seeds[s].color; // sets new color if range is satisfied
 				break;
 			}
-		*(splashImage->data + p) = color;
+		*(paletteImage->data + p) = color;
 	}
 
-	return splashImage;
+	return paletteImage;
 }
 
-Rasteron_Image* createImgProxCell(const Rasteron_Image* refImage, const Rasteron_ColorPointTable* colorPointTable){
+Rasteron_Image* createImgProxim(const Rasteron_Image* refImage, const Rasteron_ColorPointTable* colorPointTable){
 	if (refImage == NULL) {
-		perror("Cannot create splash image! Null pointer provided as reference image!");
+		perror("Cannot create palette image! Null pointer provided as reference image!");
 		return NULL;
 	}
 

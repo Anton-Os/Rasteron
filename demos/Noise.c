@@ -12,8 +12,8 @@ Rasteron_GradientNoise noiseGradientTable = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
 Rasteron_Image* blankImg;
 Rasteron_Image* randNoiseImg;
 Rasteron_Image* randNoiseImg2;
-Rasteron_Image* scatterImg;
-Rasteron_Image* splashImg;
+Rasteron_Image* seededImg;
+Rasteron_Image* paletteImg;
 Rasteron_Image* proxCellImg;
 
 void genImages(){
@@ -30,17 +30,17 @@ void genImages(){
 	blankImg = createImgBlank(1100, 1200, 0xFF73e5ff);
 	randNoiseImg = createWhiteNoiseImg(blankImg, 0xFFFF0000, 0xFF0000FF);
 	randNoiseImg2 = createGradientNoiseImg(blankImg, &noiseGradientTable);
-	scatterImg = createImgScatter(blankImg, 0xFFFF00FF, 0.1);
-	splashImg = createImgSplash(blankImg, &seedTable);
-	proxCellImg = createImgProxCell(blankImg, &colorPtTable);
+	seededImg = createImgSeedRaw(blankImg, 0xFFFF00FF, 0.1);
+	paletteImg = createImgSeedWeighted(blankImg, &seedTable);
+	proxCellImg = createImgProxim(blankImg, &colorPtTable);
 }
 
 void cleanup() {
 	deleteImg(blankImg);
 	deleteImg(randNoiseImg);
 	deleteImg(randNoiseImg2);
-	deleteImg(scatterImg);
-	deleteImg(splashImg);
+	deleteImg(seededImg);
+	deleteImg(paletteImg);
 	deleteImg(proxCellImg);
 }
 
@@ -60,8 +60,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 		// bmap = createWinBmap(randNoiseImg);
 		bmap = createWinBmap(randNoiseImg2);
-		// bmap = createWinBmap(scatterImg);
-		// bmap = createWinBmap(splashImg);
+		// bmap = createWinBmap(seededImg);
+		// bmap = createWinBmap(paletteImg);
 		// bmap = createWinBmap(proxCellImg);
 	}
 	case (WM_PAINT): {
@@ -81,7 +81,7 @@ void unixProc(){
 	seedRandGen();
 	genImages();
 
-	XImage* unixBmap = createUnixBmapRaw(context, scatterImg->width, scatterImg->height, scatterImg->data);
+	XImage* unixBmap = createUnixBmapRaw(context, seededImg->width, seededImg->height, seededImg->data);
 	drawUnixBmap(context, unixBmap);
 }
 
