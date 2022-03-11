@@ -2,9 +2,13 @@
 
 // Helper Types Operations
 
-void addSeed(Rasteron_SeedTable* table, unsigned color){
-	addWeightedSeed(table, color, 0.0);
-}
+/* static unsigned calcPixelPointCoord(double input, double xMin, double xMax){
+	if(pixPos->xFrac <= xMin) xOffset = 0;
+	else if(pixPos->xFrac >= 1.0) xOffset = refImage->width - 1;
+	else xOffset = (unsigned)((double)refImage->width * pixPos->xFrac);
+} */
+
+void addSeed(Rasteron_SeedTable* table, unsigned color){ addWeightedSeed(table, color, 0.0); }
 
 void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight){
 	table->seeds[table->seedCount].color = color;
@@ -19,7 +23,7 @@ void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac
 	table->pixelPointCount++;
 }
 
-unsigned getPixIndexFromPos(Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage){
+unsigned getPixOffset(const Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage){
 	unsigned xOffset;
 	if(pixPos->xFrac <= 0.0) xOffset = 0;
 	else if(pixPos->xFrac >= 1.0) xOffset = refImage->width - 1;
@@ -34,6 +38,19 @@ unsigned getPixIndexFromPos(Rasteron_PixelPoint* pixPos, Rasteron_Image* refImag
 	return pixIndex;
 }
 
+unsigned getPixCursorOffset(const Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage){
+	unsigned xOffset;
+	if(pixPos->xFrac <= -1.0) xOffset = 0;
+	else if(pixPos->xFrac >= 1.0) xOffset = refImage->width - 1;
+
+	unsigned yOffset;
+	if(pixPos->yFrac <= -1.0) yOffset = 0;
+	else if(pixPos->yFrac >= 1.0) yOffset = refImage->height;
+
+	// Implement Body Here!
+	return 0;
+}
+
 // Image Operations
 
 Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width){
@@ -44,12 +61,6 @@ Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width){
 	image->data = (uint32_t*)malloc(width * height * sizeof(uint32_t));
 
 	return image;
-}
-
-Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor){
-	Rasteron_Image* blankImage = allocNewImg("blank", height, width);
-	makeColor(blankImage->data, blankImage->width * blankImage->height, solidColor);
-	return blankImage;
 }
 
 Rasteron_Image* createImgRef(const char* fileName){
@@ -89,6 +100,29 @@ Rasteron_Image* createImgRef(const char* fileName){
 	return refImage;
 }
 
+Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor){
+	Rasteron_Image* blankImage = allocNewImg("blank", height, width);
+	makeColor(blankImage->data, blankImage->width * blankImage->height, solidColor);
+	return blankImage;
+}
+
+Rasteron_Image* createImgFlip(const Rasteron_Image* refImage, enum FLIP_Type flip){
+	Rasteron_Image* flipImage = NULL;
+	if(flip == FLIP_Upside){
+		flipImage = allocNewImg("flip", refImage->height, refImage->width); // matches source
+		for(unsigned p = 0; p < refImage->height * refImage->width; p++)
+			*(flipImage->data + (refImage->height * refImage->width) - p - 1) = *(refImage->data + p); // copies pixels in reverse
+	} else {
+		flipImage = allocNewImg("flip", refImage->width, refImage->height); // opposite of source
+		for(unsigned p = 0; p < refImage->height * refImage->width; p++){
+			unsigned matchIndex = (flip == FLIP_Clock)? p : p; // change these to coorespond to flipped image index!
+			*(flipImage->data + matchIndex) = *(refImage->data + p);
+		}
+	}
+
+	return flipImage;
+}
+
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
 	if (refImage == NULL) {
 		perror("Cannot create grey image! Null pointer provided as reference image!");
@@ -117,15 +151,15 @@ Rasteron_Image* createImgFltCh(const Rasteron_Image* refImage, CHANNEL_Type chan
 	uint32_t colorMask; // used for isolating a specific color value
 	switch(channel){
 		case CHANNEL_Red:
-			filterImage = allocNewImg("red", refImage->height, refImage->width);
+			filterImage = allocNewImg("filter-red", refImage->height, refImage->width);
 			colorMask = RED_CHANNEL;
 			break;
 		case CHANNEL_Green:
-			filterImage = allocNewImg("green", refImage->height, refImage->width);
+			filterImage = allocNewImg("filter-green", refImage->height, refImage->width);
 			colorMask = GREEN_CHANNEL;
 			break;
 		case CHANNEL_Blue:
-			filterImage = allocNewImg("blue", refImage->height, refImage->width);
+			filterImage = allocNewImg("filter-blue", refImage->height, refImage->width);
 			colorMask = BLUE_CHANNEL;
 			break;
 	}
@@ -138,6 +172,26 @@ Rasteron_Image* createImgFltCh(const Rasteron_Image* refImage, CHANNEL_Type chan
 	}
 
 	return filterImage;
+}
+
+Rasteron_Image* createImgAvgCh(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+	if (refImage == NULL) {
+		perror("Cannot create averaged image! Null pointer provided as reference image!");
+		return NULL;
+	}
+
+	Rasteron_Image* greyImage = createImgGrey(refImage); // greyscale image used as reference
+	Rasteron_Image* averageImage = createImgFltCh(greyImage, channel);
+
+	switch(channel){ // renaming
+		case CHANNEL_Red: averageImage->name = "average-red"; break;
+		case CHANNEL_Green: averageImage->name = "average-green"; break;
+		case CHANNEL_Blue: averageImage->name = "average-blue"; break;
+	}
+
+	
+	deleteImg(greyImage);
+	return averageImage;
 }
 
 Rasteron_Image* createImgSeedRaw(const Rasteron_Image* refImage, uint32_t color, double prob){
@@ -209,7 +263,7 @@ Rasteron_Image* createImgProxim(const Rasteron_Image* refImage, const Rasteron_C
 	unsigned* targetPixels = malloc(colorPointTable->pixelPointCount * sizeof(unsigned));
 
 	for(unsigned t = 0; t < colorPointTable->pixelPointCount; t++)
-		*(targetPixels + t) = getPixIndexFromPos(&colorPointTable->positions[t].pos, refImage);
+		*(targetPixels + t) = getPixOffset(&colorPointTable->positions[t].pos, refImage);
 
 	Rasteron_Image* proxCellImage = allocNewImg("prox-cell", refImage->height, refImage->width);
 

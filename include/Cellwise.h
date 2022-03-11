@@ -29,7 +29,7 @@ typedef struct {
 } NebrTable_List;
 
 
-NebrTable_List* genNebrTables(Rasteron_Image* image);
+NebrTable_List* genNebrTables(const Rasteron_Image* image);
 void delNebrTables(NebrTable_List* nebrTables);
 
 typedef unsigned (*nebrCallback2)(unsigned, unsigned); // takes only right and left neighbors as input, returns result color

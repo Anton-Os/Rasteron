@@ -76,6 +76,22 @@ uint8_t getHiChannelBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	return ((color1 & mask) > (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
 }
 
+int8_t getLightDiff(uint32_t color1, uint32_t color2){ 
+	return (int8_t)((int)grayify8(color1) - (int)grayify8(color2)); 
+}
+
+int8_t getChannelDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+	uint32_t mask;
+	switch(channel){
+		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; break;
+		case CHANNEL_Red: mask = RED_CHANNEL; break;
+		case CHANNEL_Green: mask = GREEN_CHANNEL; break;
+		case CHANNEL_Blue: mask = BLUE_CHANNEL; break;
+	}
+
+	return (int8_t)((int)(color1 & mask) - (int)(color2 & mask));
+}
+
 double getPixDist(unsigned p1, unsigned p2, unsigned imageWidth){
 	unsigned x1 = p1 % imageWidth;
     unsigned y1 = p1 / imageWidth;

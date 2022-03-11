@@ -2,7 +2,7 @@
 
 #include "Image.h"
 
-#define ANIM_BACKGROUND 0xFF00FFFF
+#define ANIM_BACKGROUND 0xFFFFFF00 // yellow color
 
 // there is a default blank image as a placeholder for data inside animation struct
 typedef struct {
@@ -17,7 +17,7 @@ typedef struct {
 
 Rasteron_Animation* allocNewAnim(const char* prefix, uint32_t height, uint32_t width, unsigned frameCount);
 Rasteron_Image* getFrame(Rasteron_Animation* animation, unsigned short frameIndex);
-void addFrameData(Rasteron_Animation* anim, const Rasteron_Image *const ref, unsigned frameIndex); // copies target image into index of animation struct
+void addFrameData(Rasteron_Animation* anim, const Rasteron_Image *const ref, unsigned short frameIndex); // copies target image into index of animation struct
 void deleteAnim(Rasteron_Animation* anim);
 
 #define RASTERON_ANIM_H

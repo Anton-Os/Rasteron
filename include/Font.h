@@ -13,7 +13,7 @@ typedef struct {
     unsigned xMax;
     unsigned yMin;
     unsigned yMax;
-} Rasteron_TextSizeParams;
+} Rasteron_TextSizeProperties;
 
 typedef struct {
     const char* fileName; // file used as font

@@ -9,7 +9,10 @@ const char* fontName = "Tw-Cen-MT.ttf";
 // const char* fontName = "MajorMonoDisplay.ttf";
 char targetFontPath[1024];
 Rasteron_FormatText textObj;
-Rasteron_Image* imageFont;
+
+
+Rasteron_Image* fontImage;
+Rasteron_Image* flipImage;
 
 void genFontFilePath() {
 	strcpy(targetFontPath, fontPath);
@@ -26,11 +29,14 @@ void init(){
 	textObj.fgColor = genRandColorVal();
 	textObj.fileName = &targetFontPath;
 	textObj.text = "Hello World";
-	imageFont = bakeImgText(&textObj, &freetypeLib, 200);
+
+	fontImage = bakeImgText(&textObj, &freetypeLib, 200);
+	flipImage = createImgFlip(fontImage, FLIP_Upside);
 }
 
 void cleanup() {
-	deleteImg(imageFont);
+	deleteImg(fontImage);
+	deleteImg(flipImage);
 	cleanupFreeType(&freetypeLib);
 }
 
@@ -47,7 +53,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case (WM_CREATE): {		
 		init();
 
-		winBmap = createWinBmap(imageFont);
+		// winBmap = createWinBmap(fontImage);
+		winBmap = createWinBmap(flipImage);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &winBmap);

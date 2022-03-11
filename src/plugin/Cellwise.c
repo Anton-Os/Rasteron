@@ -1,7 +1,5 @@
 #include "Cellwise.h"
 
-#include "stdio.h" // For debug purposes
-
 static void setFlagBit(nebrCheckFlags* target, enum NBR_CellFlags flagBit){
     *(target) = (*(target) | (1 << (flagBit)));
 }

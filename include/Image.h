@@ -8,6 +8,14 @@
 #define MAX_COLOR_SEEDS TWOPOWER(11) // 2046
 #define DEFAULT_SEED_WEIGHT 0.0
 
+enum FLIP_Type {
+    FLIP_Clock,
+    FlIP_CounterClock,
+    FLIP_Upside
+};
+
+// Rasteron Seed Structures
+
 typedef struct {
 	uint32_t color; // = ZERO_COLOR;
 	double weight; // = DEFAULT_SEED_WEIGHT; // adjusted automatically inside calling function
@@ -21,7 +29,7 @@ typedef struct {
 void addSeed(Rasteron_SeedTable* table, unsigned color);
 void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight);
 
-// Rasteron Pixel Points
+// Rasteron Pixel Point Structures
 
 typedef struct {
     double xFrac; // fraction of image along the x axis
@@ -63,6 +71,7 @@ Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width); 
 Rasteron_Image* createImgRef(const char* fileName); // creates an image from a file
 Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor); // Creates a blank image
 // Rasteron_Image* createImgCopy(Rasteron_Image* refImage); // creates copy of reference image
+Rasteron_Image* createImgFlip(const Rasteron_Image* refImage, enum FLIP_Type flip);
 
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // creates greyscale version of reference image
 Rasteron_Image* createImgFltCh(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-filtered version of reference image
@@ -79,7 +88,8 @@ void deleteImg(Rasteron_Image* image);
 
 // Additional Functions
 
-unsigned getPixIndexFromPos(Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage); 
+unsigned getPixOffset(const Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage); // gets pixel offset from image corner
+unsigned getPixCursorOffset(const Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage); // gets pixel offset from cursor window position
 
 #define RASTERON_IMAGE_H
 #endif

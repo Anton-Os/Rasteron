@@ -1,6 +1,6 @@
 #include "Font.h"
 
-static void getImageTextParams(Rasteron_Image* refImage, Rasteron_TextSizeParams* sizeParams, uint32_t color) {
+static void getImageTextParams(Rasteron_Image* refImage, Rasteron_TextSizeProperties* sizeParams, uint32_t color) {
 	// setting all paramteres to initial values
 	sizeParams->xMin = refImage->width; sizeParams->xMax = 0;
 	sizeParams->yMin = refImage->height; sizeParams->yMax = 0;
@@ -16,18 +16,18 @@ static void getImageTextParams(Rasteron_Image* refImage, Rasteron_TextSizeParams
 			}
 }
 
-static void cropTextImage(Rasteron_Image* refImage, Rasteron_Image* textImage, Rasteron_TextSizeParams sizeParams) {
+static void cropTextImage(Rasteron_Image* refImage, Rasteron_Image* fontImage, Rasteron_TextSizeProperties sizeParams) {
 	unsigned writeOffset = 0;
 
 	for (unsigned r = 0; r < refImage->height; r++)
 		for (unsigned c = 0; c < refImage->width; c++)
-			if (r >= sizeParams.yMin && r < sizeParams.yMax && c >= sizeParams.xMin && c < sizeParams.xMax && writeOffset < (textImage->width * textImage->height)) {
-				*(textImage->data + writeOffset) = *(refImage->data + (r * refImage->width) + c);
+			if (r >= sizeParams.yMin && r < sizeParams.yMax && c >= sizeParams.xMin && c < sizeParams.xMax && writeOffset < (fontImage->width * fontImage->height)) {
+				*(fontImage->data + writeOffset) = *(refImage->data + (r * refImage->width) + c);
 				writeOffset++;
 			}
 }
 
-static void drawFontOffset(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t color, int x, int y){
+static void drawGlyph(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t color, int x, int y){
 	uint32_t imageOff = x + (image->width * y); // starting pixel for drawing
 	if(ftBmap->rows > 0 && ftBmap->width > 0)
 		for (unsigned r = 0; r < ftBmap->rows; r++) {
@@ -56,7 +56,8 @@ Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* libr
 	error = FT_Set_Char_Size(face, 0, scale, FONT_RES, FONT_RES);
     if(error) perror("Error occured baking text");
 
-    Rasteron_Image* canvasImage = createImgBlank(1200 * 2, 1100 * 2, textObj->bkColor); // canvas is twice the window width and height
+	// Canvas is large enough to draw any sized text
+    Rasteron_Image* canvasImage = createImgBlank(1200 * 2, 1100 * 2, textObj->bkColor);
     
 	int pen_x = FONT_PEN_OFF;
 	int pen_y = FONT_PEN_OFF; // int pen_y = FONT_PEN_OFF;
@@ -66,7 +67,7 @@ Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* libr
         error = FT_Load_Char(face, (FT_ULong)glyphRef, FT_LOAD_RENDER);
         if(error) perror("error loading glyph!");
 
-		drawFontOffset(
+		drawGlyph(
 			canvasImage,
 			&face->glyph->bitmap,
 			textObj->fgColor,
@@ -76,14 +77,16 @@ Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* libr
 		pen_x += face->glyph->advance.x >> 6; // increment pen to next position
     }
 
-	Rasteron_TextSizeParams textSizeParams;
-	getImageTextParams(canvasImage, &textSizeParams, textObj->fgColor);
-	Rasteron_Image* textImage = createImgBlank(textSizeParams.xMax - textSizeParams.xMin, textSizeParams.yMax - textSizeParams.yMin, textObj->bkColor);
-	cropTextImage(canvasImage, textImage, textSizeParams);
-	deleteImg(canvasImage);
+	Rasteron_TextSizeProperties sizeProps;
+	getImageTextParams(canvasImage, &sizeProps, textObj->fgColor);
 
+	// Copy from large canvas to real image
+	Rasteron_Image* fontImage = createImgBlank(sizeProps.yMax - sizeProps.yMin, sizeProps.xMax - sizeProps.xMin, textObj->bkColor);
+	cropTextImage(canvasImage, fontImage, sizeProps);
+	
+	deleteImg(canvasImage);
     FT_Done_Face(face);
-    return textImage;
+    return fontImage;
 }
 
 void cleanupFreeType(FT_Library* library){
