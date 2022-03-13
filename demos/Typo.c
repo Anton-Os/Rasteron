@@ -1,6 +1,9 @@
 #define RASTERON_ENABLE_PLUGIN
 #define RASTERON_ENABLE_FONT
+
 #include "Rasteron.h"
+#include "OS_Util.h"
+
 // Global Definitions
 FT_Library freetypeLib;
 const char* fontPath = FONTS_DIR;
@@ -31,7 +34,7 @@ void init(){
 	textObj.text = "Hello World";
 
 	fontImage = bakeImgText(&textObj, &freetypeLib, 200);
-	flipImage = createImgFlip(fontImage, FLIP_Upside);
+	flipImage = createImgFlip(fontImage, FLIP_Clock);
 }
 
 void cleanup() {

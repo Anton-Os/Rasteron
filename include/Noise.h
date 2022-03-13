@@ -1,7 +1,6 @@
 #ifndef RASTERON_NOISE_H
 
 #include "Image.h"
-#include "Heightmap.h"
 
 #define MAX_NOISE_WEIGHTS TWOPOWER(20) // 1048576
 #define MAX_GRADIENT_CELLS TWOPOWER(11) // 2046

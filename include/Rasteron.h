@@ -6,13 +6,12 @@ extern "C"{
 
 // Core
 #include "Image.h"
-#include "Primitive.h"
+#include "Dimensional.h"
 
 // Plugins
 #ifdef RASTERON_ENABLE_PLUGIN
 #include "Animation.h"
 #include "Cellwise.h"
-#include "Heightmap.h"
 #include "Noise.h"
 #endif
 

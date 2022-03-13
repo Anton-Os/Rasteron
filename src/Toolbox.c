@@ -1,5 +1,3 @@
-/* Image utilities and helper functions */
-
 #include "Toolbox.h"
 
 void fixPathDashes(char* str){
@@ -52,7 +50,7 @@ void switchRG(uint32_t* raster, unsigned pixels) {
 	}
 }
 
-uint8_t getLoChannelBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+uint8_t getLoChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask, shift;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
@@ -64,7 +62,7 @@ uint8_t getLoChannelBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	return ((color1 & mask) < (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
 }
 
-uint8_t getHiChannelBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+uint8_t getHiChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask, shift;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
@@ -80,7 +78,7 @@ int8_t getLightDiff(uint32_t color1, uint32_t color2){
 	return (int8_t)((int)grayify8(color1) - (int)grayify8(color2)); 
 }
 
-int8_t getChannelDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+int8_t getChanDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; break;
@@ -136,9 +134,9 @@ uint32_t fract32(uint32_t refColor, double frac){
 }
 
 uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
-	uint8_t loRedBit = getLoChannelBit(color1, color2, CHANNEL_Red); uint8_t hiRedBit = getHiChannelBit(color1, color2, CHANNEL_Red);
-    uint8_t loGreenBit = getLoChannelBit(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = getHiChannelBit(color1, color2, CHANNEL_Green);
-    uint8_t loBlueBit = getLoChannelBit(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = getHiChannelBit(color1, color2, CHANNEL_Blue);
+	uint8_t loRedBit = getLoChanBit(color1, color2, CHANNEL_Red); uint8_t hiRedBit = getHiChanBit(color1, color2, CHANNEL_Red);
+    uint8_t loGreenBit = getLoChanBit(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = getHiChanBit(color1, color2, CHANNEL_Green);
+    uint8_t loBlueBit = getLoChanBit(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = getHiChanBit(color1, color2, CHANNEL_Blue);
 
 	uint32_t loColor = (0 << 24) + (loRedBit << 16) + (loGreenBit << 8) + loBlueBit;
 	if(iVal <= 0.0) return loColor;

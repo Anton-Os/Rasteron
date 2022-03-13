@@ -2,12 +2,6 @@
 
 // Helper Types Operations
 
-/* static unsigned calcPixelPointCoord(double input, double xMin, double xMax){
-	if(pixPos->xFrac <= xMin) xOffset = 0;
-	else if(pixPos->xFrac >= 1.0) xOffset = refImage->width - 1;
-	else xOffset = (unsigned)((double)refImage->width * pixPos->xFrac);
-} */
-
 void addSeed(Rasteron_SeedTable* table, unsigned color){ addWeightedSeed(table, color, 0.0); }
 
 void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight){
@@ -23,32 +17,35 @@ void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac
 	table->pixelPointCount++;
 }
 
-unsigned getPixOffset(const Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage){
-	unsigned xOffset;
-	if(pixPos->xFrac <= 0.0) xOffset = 0;
-	else if(pixPos->xFrac >= 1.0) xOffset = refImage->width - 1;
-	else xOffset = (unsigned)((double)refImage->width * pixPos->xFrac);
+unsigned getPixOffset(const Rasteron_PixelPoint* pixPoint, Rasteron_Image* refImage){
+	unsigned xOffset; // clamping X
+	if(pixPoint->xFrac <= 0.0) xOffset = 0;
+	else if(pixPoint->xFrac >= 1.0) xOffset = refImage->width - 1;
+	else xOffset = (unsigned)((double)refImage->width * pixPoint->xFrac);
 
 	unsigned yOffset;
-	if(pixPos->yFrac <= 0.0) yOffset = 0;
-	else if(pixPos->yFrac >= 1.0) yOffset = refImage->height;
-	else yOffset = (unsigned)((double)refImage->height * pixPos->yFrac);
+	if(pixPoint->yFrac <= 0.0) yOffset = 0;
+	else if(pixPoint->yFrac >= 1.0) yOffset = refImage->height;
+	else yOffset = (unsigned)((double)refImage->height * pixPoint->yFrac);
 
 	unsigned pixIndex = (yOffset * refImage->width) + xOffset;
 	return pixIndex;
 }
 
-unsigned getPixCursorOffset(const Rasteron_PixelPoint* pixPos, Rasteron_Image* refImage){
-	unsigned xOffset;
-	if(pixPos->xFrac <= -1.0) xOffset = 0;
-	else if(pixPos->xFrac >= 1.0) xOffset = refImage->width - 1;
+unsigned getPixCursorOffset(const Rasteron_PixelPoint* pixPoint, Rasteron_Image* refImage){
+	double xFrac; // clamping X
+	if(pixPoint->xFrac <= -1.0) xFrac = -1.0;
+	else if(pixPoint->xFrac >= 1.0) xFrac = 1.0;
+	else xFrac = pixPoint->xFrac;
 
-	unsigned yOffset;
-	if(pixPos->yFrac <= -1.0) yOffset = 0;
-	else if(pixPos->yFrac >= 1.0) yOffset = refImage->height;
+	double yFrac; // clamping Y
+	if(pixPoint->yFrac <= -1.0) yFrac = -1.0;
+	else if(pixPoint->yFrac >= 1.0) yFrac = 1.0;
+	else yFrac = pixPoint->yFrac;
+	yFrac *= -1.0; // Y value needs to be flipped
 
-	// Implement Body Here!
-	return 0;
+	Rasteron_PixelPoint adjPoint = { (xFrac / 2) + 0.5, (yFrac / 2) + 0.5 };
+	return getPixOffset(&adjPoint, refImage);
 }
 
 // Image Operations
@@ -109,14 +106,24 @@ Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidCo
 Rasteron_Image* createImgFlip(const Rasteron_Image* refImage, enum FLIP_Type flip){
 	Rasteron_Image* flipImage = NULL;
 	if(flip == FLIP_Upside){
-		flipImage = allocNewImg("flip", refImage->height, refImage->width); // matches source
+		flipImage = allocNewImg("flip", refImage->height, refImage->width); // parameters equal to source
 		for(unsigned p = 0; p < refImage->height * refImage->width; p++)
 			*(flipImage->data + (refImage->height * refImage->width) - p - 1) = *(refImage->data + p); // copies pixels in reverse
 	} else {
-		flipImage = allocNewImg("flip", refImage->width, refImage->height); // opposite of source
-		for(unsigned p = 0; p < refImage->height * refImage->width; p++){
-			unsigned matchIndex = (flip == FLIP_Clock)? p : p; // change these to coorespond to flipped image index!
-			*(flipImage->data + matchIndex) = *(refImage->data + p);
+		flipImage = allocNewImg("flip", refImage->width, refImage->height); // parameters inverse of source
+		unsigned offset = 0;
+
+		for(unsigned w = 0; w < refImage->width; w++){
+			unsigned match = (flip == FLIP_Clock) 
+				? (refImage->width * refImage->height) + w
+				: refImage->width - w;
+	
+			for(unsigned h = 0; h < refImage->height; h++){
+				match = (flip == FLIP_Clock) ? match - refImage->width : match + refImage->width;
+				*(flipImage->data + offset) = *(refImage->data + match); // copies to image from match index
+
+				offset++; // move to next pixel
+			}
 		}
 	}
 
@@ -131,17 +138,13 @@ Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
 
 	Rasteron_Image* greyImage = allocNewImg("grey", refImage->height, refImage->width);
 	
-	// Generation Logic
-	uint32_t grey;
-	for (unsigned p = 0; p < greyImage->width * greyImage->height; p++) {
-		grey = grayify32(*(refImage->data + p));
-		*(greyImage->data + p) = grey;
-	}
+	for (unsigned p = 0; p < greyImage->width * greyImage->height; p++)
+		*(greyImage->data + p) = grayify32(*(refImage->data + p));
 
 	return greyImage;
 }
 
-Rasteron_Image* createImgFltCh(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+Rasteron_Image* createImgFltChan(const Rasteron_Image* refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
 		perror("Cannot create filter image! Null pointer provided as reference image!");
 		return NULL;
@@ -174,14 +177,14 @@ Rasteron_Image* createImgFltCh(const Rasteron_Image* refImage, CHANNEL_Type chan
 	return filterImage;
 }
 
-Rasteron_Image* createImgAvgCh(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+Rasteron_Image* createImgAvgChan(const Rasteron_Image* refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
 		perror("Cannot create averaged image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
 	Rasteron_Image* greyImage = createImgGrey(refImage); // greyscale image used as reference
-	Rasteron_Image* averageImage = createImgFltCh(greyImage, channel);
+	Rasteron_Image* averageImage = createImgFltChan(greyImage, channel);
 
 	switch(channel){ // renaming
 		case CHANNEL_Red: averageImage->name = "average-red"; break;

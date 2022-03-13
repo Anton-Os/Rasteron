@@ -1,17 +1,21 @@
 #define RASTERON_ENABLE_PLUGIN
+
 #include "Rasteron.h"
+#include "OS_Util.h"
 
 // Global Definitions
+Rasteron_SeedTable seedTable;
+
 Rasteron_Image* blankImg;
 Rasteron_Image* seededImg;
-Rasteron_Image* scanPatImg;
-Rasteron_Image* fPatImg;
-Rasteron_Image* ePatImg;
+Rasteron_Image* seededImg2;
+Rasteron_Image* patternImg1;
+Rasteron_Image* patternImg2;
+Rasteron_Image* patternImg3;
 
 // Start with simple black and white patterns
 unsigned callback2(unsigned right, unsigned left) {
-	if (right == BLACK_COLOR) return WHITE_COLOR;
-	else return BLACK_COLOR;
+	return ZERO_COLOR;
 }
 
 unsigned callback4(unsigned bottom, unsigned right, unsigned left, unsigned top) {
@@ -23,21 +27,27 @@ unsigned callback8(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l,
 }
 
 void genImages() {
-	blankImg = createImgBlank(1200, 1000, BLACK_COLOR);
-	seededImg = createImgSeedRaw(blankImg, WHITE_COLOR, 0.05);
+	addSeed(&seedTable, 0xFFFF0000); // red
+	addSeed(&seedTable, 0xFF00FF00); // green
+	addSeed(&seedTable, 0xFF0000FF); // blue
 
-	scanPatImg = createScanPatImg(seededImg, callback2);
-	fPatImg = createCellPatImg4(seededImg, callback4);
-	ePatImg = createCellPatImg8(seededImg, callback8);
+	blankImg = createImgBlank(1100, 1200, BLACK_COLOR);
+	seededImg = createImgSeedRaw(blankImg, WHITE_COLOR, 0.05);
+	seededImg2 = createImgSeedWeighted(blankImg, &seedTable);
+
+	patternImg1 = createCellPatImg2(seededImg, callback2);
+	patternImg2 = createCellPatImg4(seededImg, callback4);
+	patternImg3 = createCellPatImg8(seededImg2, callback8);
 }
 
 void cleanup() {
 	deleteImg(blankImg);
 	deleteImg(seededImg);
+	deleteImg(seededImg2);
 
-	deleteImg(scanPatImg);
-	deleteImg(fPatImg);
-	deleteImg(ePatImg);
+	deleteImg(patternImg1);
+	deleteImg(patternImg2);
+	deleteImg(patternImg3);
 }
 
 #ifdef _WIN32
@@ -52,7 +62,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	switch (message) {
 	case (WM_CREATE): {
 		genImages();
-		bmap = createWinBmap(fPatImg);
+		bmap = createWinBmap(patternImg1);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap);

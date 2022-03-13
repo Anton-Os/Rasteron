@@ -1,5 +1,4 @@
-#include "Image.h"
-#include "Toolbox.h"
+#include "OS_Util.h"
 
 void createWindow(WNDPROC wndProc, LPCTSTR name){
 	WNDCLASS wndClass = { 0 };
@@ -37,10 +36,6 @@ void eventLoop(){
 	}
 }
 
-BITMAP createWinBmap(Rasteron_Image* image){
-	createWinBmapRaw(image->height, image->width, image->data);
-}
-
 BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data){
 	BITMAP bmap = { 0 };
 	bmap.bmWidth = width;
@@ -53,6 +48,10 @@ BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data){
 	bmap.bmBits = data;
 
 	return bmap;
+}
+
+BITMAP createWinBmap(Rasteron_Image* image){
+	createWinBmapRaw(image->height, image->width, image->data);
 }
 
 void drawWinBmap(HWND hwnd, const BITMAP* bmap){

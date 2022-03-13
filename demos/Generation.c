@@ -1,4 +1,5 @@
 #include "Rasteron.h"
+#include "OS_Util.h"
 
 // Global Definitions
 const char* imagePath = IMAGE_DIR;
@@ -10,8 +11,6 @@ Rasteron_Image* imageBase;
 Rasteron_Image* imageGrey;
 Rasteron_Image* imageRed;
 Rasteron_Image* imageBlue;
-Rasteron_Palette* palette;
-Rasteron_Palette* palette2;
 Rasteron_Sprite* sprite;
 // Rasteron_Heightmap* heightmap;
 
@@ -25,13 +24,10 @@ void genImageFilePath() {
 void genImages(){
 	genImageFilePath();
 
-	//loadFileImage(targetImagePath, &img); // hard path
 	imageBase = createImgRef(targetImagePath);
 	imageGrey = createImgGrey(imageBase);
-	imageRed = createImgFltCh(imageBase, CHANNEL_Red);
-	imageBlue = createImgFltCh(imageBase, CHANNEL_Blue);
-	palette = createPalette(imageBase);
-	palette2 = filterPalette(DEFAULT_PALETTE_FILTER, palette);
+	imageRed = createImgFltChan(imageBase, CHANNEL_Red);
+	imageBlue = createImgAvgChan(imageBase, CHANNEL_Blue);
 	sprite = createSprite(imageBase);
 	// heightmap = createHeightmap(imageGrey); // Lattice data test
 }
@@ -42,9 +38,6 @@ void cleanup() {
 	deleteImg(imageGrey);
 	deleteImg(imageRed);
 	deleteImg(imageBlue);
-	// deleteHeightmap(heightmap);
-	deletePalette(palette);
-	deletePalette(palette2);
 	// delFileImage(&img);
 }
 
@@ -63,7 +56,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		genImages();
 
 		// bmap1 = createWinBmap(&img);
-		bmap2 = createWinBmap(imageRed);
+		bmap2 = createWinBmap(imageBlue);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap2);

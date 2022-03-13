@@ -10,7 +10,7 @@
 
 enum FLIP_Type {
     FLIP_Clock,
-    FlIP_CounterClock,
+    FLIP_CounterClock,
     FLIP_Upside
 };
 
@@ -43,17 +43,35 @@ typedef struct {
 
 #define MAX_PIXEL_POS TWOPOWER(11) // 2046
 
-/* typedef struct {
-    Rasteron_PixelPoint positions[MAX_PIXEL_POS];
-    unsigned pixelPointCount; // = 0;
-} Rasteron_PixelPointTable; */
-
 typedef struct {
     Rasteron_ColorPoint positions[MAX_PIXEL_POS];
     unsigned pixelPointCount; // = 0;
 } Rasteron_ColorPointTable;
 
 void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac, double yFrac);
+
+// Rasteron ColorSwatch
+
+#define SWATCH_COUNT 8
+
+enum SWATCH_Colors {
+    SWATCH_Red_Add = 0,
+    SWATCH_Green_Add = 1,
+    SWATCH_Blue_Add = 2,
+    SWATCH_Light = 3,
+    SWATCH_Dark = 4,
+    SWATCH_Red_Sub = 5,
+    SWATCH_Green_Sub = 6,
+    SWATCH_Blue_Sub = 7,
+};
+
+typedef struct Rasteron_ColorSwatch {
+    unsigned base; // base color to generate swatch
+    unsigned colors[SWATCH_COUNT]; // generated colors
+    uint8_t deviation;
+};
+
+void createSwatch(Rasteron_ColorSwatch* swatch, unsigned color, uint8_t deviation);
 
 // Rasteron Image
 
@@ -74,11 +92,11 @@ Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidCo
 Rasteron_Image* createImgFlip(const Rasteron_Image* refImage, enum FLIP_Type flip);
 
 Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // creates greyscale version of reference image
-Rasteron_Image* createImgFltCh(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-filtered version of reference image
-Rasteron_Image* createImgAvgCh(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-averaged version of reference image
+Rasteron_Image* createImgFltChan(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-filtered version of reference image
+Rasteron_Image* createImgAvgChan(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-averaged version of reference image
 
 Rasteron_Image* createImgBlend(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates blended version of image
-Rasteron_Image* createImgBlendCh(const Rasteron_Image* image1, CHANNEL_Type channel1, const Rasteron_Image* image2, CHANNEL_Type channel2); // creates blended image from 2 channels
+Rasteron_Image* createImgBlendChan(const Rasteron_Image* image1, CHANNEL_Type channel1, const Rasteron_Image* image2, CHANNEL_Type channel2); // creates blended image from 2 channels
 // Rasteron_Image* createImgInterp(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates interpolated version of image
 Rasteron_Image* createImgSeedRaw(const Rasteron_Image* refImage, uint32_t color, double prob); // seeds pixel over image based on probability
 Rasteron_Image* createImgSeedWeighted(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable); // seeds pixels over image based on weights

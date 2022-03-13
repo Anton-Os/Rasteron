@@ -20,7 +20,7 @@ set(Core_src
     src/ImgBmp.c # BMP does not require dependencies
 
     src/core/Image.c
-    src/core/Primitive.c
+    src/core/Dimensional.c
 )
 
 if(WIN32) # OS Specific Sources

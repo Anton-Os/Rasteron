@@ -1,5 +1,7 @@
 #define RASTERON_ENABLE_PLUGIN
+
 #include "Rasteron.h"
+#include "OS_Util.h"
 
 // Global Definitions
 #define ANIM_HEIGHT 1100

@@ -36,9 +36,11 @@ typedef unsigned (*nebrCallback2)(unsigned, unsigned); // takes only right and l
 typedef unsigned (*nebrCallback4)(unsigned, unsigned, unsigned, unsigned); // takes bottom, right, left, and top neighbors as input, returns result color
 typedef unsigned (*nebrCallback8)(unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned); // takes all neighbors in order as input, returns result color
 
-Rasteron_Image* createScanPatImg(const Rasteron_Image* refImage, nebrCallback2 callback); // creates image from two neighbors
-Rasteron_Image* createCellPatImg4(const Rasteron_Image* refImage, nebrCallback4 callback); // creates image from four neightbors
-Rasteron_Image* createCellPatImg8(const Rasteron_Image* refImage, nebrCallback8 callback); // creates an image from nine neighbors
+Rasteron_Image* createCellPatImg2(const Rasteron_Image* refImage, nebrCallback2 callback);
+Rasteron_Image* createCellPatImg4(const Rasteron_Image* refImage, nebrCallback4 callback);
+Rasteron_Image* createCellPatImg8(const Rasteron_Image* refImage, nebrCallback8 callback);
+Rasteron_Image* createScanPatImgVert(const Rasteron_Image* refImage, nebrCallback2 callback); // vertical scan pattern
+Rasteron_Image* createScanPatImgHorz(const Rasteron_Image* refImage, nebrCallback2 callback); // horizontal scan pattern
 
 #define RASTERON_CELLWISE_H
 #endif

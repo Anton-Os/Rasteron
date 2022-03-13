@@ -8,10 +8,9 @@
 #define USE_IMG_PNG // Enable PNG Support
 #define USE_IMG_BMP // Enable BMP Support
 
-// #define 255.0 255.O
-#define ZERO_COLOR 0xFF000000
+#define ZERO_COLOR 0x00000000
 #define WHITE_COLOR 0xFFFFFFFF
-#define BLACK_COLOR 0x00000000
+#define BLACK_COLOR 0xFF000000
 
 #define ALPHA_CHANNEL 0xFF000000 // alpha channel represented by first two bytes
 #define RED_CHANNEL 0x00FF0000 // red channel represented by second two bytes
