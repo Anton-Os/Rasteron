@@ -73,7 +73,7 @@ if(SUPPORT_FONT_BAKING)
     find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     message(STATUS "freetype_lib variable: ${freetype_lib}")
-
+    
     list(APPEND Plugin_src src/plugin/Font.c)
 endif()
 

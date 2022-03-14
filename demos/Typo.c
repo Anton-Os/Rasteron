@@ -33,7 +33,7 @@ void init(){
 	textObj.fileName = &targetFontPath;
 	textObj.text = "Hello World";
 
-	fontImage = bakeImgText(&textObj, &freetypeLib, 200);
+	fontImage = bakeImgTextScaled(&freetypeLib, &textObj, 200);
 	flipImage = createImgFlip(fontImage, FLIP_Clock);
 }
 

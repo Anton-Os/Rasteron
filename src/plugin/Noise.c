@@ -16,7 +16,7 @@ Rasteron_Image* createWhiteNoiseImg(const Rasteron_Image* refImage, uint32_t col
     double noiseVal;
     for (unsigned p = 0; p < whiteNoiseImg->width * whiteNoiseImg->height; p++){
         noiseVal = (double)rand() / (double)RAND_MAX;
-		*(whiteNoiseImg->data + p) = itrpolate(color1, color2, noiseVal);
+		*(whiteNoiseImg->data + p) = fuse(color1, color2, noiseVal);
     }
 
     return whiteNoiseImg;

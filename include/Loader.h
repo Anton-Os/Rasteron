@@ -1,10 +1,6 @@
-#include "support.h"
-
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 #ifndef IMAGE_LOADER_H
+
+#include "support.h"
 
 typedef struct _Image Image;
 
@@ -96,8 +92,4 @@ void loadFileImage(const char* fileName, FileImage* image);
 void delFileImage(FileImage* image);
 
 #define IMAGE_LOADER_H
-#endif // IMAGE_LOADER_H
-
-#ifdef __cplusplus
-}
-#endif 
+#endif

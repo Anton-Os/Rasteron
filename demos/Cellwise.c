@@ -5,6 +5,7 @@
 
 // Global Definitions
 Rasteron_SeedTable seedTable;
+Rasteron_Swatch darkSwatch, lightSwatch;
 
 Rasteron_Image* blankImg;
 Rasteron_Image* seededImg;
@@ -12,6 +13,8 @@ Rasteron_Image* seededImg2;
 Rasteron_Image* patternImg1;
 Rasteron_Image* patternImg2;
 Rasteron_Image* patternImg3;
+
+#define SEED_COLOR 0xFFAAAAAA
 
 // Start with simple black and white patterns
 unsigned callback2(unsigned right, unsigned left) {
@@ -23,21 +26,27 @@ unsigned callback4(unsigned bottom, unsigned right, unsigned left, unsigned top)
 }
 
 unsigned callback8(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l, unsigned tr, unsigned t, unsigned tl) {
-	return ZERO_COLOR; // for testing
+	if(t == SEED_COLOR) return 0xFFFF0000; else if (b == SEED_COLOR) return 0xFFFFFF00;
+	else if(tl == SEED_COLOR) return 0xFF00FF00; else if (bl == SEED_COLOR) return 0xFFFF00FF;
+	else if(tr == SEED_COLOR) return 0xFF0000FF; else if (br == SEED_COLOR) return 0xFF00FFFF;
+	else return ZERO_COLOR;
 }
 
 void genImages() {
+	darkSwatch = createSwatch(BLACK_COLOR, 0x33);
+	lightSwatch = createSwatch(WHITE_COLOR, 0x33);
+
 	addSeed(&seedTable, 0xFFFF0000); // red
 	addSeed(&seedTable, 0xFF00FF00); // green
 	addSeed(&seedTable, 0xFF0000FF); // blue
 
 	blankImg = createImgBlank(1100, 1200, BLACK_COLOR);
-	seededImg = createImgSeedRaw(blankImg, WHITE_COLOR, 0.05);
+	seededImg = createImgSeedRaw(blankImg, SEED_COLOR, 0.001);
 	seededImg2 = createImgSeedWeighted(blankImg, &seedTable);
 
 	patternImg1 = createCellPatImg2(seededImg, callback2);
 	patternImg2 = createCellPatImg4(seededImg, callback4);
-	patternImg3 = createCellPatImg8(seededImg2, callback8);
+	patternImg3 = createCellPatImg8(seededImg, callback8);
 }
 
 void cleanup() {
@@ -62,7 +71,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	switch (message) {
 	case (WM_CREATE): {
 		genImages();
-		bmap = createWinBmap(patternImg1);
+		bmap = createWinBmap(patternImg3);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap);

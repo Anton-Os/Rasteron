@@ -47,7 +47,7 @@ void initFreeType(FT_Library* library){
     if(error) perror("Error occured initializing freetype library!");
 }
 
-Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* library, unsigned scale){
+Rasteron_Image* bakeImgTextScaled(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
     FT_Face face;
     int error = FT_New_Face(*library, textObj->fileName, 0, &face);
 
@@ -87,6 +87,10 @@ Rasteron_Image* bakeImgText(const Rasteron_FormatText* textObj, FT_Library* libr
 	deleteImg(canvasImage);
     FT_Done_Face(face);
     return fontImage;
+}
+
+Rasteron_Image* bakeImgText(FT_Library* library, const Rasteron_FormatText* textObj){
+	return bakeImgTextScaled(library, textObj, FONT_SCALE);
 }
 
 void cleanupFreeType(FT_Library* library){

@@ -133,7 +133,17 @@ uint32_t fract32(uint32_t refColor, double frac){
 	return result;
 }
 
-uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
+uint32_t blend(uint32_t color1, uint32_t color2, double bVal){
+	if(bVal <= 0.0) return color1;
+	else if(bVal >= 1.0) return color2;
+	
+	uint32_t bColor1 = fract32(color1, 1.0 -bVal);
+	uint32_t bColor2 = fract32(color2, bVal);
+
+	return bColor1 + bColor2; 
+}
+
+uint32_t fuse(uint32_t color1, uint32_t color2, double iVal){
 	uint8_t loRedBit = getLoChanBit(color1, color2, CHANNEL_Red); uint8_t hiRedBit = getHiChanBit(color1, color2, CHANNEL_Red);
     uint8_t loGreenBit = getLoChanBit(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = getHiChanBit(color1, color2, CHANNEL_Green);
     uint8_t loBlueBit = getLoChanBit(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = getHiChanBit(color1, color2, CHANNEL_Blue);
@@ -150,14 +160,4 @@ uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal){
 	uint8_t finalBlueBit = fract8(diffColor & BLUE_CHANNEL, iVal);
 
 	return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
-}
-
-uint32_t blend(uint32_t color1, uint32_t color2, double bVal){
-	if(bVal <= 0.0) return color1;
-	else if(bVal >= 1.0) return color2;
-	
-	uint32_t bColor1 = fract32(color1, 1.0 -bVal);
-	uint32_t bColor2 = fract32(color2, bVal);
-
-	return bColor1 + bColor2; 
 }

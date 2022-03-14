@@ -6,6 +6,7 @@
 #include "Image.h"
 
 #define FONT_RES 3000
+#define FONT_SCALE 100 // default scaling used
 #define FONT_PEN_OFF 200 // default starting pen offset
 
 typedef struct {
@@ -23,7 +24,8 @@ typedef struct {
 } Rasteron_FormatText;
 
 void initFreeType(FT_Library* library);
-Rasteron_Image* bakeImgText(const Rasteron_FormatText* text, FT_Library* library, unsigned scale);
+Rasteron_Image* bakeImgTextScaled(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale);
+Rasteron_Image* bakeImgText(FT_Library* library, const Rasteron_FormatText* textObj);
 void cleanupFreeType(FT_Library* library);
 
 #define RASTERON_FONT_H

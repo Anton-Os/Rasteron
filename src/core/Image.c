@@ -17,6 +17,39 @@ void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac
 	table->pixelPointCount++;
 }
 
+Rasteron_Swatch createSwatch(unsigned color, uint8_t deviation){
+	Rasteron_Swatch swatch;
+	
+	swatch.base = color;
+	swatch.deviation = deviation;
+
+	uint8_t redBit = (color & RED_CHANNEL) >> 16;
+	uint8_t greenBit = (color & GREEN_CHANNEL) >> 8;
+	uint8_t blueBit = color & BLUE_CHANNEL;
+
+	// Clamps Additive Values Below 0xFF
+	uint8_t redAdd = (deviation < 0xFF - redBit)? deviation : 0xFF - redBit;
+	uint8_t greenAdd = (deviation < 0xFF - greenBit)? deviation : 0xFF - greenBit;
+	uint8_t blueAdd = (deviation < 0xFF - blueBit)? deviation : 0xFF - blueBit;
+
+	// Clamps Substractive Values Above 0x00
+	uint8_t redSub = (deviation < redBit)? deviation : redBit;
+	uint8_t greenSub = (deviation < greenBit)? deviation : greenBit;
+	uint8_t blueSub = (deviation < greenBit)? deviation : blueBit;
+
+	// TODO: Add calculation here!
+	swatch.colors[SWATCH_Yellow_Add] = color + (redAdd << 16) | (greenAdd << 8);
+	swatch.colors[SWATCH_Cyan_Add] = color + (greenAdd << 8) | blueAdd;
+	swatch.colors[SWATCH_Magenta_Add] = color + (redAdd << 16) | (blueBit + blueAdd);
+	swatch.colors[SWATCH_Light] = color + (redAdd << 16) | (greenAdd << 8) | blueAdd;
+	swatch.colors[SWATCH_Dark] = color - ((redSub << 16) | (greenSub << 8) | (blueSub));
+	swatch.colors[SWATCH_Yellow_Sub] = color - ((redSub << 16) | (greenSub << 8));
+	swatch.colors[SWATCH_Cyan_Sub] = color - ((greenSub << 8) | blueSub);
+	swatch.colors[SWATCH_Magenta_Sub] = color - ((redSub << 16) | blueSub);
+
+	return swatch;
+}
+
 unsigned getPixOffset(const Rasteron_PixelPoint* pixPoint, Rasteron_Image* refImage){
 	unsigned xOffset; // clamping X
 	if(pixPoint->xFrac <= 0.0) xOffset = 0;
@@ -150,31 +183,31 @@ Rasteron_Image* createImgFltChan(const Rasteron_Image* refImage, CHANNEL_Type ch
 		return NULL;
 	}
 
-	Rasteron_Image* filterImage;
+	Rasteron_Image* channelImage;
 	uint32_t colorMask; // used for isolating a specific color value
 	switch(channel){
 		case CHANNEL_Red:
-			filterImage = allocNewImg("filter-red", refImage->height, refImage->width);
+			channelImage = allocNewImg("filter-red", refImage->height, refImage->width);
 			colorMask = RED_CHANNEL;
 			break;
 		case CHANNEL_Green:
-			filterImage = allocNewImg("filter-green", refImage->height, refImage->width);
+			channelImage = allocNewImg("filter-green", refImage->height, refImage->width);
 			colorMask = GREEN_CHANNEL;
 			break;
 		case CHANNEL_Blue:
-			filterImage = allocNewImg("filter-blue", refImage->height, refImage->width);
+			channelImage = allocNewImg("filter-blue", refImage->height, refImage->width);
 			colorMask = BLUE_CHANNEL;
 			break;
 	}
 	
 	// Generation Logic
 	uint32_t color;
-	for (unsigned p = 0; p < filterImage->width * filterImage->height; p++) {
+	for (unsigned p = 0; p < channelImage->width * channelImage->height; p++) {
 		color = (*(refImage->data + p) & ALPHA_CHANNEL) + (*(refImage->data + p) & colorMask) ;
-		*(filterImage->data + p) = color;
+		*(channelImage->data + p) = color;
 	}
 
-	return filterImage;
+	return channelImage;
 }
 
 Rasteron_Image* createImgAvgChan(const Rasteron_Image* refImage, CHANNEL_Type channel) {
@@ -184,17 +217,43 @@ Rasteron_Image* createImgAvgChan(const Rasteron_Image* refImage, CHANNEL_Type ch
 	}
 
 	Rasteron_Image* greyImage = createImgGrey(refImage); // greyscale image used as reference
-	Rasteron_Image* averageImage = createImgFltChan(greyImage, channel);
+	Rasteron_Image* channelImage = createImgFltChan(greyImage, channel);
 
 	switch(channel){ // renaming
-		case CHANNEL_Red: averageImage->name = "average-red"; break;
-		case CHANNEL_Green: averageImage->name = "average-green"; break;
-		case CHANNEL_Blue: averageImage->name = "average-blue"; break;
+		case CHANNEL_Red: channelImage->name = "average-red"; break;
+		case CHANNEL_Green: channelImage->name = "average-green"; break;
+		case CHANNEL_Blue: channelImage->name = "average-blue"; break;
 	}
 
 	
 	deleteImg(greyImage);
-	return averageImage;
+	return channelImage;
+}
+
+Rasteron_Image* createImgBlend(const Rasteron_Image* image1, const Rasteron_Image* image2){
+	if (image1 == NULL || image2 == NULL || image1->height != image2->height || image1->width != image2->width) {
+		perror("Cannot create seeded image! Problems with reference images!");
+		return NULL;
+	}
+
+	Rasteron_Image* blendImage = allocNewImg("blend", image1->height, image1->width);
+	for(unsigned p = 0; p < image1->width * image1->height; p++)
+		*(blendImage->data + p) = blend(*(image1->data + p), *(image2->data + p), 0.5); // blends halfway
+
+	return blendImage;
+}
+
+Rasteron_Image* createImgFuse(const Rasteron_Image* image1, const Rasteron_Image* image2){
+	if (image1 == NULL || image2 == NULL || image1->height != image2->height || image1->width != image2->width) {
+		perror("Cannot create seeded image! Problems with reference images!");
+		return NULL;
+	}
+
+	Rasteron_Image* fuseImage = allocNewImg("fuse", image1->height, image1->width);
+	for(unsigned p = 0; p < image1->width * image1->height; p++)
+		*(fuseImage->data + p) = fuse(*(image1->data + p), *(image2->data + p), 0.5); // fuses halfway
+
+	return fuseImage;
 }
 
 Rasteron_Image* createImgSeedRaw(const Rasteron_Image* refImage, uint32_t color, double prob){

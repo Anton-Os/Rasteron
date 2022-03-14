@@ -41,7 +41,7 @@ typedef struct {
 Rasteron_Heightmap* allocNewHeightmap(uint32_t height, uint32_t width, double minBound, double maxBound);
 Rasteron_Heightmap* createHeightmap(const Rasteron_Image* ref); // create heightmap from an image file
 
-void deleteHeightmap(Rasteron_Heightmap* lattice);
+void deleteHeightmap(Rasteron_Heightmap* heightmap);
 
 #define RASTERON_PRIMITIVE_H
 #endif

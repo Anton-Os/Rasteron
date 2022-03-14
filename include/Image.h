@@ -50,28 +50,28 @@ typedef struct {
 
 void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac, double yFrac);
 
-// Rasteron ColorSwatch
+// Rasteron Swatch
 
 #define SWATCH_COUNT 8
 
 enum SWATCH_Colors {
-    SWATCH_Red_Add = 0,
-    SWATCH_Green_Add = 1,
-    SWATCH_Blue_Add = 2,
+    SWATCH_Yellow_Add = 0,
+    SWATCH_Cyan_Add = 1,
+    SWATCH_Magenta_Add = 2,
     SWATCH_Light = 3,
     SWATCH_Dark = 4,
-    SWATCH_Red_Sub = 5,
-    SWATCH_Green_Sub = 6,
-    SWATCH_Blue_Sub = 7,
+    SWATCH_Yellow_Sub = 5,
+    SWATCH_Cyan_Sub = 6,
+    SWATCH_Magenta_Sub = 7,
 };
 
-typedef struct Rasteron_ColorSwatch {
+typedef struct {
     unsigned base; // base color to generate swatch
-    unsigned colors[SWATCH_COUNT]; // generated colors
+    unsigned colors[SWATCH_COUNT]; // generated swatch colors
     uint8_t deviation;
-};
+} Rasteron_Swatch;
 
-void createSwatch(Rasteron_ColorSwatch* swatch, unsigned color, uint8_t deviation);
+Rasteron_Swatch createSwatch(unsigned color, uint8_t deviation);
 
 // Rasteron Image
 
@@ -97,7 +97,8 @@ Rasteron_Image* createImgAvgChan(const Rasteron_Image* refImage, CHANNEL_Type ch
 
 Rasteron_Image* createImgBlend(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates blended version of image
 Rasteron_Image* createImgBlendChan(const Rasteron_Image* image1, CHANNEL_Type channel1, const Rasteron_Image* image2, CHANNEL_Type channel2); // creates blended image from 2 channels
-// Rasteron_Image* createImgInterp(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates interpolated version of image
+Rasteron_Image* createImgFuse(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates fused version of image
+Rasteron_Image* createImgFuseChan(const Rasteron_Image* image1, CHANNEL_Type channel1, const Rasteron_Image* image2, CHANNEL_Type channel2); // creates fusion image from 2 channels
 Rasteron_Image* createImgSeedRaw(const Rasteron_Image* refImage, uint32_t color, double prob); // seeds pixel over image based on probability
 Rasteron_Image* createImgSeedWeighted(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable); // seeds pixels over image based on weights
 Rasteron_Image* createImgProxim(const Rasteron_Image* refImage, const Rasteron_ColorPointTable* colorPointTable); // creates a cell layout based on proximity points

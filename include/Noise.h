@@ -6,8 +6,8 @@
 #define MAX_GRADIENT_CELLS TWOPOWER(11) // 2046
 
 typedef struct {
-	unsigned xCellDivs; // = 1; // x axis cell divisions
-	unsigned yCellDivs; // = 1; // y axis cell divisions
+	unsigned xCellDivs; // x axis cell divisions
+	unsigned yCellDivs; // y axis cell divisions
 	unsigned color1;
 	unsigned color2;
 } Rasteron_GradientNoise;

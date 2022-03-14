@@ -14,7 +14,7 @@ void switchRB(uint32_t* raster, unsigned pixels); // switch red and blue bits
 void switchGB(uint32_t* raster, unsigned pixels); // switch green and blue bits
 void switchRG(uint32_t* raster, unsigned pixels); // switch red and green bits
 uint32_t genRandColorVal();
-enum CHANNEL_Type getDominantChan(unsigned color);
+// enum CHANNEL_Type getDominantChan(unsigned color);
 uint8_t getLoChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
 uint8_t getHiChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
 int8_t getLightDiff(uint32_t color1, uint32_t color2); // returns positive if lighter, negative if darker, zero on match
@@ -26,7 +26,7 @@ uint32_t grayify32(uint32_t refColor); // produces a 32 bit grey value based on 
 uint8_t fract8(uint8_t refColor, double frac); // produces an 8 bit color value based on fraction of reference color
 uint32_t fract32(uint32_t refColor, double frac); // produces an 32 bit color value based on fraction of reference color
 uint32_t blend(uint32_t color1, uint32_t color2, double bVal); // blends values between two colors
-uint32_t itrpolate(uint32_t color1, uint32_t color2, double iVal); // interpolate between computed hi and low colors
+uint32_t fuse(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
 
 #define RASTERON_TOOLBOX_H
 #endif
