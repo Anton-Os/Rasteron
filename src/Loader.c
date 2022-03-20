@@ -34,7 +34,22 @@ void loadFileImage(const char* fileName, FileImage* image){
 #ifdef USE_IMG_BMP
 	case IMG_Bmp: loadFileImage_BMP(fileName, image);break;
 #endif
-	default: puts("Image Format not yet supported!!!"); break;
+	default: perror("Image Format not supported!"); break;
+    }
+}
+
+void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data){
+    switch(format){
+#ifdef USE_IMG_PNG
+	case IMG_Png: writeFileImageRaw_PNG(fileName, height, width, data); break;
+#endif
+#ifdef USE_IMG_TIFF
+	case IMG_Tiff: writeFileImageRaw_TIFF(fileName, height, width, data); break;
+#endif
+#ifdef USE_IMG_BMP
+	case IMG_Bmp: writeFileImageRaw_BMP(fileName, height, width, data); break;
+#endif
+	default: perror("Image Format not supported!"); break;
     }
 }
 
@@ -49,6 +64,6 @@ void delFileImage(FileImage* image) {
 #ifdef USE_IMG_BMP
 	case IMG_Bmp: delFileImage_BMP(image); break;
 #endif
-	default: puts("Image Format not yet supported!!!"); break;
+	default: perror("Image Format not supported!"); break;
 	}
 }

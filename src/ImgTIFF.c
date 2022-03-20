@@ -29,6 +29,11 @@ void loadFileImage_TIFF(const char* fileName, Image* image) {
 	return;
 }
 
+void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned width, unsigned* data){
+	// TODO: Populate MetaData
+	// TODO: Populate Image Data
+}
+
 void delFileImage_TIFF(Image* image){
 	if (image->fileFormat != IMG_Tiff) {
 		puts("Image provided for deletion is not TIFF type");

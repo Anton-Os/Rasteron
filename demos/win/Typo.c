@@ -24,28 +24,7 @@ void genFontFilePath() {
 	fixPathDashes(&targetFontPath);
 }
 
-void init(){
-	genFontFilePath();
-
-	initFreeType(&freetypeLib);
-	textObj.bkColor = genRandColorVal();
-	textObj.fgColor = genRandColorVal();
-	textObj.fileName = &targetFontPath;
-	textObj.text = "Hello World";
-
-	fontImage = bakeImgTextScaled(&freetypeLib, &textObj, 200);
-	flipImage = createImgFlip(fontImage, FLIP_Clock);
-}
-
-void cleanup() {
-	deleteImg(fontImage);
-	deleteImg(flipImage);
-	cleanupFreeType(&freetypeLib);
-}
-
-#ifdef _WIN32
-
-BITMAP winBmap;
+BITMAP bmap;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -53,14 +32,12 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	RECT rect;
 
 	switch (message) {
-	case (WM_CREATE): {		
-		init();
-
-		// winBmap = createWinBmap(fontImage);
-		winBmap = createWinBmap(flipImage);
+	case (WM_CREATE): {
+		// bmap = createWinBmap(fontImage);
+		bmap = createWinBmap(flipImage);
 	}
 	case (WM_PAINT): {
-		drawWinBmap(hwnd, &winBmap);
+		drawWinBmap(hwnd, &bmap);
 	}
 	case (WM_DESTROY): { }
 	default: return DefWindowProc(hwnd, message, wParam, lParam); 
@@ -68,26 +45,29 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
-#elif defined __linux__
-
-void unixProc(){
-	UnixContext context;
-	createWindow(&context, "Typo");
-	init();
-}
-
-#endif
-
 int main(int argc, char** argv) {
+	// Generation Step
+	genFontFilePath();
 
-	srand(time(NULL));
-#ifdef _WIN32
+	initFreeType(&freetypeLib);
+	textObj.bkColor = genRandColorVal();
+	textObj.fgColor = genRandColorVal();
+	textObj.fileName = &targetFontPath;
+	textObj.text = "i";
+
+	fontImage = bakeImgText(&freetypeLib, &textObj);
+	flipImage = createImgFlip(fontImage, FLIP_Clock);
+
+	// Event Loop
+
 	createWindow(wndProc, "Typo");
-#elif defined __linux__
-	unixProc();
-#endif
 	eventLoop();
 
-	cleanup(); // cleanup step
+	// Cleanup Step
+
+	deleteImg(fontImage);
+	deleteImg(flipImage);
+	cleanupFreeType(&freetypeLib);
+
 	return 0;
 }

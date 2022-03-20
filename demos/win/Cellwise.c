@@ -32,7 +32,29 @@ unsigned callback8(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l,
 	else return ZERO_COLOR;
 }
 
-void genImages() {
+BITMAP bmap;
+
+LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	PAINTSTRUCT ps;
+	HDC hDC = GetDC(hwnd);
+	RECT rect;
+
+	switch (message) {
+	case (WM_CREATE): {
+		bmap = createWinBmap(patternImg3);
+	}
+	case (WM_PAINT): {
+		drawWinBmap(hwnd, &bmap);
+	}
+	case (WM_DESTROY): { }
+	default: return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+	return 0;
+}
+
+int main(int argc, char** argv) {
+	// Genertation Step
+
 	darkSwatch = createSwatch(BLACK_COLOR, 0x33);
 	lightSwatch = createSwatch(WHITE_COLOR, 0x33);
 
@@ -47,9 +69,14 @@ void genImages() {
 	patternImg1 = createCellPatImg2(seededImg, callback2);
 	patternImg2 = createCellPatImg4(seededImg, callback4);
 	patternImg3 = createCellPatImg8(seededImg, callback8);
-}
 
-void cleanup() {
+	// Event Loop
+
+	createWindow(wndProc, "Cellwise");
+	eventLoop();
+
+	// Cleanup Step
+
 	deleteImg(blankImg);
 	deleteImg(seededImg);
 	deleteImg(seededImg2);
@@ -57,51 +84,6 @@ void cleanup() {
 	deleteImg(patternImg1);
 	deleteImg(patternImg2);
 	deleteImg(patternImg3);
-}
-
-#ifdef _WIN32
-
-BITMAP bmap;
-
-LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	PAINTSTRUCT ps;
-	HDC hDC = GetDC(hwnd);
-	RECT rect;
-
-	switch (message) {
-	case (WM_CREATE): {
-		genImages();
-		bmap = createWinBmap(patternImg3);
-	}
-	case (WM_PAINT): {
-		drawWinBmap(hwnd, &bmap);
-	}
-	case (WM_DESTROY): { }
-	default: return DefWindowProc(hwnd, message, wParam, lParam);
-	}
-	return 0;
-}
-
-#elif defined __linux__
-
-void unixProc(){
-	UnixContext context;
-	createWindow(&context, "Cellwise");
-	genImages();
-}
-
-#endif
-
-int main(int argc, char** argv) {
-
-#ifdef _WIN32
-	createWindow(wndProc, "Cellwise");
-#elif defined __linux__
-	unixProc();
-#endif
-	eventLoop();
-
-	cleanup(); // cleanup step
 
 	return 0;
 }

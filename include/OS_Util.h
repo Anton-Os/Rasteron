@@ -13,24 +13,24 @@
     void drawWinBmap(HWND hwnd, const BITMAP* bmap);
 	// void drawWinBmap(HWND hwnd, const Image* image);
 #elif defined __linux__
-	#include<X11/X.h>
-	#include<X11/Xlib.h>
-	#include<X11/Xutil.h>
-	#include<X11/Xresource.h>
-
-	#define IMAGE_DEPTH 1
+	#include <X11/Xlib.h>
+	#include <X11/Xutil.h>
+	#include <unistd.h>
+	#include <malloc.h>
+	#include <stdio.h>
 
 	typedef struct {
 		Display* display;
-		XVisualInfo* visualInfo;
+		GC* gc;
+		// XVisualInfo* visualInfo;
+		Visual* visual;
 		Window window;
 		// XGCValues gcVals;
-		GC* gc;
-	} UnixContext;
+	} Platform_Context;
 
-	void createWindow(UnixContext* context, const char* name); // Window creatiom
-	void eventLoop(); // Event loop
+	void createWindow(Platform_Context* context, const char* name); // Window creatiom
+	void eventLoop(Display* display); // Event loop
 	// XImage createUnixBmap(const Image* image); // formatted data call
-	XImage* createUnixBmapRaw(UnixContext* context, uint32_t height, uint32_t width, uint32_t* data); // raw data call
-	void drawUnixBmap(UnixContext* context, XImage* image);
+	XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data); // raw data call
+	void drawUnixBmap(Platform_Context* context, XImage* image);
 #endif // Port later to some Internal.h header

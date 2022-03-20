@@ -57,7 +57,6 @@ void loadFileImage_PNG(const char* fileName, Image* image) {
 
 	png_byte* src_ptr;
 	uint32_t* dest_ptr = image->data.png.rgbaData;
-	int testIncrementor = 0;
 	for (unsigned int r = 0; r < image->data.png.height; r++) {
 		src_ptr = image->data.png.row_ptrs[r];
 
@@ -69,7 +68,7 @@ void loadFileImage_PNG(const char* fileName, Image* image) {
 			png_byte alpha = *(++src_ptr);
 			*(dest_ptr) = (alpha << 24) | (red << 16) | (green << 8) | blue;
 
-			dest_ptr++; src_ptr++; testIncrementor++;
+			dest_ptr++; src_ptr++;
 		}
 	}
 
@@ -78,6 +77,11 @@ void loadFileImage_PNG(const char* fileName, Image* image) {
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 	return;
 
+}
+
+void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width, unsigned* data){
+	// TODO: Populate MetaData
+	// TODO: Populate Image Data
 }
 
 void delFileImage_PNG(Image* image) {

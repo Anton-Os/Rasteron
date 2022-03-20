@@ -6,7 +6,7 @@
 #include "Image.h"
 
 #define FONT_RES 3000
-#define FONT_SCALE 100 // default scaling used
+#define FONT_SCALE 150 // default scaling used
 #define FONT_PEN_OFF 200 // default starting pen offset
 
 typedef struct {

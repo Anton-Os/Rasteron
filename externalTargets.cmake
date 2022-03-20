@@ -53,6 +53,7 @@ ExternalProject_Add(libtiff
 )
 
 set(SUPPORT_FONT_BAKING true CACHE BOOL "Include font baking module" FORCE)
+# set(SUPPORT_FONT_BAKING false CACHE BOOL "Include font baking module" FORCE)
 if(SUPPORT_FONT_BAKING)
 ExternalProject_Add(FreeType # Font Loading
     GIT_REPOSITORY "https://gitlab.freedesktop.org/freetype/freetype.git"

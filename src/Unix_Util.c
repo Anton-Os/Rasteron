@@ -1,96 +1,72 @@
 #include "OS_Util.h"
 
-void createWindow(UnixContext* context, const char* name){
+void createWindow(Platform_Context* context, const char* name){
 	context->display = XOpenDisplay(NULL);
 	unsigned long whitePix = WhitePixel(context->display, DefaultScreen(context->display));
 	unsigned long blackPix = BlackPixel(context->display, DefaultScreen(context->display));
 
-	int visualCount;
-	XVisualInfo visualInfoTemplate;
-	visualInfoTemplate.screen = XGetVisualInfo(context->display, VisualScreenMask, &visualInfoTemplate, &visualCount);
-
+	int screenNum = DefaultScreen(context->display);
 	context->window = XCreateSimpleWindow(
-		context->display, DefaultRootWindow(context->display),
-		100, 100, 1200, 1100,
+		context->display, RootWindow(context->display, screenNum),
+		50, 0, 1200, 1100,
 		1, blackPix, whitePix
 	);
+	context->visual = DefaultVisual(context->display, screenNum);
 
-	context->gc = XCreateGC(context->display, context->window, 0, NULL);
+	// context->gc = XCreateGC(context->display, context->window, 0, NULL);
+	context->gc = DefaultGC(context->display, screenNum);
 
+	XSelectInput(context->display, context->window, ExposureMask);
 	XMapWindow(context->display, context->window);
 	XFlush(context->display);
 	XFlushGC(context->display, context->gc);
 }
 
-void eventLoop(){
+void eventLoop(Display* display){
 	XEvent event;
     while(1){
-        // XNextEvent(context->display, &event);
+        XNextEvent(display, &event);
 
         switch(event.type){
-		// case (KeyPress): { printf("Key press! %x\t", event.xkey.keycode); }
-		case (ButtonPress): {  }
-		case (MotionNotify): {  }
+		case (KeyPress): return;
 		}
     }
 }
 
-XImage* createUnixBmapRaw(UnixContext* context, uint32_t height, uint32_t width, uint32_t* data){
-	XImage* image;
+XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data){
+	// size_t dataSize = width * height * 4;
+	// unsigned char* imageData = (unsigned char*)malloc(dataSize); // 4 attributes per color value
+	/* for(unsigned p = 0; p < dataSize; p++)
+		switch (p % 4){ // copies data from cooresponding input data
+			case 0: *(imageData + p) = *(data + (p / 4)) & ALPHA_CHANNEL; break;
+			case 1: *(imageData + p) = *(data + (p / 4)) & RED_CHANNEL; break;
+			case 2: *(imageData + p) = *(data + (p / 4)) & GREEN_CHANNEL; break;
+			case 3: *(imageData + p) = *(data + (p / 4)) & BLUE_CHANNEL; break;
+		} */
 
-	size_t dataSize = width * height * sizeof(char) * 4;
-	char* newData = (char*)malloc(dataSize); // 4 attributes per color value
-	for(unsigned p = 0; p < dataSize; p++)
-		switch (p % 4) // Copies data from cooresponding input data
-		{
-			case 0: *(newData + p) = *(data + (p / 4)) & ALPHA_CHANNEL; break;
-			case 1: *(newData + p) = *(data + (p / 4)) & RED_CHANNEL; break;
-			case 2: *(newData + p) = *(data + (p / 4)) & GREEN_CHANNEL; break;
-			case 3: *(newData + p) = *(data + (p / 4)) & BLUE_CHANNEL; break;
-		}
-
-	int bytesPerLine = 8 * ((width + 7) / 8);
-	image = XCreateImage(
-		context->display, context->visualInfo->visual, 
-		IMAGE_DEPTH, ZPixmap, 0, 
-		(char*)newData, bytesPerLine,
-		height, 8, 0
+	XImage* image = XCreateImage(
+		context->display, context->visual,
+		IMAGE_DEPTH, ZPixmap, 0, data,
+		// width, height, 32, 0
+		256, 256, 32, 0
 	);
+	
+	/* for(unsigned h = 0; h < height; h++)
+		for(unsigned w = 0; w < width; w++)
+			XPutPixel(image, w, h, BLACK_COLOR); */
+	for(unsigned p = 0; p < width * height; p++)
+		XAddPixel(image, (long)p);
 
-	free(newData);
+	// free(imageData);
 	return image;
 }
 
-/* BITMAP createUnixBmap(const Image* image) {
-	switch (image->fileFormat) {
-#ifdef USE_IMG_TIFF
-	case(IMG_Tiff):
-		switchRB(image->data.tiff.raster, image->data.tiff.width * image->data.tiff.length); // Should maybe move to ImgTIFF
-		return createUnixBmapRaw(image->data.tiff.width, image->data.tiff.length, image->data.tiff.raster);
-#endif
-#ifdef USE_IMG_BMP
-	case(IMG_Bmp):
-		return createUnixBmapRaw(abs(image->data.bmp.width), abs(image->data.bmp.height), image->data.bmp.data);
-#endif
-#ifdef USE_IMG_PNG
-	case(IMG_Png): 
-		return createUnixBmapRaw(image->data.png.width, image->data.png.height, image->data.png.rgbaData);
-#endif
-	default:
-		puts("Image Format not yet supported!!!");
-		break;
-	}
-	BITMAP bmap = { 0 };
-	return bmap;
-} */
-
-void drawUnixBmap(UnixContext* context, XImage* image){
-    Pixmap pixmap = XCreatePixmap(context->display, context->window, image->width, image->height, IMAGE_DEPTH);
-	
-	XPutImage(
+void drawUnixBmap(Platform_Context* context, XImage* image){
+    XPutImage(
 		context->display, context->window, context->gc, 
 		image,
 		0, 0, 0, 0, 
-		image->width, image->height
+		// image->width, image->height
+		256, 256
 	);
 }

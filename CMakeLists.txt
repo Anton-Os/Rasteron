@@ -10,7 +10,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build Type ${CMAKE_BUILD_TYPE}")
 
-# include(externalTargets.cmake)
+include(externalTargets.cmake)
+include(FindX11)
 
 # Rasteron Core Sources
 
@@ -65,7 +66,6 @@ endif(libtiff_FOUND)
 set(Plugin_src
     src/plugin/Animation.c
     src/plugin/Cellwise.c
-    src/plugin/Heightmap.c
     src/plugin/Noise.c
 )
 
@@ -99,25 +99,33 @@ target_include_directories(Rasteron
 )
 
 if(WIN32)
-    add_executable(Cellwise demos/Cellwise.c)
+    add_executable(Cellwise demos/win/Cellwise.c)
     target_include_directories(Cellwise PUBLIC include)
     target_link_libraries(Cellwise Rasteron)
 
-    add_executable(Generation demos/Generation.c)
+    add_executable(Generation demos/win/Generation.c)
     target_include_directories(Generation PUBLIC include)
     target_link_libraries(Generation Rasteron)
 
-    add_executable(Noise demos/Noise.c)
+    add_executable(Noise demos/win/Noise.c)
     target_include_directories(Noise PUBLIC include)
     target_link_libraries(Noise Rasteron)
 
-    add_executable(Typo demos/Typo.c)
+    add_executable(Typo demos/win/Typo.c)
     target_include_directories(Typo PUBLIC include)
     target_link_libraries(Typo Rasteron)
 
-    add_executable(Sequence demos/Sequence.c)
+    add_executable(Sequence demos/win/Sequence.c)
     target_include_directories(Sequence PUBLIC include)
     target_link_libraries(Sequence Rasteron)
+else() # Minimalist demos on unix, testing core functionality
+    add_executable(OpenSesame demos/unix/OpenSesame.c)
+    target_include_directories(OpenSesame PUBLIC include)
+    target_link_libraries(OpenSesame Rasteron)
+
+    add_executable(Test demos/unix/Test.c)
+    target_include_directories(Test PUBLIC include)
+    target_link_libraries(Test Rasteron)
 endif()
 
 

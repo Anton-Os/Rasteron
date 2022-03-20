@@ -20,7 +20,7 @@ typedef struct {
 } ImageData_Tiff; // TIFF-specific Data Structure
 
 void loadFileImage_TIFF(const char* fileName, Image* image);
-// void writeFileImage_TIFF(const char* fileName, Rasteron_Image* image)
+void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned width, unsigned* data);
 void delFileImage_TIFF(Image* image);
 #endif // USE_IMG_TIFF
 
@@ -39,7 +39,7 @@ typedef struct {
 } ImageData_Png;
 
 void loadFileImage_PNG(const char* fileName, Image* image);
-// void writeFileImage_PNG(const char* fileName, Rasteron_Image* image)
+void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width, unsigned* data);
 void delFileImage_PNG(Image* image);
 #endif // USE_IMG_PNG
 
@@ -55,7 +55,7 @@ typedef struct {
 } ImageData_Bmp;
 
 void loadFileImage_BMP(const char* fileName, Image* image);
-// void writeFileImage_BMP(const char* fileName, Rasteron_Image* image);
+void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width, unsigned* data);
 void delFileImage_BMP(Image* image);
 #endif // USE_IMG_BMP
 
@@ -89,6 +89,7 @@ typedef struct _Image {
 typedef Image FileImage; // just makes an easier distinction between Rasteron Image and file Image
 
 void loadFileImage(const char* fileName, FileImage* image);
+void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data);
 void delFileImage(FileImage* image);
 
 #define IMAGE_LOADER_H

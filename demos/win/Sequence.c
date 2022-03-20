@@ -85,15 +85,31 @@ void unixProc(){
 #endif
 
 int main(int argc, char** argv) {
+	// Generation Step
+	
+	frame1 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF000000);
+    frame2 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFFFF0000);
+    frame3 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF00FF00);
+    frame4 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF0000FF);
 
-#ifdef _WIN32
+    animation = allocNewAnim("sequence", ANIM_HEIGHT, ANIM_WIDTH, 4);
+    addFrameData(animation, frame1, 0);
+    addFrameData(animation, frame2, 1);
+    addFrameData(animation, frame3, 2);
+    addFrameData(animation, frame4, 3);
+
+	// Event Loop
+
 	createWindow(wndProc, "Cellwise");
-#elif defined __linux__
-	unixProc();
-#endif
 	eventLoop();
 
-	cleanup(); // cleanup step
+	// Cleanup Step
+
+	deleteAnim(animation);
+	deleteImg(frame1);
+	deleteImg(frame2);
+	deleteImg(frame3);
+	deleteImg(frame4);
 
 	return 0;
 }

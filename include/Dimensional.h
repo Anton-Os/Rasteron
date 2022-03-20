@@ -1,9 +1,5 @@
 #ifndef RASTERON_PRIMITIVE_H
 
-#define MAX_COLOR_SEEDS TWOPOWER(16) // 262144
-// #define DEFAULT_SEED_TOTAL 0.5 // leaves half the image in its original state
-#define DEFAULT_SEED_WEIGHT 0.0
-
 #include "Image.h"
 
 // Sprite
