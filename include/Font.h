@@ -5,9 +5,15 @@
 
 #include "Image.h"
 
-#define FONT_RES 3000
-#define FONT_SCALE 150 // default scaling used
-#define FONT_PEN_OFF 200 // default starting pen offset
+#ifndef INVERT_FONT_AXIS
+#define INVERT_FONT_AXIS 0 // font drawing is not inverted by default!
+#endif
+
+#define FONT_RESOLUTION 3000
+#define FONT_SCALE 200 // test scaling
+#define FONT_PEN_OFFSET 200 // default starting pen offset
+#define FONT_CANVAS_WIDTH 10000 // large enough to handle any text
+#define FONT_CANVAS_HEIGHT 1000
 
 typedef struct {
     unsigned xMin;

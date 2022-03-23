@@ -27,9 +27,6 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		seedRandGen();
-		genImages();
-
 		// bmap = createWinBmap(randNoiseImg);
 		bmap = createWinBmap(randNoiseImg2);
 		// bmap = createWinBmap(seededImg);

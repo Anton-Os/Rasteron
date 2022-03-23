@@ -86,7 +86,6 @@ int8_t getChanDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 		case CHANNEL_Green: mask = GREEN_CHANNEL; break;
 		case CHANNEL_Blue: mask = BLUE_CHANNEL; break;
 	}
-
 	return (int8_t)((int)(color1 & mask) - (int)(color2 & mask));
 }
 

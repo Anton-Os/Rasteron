@@ -31,8 +31,6 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		genImages();
-
 		bmap2 = createWinBmap(imageBlue);
 	}
 	case (WM_PAINT): {

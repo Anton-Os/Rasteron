@@ -2,8 +2,11 @@
 
 static void getImageTextParams(Rasteron_Image* refImage, Rasteron_TextSizeProperties* sizeParams, uint32_t color) {
 	// setting all paramteres to initial values
-	sizeParams->xMin = refImage->width; sizeParams->xMax = 0;
-	sizeParams->yMin = refImage->height; sizeParams->yMax = 0;
+	// sizeParams->xMin = refImage->width; // standard
+	sizeParams->xMin = refImage->height; // inverted
+	// sizeParams->yMin = refImage->height; // standard
+	sizeParams->yMin = refImage->width; // inverted
+	sizeParams->xMax = 0; sizeParams->yMax = 0;
 
 	for(unsigned r = 0; r < refImage->height; r++)
 		for (unsigned c = 0; c < refImage->width; c++)
@@ -45,6 +48,9 @@ static void drawGlyph(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t color, 
 void initFreeType(FT_Library* library){
     int error = FT_Init_FreeType(library);
     if(error) perror("Error occured initializing freetype library!");
+
+	// FT_UInt hint_engine = FT_HINTING_ADOBE;
+	// FT_Property_Set(library, "cff", "hinting-engine", &hint_engine);
 }
 
 Rasteron_Image* bakeImgTextScaled(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
@@ -53,18 +59,16 @@ Rasteron_Image* bakeImgTextScaled(FT_Library* library, const Rasteron_FormatText
 
 	int bboxWidth = face->bbox.xMax - face->bbox.xMin;
 	int bboxHeight = face->bbox.yMax - face->bbox.yMin;
-	error = FT_Set_Char_Size(face, 0, scale, FONT_RES, FONT_RES);
+	error = FT_Set_Char_Size(face, 0, scale, FONT_RESOLUTION, FONT_RESOLUTION);
     if(error) perror("Error occured baking text");
 
-	// Canvas is large enough to draw any sized text
-    Rasteron_Image* canvasImage = createImgBlank(1200 * 2, 1100 * 2, textObj->bkColor);
-    
-	int pen_x = FONT_PEN_OFF;
-	int pen_y = FONT_PEN_OFF; // int pen_y = FONT_PEN_OFF;
+	Rasteron_Image* canvasImage = createImgBlank(FONT_CANVAS_HEIGHT, FONT_CANVAS_WIDTH, textObj->bkColor);
+	int pen_x = FONT_PEN_OFFSET; int pen_y = FONT_PEN_OFFSET;
 
     for(unsigned t = 0; t < strlen(textObj->text); t++){
 		char glyphRef = textObj->text[t]; // for viewing current character being processed
         error = FT_Load_Char(face, (FT_ULong)glyphRef, FT_LOAD_RENDER);
+		// error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL); // render glyph to fix issues
         if(error) perror("error loading glyph!");
 
 		drawGlyph(
@@ -81,12 +85,13 @@ Rasteron_Image* bakeImgTextScaled(FT_Library* library, const Rasteron_FormatText
 	getImageTextParams(canvasImage, &sizeProps, textObj->fgColor);
 
 	// Copy from large canvas to real image
-	Rasteron_Image* fontImage = createImgBlank(sizeProps.yMax - sizeProps.yMin, sizeProps.xMax - sizeProps.xMin, textObj->bkColor);
+	// Rasteron_Image* fontImage = createImgBlank(sizeProps.yMax - sizeProps.yMin, sizeProps.xMax - sizeProps.xMin, textObj->bkColor); // standard
+	Rasteron_Image* fontImage = createImgBlank(sizeProps.xMax - sizeProps.xMin, sizeProps.yMax - sizeProps.yMin, textObj->bkColor); // inverted
 	cropTextImage(canvasImage, fontImage, sizeProps);
 	
 	deleteImg(canvasImage);
     FT_Done_Face(face);
-    return fontImage;
+	return fontImage; // return fontImage;
 }
 
 Rasteron_Image* bakeImgText(FT_Library* library, const Rasteron_FormatText* textObj){

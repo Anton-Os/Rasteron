@@ -10,7 +10,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build Type ${CMAKE_BUILD_TYPE}")
 
-include(externalTargets.cmake)
+# include(externalTargets.cmake)
 include(FindX11)
 
 # Rasteron Core Sources
