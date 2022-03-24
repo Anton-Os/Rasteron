@@ -7,14 +7,14 @@ const char* imageName = "Logo.png";
 char targetImagePath[1024];
 
 // Image img = { 0 };
-Rasteron_Image* imageBase;
-Rasteron_Image* imageGrey;
-Rasteron_Image* imageRed;
-Rasteron_Image* imageBlue;
+Rasteron_Image* sourceImage;
+Rasteron_Image* greyImage;
+Rasteron_Image* redImage;
+Rasteron_Image* blueImage;
 Rasteron_Sprite* sprite;
 Rasteron_Heightmap* heightmap;
 
-void genImageFilePath() {
+void genTargetImagePath() {
 	strcpy(targetImagePath, imagePath);
 	strcat(targetImagePath, "\\");
 	strcat(targetImagePath, imageName);	
@@ -31,7 +31,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		bmap2 = createWinBmap(imageBlue);
+		bmap2 = createWinBmap(greyImage);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap2);
@@ -45,14 +45,14 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 int main(int argc, char** argv) {
 	// Genertation Step
-	genImageFilePath();
+	genTargetImagePath();
 
-	imageBase = createImgRef(targetImagePath);
-	imageGrey = createImgGrey(imageBase);
-	imageRed = createImgFltChan(imageBase, CHANNEL_Red);
-	imageBlue = createImgAvgChan(imageBase, CHANNEL_Blue);
-	sprite = createSprite(imageBase);
-	heightmap = createHeightmap(imageBase);
+	sourceImage = createImgRef(targetImagePath);
+	greyImage = createImgGrey(sourceImage);
+	redImage = createImgFltChan(sourceImage, CHANNEL_Red);
+	blueImage = createImgAvgChan(sourceImage, CHANNEL_Blue);
+	sprite = createSprite(sourceImage);
+	heightmap = createHeightmap(sourceImage);
 
 	// Event Loop
 
@@ -61,10 +61,10 @@ int main(int argc, char** argv) {
 
 	// Cleanup Step
 
-	deleteImg(imageBase);
-	deleteImg(imageGrey);
-	deleteImg(imageRed);
-	deleteImg(imageBlue);
+	deleteImg(sourceImage);
+	deleteImg(greyImage);
+	deleteImg(redImage);
+	deleteImg(blueImage);
 	deleteSprite(sprite);
 	deleteHeightmap(heightmap);
 

@@ -14,15 +14,21 @@ Rasteron_Image* patternImg1;
 Rasteron_Image* patternImg2;
 Rasteron_Image* patternImg3;
 
-#define SEED_COLOR 0xFFAAAAAA
+#define SEED_COLOR 0xFFFFFFFF
 
 // Start with simple black and white patterns
 unsigned callback2(unsigned right, unsigned left) {
-	return ZERO_COLOR;
+	return blend(left, right, 0.5);
+	// return fuse(left, right, 0.5f);
 }
 
 unsigned callback4(unsigned bottom, unsigned right, unsigned left, unsigned top) {
-	return ZERO_COLOR; // for testing
+	int8_t lightDiff_RL = getLightDiff(right, left);
+	int8_t lightDiff_TB = getLightDiff(top, bottom);
+
+	if (lightDiff_RL > 0) return 0xFF6666666;
+	else if (lightDiff_TB > 0) return 0xFFCCCCCC;
+	else return ZERO_COLOR;
 }
 
 unsigned callback8(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l, unsigned tr, unsigned t, unsigned tl) {
@@ -63,12 +69,14 @@ int main(int argc, char** argv) {
 	addSeed(&seedTable, 0xFF0000FF); // blue
 
 	blankImg = createImgBlank(1100, 1200, BLACK_COLOR);
-	seededImg = createImgSeedRaw(blankImg, SEED_COLOR, 0.001);
+	seededImg = createImgSeedRaw(blankImg, SEED_COLOR, 0.01);
 	seededImg2 = createImgSeedWeighted(blankImg, &seedTable);
 
 	patternImg1 = createCellPatImg2(seededImg, callback2);
 	patternImg2 = createCellPatImg4(seededImg, callback4);
+	// patternImg2 = createCellPatImg2(patternImg1, callback2);
 	patternImg3 = createCellPatImg8(seededImg, callback8);
+	// patternImg3 = createCellPatImg2(patternImg2, callback2);
 
 	// Event Loop
 

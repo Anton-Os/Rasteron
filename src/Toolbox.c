@@ -97,23 +97,23 @@ double getPixDist(unsigned p1, unsigned p2, unsigned imageWidth){
 	return sqrt(((x2-x1)*(x2-x1))+((y2-y1)*(y2-y1)));
 }
 
-
-uint32_t grayify32(uint32_t refColor){
-	if (refColor & 0x00FFFFFF == 0xFFFFFF) 
-		return WHITE_COLOR;
+uint32_t grayify32(uint32_t refColor) {
+	if (refColor == WHITE_COLOR) return WHITE_COLOR;
+	if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
 	
 	uint8_t alpha = 0xFF; // Complete opacity desired for alpha
-	uint8_t avgColor = ((uint32_t)((refColor & 0xFF0000) << 16) + (uint32_t)((refColor & 0xFF00) << 16) + (uint32_t)((refColor & 0xFF) << 16)) / 3;
+	uint8_t avgColor = (((refColor & RED_CHANNEL) >> 16) + ((refColor & 0xFF00) >> 8) + (refColor & 0xFF)) / 3;
 
 	uint32_t result = ((alpha << 24) | (avgColor << 16) | (avgColor << 8) | avgColor);
 	return result;
 }
 
 uint8_t grayify8(uint32_t refColor){
-	if (refColor & 0x00FFFFFF == 0xFFFFFF)
-		return 0xFF; 
+	if (refColor == WHITE_COLOR) return WHITE_COLOR;
+	if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
 
-	return ((uint32_t)((refColor & 0xFF0000) << 16) + (uint32_t)((refColor & 0xFF00) << 16) + (uint32_t)((refColor & 0xFF) << 16)) / 3;
+	uint8_t avgColor = (((refColor & RED_CHANNEL) >> 16) + ((refColor & 0xFF00) >> 8) + (refColor & 0xFF)) / 3;
+	return avgColor;
 }
 
 uint8_t fract8(uint8_t refColor, double frac){

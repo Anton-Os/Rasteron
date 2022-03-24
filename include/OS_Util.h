@@ -26,11 +26,13 @@
 		Visual* visual;
 		Window window;
 		// XGCValues gcVals;
+		int depth;
 	} Platform_Context;
 
 	void createWindow(Platform_Context* context, const char* name); // Window creatiom
 	void eventLoop(Display* display); // Event loop
 	// XImage createUnixBmap(const Image* image); // formatted data call
 	XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data); // raw data call
+	XImage* createUnixBmap(Platform_Context* context, Rasteron_Image* image);
 	void drawUnixBmap(Platform_Context* context, XImage* image);
 #endif // Port later to some Internal.h header

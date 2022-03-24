@@ -9,12 +9,12 @@ void createWindow(Platform_Context* context, const char* name){
 	context->window = XCreateSimpleWindow(
 		context->display, RootWindow(context->display, screenNum),
 		50, 0, 1200, 1100,
-		1, blackPix, whitePix
+		1, 0, 0
+		// 1, blackPix, whitePix
 	);
 	context->visual = DefaultVisual(context->display, screenNum);
-
-	// context->gc = XCreateGC(context->display, context->window, 0, NULL);
 	context->gc = DefaultGC(context->display, screenNum);
+	context->depth = DefaultDepth(context->display, screenNum);
 
 	XSelectInput(context->display, context->window, ExposureMask);
 	XMapWindow(context->display, context->window);
@@ -34,39 +34,28 @@ void eventLoop(Display* display){
 }
 
 XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data){
-	// size_t dataSize = width * height * 4;
-	// unsigned char* imageData = (unsigned char*)malloc(dataSize); // 4 attributes per color value
-	/* for(unsigned p = 0; p < dataSize; p++)
-		switch (p % 4){ // copies data from cooresponding input data
-			case 0: *(imageData + p) = *(data + (p / 4)) & ALPHA_CHANNEL; break;
-			case 1: *(imageData + p) = *(data + (p / 4)) & RED_CHANNEL; break;
-			case 2: *(imageData + p) = *(data + (p / 4)) & GREEN_CHANNEL; break;
-			case 3: *(imageData + p) = *(data + (p / 4)) & BLUE_CHANNEL; break;
-		} */
-
 	XImage* image = XCreateImage(
-		context->display, context->visual,
-		IMAGE_DEPTH, ZPixmap, 0, data,
-		// width, height, 32, 0
-		256, 256, 32, 0
+		context->display, context->visual, context->depth,
+		ZPixmap, 0, data, width, height, 32, 0
 	);
 	
-	/* for(unsigned h = 0; h < height; h++)
+	for(unsigned h = 0; h < height; h++)
 		for(unsigned w = 0; w < width; w++)
-			XPutPixel(image, w, h, BLACK_COLOR); */
-	for(unsigned p = 0; p < width * height; p++)
-		XAddPixel(image, (long)p);
+			XPutPixel(image, w, h, *(data + (h * width) + w));
 
-	// free(imageData);
 	return image;
 }
 
+XImage* createUnixBmap(Platform_Context* context, Rasteron_Image* image){
+	createUnixBmapRaw(context, image->height, image->width, image->data);
+}
+
 void drawUnixBmap(Platform_Context* context, XImage* image){
-    XPutImage(
+
+	XPutImage(
 		context->display, context->window, context->gc, 
 		image,
-		0, 0, 0, 0, 
-		// image->width, image->height
-		256, 256
+		0, 0, 0, 0,
+		image->width, image->height
 	);
 }

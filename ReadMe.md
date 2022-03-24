@@ -1,5 +1,5 @@
 # Rasteron
 
-A raster image loader and manipulation project, this code will be incorporated into making sprites and textures. Supports PNG, TIFF, and BMP file formats
+A raster image loader, manipulation, and generation project. Supports PNG, TIFF, and BMP file formats.
 
 Builds on Windows with Linux port in progress

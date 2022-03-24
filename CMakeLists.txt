@@ -123,9 +123,9 @@ else() # Minimalist demos on unix, testing core functionality
     target_include_directories(OpenSesame PUBLIC include)
     target_link_libraries(OpenSesame Rasteron)
 
-    add_executable(Test demos/unix/Test.c)
-    target_include_directories(Test PUBLIC include)
-    target_link_libraries(Test Rasteron)
+    add_executable(Experiment demos/unix/Experiment.c)
+    target_include_directories(Experiment PUBLIC include)
+    target_link_libraries(Experiment Rasteron)
 endif()
 
 
