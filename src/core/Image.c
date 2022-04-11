@@ -10,13 +10,6 @@ void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight){
 	table->seedCount++;
 }
 
-void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac, double yFrac){
-	table->positions[table->pixelPointCount].pos.xFrac = xFrac;
-	table->positions[table->pixelPointCount].pos.yFrac = yFrac;
-	table->positions[table->pixelPointCount].color = color;
-	table->pixelPointCount++;
-}
-
 Rasteron_Swatch createSwatch(unsigned color, uint8_t deviation){
 	Rasteron_Swatch swatch;
 	
@@ -48,6 +41,20 @@ Rasteron_Swatch createSwatch(unsigned color, uint8_t deviation){
 	swatch.colors[SWATCH_Magenta_Sub] = color - ((redSub << 16) | blueSub);
 
 	return swatch;
+}
+
+Rasteron_SeedTable createSeedTable(const Rasteron_Swatch* swatch) {
+	Rasteron_SeedTable seedTable;
+	addSeed(&seedTable, swatch->colors[SWATCH_Yellow_Add]);
+	addSeed(&seedTable, swatch->colors[SWATCH_Cyan_Add]);
+	addSeed(&seedTable, swatch->colors[SWATCH_Magenta_Add]);
+	addSeed(&seedTable, swatch->colors[SWATCH_Light]);
+	addSeed(&seedTable, swatch->colors[SWATCH_Dark]);
+	addSeed(&seedTable, swatch->colors[SWATCH_Yellow_Sub]);
+	addSeed(&seedTable, swatch->colors[SWATCH_Cyan_Sub]);
+	addSeed(&seedTable, swatch->colors[SWATCH_Magenta_Sub]);
+
+	return seedTable;
 }
 
 unsigned getPixOffset(const Rasteron_PixelPoint* pixPoint, Rasteron_Image* refImage){
@@ -315,38 +322,6 @@ Rasteron_Image* createImgSeedWeighted(const Rasteron_Image* refImage, const Rast
 
 	return paletteImage;
 }
-
-Rasteron_Image* createImgProxim(const Rasteron_Image* refImage, const Rasteron_ColorPointTable* colorPointTable){
-	if (refImage == NULL) {
-		perror("Cannot create palette image! Null pointer provided as reference image!");
-		return NULL;
-	}
-
-	unsigned* targetPixels = malloc(colorPointTable->pixelPointCount * sizeof(unsigned));
-
-	for(unsigned t = 0; t < colorPointTable->pixelPointCount; t++)
-		*(targetPixels + t) = getPixOffset(&colorPointTable->positions[t].pos, refImage);
-
-	Rasteron_Image* proxCellImage = allocNewImg("prox-cell", refImage->height, refImage->width);
-
-	for (unsigned p = 0; p < proxCellImage->width * proxCellImage->height; p++) {
-		unsigned color = 0xFF448844; // some default color!
-		double minDist = (double)(proxCellImage->width * proxCellImage->height);
-
-		for(unsigned t = 0; t < colorPointTable->pixelPointCount; t++){
-			double dist = getPixDist(p, *(targetPixels + t), proxCellImage->width);
-			if(dist < minDist){
-				minDist = dist;
-				color = colorPointTable->positions[t].color;
-			}
-			*(proxCellImage->data + p) = color;
-		}
-	}
-
-	free(targetPixels);
-	return proxCellImage;
-}
-
 
 void deleteImg(Rasteron_Image* image) {
     if(image->data != NULL) free(image->data);

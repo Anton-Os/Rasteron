@@ -18,7 +18,7 @@ Rasteron_Image* seededImg;
 Rasteron_Image* paletteImg;
 Rasteron_Image* proxCellImg;
 
-BITMAP bmap;
+BITMAP bmap1, bmap2, bmap3;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -28,13 +28,13 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	switch (message) {
 	case (WM_CREATE): {
 		// bmap = createWinBmap(randNoiseImg);
-		bmap = createWinBmap(randNoiseImg2);
+		bmap1 = createWinBmap(randNoiseImg2);
 		// bmap = createWinBmap(seededImg);
 		// bmap = createWinBmap(paletteImg);
 		// bmap = createWinBmap(proxCellImg);
 	}
 	case (WM_PAINT): {
-		drawWinBmap(hwnd, &bmap);
+		drawWinBmap(hwnd, &bmap1);
 	}
 	case (WM_CLOSE): {}
 	default: return DefWindowProc(hwnd, message, wParam, lParam);

@@ -8,27 +8,21 @@ Rasteron_SeedTable seedTable;
 Rasteron_Swatch darkSwatch, lightSwatch;
 
 Rasteron_Image* blankImg;
+
 Rasteron_Image* seededImg;
 Rasteron_Image* seededImg2;
+
 Rasteron_Image* patternImg1;
 Rasteron_Image* patternImg2;
-Rasteron_Image* patternImg3;
+Rasteron_Image* patternImgVert;
+Rasteron_Image* patternImgHorz;
 
 #define SEED_COLOR 0xFFFFFFFF
 
 // Start with simple black and white patterns
 unsigned callback2(unsigned right, unsigned left) {
-	return blend(left, right, 0.5);
-	// return fuse(left, right, 0.5f);
-}
-
-unsigned callback4(unsigned bottom, unsigned right, unsigned left, unsigned top) {
-	int8_t lightDiff_RL = getLightDiff(right, left);
-	int8_t lightDiff_TB = getLightDiff(top, bottom);
-
-	if (lightDiff_RL > 0) return 0xFF6666666;
-	else if (lightDiff_TB > 0) return 0xFFCCCCCC;
-	else return ZERO_COLOR;
+	// return blend(left, right, 0.5);
+	return fuse(left, right, 0.9f);
 }
 
 unsigned callback8(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l, unsigned tr, unsigned t, unsigned tl) {
@@ -47,7 +41,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		bmap = createWinBmap(patternImg3);
+		bmap = createWinBmap(patternImgHorz);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap);
@@ -63,20 +57,17 @@ int main(int argc, char** argv) {
 
 	darkSwatch = createSwatch(BLACK_COLOR, 0x33);
 	lightSwatch = createSwatch(WHITE_COLOR, 0x33);
-
-	addSeed(&seedTable, 0xFFFF0000); // red
-	addSeed(&seedTable, 0xFF00FF00); // green
-	addSeed(&seedTable, 0xFF0000FF); // blue
+	// seedTable = createSeedTable(&lightSwatch);
 
 	blankImg = createImgBlank(1100, 1200, BLACK_COLOR);
+
 	seededImg = createImgSeedRaw(blankImg, SEED_COLOR, 0.01);
 	seededImg2 = createImgSeedWeighted(blankImg, &seedTable);
 
 	patternImg1 = createCellPatImg2(seededImg, callback2);
-	patternImg2 = createCellPatImg4(seededImg, callback4);
-	// patternImg2 = createCellPatImg2(patternImg1, callback2);
-	patternImg3 = createCellPatImg8(seededImg, callback8);
-	// patternImg3 = createCellPatImg2(patternImg2, callback2);
+	patternImg2 = createCellPatImg8(seededImg, callback8);
+	// patternImgVert = createVertPatImg(seededImg, callback2);
+	patternImgHorz = createHorzPatImg(seededImg, callback2);
 
 	// Event Loop
 
@@ -86,12 +77,14 @@ int main(int argc, char** argv) {
 	// Cleanup Step
 
 	deleteImg(blankImg);
+
 	deleteImg(seededImg);
 	deleteImg(seededImg2);
 
 	deleteImg(patternImg1);
 	deleteImg(patternImg2);
-	deleteImg(patternImg3);
+	// deleteImg(patternImgVert);
+	deleteImg(patternImgHorz);
 
 	return 0;
 }

@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 	textObj.fileName = &targetFontPath;
 	textObj.text = "i";
 
-	fontImage = bakeImgTextReg(&freetypeLib, &textObj);
+	fontImage = bakeTextReg(&freetypeLib, &textObj);
 	flipImage = createImgFlip(fontImage, FLIP_Clock);
 
 	// Event Loop

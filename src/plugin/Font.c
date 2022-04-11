@@ -1,9 +1,11 @@
 #include "Font.h"
 
-static void getImageTextParams(Rasteron_Image* refImage, Rasteron_TextSizeProperties* sizeParams, uint32_t color, int isInvert) {
+// Internal Functions
+
+static void getImageTextParams(Rasteron_Image* refImage, Rasteron_TextSizeProperties* sizeParams, uint32_t color, int isInverted) {
 	// setting all paramteres to initial values
-	sizeParams->xMin = (!isInvert)? refImage->width : refImage->height;
-	sizeParams->yMin = (!isInvert)? refImage->width : refImage->width;
+	sizeParams->xMin = (!isInverted)? refImage->width : refImage->height;
+	sizeParams->yMin = (!isInverted)? refImage->width : refImage->width;
 	sizeParams->xMax = 0; sizeParams->yMax = 0;
 
 	for(unsigned r = 0; r < refImage->height; r++)
@@ -43,7 +45,7 @@ static void drawGlyph(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t color, 
 	else return; // skips space
 }
 
-static Rasteron_Image* bakeImgTextCustom(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale, int isInvert){
+static Rasteron_Image* bakeTextCustom(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale, int isInverted){
     FT_Face face;
     int error = FT_New_Face(*library, textObj->fileName, 0, &face);
 
@@ -72,13 +74,13 @@ static Rasteron_Image* bakeImgTextCustom(FT_Library* library, const Rasteron_For
     }
 
 	Rasteron_TextSizeProperties sizeProps;
-	getImageTextParams(canvasImage, &sizeProps, textObj->fgColor, isInvert);
+	getImageTextParams(canvasImage, &sizeProps, textObj->fgColor, isInverted);
 
 	// Copy from large canvas to real image
 
-	Rasteron_Image* fontImage = (!isInvert)
+	Rasteron_Image* fontImage = (!isInverted)
 		? createImgBlank(sizeProps.yMax - sizeProps.yMin, sizeProps.xMax - sizeProps.xMin, textObj->bkColor) // regular
-		: createImgBlank(sizeProps.xMax - sizeProps.xMin, sizeProps.yMax - sizeProps.yMin, textObj->bkColor); // inverted
+		: createImgBlank(sizeProps.xMax - sizeProps.xMin, sizeProps.yMax - sizeProps.yMin, textObj->bkColor); // Inved
 	cropTextImage(canvasImage, fontImage, sizeProps);
 	
 	deleteImg(canvasImage);
@@ -86,25 +88,27 @@ static Rasteron_Image* bakeImgTextCustom(FT_Library* library, const Rasteron_For
 	return fontImage; // return fontImage;
 }
 
+// Library Functions
+
 void initFreeType(FT_Library* library){
     int error = FT_Init_FreeType(library);
     if(error) perror("Error occured initializing freetype library!");
 }
 
-Rasteron_Image* bakeImgTextRegScaled(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
-	return bakeImgTextCustom(library, textObj, scale, FONT_INVERT_FALSE);
+Rasteron_Image* bakeTextRegSize(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
+	return bakeTextCustom(library, textObj, scale, 0);
 }
 
-Rasteron_Image* bakeImgTextReg(FT_Library* library, const Rasteron_FormatText* textObj){
-	return bakeImgTextRegScaled(library, textObj, FONT_SIZE_MED);
+Rasteron_Image* bakeTextReg(FT_Library* library, const Rasteron_FormatText* textObj){
+	return bakeTextRegSize(library, textObj, FONT_SIZE_MED);
 }
 
-Rasteron_Image* bakeImgTextInvertScaled(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
-	return bakeImgTextCustom(library, textObj, scale, FONT_INVERT_TRUE);
+Rasteron_Image* bakeTextInvSize(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
+	return bakeTextCustom(library, textObj, scale, 1);
 }
 
-Rasteron_Image* bakeImgTextInvert(FT_Library* library, const Rasteron_FormatText* textObj){
-	return bakeImgTextInvertScaled(library, textObj, FONT_SIZE_MED);
+Rasteron_Image* bakeTextInv(FT_Library* library, const Rasteron_FormatText* textObj){
+	return bakeTextInvSize(library, textObj, FONT_SIZE_MED);
 }
 
 void cleanupFreeType(FT_Library* library){

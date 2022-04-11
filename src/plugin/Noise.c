@@ -72,7 +72,6 @@ Rasteron_Image* createGradientNoiseImg(const Rasteron_Image* refImage, const Ras
 			topLeft++; topRight++; botLeft++; botRight++;
 		}
 
-		color = *botRight; // for testing
 		color = blend(
 			blend(*topLeft, *topRight, xFrac),
 			blend(*botLeft, *botRight, xFrac),

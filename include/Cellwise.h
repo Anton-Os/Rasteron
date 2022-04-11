@@ -2,6 +2,8 @@
 
 #include "Image.h"
 
+// Neighbors and Ajdacency operations
+
 // Start from zero to index arrays easily
 enum NBR_CellFlags {
 	NBR_Bot_Right = 0,
@@ -33,17 +35,34 @@ NebrTable_List* genNebrTables(const Rasteron_Image* image);
 void delNebrTables(NebrTable_List* nebrTables);
 
 typedef unsigned (*nebrCallback2)(unsigned, unsigned); // takes only right and left neighbors as input, returns result color
-typedef unsigned (*nebrCallback4)(unsigned, unsigned, unsigned, unsigned); // takes bottom, right, left, and top neighbors as input, returns result color
+// typedef unsigned (*nebrCallback4)(unsigned, unsigned, unsigned, unsigned); // takes bottom, right, left, and top neighbors as input, returns result color
 typedef unsigned (*nebrCallback8)(unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned); // takes all neighbors in order as input, returns result color
 
 Rasteron_Image* createCellPatImg2(const Rasteron_Image* refImage, nebrCallback2 callback);
-Rasteron_Image* createIterPatImg2(const Rasteron_Image* refImage, nebrCallback2 callback, unsigned short iter);
-Rasteron_Image* createCellPatImg4(const Rasteron_Image* refImage, nebrCallback4 callback);
-Rasteron_Image* createIterPatImg4(const Rasteron_Image* refImage, nebrCallback2 callback, unsigned short iter);
 Rasteron_Image* createCellPatImg8(const Rasteron_Image* refImage, nebrCallback8 callback);
-Rasteron_Image* createIterPatImg8(const Rasteron_Image* refImage, nebrCallback2 callback, unsigned short iter);
 Rasteron_Image* createHorzPatImg(const Rasteron_Image* refImage, nebrCallback2 callback); // horizontal scan pattern
 Rasteron_Image* createVertPatImg(const Rasteron_Image* refImage, nebrCallback2 callback); // vertical scan pattern
+
+// Distance and Field operations
+
+typedef struct {
+	Rasteron_PixelPoint pos;
+	unsigned color;
+} Rasteron_ColorPoint;
+
+#define MAX_PIXEL_POS TWOPOWER(11) // 2046
+
+typedef struct {
+	Rasteron_ColorPoint positions[MAX_PIXEL_POS];
+	unsigned pixelPointCount; // = 0;
+} Rasteron_ColorPointTable;
+
+void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac, double yFrac);
+
+typedef unsigned (*distCallback)(unsigned color, double distance);
+
+Rasteron_Image* createImgProxim(const Rasteron_Image* refImage, const Rasteron_ColorPointTable* colorPointTable); // creates a cell layout based on proximity points
+Rasteron_Image* createImgField(const Rasteron_Image* refImage, distCallback callback); // creates an image based on proximity points given a distance function
 
 #define RASTERON_CELLWISE_H
 #endif
