@@ -6,10 +6,10 @@
 // Global Definitions
 
 Rasteron_SeedTable seedTable;
-Rasteron_ColorPointTable colorPtTable;
-Rasteron_GradientNoise noiseGradientTable = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
-// Rasteron_GradientNoise noiseGradientTable = { 12, 12, 0xFFFF00FF, 0xFF00FFFF };
-// Rasteron_GradientNoise noiseGradientTable = { 64, 64, 0xFF000000, 0xFFFFFFFF };
+ColorPointTable colorPtTable;
+GradientLattice gradientTable = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
+// Rasteron_GradientNoise gradientTable = { 12, 12, 0xFFFF00FF, 0xFF00FFFF };
+// Rasteron_GradientNoise gradientTable = { 64, 64, 0xFF000000, 0xFFFFFFFF };
 
 Rasteron_Image* blankImg;
 Rasteron_Image* randNoiseImg;
@@ -58,11 +58,10 @@ int main(int argc, char** argv) {
 	addColorPoint(&colorPtTable, 0xFFAAAAFF, 0.4f, 0.4f);
 
 	blankImg = createImgBlank(1100, 1200, 0xFF73e5ff);
-	randNoiseImg = createWhiteNoiseImg(blankImg, 0xFFFF0000, 0xFF0000FF);
-	randNoiseImg2 = createGradientNoiseImg(blankImg, &noiseGradientTable);
+	randNoiseImg = createNoiseImg_white(blankImg, 0xFFFF0000, 0xFF0000FF);
+	randNoiseImg2 = createNoiseImg_gradient(blankImg, gradientTable);
 	seededImg = createImgSeedRaw(blankImg, 0xFFFF00FF, 0.1);
 	paletteImg = createImgSeedWeighted(blankImg, &seedTable);
-	proxCellImg = createImgProxim(blankImg, &colorPtTable);
 
 	// Event Loop
 

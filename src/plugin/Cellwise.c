@@ -1,5 +1,7 @@
 #include "Cellwise.h"
 
+// Pattern operations
+
 static void setFlagBit(nebrCheckFlags* target, enum NBR_CellFlags flagBit){
     *(target) = (*(target) | (1 << (flagBit)));
 }
@@ -94,48 +96,18 @@ NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 	return list; // Return the structure that we generated
 }
 
-Rasteron_Image* createCellPatImg2(const Rasteron_Image* refImage, nebrCallback2 callback){
+Rasteron_Image* createPatternImg_nebr(const Rasteron_Image* refImage, nebrCallback8 callback){
 	if(refImage == NULL){
 		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
 	}
 
 	NebrTable_List* nebrTables = genNebrTables(refImage);
-	Rasteron_Image* patternImg = allocNewImg("pattern-c2", refImage->height, refImage->width);
-
-	for(unsigned p = 0; p < refImage->height * refImage->width; p++){
-		NebrTable* currentTable = nebrTables->tables + p;
-		unsigned right, left;
-
-		unsigned short i = 0; // index to keep track of neighbor
-		if (currentTable->nebrExistFlags & (1 << NBR_Right)) {
-			right = *(*(currentTable->nebrs + i)); i++;
-		} else right = ZERO_COLOR;
-		if (currentTable->nebrExistFlags & (1 << NBR_Left)) {
-			left = *(*(currentTable->nebrs + i)); i++;
-		} else left = ZERO_COLOR;
-
-		unsigned newColor = callback(right, left);
-		if(newColor != ZERO_COLOR)
-			*(patternImg->data + p) = newColor; // override color
-		else *(patternImg->data + p) = *(refImage->data + p); // preserve color
-	}
-
-	delNebrTables(nebrTables);
-	return patternImg;
-}
-
-Rasteron_Image* createCellPatImg8(const Rasteron_Image* refImage, nebrCallback8 callback){
-	if(refImage == NULL){
-		perror("Cannot create pattern image! Null pointer provided as input");
-		return NULL;
-	}
-
-	NebrTable_List* nebrTables = genNebrTables(refImage);
-	Rasteron_Image* patternImg = allocNewImg("pattern-c8", refImage->height, refImage->width);
+	Rasteron_Image* patternImg = allocNewImg("pattern-nebr", refImage->height, refImage->width);
 
 	for (unsigned p = 0; p < refImage->height * refImage->width; p++) {
 		NebrTable* currentTable = nebrTables->tables + p;
+		unsigned target = *(refImage->data + p);
 		unsigned br, b, bl, r, l, tr, t, tl;
 
 		unsigned short i = 0; // index to keep track of neighbor
@@ -164,9 +136,10 @@ Rasteron_Image* createCellPatImg8(const Rasteron_Image* refImage, nebrCallback8 
 			tl = *(*(currentTable->nebrs + i)); i++;
 		} else tl = ZERO_COLOR;
 
-		unsigned newColor = callback(br, b, bl, r, l, tr, t, tl);
-		if (newColor != ZERO_COLOR)
-			*(patternImg->data + p) = newColor; // override color
+		unsigned nebrs[NEBR_COUNT] = { br, b, bl, r, l, tr, t, tl };
+
+		unsigned newColor = callback(target, nebrs);
+		if (newColor != ZERO_COLOR) *(patternImg->data + p) = newColor; // override color
 		else *(patternImg->data + p) = *(refImage->data + p); // preserve color
 	}
 
@@ -174,78 +147,87 @@ Rasteron_Image* createCellPatImg8(const Rasteron_Image* refImage, nebrCallback8 
 	return patternImg;
 }
 
-Rasteron_Image* createHorzPatImg(const Rasteron_Image* refImage, nebrCallback2 callback){
+Rasteron_Image* createPatternImg_iter(const Rasteron_Image* refImage, nebrCallback8 callback, unsigned short iter) {
+	Rasteron_Image* patternImage = allocNewImg("staging", refImage->height, refImage->width);
+	for (unsigned p = 0; p < refImage->width * refImage->height; p++)
+		*(patternImage->data + p) = *(refImage->data + p); // copy pixels from original image
+
+	Rasteron_Image* stagingImg = { 0 };
+
+	unsigned short i = 0;
+	do {
+		stagingImg = createPatternImg_nebr(patternImage, callback);
+		for (unsigned p = 0; p < stagingImg->width * stagingImg->height; p++)
+			*(patternImage->data + p) = *(stagingImg->data + p); // copy pixels from pattern image
+		deleteImg(stagingImg);
+		i++;
+	} while (i < iter);
+
+	return patternImage;
+}
+
+Rasteron_Image* createPatternImg_horz(const Rasteron_Image* refImage, nebrCallback2 callback){
 	if(refImage == NULL){
 		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
 	}
 
-	NebrTable_List* nebrTables = genNebrTables(refImage);
-	Rasteron_Image* patternImg = allocNewImg("pattern-h2", refImage->height, refImage->width);
+	// NebrTable_List* nebrTables = genNebrTables(refImage);
+	Rasteron_Image* stagingImg = allocNewImg("staging", refImage->height, refImage->width);
+		for (unsigned r = 0; r < refImage->width; r++)
+			*(stagingImg->data + r) = *(refImage->data + r); // copy first row into staging image
+	Rasteron_Image* patternImg = allocNewImg("pattern-horz", refImage->height, refImage->width);
 
-	for(unsigned r = 0; r < refImage->height; r++){
-		for(unsigned c = 0; c < refImage->width; c++){
-			unsigned p = (r * refImage->width) + c;
-			NebrTable* currentTable = nebrTables->tables + p;
-			unsigned right, left;
+	for(unsigned r = 0; r < stagingImg->height; r++)
+		for(unsigned c = 0; c < stagingImg->width; c++){
+			unsigned p = (r * stagingImg->width) + c;
 
-			unsigned short i = 0; // index to keep track of neighbor
-			if (currentTable->nebrExistFlags & (1 << NBR_Right)) {
-				right = *(*(currentTable->nebrs + i)); i++;
-			} else right = ZERO_COLOR;
-			if (currentTable->nebrExistFlags & (1 << NBR_Left)) {
-				left = *(*(currentTable->nebrs + i)); i++;
-			} else left = ZERO_COLOR;
+			unsigned target = *(stagingImg->data + p);
+			unsigned right = (c < stagingImg->width - 1) ? *findNeighbor(stagingImg, p, NBR_Right) : ZERO_COLOR;
+			unsigned left = (c > 0) ? *findNeighbor(stagingImg, p, NBR_Left) : ZERO_COLOR;
 
-			unsigned newColor = callback(right, left);
-			if(newColor != ZERO_COLOR)
-				*(patternImg->data + p) = newColor; // override color
-			else *(patternImg->data + p) = *(refImage->data + p); // preserve color
+			unsigned newColor = callback(target, right, left);
+			if(newColor != ZERO_COLOR) *(patternImg->data + p) = newColor; // override color
+			else *(patternImg->data + p) = *(stagingImg->data + p); // preserve color
 
-			if(r < refImage->height - 1) 
-				*(patternImg->data + p + refImage->width) = *(patternImg->data + p); // copy pixel into next row
+			if(r < refImage->height - 1) // copy pixel to next row of staging image
+				*(stagingImg->data + p + stagingImg->width) = *(patternImg->data + p);
 		}
-	}
 
-	delNebrTables(nebrTables);
+	deleteImg(stagingImg);
 	return patternImg;
 }
 
-Rasteron_Image* createVertPatImg(const Rasteron_Image* refImage, nebrCallback2 callback){
+Rasteron_Image* createPatternImg_vert(const Rasteron_Image* refImage, nebrCallback2 callback){
 	if(refImage == NULL){
 		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
 	}
 
-	NebrTable_List* nebrTables = genNebrTables(refImage);
-	Rasteron_Image* patternImg = allocNewImg("pattern-v2", refImage->height, refImage->width);
+	Rasteron_Image* stagingImg = allocNewImg("staging", refImage->height, refImage->width);
+	for (unsigned c = 0; c < refImage->height; c++)
+		*(stagingImg->data + (c * refImage->width)) = *(refImage->data + (c * refImage->width)); // copy first column
+	Rasteron_Image* patternImg = allocNewImg("pattern-vert", refImage->height, refImage->width);
 
-	for(unsigned c = 0; c < refImage->width; c++){
-		unsigned p = c;
-		for(unsigned r = 0; r < refImage->height; r++){
-			p += refImage->width; // move to next row
-			NebrTable* currentTable = nebrTables->tables + p;
-			unsigned bottom, top;
+	for (unsigned c = 0; c < stagingImg->width; c++) {
+		for (unsigned r = 0; r < stagingImg->height; r++) {
+			unsigned p = (r * stagingImg->width) + c;
 
-			unsigned short i = 0; // index to keep track of neighbor
-			if (currentTable->nebrExistFlags & (1 << NBR_Bot)) {
-				bottom = *(*(currentTable->nebrs + i)); i++;
-			} else bottom = ZERO_COLOR;
-			if (currentTable->nebrExistFlags & (1 << NBR_Top)) {
-				top = *(*(currentTable->nebrs + i)); i++;
-			} else top = ZERO_COLOR;
+			unsigned target = *(stagingImg->data + p);
+			unsigned bot = (r < refImage->height - 1)? *findNeighbor(stagingImg, p, NBR_Bot) : ZERO_COLOR;
+			unsigned top = (r > 0) ? *findNeighbor(stagingImg, p, NBR_Top) : ZERO_COLOR;
 
-			unsigned newColor = callback(bottom, top);
-			if(newColor != ZERO_COLOR)
-				*(patternImg->data + p) = newColor; // override color
-			else *(patternImg->data + p) = *(refImage->data + p); // preserve color
+			unsigned newColor = callback(target, bot, top);
+			if (newColor != ZERO_COLOR) *(patternImg->data + p) = newColor; // override color
+			else *(patternImg->data + p) = *(stagingImg->data + p); // preserve color
 
-			if(c < refImage->width - 1) 
-				*(patternImg->data + p + 1) = *(patternImg->data + p); // copy pixel into next column
+			if (c < refImage->width - 1) // copy pixel to next row of staging image
+				*(stagingImg->data + p + 1) = *(patternImg->data + p);
 		}
 	}
 
-	delNebrTables(nebrTables);
+	// delNebrTables(nebrTables);
+	deleteImg(stagingImg);
 	return patternImg;
 }
 
@@ -261,40 +243,74 @@ void delNebrTables(NebrTable_List* nebrTables) {
 	nebrTables = NULL;
 }
 
-void addColorPoint(Rasteron_ColorPointTable* table, unsigned color, double xFrac, double yFrac) {
-	table->positions[table->pixelPointCount].pos.xFrac = xFrac;
-	table->positions[table->pixelPointCount].pos.yFrac = yFrac;
-	table->positions[table->pixelPointCount].color = color;
-	table->pixelPointCount++;
+// Field operations
+
+void addColorPoint(ColorPointTable* table, unsigned color, double xFrac, double yFrac) {
+	table->points[table->pointCount].point.xFrac = xFrac;
+	table->points[table->pointCount].point.yFrac = yFrac;
+	table->points[table->pointCount].color = color;
+	table->pointCount++;
 }
 
-Rasteron_Image* createImgProxim(const Rasteron_Image* refImage, const Rasteron_ColorPointTable* colorPointTable) {
+Rasteron_Image* createFieldImg(const Rasteron_Image* refImage, const ColorPointTable* colorPointTable, distCallback callback) {
+	if (refImage == NULL) {
+		perror("Cannot create field image! Null pointer provided as reference image!");
+		return NULL;
+	}
+
+	unsigned* colorPointPixels = malloc(colorPointTable->pointCount * sizeof(unsigned));
+	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
+		*(colorPointPixels + t) = getPixOffset(&colorPointTable->points[t].point, refImage);
+
+	Rasteron_Image* fieldImage = allocNewImg("field", refImage->height, refImage->width);
+
+	// Implement generation logic
+
+	free(colorPointPixels);
+	return fieldImage;
+}
+
+Rasteron_Image* createFieldImg_prox(const Rasteron_Image* refImage, const ColorPointTable* colorPointTable) {
+	if (refImage == NULL) {
+		perror("Cannot create step image! Null pointer provided as reference image!");
+		return NULL;
+	}
+
+	unsigned* colorPointPixels = malloc(colorPointTable->pointCount * sizeof(unsigned));
+	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
+		*(colorPointPixels + t) = getPixOffset(&colorPointTable->points[t].point, refImage);
+
+	Rasteron_Image* fieldImage = allocNewImg("field-prox", refImage->height, refImage->width);
+
+	for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
+		unsigned color = BLACK_COLOR;
+		double minDist = (double)(fieldImage->width * fieldImage->height);
+
+		for (unsigned t = 0; t < colorPointTable->pointCount; t++) {
+			double dist = getPixDist(p, *(colorPointPixels + t), fieldImage->width);
+			if (dist < minDist) {
+				minDist = dist;
+				color = colorPointTable->points[t].color;
+			}
+			*(fieldImage->data + p) = color;
+		}
+	}
+
+	free(colorPointPixels);
+	return fieldImage;
+}
+
+// Step operations
+
+Rasteron_Image* createStepImg(const Rasteron_Image* refImage, stepCallback callback) {
 	if (refImage == NULL) {
 		perror("Cannot create palette image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	unsigned* targetPixels = malloc(colorPointTable->pixelPointCount * sizeof(unsigned));
+	Rasteron_Image* stepImage = allocNewImg("step", refImage->height, refImage->width);
 
-	for (unsigned t = 0; t < colorPointTable->pixelPointCount; t++)
-		*(targetPixels + t) = getPixOffset(&colorPointTable->positions[t].pos, refImage);
+	// Implement generation logic
 
-	Rasteron_Image* proxCellImage = allocNewImg("prox-cell", refImage->height, refImage->width);
-
-	for (unsigned p = 0; p < proxCellImage->width * proxCellImage->height; p++) {
-		unsigned color = 0xFF448844; // some default color!
-		double minDist = (double)(proxCellImage->width * proxCellImage->height);
-
-		for (unsigned t = 0; t < colorPointTable->pixelPointCount; t++) {
-			double dist = getPixDist(p, *(targetPixels + t), proxCellImage->width);
-			if (dist < minDist) {
-				minDist = dist;
-				color = colorPointTable->positions[t].color;
-			}
-			*(proxCellImage->data + p) = color;
-		}
-	}
-
-	free(targetPixels);
-	return proxCellImage;
+	return stepImage;
 }

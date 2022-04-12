@@ -4,83 +4,77 @@
 
 // Noise Image Operations
 
-Rasteron_Image* createWhiteNoiseImg(const Rasteron_Image* refImage, uint32_t color1, uint32_t color2){
+Rasteron_Image* createNoiseImg_white(const Rasteron_Image* refImage, uint32_t color1, uint32_t color2){
     if (refImage == NULL) {
 		perror("Cannot create white noise! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-    Rasteron_Image* whiteNoiseImg = allocNewImg("white-noise", refImage->height, refImage->width);
+    Rasteron_Image* noiseImg = allocNewImg("noise-w", refImage->height, refImage->width);
 
     // Noise Generation Logic
     double noiseVal;
-    for (unsigned p = 0; p < whiteNoiseImg->width * whiteNoiseImg->height; p++){
+    for (unsigned p = 0; p < noiseImg->width * noiseImg->height; p++){
         noiseVal = (double)rand() / (double)RAND_MAX;
-		*(whiteNoiseImg->data + p) = fuse(color1, color2, noiseVal);
+		*(noiseImg->data + p) = fuse(color1, color2, noiseVal);
     }
 
-    return whiteNoiseImg;
+    return noiseImg;
 }
 
-Rasteron_Image* createGradientNoiseImg(const Rasteron_Image* refImage, const Rasteron_GradientNoise* noise){
-    if(noise == NULL || refImage == NULL){
-        perror("Cannot create gradient noise! Null pointers provided as inperror!");
+Rasteron_Image* createNoiseImg_gradient(const Rasteron_Image* refImage, GradientLattice lattice){
+	if (lattice.xCellDivs == 0 || lattice.yCellDivs == 0 || refImage == NULL) {
+        perror("Cannot create gradient noise! Invalid parameters!");
         return NULL;
     }
 
-    Rasteron_Image* gradientNoiseImg = allocNewImg("gradient-noise", refImage->height, refImage->width);
+    Rasteron_Image* noiseImg = allocNewImg("noise-g", refImage->height, refImage->width);
 
-    const unsigned xCellPoints = noise->xCellDivs + 1; // includes leftmost and rightmost vertices +1
-    const unsigned yCellPoints = noise->yCellDivs + 1; // includes topmost and bottommost vertices +1
+	// generating lattice cells
+    const unsigned xCellPoints = lattice.xCellDivs + 1; // includes leftmost and rightmost vertices +1
+    const unsigned yCellPoints = lattice.yCellDivs + 1; // includes topmost and bottommost vertices +1
 
-	Rasteron_Image* latticeCells = allocNewImg("cell-points", yCellPoints, xCellPoints);
-	double noiseVal;
-	for (unsigned p = 0; p < latticeCells->width * latticeCells->height; p++) {
-		noiseVal = (double)rand() / (double)RAND_MAX;
-		*(latticeCells->data + p) = blend(noise->color1, noise->color2, noiseVal); // use this instead
-		/* switch (p % 4) {
-		case 0: *(latticeCells->data + p) = 0xFFFFFFFF; break;
-		case 1: *(latticeCells->data + p) = 0xFF00FFFF; break;
-		case 2: *(latticeCells->data + p) = 0xFFFF00FF; break;
-		case 3: *(latticeCells->data + p) = 0xFFFFFF00; break;
-		} */
+	Rasteron_Image* latticeImg = allocNewImg("lattice", yCellPoints, xCellPoints);
+	for (unsigned p = 0; p < latticeImg->width * latticeImg->height; p++) {
+		double noiseVal = (double)rand() / (double)RAND_MAX; // random value between 0 and 1
+		*(latticeImg->data + p) = blend(lattice.color1, lattice.color2, noiseVal); // blending value between lattice colors
 	}
 
-	// tracks position of the current gradient cell
+	// lattice cell values
 	unsigned* topLeft; unsigned* topRight; unsigned* botLeft; unsigned* botRight;
+	const unsigned xSwitch = noiseImg->width / lattice.xCellDivs;
+	const unsigned ySwitch = noiseImg->height / lattice.yCellDivs;
 
-	unsigned color = 0xFFFFFFFF;
-	const unsigned xSwitch = gradientNoiseImg->width / noise->xCellDivs;
-	const unsigned ySwitch = gradientNoiseImg->height / noise->yCellDivs;
+    for(unsigned p = 0; p < noiseImg->width * noiseImg->height; p++){
+        unsigned xOffset = p % noiseImg->width; // absolute X pixel offset
+        unsigned yOffset = p / noiseImg->width; // absolute Y pixel offset
+		
+		// setting lattice cell values
+		if(xOffset == 0){ // repositions to correct row inside lattice
+			unsigned short row = (yOffset / ySwitch) * latticeImg->width;
 
-    for(unsigned p = 0; p < gradientNoiseImg->width * gradientNoiseImg->height; p++){
-        unsigned xOffset = p % gradientNoiseImg->width; // absolute offset along width
-        unsigned yOffset = p / gradientNoiseImg->width; // absolute offset along height
-		double xFrac = (double)(xOffset % xSwitch) / (double)xSwitch; // fractional offset relative to current cell along width
-		double yFrac = (double)(yOffset % ySwitch) / (double)ySwitch; // fractional offset relative to current cell along height
-
-		if(xOffset == 0){
-			unsigned short yInc = (yOffset / ySwitch) * latticeCells->width;
-
-			// resets to the beginning of the correct row
-			topLeft = latticeCells->data + yInc;
-			topRight = latticeCells->data + 1 + yInc;
-			botLeft = latticeCells->data + latticeCells->width + yInc;
-			botRight = latticeCells->data + latticeCells->width + 1 + yInc;
+			topLeft = latticeImg->data + row;
+			topRight = latticeImg->data + 1 + row;
+			botLeft = latticeImg->data + latticeImg->width + row;
+			botRight = latticeImg->data + latticeImg->width + 1 + row;
 		}
-		else if (xOffset % xSwitch == 0 && p > 0) { // increment to next gradient cell
+		else if (xOffset % xSwitch == 0 && p > 0) { // increment to next column inside lattice
 			topLeft++; topRight++; botLeft++; botRight++;
 		}
 
-		color = blend(
+		// color determination
+		double xFrac = (double)(xOffset % xSwitch) / (double)xSwitch; // relative X offset inside lattice cell
+		double yFrac = (double)(yOffset % ySwitch) / (double)ySwitch; // relative Y offset inside lattice cell
+
+		unsigned newColor = blend(
 			blend(*topLeft, *topRight, xFrac),
 			blend(*botLeft, *botRight, xFrac),
 			yFrac
 		);
         
-        *(gradientNoiseImg->data + p) = color;
+        *(noiseImg->data + p) = newColor;
     }
 
-	deleteImg(latticeCells);
-    return gradientNoiseImg;
+	deleteImg(latticeImg);
+    return noiseImg;
 }

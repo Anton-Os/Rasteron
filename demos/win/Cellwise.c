@@ -4,32 +4,39 @@
 #include "OS_Util.h"
 
 // Global Definitions
-Rasteron_SeedTable seedTable;
 Rasteron_Swatch darkSwatch, lightSwatch;
+Rasteron_SeedTable seedTable1, seedTable2;
 
 Rasteron_Image* blankImg;
 
 Rasteron_Image* seededImg;
 Rasteron_Image* seededImg2;
 
-Rasteron_Image* patternImg1;
+Rasteron_Image* patternImg;
 Rasteron_Image* patternImg2;
 Rasteron_Image* patternImgVert;
 Rasteron_Image* patternImgHorz;
 
 #define SEED_COLOR 0xFFFFFFFF
+#define RESULT_COLOR 0xFF00FF00
 
 // Start with simple black and white patterns
-unsigned callback2(unsigned right, unsigned left) {
+unsigned callback2(unsigned target, unsigned right, unsigned left) {
 	// return blend(left, right, 0.5);
-	return fuse(left, right, 0.9f);
+	// return fuse(left, right, 0.5f);
+
+	if (left == SEED_COLOR) return SEED_COLOR;
+	else if (right == SEED_COLOR) return BLACK_COLOR;
+	else return ZERO_COLOR;
 }
 
-unsigned callback8(unsigned br, unsigned b, unsigned bl, unsigned r, unsigned l, unsigned tr, unsigned t, unsigned tl) {
-	if(t == SEED_COLOR) return 0xFFFF0000; else if (b == SEED_COLOR) return 0xFFFFFF00;
+unsigned callback8(unsigned target, unsigned nebrs[NEBR_COUNT]) {
+	/* if(t == SEED_COLOR) return 0xFFFF0000; else if (b == SEED_COLOR) return 0xFFFFFF00;
 	else if(tl == SEED_COLOR) return 0xFF00FF00; else if (bl == SEED_COLOR) return 0xFFFF00FF;
 	else if(tr == SEED_COLOR) return 0xFF0000FF; else if (br == SEED_COLOR) return 0xFF00FFFF;
-	else return ZERO_COLOR;
+	else return ZERO_COLOR; */
+
+	return ZERO_COLOR;
 }
 
 BITMAP bmap;
@@ -55,19 +62,20 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 int main(int argc, char** argv) {
 	// Genertation Step
 
-	darkSwatch = createSwatch(BLACK_COLOR, 0x33);
-	lightSwatch = createSwatch(WHITE_COLOR, 0x33);
-	// seedTable = createSeedTable(&lightSwatch);
+	darkSwatch = createSwatch(BLACK_COLOR, 0x25);
+	lightSwatch = createSwatch(WHITE_COLOR, 0x25);
+	seedTable1 = createSeedTable(&lightSwatch);
+	seedTable2 = createSeedTable(&darkSwatch);
 
 	blankImg = createImgBlank(1100, 1200, BLACK_COLOR);
 
 	seededImg = createImgSeedRaw(blankImg, SEED_COLOR, 0.01);
-	seededImg2 = createImgSeedWeighted(blankImg, &seedTable);
+	seededImg2 = createImgSeedWeighted(blankImg, &seedTable2);
 
-	patternImg1 = createCellPatImg2(seededImg, callback2);
-	patternImg2 = createCellPatImg8(seededImg, callback8);
-	// patternImgVert = createVertPatImg(seededImg, callback2);
-	patternImgHorz = createHorzPatImg(seededImg, callback2);
+	patternImg = createPatternImg_nebr(seededImg, callback8);
+	patternImg2 = createPatternImg_iter(seededImg, callback8, 4);
+	patternImgHorz = createPatternImg_horz(seededImg, callback2);
+	patternImgVert = createPatternImg_vert(seededImg, callback2);
 
 	// Event Loop
 
@@ -81,10 +89,10 @@ int main(int argc, char** argv) {
 	deleteImg(seededImg);
 	deleteImg(seededImg2);
 
-	deleteImg(patternImg1);
+	deleteImg(patternImg);
 	deleteImg(patternImg2);
-	// deleteImg(patternImgVert);
 	deleteImg(patternImgHorz);
+	deleteImg(patternImgVert);
 
 	return 0;
 }

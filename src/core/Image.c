@@ -44,7 +44,7 @@ Rasteron_Swatch createSwatch(unsigned color, uint8_t deviation){
 }
 
 Rasteron_SeedTable createSeedTable(const Rasteron_Swatch* swatch) {
-	Rasteron_SeedTable seedTable;
+	Rasteron_SeedTable seedTable = { 0 };
 	addSeed(&seedTable, swatch->colors[SWATCH_Yellow_Add]);
 	addSeed(&seedTable, swatch->colors[SWATCH_Cyan_Add]);
 	addSeed(&seedTable, swatch->colors[SWATCH_Magenta_Add]);

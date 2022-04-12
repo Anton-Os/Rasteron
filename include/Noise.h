@@ -11,17 +11,11 @@ typedef struct {
 	unsigned yCellDivs; // y axis cell divisions
 	unsigned color1;
 	unsigned color2;
-} Rasteron_GradientNoise;
+} GradientLattice;
 
-Rasteron_Image* createWhiteNoiseImg(const Rasteron_Image* ref, uint32_t color1, uint32_t color2); // creates interpolated white noise
-Rasteron_Image* createGradientNoiseImg( // perlin-like noise function
-	const Rasteron_Image* refImage,
-    const Rasteron_GradientNoise* lattice
-);
-/* Rasteron_Image* createFlowFieldImg( // creates flow field based on noise function
-	const Rasteron_Image* refImage,
-    const Rasteron_GradientNoise* lattice
-) */
+Rasteron_Image* createNoiseImg_white(const Rasteron_Image* ref, uint32_t color1, uint32_t color2); // creates interpolated white noise
+Rasteron_Image* createNoiseImg_gradient(const Rasteron_Image* refImage, GradientLattice lattice);
+// Rasteron_Image* createNoiseImg_octave(const Rasteron_Image* refImage, GradientLattice lattice1, GradientLattice lattice2);
 
 #define RASTERON_NOISE_H
 #endif

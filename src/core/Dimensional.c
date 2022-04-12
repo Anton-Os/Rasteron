@@ -1,6 +1,6 @@
 #include "Dimensional.h"
 
-// Sprite Operations
+// Sprite operations
 
 Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
 	if (refImage == NULL) {
@@ -32,7 +32,7 @@ void deleteSprite(Rasteron_Sprite* sprite){
 	sprite = NULL;
 }
 
-// Heightmap Operations
+// Heightmap operations
 
 static double computeHeight(unsigned inputColor, double minBound, double maxBound){;
 	uint8_t greyColorRef = grayify8(inputColor);
