@@ -54,7 +54,7 @@ static Rasteron_Image* bakeTextCustom(FT_Library* library, const Rasteron_Format
 	error = FT_Set_Char_Size(face, 0, scale, FONT_RESOLUTION, FONT_RESOLUTION);
     if(error) perror("Error occured baking text");
 
-	Rasteron_Image* canvasImage = createImgBlank(FONT_CANVAS_HEIGHT, FONT_CANVAS_WIDTH, textObj->bkColor);
+	Rasteron_Image* canvasImage = createImgSolid((ImageSize){ FONT_CANVAS_HEIGHT, FONT_CANVAS_WIDTH }, textObj->bkColor);
 	int pen_x = FONT_PEN_OFFSET; int pen_y = FONT_PEN_OFFSET;
 
     for(unsigned t = 0; t < strlen(textObj->text); t++){
@@ -79,8 +79,8 @@ static Rasteron_Image* bakeTextCustom(FT_Library* library, const Rasteron_Format
 	// Copy from large canvas to real image
 
 	Rasteron_Image* fontImage = (!isInverted)
-		? createImgBlank(sizeProps.yMax - sizeProps.yMin, sizeProps.xMax - sizeProps.xMin, textObj->bkColor) // regular
-		: createImgBlank(sizeProps.xMax - sizeProps.xMin, sizeProps.yMax - sizeProps.yMin, textObj->bkColor); // Inved
+		? createImgSolid((ImageSize){ sizeProps.yMax - sizeProps.yMin, sizeProps.xMax - sizeProps.xMin }, textObj->bkColor) // regular
+		: createImgSolid((ImageSize){ sizeProps.xMax - sizeProps.xMin, sizeProps.yMax - sizeProps.yMin }, textObj->bkColor); // Inved
 	cropTextImage(canvasImage, fontImage, sizeProps);
 	
 	deleteImg(canvasImage);
@@ -96,7 +96,7 @@ void initFreeType(FT_Library* library){
 }
 
 Rasteron_Image* bakeTextRegSize(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
-	return bakeTextCustom(library, textObj, scale, 0);
+	return bakeTextCustom(library, textObj, scale, FONT_REGULAR);
 }
 
 Rasteron_Image* bakeTextReg(FT_Library* library, const Rasteron_FormatText* textObj){
@@ -104,7 +104,7 @@ Rasteron_Image* bakeTextReg(FT_Library* library, const Rasteron_FormatText* text
 }
 
 Rasteron_Image* bakeTextInvSize(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
-	return bakeTextCustom(library, textObj, scale, 1);
+	return bakeTextCustom(library, textObj, scale, FONT_INVERTED);
 }
 
 Rasteron_Image* bakeTextInv(FT_Library* library, const Rasteron_FormatText* textObj){

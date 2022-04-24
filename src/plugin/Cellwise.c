@@ -252,17 +252,13 @@ void addColorPoint(ColorPointTable* table, unsigned color, double xFrac, double 
 	table->pointCount++;
 }
 
-Rasteron_Image* createFieldImg(const Rasteron_Image* refImage, const ColorPointTable* colorPointTable, distCallback callback) {
-	if (refImage == NULL) {
-		perror("Cannot create field image! Null pointer provided as reference image!");
-		return NULL;
-	}
-
+Rasteron_Image* createFieldImg(ImageSize size, const ColorPointTable* colorPointTable, distCallback callback) {
 	unsigned* colorPointPixels = malloc(colorPointTable->pointCount * sizeof(unsigned));
-	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
-		*(colorPointPixels + t) = getPixOffset(&colorPointTable->points[t].point, refImage);
 
-	Rasteron_Image* fieldImage = allocNewImg("field", refImage->height, refImage->width);
+	Rasteron_Image* fieldImage = allocNewImg("field", size.height, size.width);
+
+	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
+		*(colorPointPixels + t) = getPixOffset(colorPointTable->points[t].point, fieldImage);
 
 	// Implement generation logic
 
@@ -270,17 +266,12 @@ Rasteron_Image* createFieldImg(const Rasteron_Image* refImage, const ColorPointT
 	return fieldImage;
 }
 
-Rasteron_Image* createFieldImg_prox(const Rasteron_Image* refImage, const ColorPointTable* colorPointTable) {
-	if (refImage == NULL) {
-		perror("Cannot create step image! Null pointer provided as reference image!");
-		return NULL;
-	}
+Rasteron_Image* createFieldImg_vornoi(ImageSize size, const ColorPointTable* colorPointTable) {
+	Rasteron_Image* fieldImage = allocNewImg("field-vornoi", size.height, size.width);
 
 	unsigned* colorPointPixels = malloc(colorPointTable->pointCount * sizeof(unsigned));
 	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
-		*(colorPointPixels + t) = getPixOffset(&colorPointTable->points[t].point, refImage);
-
-	Rasteron_Image* fieldImage = allocNewImg("field-prox", refImage->height, refImage->width);
+		*(colorPointPixels + t) = getPixOffset(colorPointTable->points[t].point, fieldImage);
 
 	for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
 		unsigned color = BLACK_COLOR;
@@ -301,16 +292,3 @@ Rasteron_Image* createFieldImg_prox(const Rasteron_Image* refImage, const ColorP
 }
 
 // Step operations
-
-Rasteron_Image* createStepImg(const Rasteron_Image* refImage, stepCallback callback) {
-	if (refImage == NULL) {
-		perror("Cannot create palette image! Null pointer provided as reference image!");
-		return NULL;
-	}
-
-	Rasteron_Image* stepImage = allocNewImg("step", refImage->height, refImage->width);
-
-	// Implement generation logic
-
-	return stepImage;
-}

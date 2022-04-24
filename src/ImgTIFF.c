@@ -4,18 +4,18 @@
 
 void loadFileImage_TIFF(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Tiff;
-	TIFF** tiff = &image->data.tiff.tiff; // For less typing, points to tiff file type
+	TIFF* tiffFile = &image->data.tiff.tiff; // For less typing, points to tiff file type
 
-	*(tiff) = TIFFOpen(fileName, "r");
-	if (!*(tiff)) {
+	tiffFile = TIFFOpen(fileName, "r");
+	if (!tiffFile) {
 		printf("Could not open file: %s", fileName);
 		return;
 	}
-	TIFFGetField(*(tiff), TIFFTAG_IMAGELENGTH, &image->data.tiff.length);
-	TIFFGetField(*(tiff), TIFFTAG_IMAGEWIDTH, &image->data.tiff.width);
-	TIFFGetField(*(tiff), TIFFTAG_BITSPERSAMPLE, &image->data.tiff.bitsPerSample);
-	TIFFGetField(*(tiff), TIFFTAG_SAMPLESPERPIXEL, &image->data.tiff.samplesPerPixel);
-	TIFFGetField(*(tiff), TIFFTAG_ORIENTATION, &image->data.tiff.orientation);
+	TIFFGetField(tiffFile, TIFFTAG_IMAGELENGTH, &image->data.tiff.length);
+	TIFFGetField(tiffFile, TIFFTAG_IMAGEWIDTH, &image->data.tiff.width);
+	TIFFGetField(tiffFile, TIFFTAG_BITSPERSAMPLE, &image->data.tiff.bitsPerSample);
+	TIFFGetField(tiffFile, TIFFTAG_SAMPLESPERPIXEL, &image->data.tiff.samplesPerPixel);
+	TIFFGetField(tiffFile, TIFFTAG_ORIENTATION, &image->data.tiff.orientation);
 
 	image->data.tiff.raster = (uint32*)_TIFFmalloc(image->data.tiff.length * image->data.tiff.width * sizeof(uint32));
 	TIFFReadRGBAImageOriented(
@@ -24,14 +24,36 @@ void loadFileImage_TIFF(const char* fileName, Image* image) {
 		image->data.tiff.length,
 		image->data.tiff.raster,
 		ORIENTATION_TOPRIGHT,
-		0);
-	TIFFClose(*(tiff));
+		0
+	);
+	TIFFClose(tiffFile);
 	return;
 }
 
 void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned width, unsigned* data){
-	// TODO: Populate MetaData
-	// TODO: Populate Image Data
+	TIFF* tiffFile = TIFFOpen(fileName, "w");
+
+	// Writing Meta-Data
+
+	TIFFSetField(tiffFile, TIFFTAG_IMAGEWIDTH, width);
+	TIFFSetField(tiffFile, TIFFTAG_IMAGELENGTH, height);
+	TIFFSetField(tiffFile, TIFFTAG_SAMPLESPERPIXEL, 4);
+	TIFFSetField(tiffFile, TIFFTAG_BITSPERSAMPLE, 8);
+	TIFFSetField(tiffFile, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
+	TIFFSetField(tiffFile, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+	TIFFSetField(tiffFile, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
+	TIFFSetField(tiffFile, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiffFile, width * 4));
+
+	// Writing Data
+
+	unsigned char* rowBytes = (unsigned char*)malloc(width * 4);
+	for (unsigned r = 0; r < height; r++) { // copying data
+		memcpy(rowBytes, *(data + ((height - 1 - r) * width * 4)), width * 4); // check if working
+		if (TIFFWriteScanline(tiffFile, rowBytes, r, 0) < 0) break;
+	}
+
+	free(rowBytes);
+	TIFFClose(tiffFile);
 }
 
 void delFileImage_TIFF(Image* image){

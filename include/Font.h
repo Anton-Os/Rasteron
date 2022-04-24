@@ -16,6 +16,9 @@
 #define FONT_SIZE_EXTRA 400
 #define FONT_SIZE_GIANT 500
 
+#define FONT_REGULAR 0
+#define FONT_INVERTED 1
+
 typedef struct {
     unsigned xMin;
     unsigned xMax;

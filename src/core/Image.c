@@ -57,35 +57,35 @@ Rasteron_SeedTable createSeedTable(const Rasteron_Swatch* swatch) {
 	return seedTable;
 }
 
-unsigned getPixOffset(const Rasteron_PixelPoint* pixPoint, Rasteron_Image* refImage){
+unsigned getPixOffset(PixelPoint pixPoint, Rasteron_Image* refImage){
 	unsigned xOffset; // clamping X
-	if(pixPoint->xFrac <= 0.0) xOffset = 0;
-	else if(pixPoint->xFrac >= 1.0) xOffset = refImage->width - 1;
-	else xOffset = (unsigned)((double)refImage->width * pixPoint->xFrac);
+	if(pixPoint.xFrac <= 0.0) xOffset = 0;
+	else if(pixPoint.xFrac >= 1.0) xOffset = refImage->width - 1;
+	else xOffset = (unsigned)((double)refImage->width * pixPoint.xFrac);
 
 	unsigned yOffset;
-	if(pixPoint->yFrac <= 0.0) yOffset = 0;
-	else if(pixPoint->yFrac >= 1.0) yOffset = refImage->height;
-	else yOffset = (unsigned)((double)refImage->height * pixPoint->yFrac);
+	if(pixPoint.yFrac <= 0.0) yOffset = 0;
+	else if(pixPoint.yFrac >= 1.0) yOffset = refImage->height;
+	else yOffset = (unsigned)((double)refImage->height * pixPoint.yFrac);
 
 	unsigned pixIndex = (yOffset * refImage->width) + xOffset;
 	return pixIndex;
 }
 
-unsigned getPixCursorOffset(const Rasteron_PixelPoint* pixPoint, Rasteron_Image* refImage){
+unsigned getPixCursorOffset(PixelPoint pixPoint, Rasteron_Image* refImage){
 	double xFrac; // clamping X
-	if(pixPoint->xFrac <= -1.0) xFrac = -1.0;
-	else if(pixPoint->xFrac >= 1.0) xFrac = 1.0;
-	else xFrac = pixPoint->xFrac;
+	if(pixPoint.xFrac <= -1.0) xFrac = -1.0;
+	else if(pixPoint.xFrac >= 1.0) xFrac = 1.0;
+	else xFrac = pixPoint.xFrac;
 
 	double yFrac; // clamping Y
-	if(pixPoint->yFrac <= -1.0) yFrac = -1.0;
-	else if(pixPoint->yFrac >= 1.0) yFrac = 1.0;
-	else yFrac = pixPoint->yFrac;
+	if(pixPoint.yFrac <= -1.0) yFrac = -1.0;
+	else if(pixPoint.yFrac >= 1.0) yFrac = 1.0;
+	else yFrac = pixPoint.yFrac;
 	yFrac *= -1.0; // Y value needs to be flipped
 
-	Rasteron_PixelPoint adjPoint = { (xFrac / 2) + 0.5, (yFrac / 2) + 0.5 };
-	return getPixOffset(&adjPoint, refImage);
+	PixelPoint adjPoint = (PixelPoint){ (xFrac / 2) + 0.5, (yFrac / 2) + 0.5 };
+	return getPixOffset(adjPoint, refImage);
 }
 
 // Image Operations
@@ -137,10 +137,10 @@ Rasteron_Image* createImgRef(const char* fileName){
 	return refImage;
 }
 
-Rasteron_Image* createImgBlank(uint32_t height, uint32_t width, uint32_t solidColor){
-	Rasteron_Image* blankImage = allocNewImg("blank", height, width);
-	makeColor(blankImage->data, blankImage->width * blankImage->height, solidColor);
-	return blankImage;
+Rasteron_Image* createImgSolid(ImageSize size, uint32_t color){
+	Rasteron_Image* solidImage = allocNewImg("solid", size.height, size.width);
+	makeColor(solidImage->data, solidImage->width * solidImage->height, color);
+	return solidImage;
 }
 
 Rasteron_Image* createImgFlip(const Rasteron_Image* refImage, enum FLIP_Type flip){
@@ -239,7 +239,7 @@ Rasteron_Image* createImgAvgChan(const Rasteron_Image* refImage, CHANNEL_Type ch
 
 Rasteron_Image* createImgBlend(const Rasteron_Image* image1, const Rasteron_Image* image2){
 	if (image1 == NULL || image2 == NULL || image1->height != image2->height || image1->width != image2->width) {
-		perror("Cannot create seeded image! Problems with reference images!");
+		perror("Cannot create seeded image! Invalid parameters provided!");
 		return NULL;
 	}
 
@@ -252,7 +252,7 @@ Rasteron_Image* createImgBlend(const Rasteron_Image* image1, const Rasteron_Imag
 
 Rasteron_Image* createImgFuse(const Rasteron_Image* image1, const Rasteron_Image* image2){
 	if (image1 == NULL || image2 == NULL || image1->height != image2->height || image1->width != image2->width) {
-		perror("Cannot create seeded image! Problems with reference images!");
+		perror("Cannot create seeded image! Invalid parameters provided!");
 		return NULL;
 	}
 

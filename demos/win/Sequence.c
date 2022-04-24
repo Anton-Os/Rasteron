@@ -20,7 +20,7 @@ void genImages() {
     frame3 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF00FF00);
     frame4 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF0000FF);
 
-    animation = allocNewAnim("sequence", ANIM_HEIGHT, ANIM_WIDTH, 4);
+	animation = allocNewAnim("sequence", (ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 4);
     addFrameData(animation, frame1, 0);
     addFrameData(animation, frame2, 1);
     addFrameData(animation, frame3, 2);

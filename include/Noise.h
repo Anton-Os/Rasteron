@@ -13,8 +13,8 @@ typedef struct {
 	unsigned color2;
 } GradientLattice;
 
-Rasteron_Image* createNoiseImg_white(const Rasteron_Image* ref, uint32_t color1, uint32_t color2); // creates interpolated white noise
-Rasteron_Image* createNoiseImg_gradient(const Rasteron_Image* refImage, GradientLattice lattice);
+Rasteron_Image* createNoiseImg_white(ImageSize size, uint32_t color1, uint32_t color2); // creates interpolated white noise
+Rasteron_Image* createNoiseImg_gradient(ImageSize size, GradientLattice lattice);
 // Rasteron_Image* createNoiseImg_octave(const Rasteron_Image* refImage, GradientLattice lattice1, GradientLattice lattice2);
 
 #define RASTERON_NOISE_H

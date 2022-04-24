@@ -4,13 +4,8 @@
 
 // Noise Image Operations
 
-Rasteron_Image* createNoiseImg_white(const Rasteron_Image* refImage, uint32_t color1, uint32_t color2){
-    if (refImage == NULL) {
-		perror("Cannot create white noise! Null pointer provided as reference image!");
-		return NULL;
-	}
-
-    Rasteron_Image* noiseImg = allocNewImg("noise-w", refImage->height, refImage->width);
+Rasteron_Image* createNoiseImg_white(ImageSize size, uint32_t color1, uint32_t color2){
+    Rasteron_Image* noiseImg = allocNewImg("noise-w", size.height, size.width);
 
     // Noise Generation Logic
     double noiseVal;
@@ -22,13 +17,13 @@ Rasteron_Image* createNoiseImg_white(const Rasteron_Image* refImage, uint32_t co
     return noiseImg;
 }
 
-Rasteron_Image* createNoiseImg_gradient(const Rasteron_Image* refImage, GradientLattice lattice){
-	if (lattice.xCellDivs == 0 || lattice.yCellDivs == 0 || refImage == NULL) {
+Rasteron_Image* createNoiseImg_gradient(ImageSize size, GradientLattice lattice){
+	if (lattice.xCellDivs == 0 || lattice.yCellDivs == 0) {
         perror("Cannot create gradient noise! Invalid parameters!");
         return NULL;
     }
 
-    Rasteron_Image* noiseImg = allocNewImg("noise-g", refImage->height, refImage->width);
+    Rasteron_Image* noiseImg = allocNewImg("noise-g", size.height, size.width);
 
 	// generating lattice cells
     const unsigned xCellPoints = lattice.xCellDivs + 1; // includes leftmost and rightmost vertices +1

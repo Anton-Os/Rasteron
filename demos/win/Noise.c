@@ -11,7 +11,7 @@ GradientLattice gradientTable = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
 // Rasteron_GradientNoise gradientTable = { 12, 12, 0xFFFF00FF, 0xFF00FFFF };
 // Rasteron_GradientNoise gradientTable = { 64, 64, 0xFF000000, 0xFFFFFFFF };
 
-Rasteron_Image* blankImg;
+Rasteron_Image* solidImg;
 Rasteron_Image* randNoiseImg;
 Rasteron_Image* randNoiseImg2;
 Rasteron_Image* seededImg;
@@ -57,11 +57,11 @@ int main(int argc, char** argv) {
 	addColorPoint(&colorPtTable, 0xFFDDEECC, 0.5f, 0.2f); 
 	addColorPoint(&colorPtTable, 0xFFAAAAFF, 0.4f, 0.4f);
 
-	blankImg = createImgBlank(1100, 1200, 0xFF73e5ff);
-	randNoiseImg = createNoiseImg_white(blankImg, 0xFFFF0000, 0xFF0000FF);
-	randNoiseImg2 = createNoiseImg_gradient(blankImg, gradientTable);
-	seededImg = createImgSeedRaw(blankImg, 0xFFFF00FF, 0.1);
-	paletteImg = createImgSeedWeighted(blankImg, &seedTable);
+	solidImg = createImgSolid((ImageSize){ 1100, 1200 }, 0xFF73e5ff);
+	randNoiseImg = createNoiseImg_white((ImageSize) { 1100, 1200 }, 0xFFFF0000, 0xFF0000FF);
+	randNoiseImg2 = createNoiseImg_gradient((ImageSize) { 1100, 1200 }, gradientTable);
+	seededImg = createImgSeedRaw(solidImg, 0xFFFF00FF, 0.1);
+	paletteImg = createImgSeedWeighted(solidImg, &seedTable);
 
 	// Event Loop
 
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 
 	// Cleanup Step
 
-	deleteImg(blankImg);
+	deleteImg(solidImg);
 	deleteImg(randNoiseImg);
 	deleteImg(randNoiseImg2);
 	deleteImg(seededImg);

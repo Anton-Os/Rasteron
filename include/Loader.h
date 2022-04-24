@@ -33,7 +33,7 @@ typedef struct {
 	png_uint_32 width;
 	int bitDepth;
 	int colorType;
-	size_t rowBytes;
+	size_t rowBytesCount;
 	png_byte** row_ptrs;
 	uint32_t* rgbaData;
 } ImageData_Png;
@@ -68,15 +68,15 @@ enum IMG_FileFormat {
 };
 
 union ImageData {
-	#ifdef USE_IMG_TIFF
-		ImageData_Tiff tiff;
-	#endif
-	#ifdef USE_IMG_PNG
-		ImageData_Png png;
-	#endif
-	#ifdef USE_IMG_BMP
-		ImageData_Bmp bmp;
-	#endif
+#ifdef USE_IMG_TIFF
+	ImageData_Tiff tiff;
+#endif
+#ifdef USE_IMG_PNG
+	ImageData_Png png;
+#endif
+#ifdef USE_IMG_BMP
+	ImageData_Bmp bmp;
+#endif
 };
 
 typedef struct _Image {

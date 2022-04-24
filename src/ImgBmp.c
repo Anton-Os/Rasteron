@@ -19,15 +19,14 @@ void loadFileImage_BMP(const char* fileName, Image* image) {
 		}
 	#endif // _WIN32
 
-
 	fread(&image->data.bmp.typeCheck, sizeof(uint16_t), 1, bmpFile);
 	if (image->data.bmp.typeCheck != 0x4D42) {
 		printf("%s is not a valid BMP file", fileName);
 		return;
 	}
 
-	// https://solarianprogrammer.com/2018/11/19/cpp-reading-writing-bmp-images/
-	// I used the link above to calculate the positions of each of the data members
+	// checkout https://solarianprogrammer.com/2018/11/19/cpp-reading-writing-bmp-images/
+	// Reading Meta-Data
 
 	fseek(bmpFile, 10, SEEK_SET);
 	fread(&image->data.bmp.offset, sizeof(uint32_t), 1, bmpFile);
@@ -37,7 +36,7 @@ void loadFileImage_BMP(const char* fileName, Image* image) {
 	fseek(bmpFile, 22, SEEK_SET);
 	fread(&image->data.bmp.height, sizeof(int32_t), 1, bmpFile);
 
-	// Data Reading Time!!!
+	// Reading Data
 
 	image->data.bmp.data = (uint32_t*)malloc(abs(image->data.bmp.width) * abs(image->data.bmp.height) * (uint32_t)sizeof(uint32_t));
 	fseek(bmpFile, image->data.bmp.offset, SEEK_SET);
@@ -49,8 +48,53 @@ void loadFileImage_BMP(const char* fileName, Image* image) {
 }
 
 void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width, unsigned* data){
-	// TODO: Populate MetaData
-	// TODO: Populate Image Data
+	FILE* bmpFile;
+	if ((bmpFile = fopen(fileName, "wb") == NULL)) {
+		printf("Error opening %s", fileName);
+		return;
+	}
+	
+	// https://stackoverflow.com/questions/2654480/writing-bmp-image-in-pure-c-c-without-other-libraries
+	// Writing Meta-Data
+
+	int filesize = 54 + (3 * width * height);
+
+	unsigned char bmpFileHeader[14] = { 'B','M', 0,0,0,0, 0,0, 0,0, 54,0,0,0 };
+	unsigned char bmpInfoHeader[40] = { 40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0, 24,0 };
+	unsigned char padding[3] = { 0,0,0 };
+
+	bmpFileHeader[2] = (unsigned char)(filesize);
+	bmpFileHeader[3] = (unsigned char)(filesize >> 8);
+	bmpFileHeader[4] = (unsigned char)(filesize >> 16);
+	bmpFileHeader[5] = (unsigned char)(filesize >> 24);
+
+	bmpInfoHeader[4] = (unsigned char)(width);
+	bmpInfoHeader[5] = (unsigned char)(width >> 8);
+	bmpInfoHeader[6] = (unsigned char)(width >> 16);
+	bmpInfoHeader[7] = (unsigned char)(width >> 24);
+	bmpInfoHeader[8] = (unsigned char)(height);
+	bmpInfoHeader[9] = (unsigned char)(height >> 8);
+	bmpInfoHeader[10] = (unsigned char)(height >> 16);
+	bmpInfoHeader[11] = (unsigned char)(height >> 24);
+
+	fwrite(bmpFileHeader, 1, 14, bmpFile);
+	fwrite(bmpInfoHeader, 1, 40, bmpFile);
+
+	// Writing Data
+	unsigned char* dataBytes = (unsigned char*)malloc(width * height * 3);
+	for (unsigned p = 0; p < width * height; p++) {
+		*(dataBytes + (p * 3) + 0) = (*(data + p) & RED_CHANNEL) >> 16;
+		*(dataBytes + (p * 3) + 1) = (*(data + p) & GREEN_CHANNEL) >> 8;
+		*(dataBytes + (p * 3) + 2) = *(data + p) & BLUE_CHANNEL;
+	}
+
+	for (int r = 0; r < height; r++) {
+		fwrite(dataBytes + (width * (height - r - 1) * 3), 3, width, bmpFile);
+		fwrite(padding, 1, (4 - (width * 3) % 4) % 4, bmpFile);
+	}
+
+	free(dataBytes);
+	fclose(bmpFile);
 }
 
 void delFileImage_BMP(Image* image) {

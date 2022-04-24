@@ -7,7 +7,7 @@
 Rasteron_Swatch darkSwatch, lightSwatch;
 Rasteron_SeedTable seedTable1, seedTable2;
 
-Rasteron_Image* blankImg;
+Rasteron_Image* solidImg;
 
 Rasteron_Image* seededImg;
 Rasteron_Image* seededImg2;
@@ -67,10 +67,10 @@ int main(int argc, char** argv) {
 	seedTable1 = createSeedTable(&lightSwatch);
 	seedTable2 = createSeedTable(&darkSwatch);
 
-	blankImg = createImgBlank(1100, 1200, BLACK_COLOR);
+	solidImg = createImgSolid((ImageSize){ 1100, 1200 }, BLACK_COLOR);
 
-	seededImg = createImgSeedRaw(blankImg, SEED_COLOR, 0.01);
-	seededImg2 = createImgSeedWeighted(blankImg, &seedTable2);
+	seededImg = createImgSeedRaw(solidImg, SEED_COLOR, 0.01);
+	seededImg2 = createImgSeedWeighted(solidImg, &seedTable2);
 
 	patternImg = createPatternImg_nebr(seededImg, callback8);
 	patternImg2 = createPatternImg_iter(seededImg, callback8, 4);
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
 
 	// Cleanup Step
 
-	deleteImg(blankImg);
+	deleteImg(solidImg);
 
 	deleteImg(seededImg);
 	deleteImg(seededImg2);

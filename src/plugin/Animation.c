@@ -9,17 +9,17 @@ static char* getFrameName(char* prefix, unsigned frameIndex) {
 	return name;
 }
 
-Rasteron_Animation* allocNewAnim(const char* prefix, uint32_t height, uint32_t width, unsigned frameCount){
+Rasteron_Animation* allocNewAnim(const char* prefix, ImageSize size, unsigned frameCount){
     Rasteron_Animation* animation = (Rasteron_Animation*)malloc(sizeof(Rasteron_Animation));
     animation->prefix = prefix;
-    animation->height = height;
-    animation->width = width;
+    animation->height = size.height;
+    animation->width = size.width;
     animation->frameCount = frameCount;
     animation->bkColor = ANIM_BACKGROUND; // cyan background by default
 
     animation->data = (Rasteron_Image**)malloc(frameCount * sizeof(Rasteron_Image*));
     for(unsigned f = 0; f < frameCount; f++)
-        *(animation->data + f) = createImgBlank(height, width, animation->bkColor);
+        *(animation->data + f) = createImgBlank(size.height, size.width, animation->bkColor);
     return animation;
 }
 

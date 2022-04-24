@@ -54,6 +54,10 @@ int main(int argc, char** argv) {
 	sprite = createSprite(sourceImage);
 	heightmap = createHeightmap(sourceImage);
 
+	// writeFileImageRaw("Generated.bmp", IMG_Bmp, greyImage->height, greyImage->width, greyImage->data);
+	// writeFileImageRaw("Generated.tiff", IMG_Tiff, redImage->height, redImage->width, redImage->data);
+	// writeFileImageRaw("Generated.png", IMG_Png, blueImage->height, blueImage->width, blueImage->data);
+
 	// Event Loop
 
 	createWindow(wndProc, "Primitives");
