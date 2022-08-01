@@ -14,6 +14,7 @@ Rasteron_Image* blueImage;
 Rasteron_Sprite* sprite;
 Rasteron_Heightmap* heightmap;
 
+// TODO: Move this to Toolbox or OS_Util
 void genTargetImagePath() {
 	strcpy(targetImagePath, imagePath);
 	strcat(targetImagePath, "\\");
@@ -53,10 +54,6 @@ int main(int argc, char** argv) {
 	blueImage = createImgAvgChan(sourceImage, CHANNEL_Blue);
 	sprite = createSprite(sourceImage);
 	heightmap = createHeightmap(sourceImage);
-
-	// writeFileImageRaw("Generated.bmp", IMG_Bmp, greyImage->height, greyImage->width, greyImage->data);
-	// writeFileImageRaw("Generated.tiff", IMG_Tiff, redImage->height, redImage->width, redImage->data);
-	// writeFileImageRaw("Generated.png", IMG_Png, blueImage->height, blueImage->width, blueImage->data);
 
 	// Event Loop
 

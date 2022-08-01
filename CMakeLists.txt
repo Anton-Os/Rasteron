@@ -10,25 +10,20 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build Type ${CMAKE_BUILD_TYPE}")
 
-# include(externalTargets.cmake)
+include(externalTargets.cmake)
 include(FindX11)
 
-# Rasteron Core Sources
+# Core Sources
 
-set(Core_src
+set(core_src
     src/Toolbox.c
     src/Loader.c
-    src/ImgBmp.c # BMP does not require dependencies
 
     src/core/Image.c
     src/core/Dimensional.c
 )
 
-if(WIN32) # OS Specific Sources
-    list(APPEND Core_src src/Win_Util.c)
-elseif(UNIX)
-    list(APPEND Core_src src/Unix_Util.c)
-endif()
+list(APPEND core_src src/ImgBmp.c) # BMP does not require dependencies
 
 find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
 if(zlib_FOUND)
@@ -42,7 +37,7 @@ if(libpng_FOUND)
     set(PNG_SUPPORT_STR "#define USE_IMG_PNG")
 
     message(STATUS "PNG Support Enabled")
-    list(APPEND Core_src src/ImgPng.c) # Add png functionality
+    list(APPEND core_src src/ImgPng.c) # Add png functionality
 else(NOT libpng_FOUND)
     set(PNG_SUPPORT_STR "// #define USE_IMG_PNG")
 
@@ -54,16 +49,16 @@ if(libtiff_FOUND)
     set(TIFF_SUPPORT_STR "#define USE_IMG_TIFF")
 
     message(STATUS "TIFF Support Enabled")
-    list(APPEND Core_src src/ImgTIFF.c) # add tiff functionality
+    list(APPEND core_src src/ImgTIFF.c) # add tiff functionality
 else(NOT libtiff_FOUND)
     set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
 
     message(STATUS "TIFF Support Disabled, build tiff")
 endif(libtiff_FOUND)
 
-# Rasteron Plugin Sources
+# Plugin Sources
 
-set(Plugin_src
+set(plugin_src
     src/plugin/Animation.c
     src/plugin/Cellwise.c
     src/plugin/Noise.c
@@ -74,12 +69,21 @@ if(SUPPORT_FONT_BAKING)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     message(STATUS "freetype_lib variable: ${freetype_lib}")
     
-    list(APPEND Plugin_src src/plugin/Font.c)
+    list(APPEND plugin_src src/plugin/Font.c)
 endif()
 
+# Helper Sources
 
+if(WIN32) # Windows Specific
+    list(APPEND helper_src src/helper/Win_Util.c)
+elseif(UNIX AND NOT APPLE) # Unix Specific
+    list(APPEND helper_src src/helper/Unix_Util.c)
+endif()
 
-add_library(Rasteron STATIC ${Core_src} ${Plugin_src})
+# Rasteron Library
+
+# add_library(Rasteron STATIC ${core_src} ${plugin_src}) # library only
+add_library(Rasteron STATIC ${core_src} ${plugin_src} ${helper_src}) # library with examples
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
 target_link_libraries(Rasteron PUBLIC tiff png zlibstatic)
@@ -98,7 +102,17 @@ target_include_directories(Rasteron
     $<INSTALL_INTERFACE:include/Rasteron>
 )
 
-if(WIN32)
+# Demo Applications
+
+add_executable(ReadTest demos/ReadTest.c)
+target_include_directories(ReadTest PUBLIC include)
+target_link_libraries(ReadTest Rasteron)
+
+add_executable(WriteTest demos/WriteTest.c)
+target_include_directories(WriteTest PUBLIC include)
+target_link_libraries(WriteTest Rasteron)
+
+if(WIN32) # Large Demos in Win32
     add_executable(Cellwise demos/win/Cellwise.c)
     target_include_directories(Cellwise PUBLIC include)
     target_link_libraries(Cellwise Rasteron)
@@ -118,7 +132,7 @@ if(WIN32)
     add_executable(Sequence demos/win/Sequence.c)
     target_include_directories(Sequence PUBLIC include)
     target_link_libraries(Sequence Rasteron)
-else() # Minimalist demos on unix, testing core functionality
+elseif(UNIX AND NOT APPLE) # Small Demos in X11
     add_executable(OpenSesame demos/unix/OpenSesame.c)
     target_include_directories(OpenSesame PUBLIC include)
     target_link_libraries(OpenSesame Rasteron)
@@ -128,8 +142,8 @@ else() # Minimalist demos on unix, testing core functionality
     target_link_libraries(Experiment Rasteron)
 endif()
 
-
 # Install Procedures
+
 install(TARGETS Rasteron
         EXPORT Rasteron
         RUNTIME DESTINATION bin
@@ -138,7 +152,9 @@ install(TARGETS Rasteron
 	    FRAMEWORK DESTINATION lib
 )
 
-# add_dependencies(Rasteron zlib libpng libtiff)
+if(UNIX)
+    add_dependencies(Rasteron zlib libpng libtiff)
+endif()
 
 file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)

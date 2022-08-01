@@ -82,7 +82,9 @@ void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width
 
 	// Writing Data
 	unsigned char* dataBytes = (unsigned char*)malloc(width * height * 3);
-	for (unsigned p = 0; p < width * height; p++) {
+	
+	// TODO: Implement correct copy logic
+	/* for (unsigned p = 0; p < width * height; p++) {
 		*(dataBytes + (p * 3) + 0) = (*(data + p) & RED_CHANNEL) >> 16;
 		*(dataBytes + (p * 3) + 1) = (*(data + p) & GREEN_CHANNEL) >> 8;
 		*(dataBytes + (p * 3) + 2) = *(data + p) & BLUE_CHANNEL;
@@ -91,7 +93,7 @@ void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width
 	for (int r = 0; r < height; r++) {
 		fwrite(dataBytes + (width * (height - r - 1) * 3), 3, width, bmpFile);
 		fwrite(padding, 1, (4 - (width * 3) % 4) % 4, bmpFile);
-	}
+	} */
 
 	free(dataBytes);
 	fclose(bmpFile);

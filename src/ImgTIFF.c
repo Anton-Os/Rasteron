@@ -47,10 +47,12 @@ void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned widt
 	// Writing Data
 
 	unsigned char* rowBytes = (unsigned char*)malloc(width * 4);
-	for (unsigned r = 0; r < height; r++) { // copying data
+
+	// TODO: Implement correct copy logic
+	/* for (unsigned r = 0; r < height; r++) { // copying data
 		memcpy(rowBytes, *(data + ((height - 1 - r) * width * 4)), width * 4); // check if working
 		if (TIFFWriteScanline(tiffFile, rowBytes, r, 0) < 0) break;
-	}
+	} */
 
 	free(rowBytes);
 	TIFFClose(tiffFile);

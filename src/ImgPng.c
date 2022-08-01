@@ -101,10 +101,13 @@ void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width
 	);
 	png_write_info(png_ptr, info_ptr);
 
+	// Writing Data
+	
 	png_byte** dataBytes = (png_byte**)malloc(height * width * 4);
 
-	for (unsigned r = 0; r < height; r++)
-		memcpy(*(dataBytes + (r * width * 4)), *(data + ((height - r - 1) * width * 4)), width * 4); // check if working
+	// TODO: Implement correct copy logic
+	/* for (unsigned r = 0; r < height; r++)
+		memcpy(*(dataBytes + (r * width * 4)), *(data + ((height - r - 1) * width * 4)), width * 4); // check if working */
 
 	png_write_image(png_ptr, dataBytes);
 	png_write_end(png_ptr, NULL);

@@ -57,7 +57,7 @@ Rasteron_SeedTable createSeedTable(const Rasteron_Swatch* swatch) {
 	return seedTable;
 }
 
-unsigned getPixOffset(PixelPoint pixPoint, Rasteron_Image* refImage){
+unsigned getPixOffset(PixelPoint pixPoint, const Rasteron_Image* refImage){
 	unsigned xOffset; // clamping X
 	if(pixPoint.xFrac <= 0.0) xOffset = 0;
 	else if(pixPoint.xFrac >= 1.0) xOffset = refImage->width - 1;
@@ -72,7 +72,7 @@ unsigned getPixOffset(PixelPoint pixPoint, Rasteron_Image* refImage){
 	return pixIndex;
 }
 
-unsigned getPixCursorOffset(PixelPoint pixPoint, Rasteron_Image* refImage){
+unsigned getPixCursorOffset(PixelPoint pixPoint, const Rasteron_Image* refImage){
 	double xFrac; // clamping X
 	if(pixPoint.xFrac <= -1.0) xFrac = -1.0;
 	else if(pixPoint.xFrac >= 1.0) xFrac = 1.0;

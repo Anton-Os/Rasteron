@@ -66,7 +66,7 @@ Rasteron_Image* createFieldImg_vornoi(ImageSize size, const ColorPointTable* col
 
 // Step Image operations based on a traced path
 
-typedef struct {
+/* typedef struct {
 	unsigned color;
 	enum NBR_CellFlags direction;
 } ColorStep;
@@ -78,7 +78,7 @@ typedef struct {
 } ColorStepRecord;
 
 typedef ColorStep (*stepCallback)(const ColorStepRecord* prevStep);
-// typedef Rasteron_Step(*stepCallback8)(const Rasteron_StepRecord* prevStep, const NebrTable* nebrTable);
+// typedef Rasteron_Step(*stepCallback8)(const Rasteron_StepRecord* prevStep, const NebrTable* nebrTable); */
 
 #define RASTERON_CELLWISE_H
 #endif
