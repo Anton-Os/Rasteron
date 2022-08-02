@@ -128,9 +128,6 @@ Rasteron_Image* createImgRef(const char* fileName){
 			*(refImage->data + i) = *(fileImage.data.png.rgbaData + i); // copying operation
 		break;
 #endif
-	default:
-		perror("Image Format not yet supported!!!");
-		return NULL;
 	}
 
 	delFileImage(&fileImage);

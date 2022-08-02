@@ -35,8 +35,6 @@ void cleanup() {
 	deleteImg(frame4);
 }
 
-#ifdef _WIN32
-
 BITMAP bmap1, bmap2, bmap3, bmap4;
 BITMAP* bmap_active;
 
@@ -47,7 +45,6 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		genImages();
 		bmap1 = createWinBmap(getFrame(animation, 0));
 		bmap2 = createWinBmap(getFrame(animation, 1));
 		bmap3 = createWinBmap(getFrame(animation, 2));
@@ -74,29 +71,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	return 0;
 }
 
-#elif defined __linux__
-
-void unixProc(){
-	UnixContext context;
-	createWindow(&context, "Cellwise");
-	genImages();
-}
-
-#endif
-
 int main(int argc, char** argv) {
 	// Generation Step
 	
-	frame1 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF000000);
-    frame2 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFFFF0000);
-    frame3 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF00FF00);
-    frame4 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF0000FF);
-
-    animation = allocNewAnim("sequence", ANIM_HEIGHT, ANIM_WIDTH, 4);
-    addFrameData(animation, frame1, 0);
-    addFrameData(animation, frame2, 1);
-    addFrameData(animation, frame3, 2);
-    addFrameData(animation, frame4, 3);
+	genImages();
 
 	// Event Loop
 
@@ -105,11 +83,7 @@ int main(int argc, char** argv) {
 
 	// Cleanup Step
 
-	deleteAnim(animation);
-	deleteImg(frame1);
-	deleteImg(frame2);
-	deleteImg(frame3);
-	deleteImg(frame4);
+	cleanup();
 
 	return 0;
 }

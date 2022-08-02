@@ -1,16 +1,36 @@
 #include "Rasteron.h"
 
-const char* imagePath = IMAGE_DIR;
+char fullImagePath[1024];
+
 Rasteron_Image* sourceImage1; // BMP Image
 Rasteron_Image* sourceImage2; // TIFF Image
 Rasteron_Image* sourceImage3; // PNG Image
 
-int main(int argc, char** argv) {
+void genFullImagePath(const char* name) {
+	strcpy(fullImagePath, IMAGE_DIR);
+	strcat(fullImagePath, "/");
+	strcat(fullImagePath, name);
+#ifdef _WIN32
+    fixPathDashes(&fullImagePath);
+#endif
+    printf("Image Path: %s \n", fullImagePath);
+}
 
-    // TODO: Include proper paths
-    sourceImage1 = createImgRef("Logo.bmp");
-    sourceImage2 = createImgRef("Logo.tiff");
-    sourceImage3 = createImgRef("Logo.png");
+int main(int argc, char** argv) {
+    // Reading Step
+
+    genFullImagePath("Logo.bmp");
+    sourceImage1 = createImgRef(fullImagePath);
+    genFullImagePath("Logo.tiff");
+    sourceImage2 = createImgRef(fullImagePath);
+    genFullImagePath("Logo.png");
+    sourceImage3 = createImgRef(fullImagePath);
     
+    // Cleanup Step
+    
+    deleteImg(sourceImage1);
+    deleteImg(sourceImage2);
+    deleteImg(sourceImage3);
+
     return 0;
 }

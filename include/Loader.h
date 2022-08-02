@@ -1,6 +1,7 @@
 #ifndef IMAGE_LOADER_H
 
 #include "support.h"
+#include "string.h"
 
 typedef struct _Image Image;
 

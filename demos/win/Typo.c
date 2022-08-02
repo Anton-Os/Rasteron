@@ -13,7 +13,6 @@ const char* fontName = "Tw-Cen-MT.ttf";
 char targetFontPath[1024];
 Rasteron_FormatText textObj;
 
-
 Rasteron_Image* fontImage;
 Rasteron_Image* flipImage;
 
@@ -46,8 +45,9 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 }
 
 int main(int argc, char** argv) {
-	// Generation Step
 	genFontFilePath();
+
+	// Generation Step
 
 	initFreeType(&freetypeLib);
 	textObj.bkColor = genRandColorVal();

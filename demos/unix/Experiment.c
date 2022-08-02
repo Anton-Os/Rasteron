@@ -4,9 +4,8 @@
 #include "OS_Util.h"
 
 // Global Definitions
-const char* imagePath = IMAGE_DIR;
 const char* imageName = "Logo.png";
-char targetImagePath[1024];
+char fullImagePath[1024];
 
 Rasteron_Image* blankImg;
 Rasteron_Image* seededImg;
@@ -24,18 +23,19 @@ unsigned vertCallback(unsigned right, unsigned left){
     return ZERO_COLOR;
 }
 
-void genTargetImagePath() {
-	strcpy(targetImagePath, imagePath);
-	strcat(targetImagePath, "/");
-	strcat(targetImagePath, imageName);
+void genFullImagePath(const char* name) {
+	strcpy(fullImagePath, IMAGE_DIR);
+	strcat(fullImagePath, "/");
+	strcat(fullImagePath, name);
 }
 
 int main(int argc, char** argv) {
+    genFullImagePath(imageName);
+
     // Genertation Step
-    genTargetImagePath();
 
     blankImg = createImgBlank(1100, 1200, BLACK_COLOR);
-	sourceImage = createImgRef(targetImagePath);
+	sourceImage = createImgRef(fullImagePath);
     seededImg = createImgSeedRaw(blankImg, SEED_COLOR, 0.1);
 
     patternImgHorz = createHorzPatImg(seededImg, horzCallback);
@@ -60,5 +60,6 @@ int main(int argc, char** argv) {
     deleteImg(seededImg);
     deleteImg(patternImgHorz);
     deleteImg(patternImgVert);
+    
     return 0;
 }

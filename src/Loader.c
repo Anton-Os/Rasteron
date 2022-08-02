@@ -4,20 +4,19 @@
 
 static enum IMG_FileFormat getFormat(const char* fileName) {
     size_t len = strlen(fileName);
-    char extensionTarget[] = {
+    char extension[] = {
         *(fileName + len - 3),
         *(fileName + len - 2),
         *(fileName + len - 1),
 		'\0'
     }; // Gets the last 3 letters of a file extension
 
-    char extension_png[] = "png";
-    char extension_tiff[] = "tif";
-    char extension_bmp[] = "bmp";
-
-    if(! strcmp(extensionTarget, extension_png)) return IMG_Png;
-    else if(! strcmp(extensionTarget, extension_tiff)) return IMG_Tiff;
-    else if(! strcmp(extensionTarget, extension_bmp)) return IMG_Bmp;
+    if(! strcmp(extension, "bmp")) // bmp file check
+        return IMG_Bmp;
+    else if(! strcmp(extension, "png")) // png file check
+        return IMG_Png;
+    else if(! strcmp(extension, "iff") || ! strcmp(extension, "tif")) // tiff file check
+        return IMG_Tiff;
     else return IMG_NonValid;
 }
 

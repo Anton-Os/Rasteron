@@ -6,18 +6,19 @@ void loadFileImage_BMP(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Bmp;
 
 	FILE* bmpFile;
-	#ifdef _WIN32
-		errno_t err = fopen_s(&bmpFile, fileName, "rb");
-		if (err) {
-			printf("Error opening %s fopen_s error code %d", fileName, err);
-			return;
-		}
-	#else
-		if ((bmpFile = fopen(fileName, "rb") == NULL)) {
-			printf("Error opening %s", fileName);
-			return;
-		}
-	#endif // _WIN32
+#ifdef _WIN32
+	errno_t err = fopen_s(&bmpFile, fileName, "rb");
+	if (err) {
+		printf("Error opening %s fopen_s error code %d", fileName, err);
+		return;
+	}
+#else
+	bmpFile = fopen(fileName, "rb");
+	if (bmpFile == NULL) {
+		printf("Error opening %s", fileName);
+		return;
+	}
+#endif // _WIN32
 
 	fread(&image->data.bmp.typeCheck, sizeof(uint16_t), 1, bmpFile);
 	if (image->data.bmp.typeCheck != 0x4D42) {
@@ -42,37 +43,45 @@ void loadFileImage_BMP(const char* fileName, Image* image) {
 	fseek(bmpFile, image->data.bmp.offset, SEEK_SET);
 	fread((uint32_t*)image->data.bmp.data, sizeof(uint32_t), abs(image->data.bmp.width) * abs(image->data.bmp.height), bmpFile);
 
-
 	fclose(bmpFile);
 	return;
 }
 
 void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width, unsigned* data){
 	FILE* bmpFile;
-	if ((bmpFile = fopen(fileName, "wb") == NULL)) {
+#ifdef _WIN32
+	errno_t err = fopen_s(&bmpFile, fileName, "wb");
+	if (err) {
+		printf("Error opening %s fopen_s error code %d", fileName, err);
+		return;
+	}
+#else
+	bmpFile = fopen(fileName, "wb");
+	if(bmpFile == NULL) {
 		printf("Error opening %s", fileName);
 		return;
 	}
-	
+#endif
+
 	// https://stackoverflow.com/questions/2654480/writing-bmp-image-in-pure-c-c-without-other-libraries
 	// Writing Meta-Data
 
-	int filesize = 54 + (3 * width * height);
+	int filesize = 54 + (width * height * 3);
+	// int filesize = 54 + (4 * width * height);
 
 	unsigned char bmpFileHeader[14] = { 'B','M', 0,0,0,0, 0,0, 0,0, 54,0,0,0 };
 	unsigned char bmpInfoHeader[40] = { 40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0, 24,0 };
 	unsigned char padding[3] = { 0,0,0 };
 
-	bmpFileHeader[2] = (unsigned char)(filesize);
+	bmpFileHeader[2] = (unsigned char)(filesize); // filesize
 	bmpFileHeader[3] = (unsigned char)(filesize >> 8);
 	bmpFileHeader[4] = (unsigned char)(filesize >> 16);
 	bmpFileHeader[5] = (unsigned char)(filesize >> 24);
-
-	bmpInfoHeader[4] = (unsigned char)(width);
+	bmpInfoHeader[4] = (unsigned char)(width); // width
 	bmpInfoHeader[5] = (unsigned char)(width >> 8);
 	bmpInfoHeader[6] = (unsigned char)(width >> 16);
 	bmpInfoHeader[7] = (unsigned char)(width >> 24);
-	bmpInfoHeader[8] = (unsigned char)(height);
+	bmpInfoHeader[8] = (unsigned char)(height); // height
 	bmpInfoHeader[9] = (unsigned char)(height >> 8);
 	bmpInfoHeader[10] = (unsigned char)(height >> 16);
 	bmpInfoHeader[11] = (unsigned char)(height >> 24);
@@ -81,21 +90,19 @@ void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width
 	fwrite(bmpInfoHeader, 1, 40, bmpFile);
 
 	// Writing Data
-	unsigned char* dataBytes = (unsigned char*)malloc(width * height * 3);
+
+	unsigned char* colorBytes = malloc(width * height * 3);
+	for(unsigned p = 0; p < width * height; p++)
+		*(colorBytes + (p * 3)) = *(data + p); // copy source data into new format
+		// *(colorBytes + (p * 3)) = 0xFF0000; // test color
 	
-	// TODO: Implement correct copy logic
-	/* for (unsigned p = 0; p < width * height; p++) {
-		*(dataBytes + (p * 3) + 0) = (*(data + p) & RED_CHANNEL) >> 16;
-		*(dataBytes + (p * 3) + 1) = (*(data + p) & GREEN_CHANNEL) >> 8;
-		*(dataBytes + (p * 3) + 2) = *(data + p) & BLUE_CHANNEL;
-	}
-
 	for (int r = 0; r < height; r++) {
-		fwrite(dataBytes + (width * (height - r - 1) * 3), 3, width, bmpFile);
+		// fwrite(colorBytes + (r * width * 3), 3, width, bmpFile);
+		fwrite(colorBytes + (width * (height - r - 1) * 3), 3, width, bmpFile);
 		fwrite(padding, 1, (4 - (width * 3) % 4) % 4, bmpFile);
-	} */
-
-	free(dataBytes);
+	}
+	
+	free(colorBytes);
 	fclose(bmpFile);
 }
 
@@ -106,7 +113,6 @@ void delFileImage_BMP(Image* image) {
 	}
 	free(image->data.bmp.data);
 	image->fileFormat = IMG_NonValid;
-	return;
 }
 
 #endif

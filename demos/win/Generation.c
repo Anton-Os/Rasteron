@@ -2,11 +2,9 @@
 #include "OS_Util.h"
 
 // Global Definitions
-const char* imagePath = IMAGE_DIR;
 const char* imageName = "Logo.png";
-char targetImagePath[1024];
+char fullImagePath[1024];
 
-// Image img = { 0 };
 Rasteron_Image* sourceImage;
 Rasteron_Image* greyImage;
 Rasteron_Image* redImage;
@@ -15,15 +13,14 @@ Rasteron_Sprite* sprite;
 Rasteron_Heightmap* heightmap;
 
 // TODO: Move this to Toolbox or OS_Util
-void genTargetImagePath() {
-	strcpy(targetImagePath, imagePath);
-	strcat(targetImagePath, "\\");
-	strcat(targetImagePath, imageName);	
-	fixPathDashes(&targetImagePath);
+void genFullImagePath(const char* name) {
+	strcpy(fullImagePath, IMAGE_DIR);
+	strcat(fullImagePath, "\\");
+	strcat(fullImagePath, name);	
+	fixPathDashes(&fullImagePath);
 }
 
-BITMAP bmap1;
-BITMAP bmap2;
+BITMAP bmap1, bmap2, bmap3;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -45,10 +42,11 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 
 int main(int argc, char** argv) {
+	genFullImagePath();
+	
 	// Genertation Step
-	genTargetImagePath();
 
-	sourceImage = createImgRef(targetImagePath);
+	sourceImage = createImgRef(fullImagePath);
 	greyImage = createImgGrey(sourceImage);
 	redImage = createImgFltChan(sourceImage, CHANNEL_Red);
 	blueImage = createImgAvgChan(sourceImage, CHANNEL_Blue);

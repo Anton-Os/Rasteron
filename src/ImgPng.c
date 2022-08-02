@@ -2,20 +2,26 @@
 
 #ifdef USE_IMG_PNG
 
-#define DEFAULT_PNG_DISPLAY_EXPO 2.2
+/* static void switchRB(uint32_t* raster, unsigned pixels) { // See Toolbox.h for details
+	for (unsigned i = 0; i < pixels; i++) {
+		unsigned val = *(raster + i);
+		*(raster + i) = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
+	}
+} */
 
 void loadFileImage_PNG(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Png;
 
 	FILE* pngFile;
 #ifdef _WIN32
-	errno_t err = fopen_s(&pngFile, fileName, "rb");
+	errno_t err = fopen_s(&pngFile, fileName, "wb");
 	if (err) {
 		printf("Error opening %s fopen_s error code %d", fileName, err);
 		return;
 	}
 #else
-	if ((pngFile = fopen(fileName, "rb") == NULL)) {
+	pngFile = fopen(fileName, "wb");
+	if(pngFile == NULL) {
 		printf("Error opening %s", fileName);
 		return;
 	}
@@ -81,11 +87,19 @@ void loadFileImage_PNG(const char* fileName, Image* image) {
 
 void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width, unsigned* data){
 	FILE* pngFile;
-	if ((pngFile = fopen(fileName, "wb") == NULL)) {
+#ifdef _WIN32
+	errno_t err = fopen_s(&pngFile, fileName, "wb");
+	if (err) {
+		printf("Error opening %s fopen_s error code %d", fileName, err);
+		return;
+	}
+#else
+	pngFile = fopen(fileName, "wb");
+	if(pngFile == NULL) {
 		printf("Error opening %s", fileName);
 		return;
 	}
-
+#endif
 	// Writing Meta-Data
 
 	png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -103,18 +117,20 @@ void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width
 
 	// Writing Data
 	
-	png_byte** dataBytes = (png_byte**)malloc(height * width * 4);
+	png_byte** colorBytes = (png_byte**)malloc(sizeof(png_byte*) * height);
+	for(unsigned r = 0; r < height; r++){
+		*(colorBytes + r) = (png_byte*)malloc(sizeof(png_byte) * width); // allocate
+		memcpy(*(colorBytes + r), data + (r * width), sizeof(png_byte) * width); // copy from source data
+	}
 
-	// TODO: Implement correct copy logic
-	/* for (unsigned r = 0; r < height; r++)
-		memcpy(*(dataBytes + (r * width * 4)), *(data + ((height - r - 1) * width * 4)), width * 4); // check if working */
-
-	png_write_image(png_ptr, dataBytes);
+	png_write_image(png_ptr, colorBytes);
 	png_write_end(png_ptr, NULL);
 
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 
-	free(dataBytes);
+	for(unsigned r = 0; r < height; r++) free(*(colorBytes + r));
+	free(colorBytes);
+
 	fclose(pngFile);
 }
 
@@ -130,7 +146,6 @@ void delFileImage_PNG(Image* image) {
 
 	free(image->data.png.rgbaData);
 	image->fileFormat = IMG_NonValid;
-	return;
 }
 
 #endif

@@ -46,15 +46,14 @@ void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned widt
 
 	// Writing Data
 
-	unsigned char* rowBytes = (unsigned char*)malloc(width * 4);
+	unsigned char* colorBytes = (unsigned char*)malloc(width * 4);
 
-	// TODO: Implement correct copy logic
-	/* for (unsigned r = 0; r < height; r++) { // copying data
-		memcpy(rowBytes, *(data + ((height - 1 - r) * width * 4)), width * 4); // check if working
-		if (TIFFWriteScanline(tiffFile, rowBytes, r, 0) < 0) break;
-	} */
+	for (unsigned r = 0; r < height; r++) { // copying data
+		memcpy(colorBytes, data + ((height - 1 - r) * width), width * 4); // check if working
+		if (TIFFWriteScanline(tiffFile, colorBytes, r, 0) < 0) break;
+	}
 
-	free(rowBytes);
+	free(colorBytes);
 	TIFFClose(tiffFile);
 }
 
@@ -65,7 +64,6 @@ void delFileImage_TIFF(Image* image){
 	}
 	_TIFFfree(image->data.tiff.raster);
 	image->fileFormat = IMG_NonValid;
-	return;
 }
 
 #endif
