@@ -3,6 +3,8 @@
 #include "support.h"
 #include "string.h"
 
+#include "Toolbox.h"
+
 typedef struct _Image Image;
 
 #ifdef USE_IMG_TIFF

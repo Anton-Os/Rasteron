@@ -1,8 +1,8 @@
 
 #ifndef RASTERON_SUPPORT_H
 
-#define IMAGE_DIR "/Users/notshy/Documents/Ao-Project/Rasteron/assets/image"
-#define FONTS_DIR "/Users/notshy/Documents/Ao-Project/Rasteron/assets/fonts"
+#define IMAGE_DIR "C:/AntonDocs/Codex/Ao-Project/Rasteron/master/assets/image"
+#define FONTS_DIR "C:/AntonDocs/Codex/Ao-Project/Rasteron/master/assets/fonts"
 
 #define USE_IMG_TIFF // Enable TIFF Support
 #define USE_IMG_PNG // Enable PNG Support

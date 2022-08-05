@@ -1,27 +1,39 @@
 #include "Rasteron.h"
 
-#define IMAGE_SIZE 1024
+#define SIZE 1024
 
 Rasteron_Image* blankImage;
-Rasteron_Image* splitImage;
+Rasteron_Image* colorImage;
+
+Rasteron_Image* genTestImage(){
+    Rasteron_Image* testImage = createImgSolid((ImageSize){SIZE, SIZE}, 0xFFFF0000); // red
+    
+    for(unsigned p = 0; p < (SIZE * SIZE) / 2; p++)
+        *(testImage->data + p) = 0xFF0000FF; // blue
+
+    for(unsigned p = 0; p < (SIZE * SIZE) / 2; p++)
+        if(p % SIZE > (SIZE / 2) - (SIZE / 4))
+            *(testImage->data + p) = 0xFF00FF00; // green
+
+    return testImage;
+}
 
 int main(int argc, char** argv) {
     // Generation Step
 
-    blankImage = createImgSolid((ImageSize){IMAGE_SIZE, IMAGE_SIZE}, 0xFF666666);
-    splitImage = createImgSolid((ImageSize){IMAGE_SIZE, IMAGE_SIZE}, 0xFFFF0000);
-    for(unsigned p = 0; p < (IMAGE_SIZE * IMAGE_SIZE) / 2; p++) *(splitImage->data + p) = 0xFF0000FF;
+    blankImage = createImgSolid((ImageSize){SIZE, SIZE}, 0xFF666666);
+    colorImage = genTestImage();
 
     // Writing Step
 
-    writeFileImageRaw("Generated.bmp", IMG_Bmp, IMAGE_SIZE, IMAGE_SIZE, splitImage->data);
-	writeFileImageRaw("Generated.tiff", IMG_Tiff, IMAGE_SIZE, IMAGE_SIZE, splitImage->data);
-	writeFileImageRaw("Generated.png", IMG_Png, IMAGE_SIZE, IMAGE_SIZE, splitImage->data);
+    writeFileImageRaw("Generated.bmp", IMG_Bmp, SIZE, SIZE, colorImage->data);
+	writeFileImageRaw("Generated.tiff", IMG_Tiff, SIZE, SIZE, colorImage->data);
+	writeFileImageRaw("Generated.png", IMG_Png, SIZE, SIZE, colorImage->data);
 
     // Cleanup Step
 
     deleteImg(blankImage);
-    deleteImg(splitImage);
+    deleteImg(colorImage);
 
     return 0;
 }

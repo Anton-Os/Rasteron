@@ -92,15 +92,18 @@ void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width
 	// Writing Data
 
 	unsigned char* colorBytes = malloc(width * height * 3);
-	for(unsigned p = 0; p < width * height; p++)
-		*(colorBytes + (p * 3)) = *(data + p); // copy source data into new format
-		// *(colorBytes + (p * 3)) = 0xFF0000; // test color
-	
-	for (int r = 0; r < height; r++) {
-		// fwrite(colorBytes + (r * width * 3), 3, width, bmpFile);
-		fwrite(colorBytes + (width * (height - r - 1) * 3), 3, width, bmpFile);
-		fwrite(padding, 1, (4 - (width * 3) % 4) % 4, bmpFile);
-	}
+	for(unsigned r = 0; r < height; r++)
+		for(unsigned c = 0; c < width; c++){
+			unsigned destOffset = (r * width) + c;
+			unsigned srcOffset = (height * width) - ((r + 1) * width) + c;
+			*(colorBytes + (destOffset * 3)) = *(data + srcOffset);
+			*(colorBytes + (destOffset * 3) + 1) = *(data + srcOffset) >> 8;
+			*(colorBytes + (destOffset * 3) + 2) = *(data + srcOffset) >> 16;
+		}
+
+	for (int r = 0; r < height; r++)
+		fwrite(colorBytes + (r * width * 3), 3, width, bmpFile);
+		// fwrite(padding, 1, (4 - (width * 3) % 4) % 4, bmpFile);
 	
 	free(colorBytes);
 	fclose(bmpFile);

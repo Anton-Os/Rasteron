@@ -2,13 +2,6 @@
 
 #ifdef USE_IMG_PNG
 
-/* static void switchRB(uint32_t* raster, unsigned pixels) { // See Toolbox.h for details
-	for (unsigned i = 0; i < pixels; i++) {
-		unsigned val = *(raster + i);
-		*(raster + i) = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
-	}
-} */
-
 void loadFileImage_PNG(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Png;
 
@@ -115,12 +108,18 @@ void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width
 	);
 	png_write_info(png_ptr, info_ptr);
 
+	// Flipping Color Bits
+	
+	unsigned* dataflip = (unsigned*)malloc(sizeof(unsigned) * height * width); // for flipping color values
+	for(unsigned p = 0; p < width * height; p++)
+		*(dataflip + p) = (*(data + p) & 0xFF000000) + ((*(data + p) & 0xFF) << 16) + (*(data + p) & 0xFF00) + ((*(data + p) >> 16) & 0xFF);
+
 	// Writing Data
 	
 	png_byte** colorBytes = (png_byte**)malloc(sizeof(png_byte*) * height);
 	for(unsigned r = 0; r < height; r++){
-		*(colorBytes + r) = (png_byte*)malloc(sizeof(png_byte) * width); // allocate
-		memcpy(*(colorBytes + r), data + (r * width), sizeof(png_byte) * width); // copy from source data
+		*(colorBytes + r) = (png_byte*)malloc(sizeof(png_byte) * 4 * width); // allocate
+		memcpy(*(colorBytes + r), dataflip + (r * width), sizeof(png_byte) * 4 * width); // copy from source data
 	}
 
 	png_write_image(png_ptr, colorBytes);
@@ -130,8 +129,10 @@ void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width
 
 	for(unsigned r = 0; r < height; r++) free(*(colorBytes + r));
 	free(colorBytes);
+	free(dataflip);
 
 	fclose(pngFile);
+
 }
 
 void delFileImage_PNG(Image* image) {

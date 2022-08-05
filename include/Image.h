@@ -1,7 +1,6 @@
 #ifndef RASTERON_IMAGE_H
 
 #include "Loader.h"
-#include "Toolbox.h"
 
 /* enum SPECTRUM_Level {
 	SPECTRUM_Dark, // 0% to 20% // BLACK

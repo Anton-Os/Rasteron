@@ -29,7 +29,6 @@ void switchRB(uint32_t* raster, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
 		unsigned val = *(raster + i);
 		unsigned res = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
-		// unsigned res = (val & RED_CHANNEL) + (val & GREEN_CHANNEL) + (val & BLUE_CHANNEL);
 		*(raster + i) = res;
 	}
 }

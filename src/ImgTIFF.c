@@ -27,6 +27,9 @@ void loadFileImage_TIFF(const char* fileName, Image* image) {
 		0
 	);
 	TIFFClose(tiffFile);
+
+	switchRB(image->data.tiff.raster, image->data.tiff.length * image->data.tiff.width); // switch red and blue bits
+	
 	return;
 }
 
@@ -44,16 +47,24 @@ void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned widt
 	TIFFSetField(tiffFile, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
 	TIFFSetField(tiffFile, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiffFile, width * 4));
 
+	// Flipping Color Bits
+
+	unsigned* dataflip = (unsigned*)malloc(sizeof(unsigned) * height * width); // for flipping color values
+	for(unsigned p = 0; p < width * height; p++)
+		*(dataflip + p) = (*(data + p) & 0xFF000000) + ((*(data + p) & 0xFF) << 16) + (*(data + p) & 0xFF00) + ((*(data + p) >> 16) & 0xFF);
+
 	// Writing Data
 
 	unsigned char* colorBytes = (unsigned char*)malloc(width * 4);
 
 	for (unsigned r = 0; r < height; r++) { // copying data
-		memcpy(colorBytes, data + ((height - 1 - r) * width), width * 4); // check if working
+		memcpy(colorBytes, dataflip + (r * width), width * 4);
 		if (TIFFWriteScanline(tiffFile, colorBytes, r, 0) < 0) break;
 	}
 
 	free(colorBytes);
+	free(dataflip);
+
 	TIFFClose(tiffFile);
 }
 
