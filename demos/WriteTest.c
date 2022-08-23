@@ -6,7 +6,7 @@ Rasteron_Image* blankImage;
 Rasteron_Image* colorImage;
 
 Rasteron_Image* genTestImage(){
-    Rasteron_Image* testImage = createImgSolid((ImageSize){SIZE, SIZE}, 0xFFFF0000); // red
+    Rasteron_Image* testImage = createSolidImg((ImageSize){SIZE, SIZE}, 0xFFFF0000); // red
     
     for(unsigned p = 0; p < (SIZE * SIZE) / 2; p++)
         *(testImage->data + p) = 0xFF0000FF; // blue
@@ -21,7 +21,7 @@ Rasteron_Image* genTestImage(){
 int main(int argc, char** argv) {
     // Generation Step
 
-    blankImage = createImgSolid((ImageSize){SIZE, SIZE}, 0xFF666666);
+    blankImage = createSolidImg((ImageSize){SIZE, SIZE}, 0xFF666666);
     colorImage = genTestImage();
 
     // Writing Step

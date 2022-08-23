@@ -1,8 +1,7 @@
 #ifndef RASTERON_CELLWISE_H
 
 #include "Image.h"
-
-// Pattern Image operations based on adjacent pixel values
+#include "PixelPoint.h"
 
 #define NEBR_COUNT 8
 
@@ -32,53 +31,44 @@ typedef struct {
 	NebrTable* tables;
 } NebrTable_List;
 
-
 NebrTable_List* genNebrTables(const Rasteron_Image* image);
 void delNebrTables(NebrTable_List* nebrTables);
 
-typedef unsigned (*nebrCallback2)(unsigned, unsigned, unsigned); // accepts target and two neighbors (right/left or bottom/top)
-// typedef unsigned (*nebrCallback4)(unsigned, unsigned, unsigned, unsigned); // takes bottom, right, left, and top neighbors as input, returns result color
-typedef unsigned (*nebrCallback8)(unsigned, unsigned[NEBR_COUNT]); // accepts target and all neighbors in order
+// Pattern Image operations based on adjacent pixel values
 
-Rasteron_Image* createPatternImg_nebr(const Rasteron_Image* refImage, nebrCallback8 callback); // neighbor pattern
-Rasteron_Image* createPatternImg_iter(const Rasteron_Image* refImage, nebrCallback8 callback, unsigned short iter); // iterative pattern
-Rasteron_Image* createPatternImg_horz(const Rasteron_Image* refImage, nebrCallback2 callback); // horizontal scan pattern
-Rasteron_Image* createPatternImg_vert(const Rasteron_Image* refImage, nebrCallback2 callback); // vertical scan pattern
+typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // accepts target and two neighbors
+typedef unsigned (*nebrCallback8)(unsigned, unsigned[8]); // accepts target and all neighbors
+
+// Rasteron_Image* createPatternImg_nebr(const Rasteron_Image* refImage, nebrCallback8 callback); // neighbor pattern
+// Rasteron_Image* createPatternImg_iter(const Rasteron_Image* refImage, nebrCallback8 callback, unsigned short iter); // iterative pattern
+Rasteron_Image* createPatternImg_horz(const Rasteron_Image* refImage, nebrCallback2 callback); // horizontal pattern
+Rasteron_Image* createPatternImg_vert(const Rasteron_Image* refImage, nebrCallback2 callback); // vertical pattern
 
 // Field Image operations based on color points and distance
 
-typedef struct {
-	PixelPoint point;
-	unsigned color;
-} ColorPoint;
-
-typedef struct {
-	ColorPoint points[MAX_PIXEL_POS];
-	unsigned pointCount; // = 0;
-} ColorPointTable;
-
-void addColorPoint(ColorPointTable* table, unsigned color, double xFrac, double yFrac);
-
 typedef unsigned (*distCallback)(unsigned color, double distance);
 
-Rasteron_Image* createFieldImg(ImageSize size, const ColorPointTable* colorPointTable, distCallback callback); // creates an image based on proximity points given a distance function
+Rasteron_Image* createFieldImg(ImageSize size, const ColorPointTable* colorPointTable, distCallback callback); // creates image based on color points given a distance function
 Rasteron_Image* createFieldImg_vornoi(ImageSize size, const ColorPointTable* colorPointTable); // creates voronoi cell image
+
+// Mapped Image operations based on x and y input values
+
+typedef unsigned (*mapCallback)(double x, double y); // accepts fractional x and y offsets
+
+Rasteron_Image* createMappedImg(ImageSize size, mapCallback callback);
 
 // Step Image operations based on a traced path
 
-/* typedef struct {
+#define MAX_COLOR_STEPS 64
+
+typedef struct {
 	unsigned color;
 	enum NBR_CellFlags direction;
 } ColorStep;
 
-typedef struct {
-	ColorStep step;
-	unsigned row;
-	unsigned col;
-} ColorStepRecord;
+typedef ColorStep (*stepCallback)(const NebrTable* nebrTable, ColorStep prevStep, unsigned short stepCount);
 
-typedef ColorStep (*stepCallback)(const ColorStepRecord* prevStep);
-// typedef Rasteron_Step(*stepCallback8)(const Rasteron_StepRecord* prevStep, const NebrTable* nebrTable); */
+Rasteron_Image* createStepImg(const Rasteron_Image* refImage, const PixelPointTable* pixelPointTable, stepCallback callback); // creates image based on tracing paths
 
 #define RASTERON_CELLWISE_H
 #endif

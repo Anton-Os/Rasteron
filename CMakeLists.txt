@@ -20,7 +20,10 @@ set(core_src
     src/Loader.c
 
     src/core/Image.c
+    src/core/PixelPoint.c
     src/core/Dimensional.c
+    src/core/Cellwise.c
+    src/core/Noise.c
 )
 
 list(APPEND core_src src/ImgBmp.c) # BMP does not require dependencies
@@ -60,8 +63,6 @@ endif(libtiff_FOUND)
 
 set(plugin_src
     src/plugin/Animation.c
-    src/plugin/Cellwise.c
-    src/plugin/Noise.c
 )
 
 if(SUPPORT_FONT_BAKING)

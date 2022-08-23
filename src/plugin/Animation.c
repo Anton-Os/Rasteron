@@ -19,7 +19,7 @@ Rasteron_Animation* allocNewAnim(const char* prefix, ImageSize size, unsigned fr
 
     animation->data = (Rasteron_Image**)malloc(frameCount * sizeof(Rasteron_Image*));
     for(unsigned f = 0; f < frameCount; f++)
-        *(animation->data + f) = createImgSolid((ImageSize){ size.height, size.width }, animation->bkColor);
+        *(animation->data + f) = createSolidImg((ImageSize){ size.height, size.width }, animation->bkColor);
     return animation;
 }
 

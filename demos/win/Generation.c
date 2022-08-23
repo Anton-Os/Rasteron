@@ -20,6 +20,24 @@ void genFullImagePath(const char* name) {
 	fixPathDashes(&fullImagePath);
 }
 
+void genImages(){
+	sourceImage = createRefImg(fullImagePath);
+	greyImage = createGreyImg(sourceImage);
+	redImage = createFltChanImg(sourceImage, CHANNEL_Red);
+	blueImage = createAvgChanImg(sourceImage, CHANNEL_Blue);
+	sprite = createSprite(sourceImage);
+	heightmap = createHeightmap(sourceImage);
+}
+
+void cleanup(){
+	deleteImg(sourceImage);
+	deleteImg(greyImage);
+	deleteImg(redImage);
+	deleteImg(blueImage);
+	deleteSprite(sprite);
+	deleteHeightmap(heightmap);
+}
+
 BITMAP bmap1, bmap2, bmap3;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -42,16 +60,11 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 
 int main(int argc, char** argv) {
-	genFullImagePath();
+	genFullImagePath(imageName);
 	
 	// Genertation Step
 
-	sourceImage = createImgRef(fullImagePath);
-	greyImage = createImgGrey(sourceImage);
-	redImage = createImgFltChan(sourceImage, CHANNEL_Red);
-	blueImage = createImgAvgChan(sourceImage, CHANNEL_Blue);
-	sprite = createSprite(sourceImage);
-	heightmap = createHeightmap(sourceImage);
+	genImages();
 
 	// Event Loop
 
@@ -60,12 +73,7 @@ int main(int argc, char** argv) {
 
 	// Cleanup Step
 
-	deleteImg(sourceImage);
-	deleteImg(greyImage);
-	deleteImg(redImage);
-	deleteImg(blueImage);
-	deleteSprite(sprite);
-	deleteHeightmap(heightmap);
+	cleanup();
 
 	return 0;
 }

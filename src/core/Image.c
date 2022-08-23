@@ -57,37 +57,6 @@ Rasteron_SeedTable createSeedTable(const Rasteron_Swatch* swatch) {
 	return seedTable;
 }
 
-unsigned getPixOffset(PixelPoint pixPoint, const Rasteron_Image* refImage){
-	unsigned xOffset; // clamping X
-	if(pixPoint.xFrac <= 0.0) xOffset = 0;
-	else if(pixPoint.xFrac >= 1.0) xOffset = refImage->width - 1;
-	else xOffset = (unsigned)((double)refImage->width * pixPoint.xFrac);
-
-	unsigned yOffset;
-	if(pixPoint.yFrac <= 0.0) yOffset = 0;
-	else if(pixPoint.yFrac >= 1.0) yOffset = refImage->height;
-	else yOffset = (unsigned)((double)refImage->height * pixPoint.yFrac);
-
-	unsigned pixIndex = (yOffset * refImage->width) + xOffset;
-	return pixIndex;
-}
-
-unsigned getPixCursorOffset(PixelPoint pixPoint, const Rasteron_Image* refImage){
-	double xFrac; // clamping X
-	if(pixPoint.xFrac <= -1.0) xFrac = -1.0;
-	else if(pixPoint.xFrac >= 1.0) xFrac = 1.0;
-	else xFrac = pixPoint.xFrac;
-
-	double yFrac; // clamping Y
-	if(pixPoint.yFrac <= -1.0) yFrac = -1.0;
-	else if(pixPoint.yFrac >= 1.0) yFrac = 1.0;
-	else yFrac = pixPoint.yFrac;
-	yFrac *= -1.0; // Y value needs to be flipped
-
-	PixelPoint adjPoint = (PixelPoint){ (xFrac / 2) + 0.5, (yFrac / 2) + 0.5 };
-	return getPixOffset(adjPoint, refImage);
-}
-
 // Image Operations
 
 Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width){
@@ -100,7 +69,7 @@ Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width){
 	return image;
 }
 
-Rasteron_Image* createImgRef(const char* fileName){
+Rasteron_Image* createRefImg(const char* fileName){
 	FileImage fileImage;
 	loadFileImage(fileName, &fileImage);
 
@@ -134,13 +103,13 @@ Rasteron_Image* createImgRef(const char* fileName){
 	return refImage;
 }
 
-Rasteron_Image* createImgSolid(ImageSize size, uint32_t color){
+Rasteron_Image* createSolidImg(ImageSize size, uint32_t color){
 	Rasteron_Image* solidImage = allocNewImg("solid", size.height, size.width);
 	makeColor(solidImage->data, solidImage->width * solidImage->height, color);
 	return solidImage;
 }
 
-Rasteron_Image* createImgFlip(const Rasteron_Image* refImage, enum FLIP_Type flip){
+Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type flip){
 	Rasteron_Image* flipImage = NULL;
 	if(flip == FLIP_Upside){
 		flipImage = allocNewImg("flip", refImage->height, refImage->width); // parameters equal to source
@@ -167,7 +136,7 @@ Rasteron_Image* createImgFlip(const Rasteron_Image* refImage, enum FLIP_Type fli
 	return flipImage;
 }
 
-Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
+Rasteron_Image* createGreyImg(const Rasteron_Image* refImage) {
 	if (refImage == NULL) {
 		perror("Cannot create grey image! Null pointer provided as reference image!");
 		return NULL;
@@ -181,7 +150,7 @@ Rasteron_Image* createImgGrey(const Rasteron_Image* refImage) {
 	return greyImage;
 }
 
-Rasteron_Image* createImgFltChan(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+Rasteron_Image* createFltChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
 		perror("Cannot create filter image! Null pointer provided as reference image!");
 		return NULL;
@@ -214,14 +183,14 @@ Rasteron_Image* createImgFltChan(const Rasteron_Image* refImage, CHANNEL_Type ch
 	return channelImage;
 }
 
-Rasteron_Image* createImgAvgChan(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+Rasteron_Image* createAvgChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
 		perror("Cannot create averaged image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	Rasteron_Image* greyImage = createImgGrey(refImage); // greyscale image used as reference
-	Rasteron_Image* channelImage = createImgFltChan(greyImage, channel);
+	Rasteron_Image* greyImage = createGreyImg(refImage); // greyscale image used as reference
+	Rasteron_Image* channelImage = createFltChanImg(greyImage, channel);
 
 	switch(channel){ // renaming
 		case CHANNEL_Red: channelImage->name = "average-red"; break;
@@ -234,7 +203,7 @@ Rasteron_Image* createImgAvgChan(const Rasteron_Image* refImage, CHANNEL_Type ch
 	return channelImage;
 }
 
-Rasteron_Image* createImgBlend(const Rasteron_Image* image1, const Rasteron_Image* image2){
+Rasteron_Image* createBlendImg(const Rasteron_Image* image1, const Rasteron_Image* image2){
 	if (image1 == NULL || image2 == NULL || image1->height != image2->height || image1->width != image2->width) {
 		perror("Cannot create seeded image! Invalid parameters provided!");
 		return NULL;
@@ -247,7 +216,7 @@ Rasteron_Image* createImgBlend(const Rasteron_Image* image1, const Rasteron_Imag
 	return blendImage;
 }
 
-Rasteron_Image* createImgFuse(const Rasteron_Image* image1, const Rasteron_Image* image2){
+Rasteron_Image* createFuseImg(const Rasteron_Image* image1, const Rasteron_Image* image2){
 	if (image1 == NULL || image2 == NULL || image1->height != image2->height || image1->width != image2->width) {
 		perror("Cannot create seeded image! Invalid parameters provided!");
 		return NULL;
@@ -260,37 +229,35 @@ Rasteron_Image* createImgFuse(const Rasteron_Image* image1, const Rasteron_Image
 	return fuseImage;
 }
 
-Rasteron_Image* createImgSeedRaw(const Rasteron_Image* refImage, uint32_t color, double prob){
+Rasteron_Image* createSeedRawImg(const Rasteron_Image* refImage, uint32_t color, double prob){
 	if (refImage == NULL) {
 		perror("Cannot create seeded image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	Rasteron_Image* seededImage = allocNewImg("seeded", refImage->height, refImage->width);
-	// *seededImage->data = *refImage->data; // copies original image
+	Rasteron_Image* seedImage = allocNewImg("seeded", refImage->height, refImage->width);
 	if(prob >= 1.0){
-		makeColor(seededImage->data, seededImage->width * seededImage->height, color);
-		return seededImage;
-	} else if(prob <= 0.0) return seededImage; // no modifications
+		makeColor(seedImage->data, seedImage->width * seedImage->height, color);
+		return seedImage;
+	} else if(prob <= 0.0) return seedImage; // no modifications
 
 	double chance = 0.0;
-	for (unsigned p = 0; p < seededImage->width * seededImage->height; p++) {
+	for (unsigned p = 0; p < seedImage->width * seedImage->height; p++) {
 		chance = (double)rand() / (double)RAND_MAX;
-		if (chance <= prob) *(seededImage->data + p) = color; // if chance is less than probability change to target color
-		else *(seededImage->data + p) = *(refImage->data + p); // otherwise copy ref contents
+		if (chance <= prob) *(seedImage->data + p) = color; // if chance is less than probability change to target color
+		else *(seedImage->data + p) = *(refImage->data + p); // otherwise copy ref contents
 	}
 
-	return seededImage;
+	return seedImage;
 }
 
-Rasteron_Image* createImgSeedWeighted(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable){
+Rasteron_Image* createSeedWeightImg(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable){
 	if (refImage == NULL) {
 		perror("Cannot create palette image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	Rasteron_Image* paletteImage = allocNewImg("palette", refImage->height, refImage->width);
-	// *paletteImage->data = *refImage->data; // copies original image
+	Rasteron_Image* seedImage = allocNewImg("palette", refImage->height, refImage->width);
 	const float defaultSeedWeight = 1.0f / (seedTable->seedCount + 1); // leaves less covered as seed count increases
 
 	double chance = 0.0f;
@@ -306,7 +273,7 @@ Rasteron_Image* createImgSeedWeighted(const Rasteron_Image* refImage, const Rast
 	}
 
 	// setting proper colors
-	for (unsigned p = 0; p < paletteImage->width * paletteImage->height; p++) {
+	for (unsigned p = 0; p < seedImage->width * seedImage->height; p++) {
 		chance = ((double)rand() / (double)RAND_MAX) * seedWeightTotal;
 		unsigned color = *(refImage->data + p);
 		for(unsigned s = 0; s < seedTable->seedCount; s++)
@@ -314,10 +281,10 @@ Rasteron_Image* createImgSeedWeighted(const Rasteron_Image* refImage, const Rast
 				color = seedTable->seeds[s].color; // sets new color if range is satisfied
 				break;
 			}
-		*(paletteImage->data + p) = color;
+		*(seedImage->data + p) = color;
 	}
 
-	return paletteImage;
+	return seedImage;
 }
 
 void deleteImg(Rasteron_Image* image) {

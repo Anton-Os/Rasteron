@@ -1,7 +1,5 @@
 #include "Cellwise.h"
 
-// Pattern operations
-
 static void setFlagBit(nebrCheckFlags* target, enum NBR_CellFlags flagBit){
     *(target) = (*(target) | (1 << (flagBit)));
 }
@@ -52,8 +50,6 @@ static uint32_t* findNeighbor(Rasteron_Image* refImage, uint32_t index, enum NBR
     return NULL;
 }
 
-
-// NebrTable_List* genNebrTables(const uint32_t* refImage->data, uint32_t refImage->width, uint32_t refImage->height) {
 NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 	NebrTable_List* list = (NebrTable_List*)malloc(sizeof(NebrTable_List));
 	list->count = refImage->width * refImage->height;
@@ -96,7 +92,21 @@ NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 	return list; // Return the structure that we generated
 }
 
-Rasteron_Image* createPatternImg_nebr(const Rasteron_Image* refImage, nebrCallback8 callback){
+void delNebrTables(NebrTable_List* nebrTables) {
+	for (NebrTable* currentTable = nebrTables->tables;
+		currentTable != nebrTables->tables + nebrTables->count; 
+		currentTable++) {
+		free(currentTable->nebrs);
+	}
+	free(nebrTables->tables);
+	nebrTables->tables = NULL;
+	free(nebrTables);
+	nebrTables = NULL;
+}
+
+// Pattern operations
+
+/* Rasteron_Image* createPatternImg_nebr(const Rasteron_Image* refImage, nebrCallback8 callback){
 	if(refImage == NULL){
 		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
@@ -164,7 +174,7 @@ Rasteron_Image* createPatternImg_iter(const Rasteron_Image* refImage, nebrCallba
 	} while (i < iter);
 
 	return patternImage;
-}
+}*/
 
 Rasteron_Image* createPatternImg_horz(const Rasteron_Image* refImage, nebrCallback2 callback){
 	if(refImage == NULL){
@@ -231,64 +241,81 @@ Rasteron_Image* createPatternImg_vert(const Rasteron_Image* refImage, nebrCallba
 	return patternImg;
 }
 
-void delNebrTables(NebrTable_List* nebrTables) {
-	for (NebrTable* currentTable = nebrTables->tables;
-		currentTable != nebrTables->tables + nebrTables->count; 
-		currentTable++) {
-		free(currentTable->nebrs);
-	}
-	free(nebrTables->tables);
-	nebrTables->tables = NULL;
-	free(nebrTables);
-	nebrTables = NULL;
-}
-
 // Field operations
 
-void addColorPoint(ColorPointTable* table, unsigned color, double xFrac, double yFrac) {
-	table->points[table->pointCount].point.xFrac = xFrac;
-	table->points[table->pointCount].point.yFrac = yFrac;
-	table->points[table->pointCount].color = color;
-	table->pointCount++;
+static unsigned callback_vornoi(unsigned color, double distance){
+	return color; // return solid color
 }
 
 Rasteron_Image* createFieldImg(ImageSize size, const ColorPointTable* colorPointTable, distCallback callback) {
-	unsigned* colorPointPixels = malloc(colorPointTable->pointCount * sizeof(unsigned));
-
 	Rasteron_Image* fieldImage = allocNewImg("field", size.height, size.width);
 
+	unsigned* colorPoints = malloc(colorPointTable->pointCount * sizeof(unsigned));
 	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
-		*(colorPointPixels + t) = getPixOffset(colorPointTable->points[t].point, fieldImage);
-
-	// Implement generation logic
-
-	free(colorPointPixels);
-	return fieldImage;
-}
-
-Rasteron_Image* createFieldImg_vornoi(ImageSize size, const ColorPointTable* colorPointTable) {
-	Rasteron_Image* fieldImage = allocNewImg("field-vornoi", size.height, size.width);
-
-	unsigned* colorPointPixels = malloc(colorPointTable->pointCount * sizeof(unsigned));
-	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
-		*(colorPointPixels + t) = getPixOffset(colorPointTable->points[t].point, fieldImage);
+		*(colorPoints + t) = getPixOffset(colorPointTable->points[t].point, fieldImage);
 
 	for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
 		unsigned color = BLACK_COLOR;
 		double minDist = (double)(fieldImage->width * fieldImage->height);
 
 		for (unsigned t = 0; t < colorPointTable->pointCount; t++) {
-			double dist = getPixDist(p, *(colorPointPixels + t), fieldImage->width);
+			double dist = getPixDist(p, *(colorPoints + t), fieldImage->width);
 			if (dist < minDist) {
 				minDist = dist;
 				color = colorPointTable->points[t].color;
 			}
-			*(fieldImage->data + p) = color;
+			*(fieldImage->data + p) = callback(color, minDist);
 		}
 	}
 
-	free(colorPointPixels);
+	free(colorPoints);
 	return fieldImage;
 }
 
+Rasteron_Image* createFieldImg_vornoi(ImageSize size, const ColorPointTable* colorPointTable){
+	return createFieldImg(size, colorPointTable, callback_vornoi);
+}
+
+// Mapped operations
+
+Rasteron_Image* createMappedImg(ImageSize size, mapCallback callback){
+	Rasteron_Image* mappedImage = allocNewImg("map", size.height, size.width);
+
+	for(unsigned p = 0; p < mappedImage->width * mappedImage->height; p++){
+		double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
+		*(mappedImage->data + p) = callback(x, y);
+	}
+
+	return mappedImage;
+}
+
 // Step operations
+
+Rasteron_Image* createStepImg(const Rasteron_Image* refImage, const PixelPointTable* pixelPointTable, stepCallback callback){
+	if(refImage == NULL){
+		perror("Cannot create step image! Null pointer provided as input");
+		return NULL;
+	}
+
+	NebrTable_List* nebrTables = genNebrTables(refImage);
+	Rasteron_Image* stepImage = allocNewImg("step", refImage->height, refImage->width);
+	
+	for(unsigned p = 0; p < stepImage->width * stepImage->height; p++)
+		*(stepImage->data + p) = *(refImage->data + p); // copy pixel by pixel
+
+	for(unsigned t = 0; t < pixelPointTable->pointCount; t++){
+		unsigned offset = getPixOffset(pixelPointTable->points[t], stepImage);
+		const NebrTable* currentTable = nebrTables->tables + offset;
+		ColorStep colorStep = { *(stepImage->data + offset), NBR_None };
+
+		for(unsigned s = 0; s < MAX_COLOR_STEPS && colorStep.color != ZERO_COLOR; s++){
+			colorStep = callback(currentTable, colorStep, s);
+			// offset = ... // UPDATE OFFSET TO NEW POSITION
+			*(stepImage->data + offset) = colorStep.color;
+		}
+	}
+
+	delNebrTables(nebrTables);
+	return stepImage;
+}

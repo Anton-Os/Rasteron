@@ -4,39 +4,76 @@
 #include "OS_Util.h"
 
 // Global Definitions
-Rasteron_Swatch darkSwatch, lightSwatch;
-Rasteron_SeedTable seedTable1, seedTable2;
-
-Rasteron_Image* solidImg;
-
-Rasteron_Image* seededImg;
-Rasteron_Image* seededImg2;
-
-Rasteron_Image* patternImg;
-Rasteron_Image* patternImg2;
-Rasteron_Image* patternImgVert;
-Rasteron_Image* patternImgHorz;
 
 #define SEED_COLOR 0xFFFFFFFF
 #define RESULT_COLOR 0xFF00FF00
 
-// Start with simple black and white patterns
-unsigned callback2(unsigned target, unsigned right, unsigned left) {
-	// return blend(left, right, 0.5);
-	// return fuse(left, right, 0.5f);
+Rasteron_Swatch darkSwatch, lightSwatch;
+Rasteron_SeedTable seedTable1, seedTable2;
+ColorPointTable colorPointTable;
 
-	if (left == SEED_COLOR) return SEED_COLOR;
-	else if (right == SEED_COLOR) return BLACK_COLOR;
-	else return ZERO_COLOR;
+Rasteron_Image* solidImg;
+Rasteron_Image* seededImg;
+Rasteron_Image* seededImg2;
+
+// Rasteron_Image* patternImg;
+// Rasteron_Image* patternImg2;
+Rasteron_Image* patternImgHorz;
+Rasteron_Image* patternImgVert;
+Rasteron_Image* mapImg;
+Rasteron_Image* fieldImg;
+Rasteron_Image* stepImg;
+
+unsigned callback2(unsigned target, unsigned nebrs[2]) {
+	// TODO: Implement callback
+
+	return RESULT_COLOR;
 }
 
-unsigned callback8(unsigned target, unsigned nebrs[NEBR_COUNT]) {
-	/* if(t == SEED_COLOR) return 0xFFFF0000; else if (b == SEED_COLOR) return 0xFFFFFF00;
-	else if(tl == SEED_COLOR) return 0xFF00FF00; else if (bl == SEED_COLOR) return 0xFFFF00FF;
-	else if(tr == SEED_COLOR) return 0xFF0000FF; else if (br == SEED_COLOR) return 0xFF00FFFF;
-	else return ZERO_COLOR; */
+unsigned callback8(unsigned target, unsigned nebrs[8]) {
+	// TODO: Implement callback
 
-	return ZERO_COLOR;
+	return RESULT_COLOR;
+}
+
+unsigned callback_map(double x, double y){
+	// TODO: Implement callback
+
+	return RESULT_COLOR;
+}
+
+void genImages() {
+	addColorPoint(&colorPointTable, 0xFFFF0000, 0.25f, 0.75f);
+	addColorPoint(&colorPointTable, 0xFF00FF00, 0.5f, 0.5f);
+	addColorPoint(&colorPointTable, 0xFF0000FF, 0.75f, 0.25f);
+	darkSwatch = createSwatch(BLACK_COLOR, 0x25);
+	lightSwatch = createSwatch(WHITE_COLOR, 0x25);
+	seedTable1 = createSeedTable(&lightSwatch);
+	seedTable2 = createSeedTable(&darkSwatch);
+
+	solidImg = createSolidImg((ImageSize){ 1100, 1200 }, BLACK_COLOR);
+	seededImg = createSeedRawImg(solidImg, SEED_COLOR, 0.01);
+	seededImg2 = createSeedWeightImg(solidImg, &seedTable2);
+
+	// patternImg = createPatternImg_nebr(seededImg, callback8);
+	// patternImg2 = createPatternImg_iter(seededImg, callback8, 4);
+	patternImgHorz = createPatternImg_horz(seededImg, callback2);
+	patternImgVert = createPatternImg_vert(seededImg, callback2);
+	mapImg = createMappedImg((ImageSize){ 1100, 1200 }, callback_map);
+	fieldImg = createFieldImg_vornoi((ImageSize){ 1100, 1200 }, &colorPointTable);
+}
+
+void cleanup() {
+	deleteImg(solidImg);
+	deleteImg(seededImg);
+	deleteImg(seededImg2);
+
+	// deleteImg(patternImg);
+	// deleteImg(patternImg2);
+	deleteImg(patternImgHorz);
+	deleteImg(patternImgVert);
+	deleteImg(mapImg);
+	deleteImg(fieldImg);
 }
 
 BITMAP bmap;
@@ -48,7 +85,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		bmap = createWinBmap(patternImgHorz);
+		bmap = createWinBmap(mapImg);
 	}
 	case (WM_PAINT): {
 		drawWinBmap(hwnd, &bmap);
@@ -62,37 +99,16 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 int main(int argc, char** argv) {
 	// Genertation Step
 
-	darkSwatch = createSwatch(BLACK_COLOR, 0x25);
-	lightSwatch = createSwatch(WHITE_COLOR, 0x25);
-	seedTable1 = createSeedTable(&lightSwatch);
-	seedTable2 = createSeedTable(&darkSwatch);
-
-	solidImg = createImgSolid((ImageSize){ 1100, 1200 }, BLACK_COLOR);
-
-	seededImg = createImgSeedRaw(solidImg, SEED_COLOR, 0.01);
-	seededImg2 = createImgSeedWeighted(solidImg, &seedTable2);
-
-	patternImg = createPatternImg_nebr(seededImg, callback8);
-	patternImg2 = createPatternImg_iter(seededImg, callback8, 4);
-	patternImgHorz = createPatternImg_horz(seededImg, callback2);
-	patternImgVert = createPatternImg_vert(seededImg, callback2);
+	genImages();
 
 	// Event Loop
 
 	createWindow(wndProc, "Cellwise");
-	eventLoop();
+	eventLoop((ImageSize){ 1100, 1200 });
 
 	// Cleanup Step
 
-	deleteImg(solidImg);
-
-	deleteImg(seededImg);
-	deleteImg(seededImg2);
-
-	deleteImg(patternImg);
-	deleteImg(patternImg2);
-	deleteImg(patternImgHorz);
-	deleteImg(patternImgVert);
+	cleanup();
 
 	return 0;
 }

@@ -5,6 +5,7 @@
 #include "OS_Util.h"
 
 // Global Definitions
+
 FT_Library freetypeLib;
 const char* fontPath = FONTS_DIR;
 const char* fontName = "Tw-Cen-MT.ttf";
@@ -21,6 +22,12 @@ void genFontFilePath() {
 	strcat(targetFontPath, "\\");
 	strcat(targetFontPath, fontName);
 	fixPathDashes(&targetFontPath);
+}
+
+void cleanup(){
+	deleteImg(fontImage);
+	deleteImg(flipImage);
+	cleanupFreeType(&freetypeLib);
 }
 
 BITMAP bmap;
@@ -56,7 +63,7 @@ int main(int argc, char** argv) {
 	textObj.text = "i";
 
 	fontImage = bakeTextReg(&freetypeLib, &textObj);
-	flipImage = createImgFlip(fontImage, FLIP_Clock);
+	flipImage = createFlipImg(fontImage, FLIP_Clock);
 
 	// Event Loop
 
@@ -65,9 +72,7 @@ int main(int argc, char** argv) {
 
 	// Cleanup Step
 
-	deleteImg(fontImage);
-	deleteImg(flipImage);
-	cleanupFreeType(&freetypeLib);
+	cleanup();
 
 	return 0;
 }

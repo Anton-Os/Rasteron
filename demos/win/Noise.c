@@ -5,8 +5,6 @@
 
 // Global Definitions
 
-Rasteron_SeedTable seedTable;
-ColorPointTable colorPtTable;
 GradientLattice gradientTable = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
 // Rasteron_GradientNoise gradientTable = { 12, 12, 0xFFFF00FF, 0xFF00FFFF };
 // Rasteron_GradientNoise gradientTable = { 64, 64, 0xFF000000, 0xFFFFFFFF };
@@ -14,9 +12,12 @@ GradientLattice gradientTable = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
 Rasteron_Image* solidImg;
 Rasteron_Image* randNoiseImg;
 Rasteron_Image* randNoiseImg2;
-Rasteron_Image* seededImg;
-Rasteron_Image* paletteImg;
-Rasteron_Image* proxCellImg;
+
+void cleanup(){
+	deleteImg(solidImg);
+	deleteImg(randNoiseImg);
+	deleteImg(randNoiseImg2);
+}
 
 BITMAP bmap1, bmap2, bmap3;
 
@@ -47,21 +48,9 @@ int main(int argc, char** argv) {
 	
 	// Genertation Step
 
-	addWeightedSeed(&seedTable, 0xFFFFEECC, 0.1f);
-	addWeightedSeed(&seedTable, 0xFFAADDEE, 0.2f);
-	addWeightedSeed(&seedTable, 0xFFAADDEE, 0.3f);
-	addWeightedSeed(&seedTable, 0xFFAAAAFF, 0.4f);
-
-	addColorPoint(&colorPtTable, 0xFFFFEECC, 0.1f, 0.1f);
-	addColorPoint(&colorPtTable, 0xFFAADDEE, 0.2f, 0.5f);
-	addColorPoint(&colorPtTable, 0xFFDDEECC, 0.5f, 0.2f); 
-	addColorPoint(&colorPtTable, 0xFFAAAAFF, 0.4f, 0.4f);
-
-	solidImg = createImgSolid((ImageSize){ 1100, 1200 }, 0xFF73e5ff);
+	solidImg = createSolidImg((ImageSize){ 1100, 1200 }, 0xFF73e5ff);
 	randNoiseImg = createNoiseImg_white((ImageSize) { 1100, 1200 }, 0xFFFF0000, 0xFF0000FF);
 	randNoiseImg2 = createNoiseImg_gradient((ImageSize) { 1100, 1200 }, gradientTable);
-	seededImg = createImgSeedRaw(solidImg, 0xFFFF00FF, 0.1);
-	paletteImg = createImgSeedWeighted(solidImg, &seedTable);
 
 	// Event Loop
 
@@ -70,12 +59,7 @@ int main(int argc, char** argv) {
 
 	// Cleanup Step
 
-	deleteImg(solidImg);
-	deleteImg(randNoiseImg);
-	deleteImg(randNoiseImg2);
-	deleteImg(seededImg);
-	deleteImg(paletteImg);
-	deleteImg(proxCellImg);
+	cleanup();
 
 	return 0;
 }

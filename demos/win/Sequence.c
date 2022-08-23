@@ -4,6 +4,7 @@
 #include "OS_Util.h"
 
 // Global Definitions
+
 #define ANIM_HEIGHT 1100
 #define ANIM_WIDTH 1200
 
@@ -15,10 +16,10 @@ Rasteron_Image* frame3;
 Rasteron_Image* frame4;
 
 void genImages() {
-	frame1 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF000000);
-    frame2 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFFFF0000);
-    frame3 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF00FF00);
-    frame4 = createImgBlank(ANIM_HEIGHT, ANIM_WIDTH, 0xFF0000FF);
+	frame1 = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 0xFF000000);
+    frame2 = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 0xFFFF0000);
+    frame3 = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 0xFF00FF00);
+    frame4 = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 0xFF0000FF);
 
 	animation = allocNewAnim("sequence", (ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 4);
     addFrameData(animation, frame1, 0);

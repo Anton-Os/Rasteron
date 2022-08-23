@@ -70,38 +70,21 @@ typedef struct {
 
 Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width); // Image allocation helper
 
-Rasteron_Image* createImgRef(const char* fileName); // creates an image from a file
-Rasteron_Image* createImgSolid(ImageSize size, uint32_t solidColor); // creates a solid color image
+Rasteron_Image* createRefImg(const char* fileName); // creates an image from a file
+Rasteron_Image* createSolidImg(ImageSize size, uint32_t solidColor); // creates a solid color image
 // Rasteron_Image* createImgCopy(Rasteron_Image* refImage); // creates copy of reference image
-Rasteron_Image* createImgFlip(const Rasteron_Image* refImage, enum FLIP_Type flip); // creates flipped version of reference image
+Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type flip); // creates flipped version of reference image
 
-Rasteron_Image* createImgGrey(const Rasteron_Image* refImage); // creates greyscale version of reference image
-Rasteron_Image* createImgFltChan(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-filtered version of reference image
-Rasteron_Image* createImgAvgChan(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-averaged version of reference image
+Rasteron_Image* createGreyImg(const Rasteron_Image* refImage); // creates greyscale version of reference image
+Rasteron_Image* createFltChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-filtered version of reference image
+Rasteron_Image* createAvgChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-averaged version of reference image
 
-Rasteron_Image* createImgBlend(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates blended version of image
-Rasteron_Image* createImgFuse(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates fused version of image
-Rasteron_Image* createImgSeedRaw(const Rasteron_Image* refImage, uint32_t color, double prob); // seeds pixel over image based on probability
-Rasteron_Image* createImgSeedWeighted(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable); // seeds pixels over image based on weights
+Rasteron_Image* createBlendImg(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates blended version of image
+Rasteron_Image* createFuseImg(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates fused version of image
+Rasteron_Image* createSeedRawImg(const Rasteron_Image* refImage, uint32_t color, double prob); // seeds pixel over image based on probability
+Rasteron_Image* createSeedWeightImg(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable); // seeds pixels over image based on weights
 
 void deleteImg(Rasteron_Image* image);
-
-// PixelPoint operations
-
-#define MAX_PIXEL_POS TWOPOWER(11) // 2046
-
-typedef struct {
-	double xFrac; // fraction of image along the x axis
-	double yFrac; // fraction of image along the y axis
-} PixelPoint;
-
-typedef struct {
-	PixelPoint points[MAX_PIXEL_POS];
-	unsigned pointCount; // = 0;
-} PixelPointTable;
-
-unsigned getPixOffset(PixelPoint pixPos, const Rasteron_Image* refImage); // gets pixel offset from image corner
-unsigned getPixCursorOffset(PixelPoint pixPos, const Rasteron_Image* refImage); // gets pixel offset from cursor window position
 
 #define RASTERON_IMAGE_H
 #endif

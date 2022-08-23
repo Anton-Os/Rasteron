@@ -20,11 +20,11 @@ int main(int argc, char** argv) {
     // Reading Step
 
     genFullImagePath("Logo.bmp");
-    sourceImage1 = createImgRef(fullImagePath);
+    sourceImage1 = createRefImg(fullImagePath);
     genFullImagePath("Logo.tiff");
-    sourceImage2 = createImgRef(fullImagePath);
+    sourceImage2 = createRefImg(fullImagePath);
     genFullImagePath("Logo.png");
-    sourceImage3 = createImgRef(fullImagePath);
+    sourceImage3 = createRefImg(fullImagePath);
     
     // Cleanup Step
     

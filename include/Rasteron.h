@@ -6,6 +6,7 @@ extern "C"{
 
 // Core
 #include "Image.h"
+#include "PixelPoint.h"
 #include "Dimensional.h"
 
 // Plugins
