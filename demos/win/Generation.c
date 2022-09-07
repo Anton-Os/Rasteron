@@ -2,7 +2,7 @@
 #include "OS_Util.h"
 
 // Global Definitions
-const char* imageName = "Logo.png";
+const char* imageName = "Logo.bmp";
 char fullImagePath[1024];
 
 Rasteron_Image* sourceImage;
@@ -47,10 +47,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		bmap2 = createWinBmap(greyImage);
+		bmap1 = createWinBmap(greyImage);
 	}
 	case (WM_PAINT): {
-		drawWinBmap(hwnd, &bmap2);
+		drawWinBmap(hwnd, &bmap1);
 	}
 	case (WM_CLOSE): {}
 	default: return DefWindowProc(hwnd, message, wParam, lParam);
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 
 	// Event Loop
 
-	createWindow(wndProc, "Primitives");
+	createWindow(wndProc, "Generation");
 	eventLoop();
 
 	// Cleanup Step

@@ -10,7 +10,7 @@
 	SPECTRUM_Bright // 80% to 100% // WHITE
 }; */
 
-// SeedTable operations
+// Table and Swatch operations
 
 typedef struct {
 	uint32_t color; // = ZERO_COLOR;
@@ -27,8 +27,6 @@ typedef struct {
 
 void addSeed(Rasteron_SeedTable* table, unsigned color);
 void addWeightedSeed(Rasteron_SeedTable* table, unsigned color, double weight);
-
-// Rasteron operations
 
 #define SWATCH_COUNT 8
 
@@ -52,7 +50,7 @@ typedef struct {
 Rasteron_Swatch createSwatch(unsigned color, uint8_t deviation);
 Rasteron_SeedTable createSeedTable(const Rasteron_Swatch* swatch);
 
-// Image operations
+// Basic Image operations
 
 enum FLIP_Type { FLIP_Clock, FLIP_CounterClock, FLIP_Upside };
 
@@ -72,19 +70,29 @@ Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width); 
 
 Rasteron_Image* createRefImg(const char* fileName); // creates an image from a file
 Rasteron_Image* createSolidImg(ImageSize size, uint32_t solidColor); // creates a solid color image
-// Rasteron_Image* createImgCopy(Rasteron_Image* refImage); // creates copy of reference image
+Rasteron_Image* createCopyImg(Rasteron_Image* refImage); // creates copy of reference image
 Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type flip); // creates flipped version of reference image
+
+void deleteImg(Rasteron_Image* image);
+
+// Filtering Image operations
 
 Rasteron_Image* createGreyImg(const Rasteron_Image* refImage); // creates greyscale version of reference image
 Rasteron_Image* createFltChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-filtered version of reference image
 Rasteron_Image* createAvgChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-averaged version of reference image
+
+// Combination and Seeding Image operations
 
 Rasteron_Image* createBlendImg(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates blended version of image
 Rasteron_Image* createFuseImg(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates fused version of image
 Rasteron_Image* createSeedRawImg(const Rasteron_Image* refImage, uint32_t color, double prob); // seeds pixel over image based on probability
 Rasteron_Image* createSeedWeightImg(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable); // seeds pixels over image based on weights
 
-void deleteImg(Rasteron_Image* image);
+// Mapped Image operations based on x and y coordinates
+
+typedef unsigned (*mapCallback)(double x, double y);
+
+Rasteron_Image* createMappedImg(ImageSize size, mapCallback callback);
 
 #define RASTERON_IMAGE_H
 #endif

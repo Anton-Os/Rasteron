@@ -7,13 +7,13 @@ void loadFileImage_PNG(const char* fileName, Image* image) {
 
 	FILE* pngFile;
 #ifdef _WIN32
-	errno_t err = fopen_s(&pngFile, fileName, "wb");
+	errno_t err = fopen_s(&pngFile, fileName, "rb");
 	if (err) {
 		printf("Error opening %s fopen_s error code %d", fileName, err);
 		return;
 	}
 #else
-	pngFile = fopen(fileName, "wb");
+	pngFile = fopen(fileName, "rb");
 	if(pngFile == NULL) {
 		printf("Error opening %s", fileName);
 		return;
@@ -26,7 +26,6 @@ void loadFileImage_PNG(const char* fileName, Image* image) {
 		puts("Incorrect png signature!");
 		return;
 	}
-	// fclose(pngFile);
 
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	png_infop info_ptr = png_create_info_struct(png_ptr);

@@ -89,11 +89,15 @@ int8_t getChanDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 }
 
 double getPixDist(unsigned p1, unsigned p2, unsigned imageWidth){
-	unsigned x1 = p1 % imageWidth;
-    unsigned y1 = p1 / imageWidth;
-	unsigned x2 = p2 % imageWidth;
-	unsigned y2 = p2 / imageWidth;
-	return sqrt(((x2-x1)*(x2-x1))+((y2-y1)*(y2-y1)));
+	long int x1 = p1 % imageWidth;
+	long int y1 = p1 / imageWidth;
+	long int x2 = p2 % imageWidth;
+	long int y2 = p2 / imageWidth;
+
+	double w = abs(x2 - x1); // length in pixels
+	double l = abs(y2 - y1); // width in pixels
+
+	return sqrt((l * l) + (w * w));
 }
 
 uint32_t grayify32(uint32_t refColor) {

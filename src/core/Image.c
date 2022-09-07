@@ -1,6 +1,6 @@
 #include "Image.h"
 
-// Helper Types Operations
+// Table and Swatch operations
 
 void addSeed(Rasteron_SeedTable* table, unsigned color){ addWeightedSeed(table, color, 0.0); }
 
@@ -57,10 +57,11 @@ Rasteron_SeedTable createSeedTable(const Rasteron_Swatch* swatch) {
 	return seedTable;
 }
 
-// Image Operations
+// Basic Image operations
 
 Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width){
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	
 	image->name = name;
 	image->width = width;
 	image->height = height;
@@ -109,10 +110,29 @@ Rasteron_Image* createSolidImg(ImageSize size, uint32_t color){
 	return solidImage;
 }
 
+Rasteron_Image* createCopyImg(Rasteron_Image* refImage){
+	if (refImage == NULL) {
+		perror("Cannot create copy image! Null pointer provided as reference image!");
+		return NULL;
+	}
+
+	Rasteron_Image* copyImage = allocNewImg("copy", refImage->height, refImage->width);
+
+	for(unsigned p = 0; p < refImage->width * refImage->height; p++)
+		*(copyImage->data + p) = *(refImage->data + p); // copy each pixel
+
+	return copyImage;
+}
+
 Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type flip){
+	if (refImage == NULL) {
+		perror("Cannot create flip image! Null pointer provided as reference image!");
+		return NULL;
+	}
+	
 	Rasteron_Image* flipImage = NULL;
 	if(flip == FLIP_Upside){
-		flipImage = allocNewImg("flip", refImage->height, refImage->width); // parameters equal to source
+		flipImage = allocNewImg("flip", refImage->height, refImage->width); // parameters match source
 		for(unsigned p = 0; p < refImage->height * refImage->width; p++)
 			*(flipImage->data + (refImage->height * refImage->width) - p - 1) = *(refImage->data + p); // copies pixels in reverse
 	} else {
@@ -135,6 +155,14 @@ Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type fli
 
 	return flipImage;
 }
+
+void deleteImg(Rasteron_Image* image) {
+    if(image->data != NULL) free(image->data);
+    if(image != NULL) free(image);
+	image = NULL; // set address to null
+}
+
+// Filtering operations
 
 Rasteron_Image* createGreyImg(const Rasteron_Image* refImage) {
 	if (refImage == NULL) {
@@ -173,7 +201,6 @@ Rasteron_Image* createFltChanImg(const Rasteron_Image* refImage, CHANNEL_Type ch
 			break;
 	}
 	
-	// Generation Logic
 	uint32_t color;
 	for (unsigned p = 0; p < channelImage->width * channelImage->height; p++) {
 		color = (*(refImage->data + p) & ALPHA_CHANNEL) + (*(refImage->data + p) & colorMask) ;
@@ -198,10 +225,11 @@ Rasteron_Image* createAvgChanImg(const Rasteron_Image* refImage, CHANNEL_Type ch
 		case CHANNEL_Blue: channelImage->name = "average-blue"; break;
 	}
 
-	
 	deleteImg(greyImage);
 	return channelImage;
 }
+
+// Combination and Seeding operations
 
 Rasteron_Image* createBlendImg(const Rasteron_Image* image1, const Rasteron_Image* image2){
 	if (image1 == NULL || image2 == NULL || image1->height != image2->height || image1->width != image2->width) {
@@ -287,8 +315,16 @@ Rasteron_Image* createSeedWeightImg(const Rasteron_Image* refImage, const Raster
 	return seedImage;
 }
 
-void deleteImg(Rasteron_Image* image) {
-    if(image->data != NULL) free(image->data);
-    if(image != NULL) free(image);
-	image = NULL; // set address to null
+// Mapped operations
+
+Rasteron_Image* createMappedImg(ImageSize size, mapCallback callback){
+	Rasteron_Image* mappedImage = allocNewImg("map", size.height, size.width);
+
+	for(unsigned p = 0; p < mappedImage->width * mappedImage->height; p++){
+		double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
+		*(mappedImage->data + p) = callback(x, y);
+	}
+
+	return mappedImage;
 }

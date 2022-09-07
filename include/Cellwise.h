@@ -39,8 +39,8 @@ void delNebrTables(NebrTable_List* nebrTables);
 typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // accepts target and two neighbors
 typedef unsigned (*nebrCallback8)(unsigned, unsigned[8]); // accepts target and all neighbors
 
-// Rasteron_Image* createPatternImg_nebr(const Rasteron_Image* refImage, nebrCallback8 callback); // neighbor pattern
-// Rasteron_Image* createPatternImg_iter(const Rasteron_Image* refImage, nebrCallback8 callback, unsigned short iter); // iterative pattern
+Rasteron_Image* createPatternImg(const Rasteron_Image* refImage, nebrCallback8 callback); // neighbor pattern
+Rasteron_Image* createMultiPatternImg(const Rasteron_Image* refImage, nebrCallback8 callback, unsigned short iter); // iterative pattern
 Rasteron_Image* createPatternImg_horz(const Rasteron_Image* refImage, nebrCallback2 callback); // horizontal pattern
 Rasteron_Image* createPatternImg_vert(const Rasteron_Image* refImage, nebrCallback2 callback); // vertical pattern
 
@@ -50,12 +50,6 @@ typedef unsigned (*distCallback)(unsigned color, double distance);
 
 Rasteron_Image* createFieldImg(ImageSize size, const ColorPointTable* colorPointTable, distCallback callback); // creates image based on color points given a distance function
 Rasteron_Image* createFieldImg_vornoi(ImageSize size, const ColorPointTable* colorPointTable); // creates voronoi cell image
-
-// Mapped Image operations based on x and y input values
-
-typedef unsigned (*mapCallback)(double x, double y); // accepts fractional x and y offsets
-
-Rasteron_Image* createMappedImg(ImageSize size, mapCallback callback);
 
 // Step Image operations based on a traced path
 

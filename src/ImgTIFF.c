@@ -4,13 +4,13 @@
 
 void loadFileImage_TIFF(const char* fileName, Image* image) {
 	image->fileFormat = IMG_Tiff;
-	TIFF* tiffFile = &image->data.tiff.tiff; // For less typing, points to tiff file type
 
-	tiffFile = TIFFOpen(fileName, "r");
+	TIFF* tiffFile = TIFFOpen(fileName, "r");
 	if (!tiffFile) {
 		printf("Could not open file: %s", fileName);
 		return;
 	}
+
 	TIFFGetField(tiffFile, TIFFTAG_IMAGELENGTH, &image->data.tiff.length);
 	TIFFGetField(tiffFile, TIFFTAG_IMAGEWIDTH, &image->data.tiff.width);
 	TIFFGetField(tiffFile, TIFFTAG_BITSPERSAMPLE, &image->data.tiff.bitsPerSample);
@@ -19,13 +19,14 @@ void loadFileImage_TIFF(const char* fileName, Image* image) {
 
 	image->data.tiff.raster = (uint32*)_TIFFmalloc(image->data.tiff.length * image->data.tiff.width * sizeof(uint32));
 	TIFFReadRGBAImageOriented(
-		image->data.tiff.tiff,
+		tiffFile,
 		image->data.tiff.width,
 		image->data.tiff.length,
 		image->data.tiff.raster,
 		ORIENTATION_TOPRIGHT,
 		0
 	);
+
 	TIFFClose(tiffFile);
 
 	switchRB(image->data.tiff.raster, image->data.tiff.length * image->data.tiff.width); // switch red and blue bits
@@ -35,6 +36,10 @@ void loadFileImage_TIFF(const char* fileName, Image* image) {
 
 void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned width, unsigned* data){
 	TIFF* tiffFile = TIFFOpen(fileName, "w");
+	if (!tiffFile) {
+		printf("Could not open file: %s", fileName);
+		return;
+	}
 
 	// Writing Meta-Data
 

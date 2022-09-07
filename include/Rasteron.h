@@ -8,12 +8,12 @@ extern "C"{
 #include "Image.h"
 #include "PixelPoint.h"
 #include "Dimensional.h"
+#include "Cellwise.h"
+#include "Noise.h"
 
 // Plugins
 #ifdef RASTERON_ENABLE_PLUGIN
 #include "Animation.h"
-#include "Cellwise.h"
-#include "Noise.h"
 #endif
 
 #ifdef RASTERON_ENABLE_FONT
