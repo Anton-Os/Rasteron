@@ -6,7 +6,7 @@
 #include <string.h>
 
 void seedRandGen(); // seeds the random number generator
-void fixPathDashes(char* str); // utility for replacing forward-slashes with back-slashes
+void replaceFwdSlash(char* str); // utility for replacing forward-slashes with back-slashes
 
 void makeColor(uint32_t* raster, unsigned pixels, uint32_t colorVal); // makes image data into uniform color
 void changeColor(uint32_t* raster, unsigned pixels, uint32_t newColor, uint32_t oldColor); // switches oldColor to newColor in image

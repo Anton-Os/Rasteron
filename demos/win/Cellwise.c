@@ -10,7 +10,8 @@
 
 Rasteron_Swatch darkSwatch, lightSwatch;
 Rasteron_SeedTable seedTable1, seedTable2;
-ColorPointTable colorPointTable;
+PixelPointTable ppTable;
+ColorPointTable cpTable;
 
 Rasteron_Image* solidImg;
 Rasteron_Image* seededImg;
@@ -31,25 +32,25 @@ unsigned callback2(unsigned target, unsigned nebrs[2]) {
 }
 
 unsigned callback8(unsigned target, unsigned nebrs[8]) {
-	if(target == SEED_COLOR) return RESULT_COLOR;
+	unsigned count = 0;
 
-	for(unsigned n = 0; n < NEBR_COUNT; n++)
-		if(nebrs[n] == SEED_COLOR) return SEED_COLOR;
+	if(nebrs[NBR_Bot] == SEED_COLOR) count++;
+	if(nebrs[NBR_Right] == SEED_COLOR) count++;
+	if(nebrs[NBR_Left] == SEED_COLOR) count++;
+	if(nebrs[NBR_Top] == SEED_COLOR) count++;
 
-	return ZERO_COLOR;
+	if(count == 1) return SEED_COLOR;
+	// else if(count > 1) return RESULT_COLOR;
+	else return ZERO_COLOR;
 }
 
 unsigned callback_field(unsigned color, double distance){ return blend(BLACK_COLOR, color, distance); }
 
-unsigned callback_map(double x, double y){ return blend(BLACK_COLOR, WHITE_COLOR, x); } // simple gradient
+unsigned callback_map(double x, double y){ return blend(BLACK_COLOR, WHITE_COLOR, y); } // simple gradient
 
-ColorStep callback_step(const NebrTable* nebrTable, ColorStep prevStep, unsigned short stepCount){ return (ColorStep){ SEED_COLOR, NBR_None }; }
+ColorStep callback_step(const NebrTable* nebrTable, ColorStep prevStep, unsigned short stepCount){return (ColorStep){ SEED_COLOR, NEBR_RANDOM }; }
 
 void genImages() {
-	addColorPoint(&colorPointTable, 0xFFFF0000, 0.25f, 0.75f);
-	addColorPoint(&colorPointTable, 0xFF00FF00, 0.5f, 0.5f);
-	addColorPoint(&colorPointTable, 0xFF0000FF, 0.75f, 0.25f);
-
 	lightSwatch = createSwatch(WHITE_COLOR, 0x25);
 	darkSwatch = createSwatch(BLACK_COLOR, 0x25);
 	seedTable1 = createSeedTable(&lightSwatch);
@@ -65,9 +66,11 @@ void genImages() {
 	iterativeImg = createMultiPatternImg(seededImg, callback8, 5);
 	horzImg = createPatternImg_horz(seededImg2, callback2);
 	vertImg = createPatternImg_vert(seededImg3, callback2);
-	fieldImg = createFieldImg((ImageSize){ 1100, 1200 }, &colorPointTable, callback_field);
-	// fieldImg = createFieldImg_vornoi((ImageSize){ 1100, 1200 }, &colorPointTable);
-	mixImg = createFuseImg(horzImg, seededImg2);
+	fieldImg = createFieldImg((ImageSize){ 1100, 1200 }, &cpTable, callback_field);
+	// fieldImg = createFieldImg_vornoi((ImageSize){ 1100, 1200 }, &cpTable);
+	stepImg = createStepImg(seededImg, &ppTable, callback_step);
+	mixImg = createFuseImg(iterativeImg, mapImg);
+	// mixImg = createFuseImg(horzImg, seededImg2);
 }
 
 void cleanup() {
@@ -82,6 +85,7 @@ void cleanup() {
 	deleteImg(horzImg);
 	deleteImg(vertImg);
 	deleteImg(fieldImg);
+	deleteImg(stepImg);
 	deleteImg(mixImg);
 }
 
@@ -93,12 +97,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	RECT rect;
 
 	switch (message) {
-	case (WM_CREATE): {
-		bmap = createWinBmap(mixImg);
-	}
-	case (WM_PAINT): {
-		drawWinBmap(hwnd, &bmap);
-	}
+	case (WM_CREATE): { bmap = createWinBmap(stepImg); }
+	case (WM_PAINT): { drawWinBmap(hwnd, &bmap); }
 	case (WM_DESTROY): { }
 	default: return DefWindowProc(hwnd, message, wParam, lParam);
 	}
@@ -107,6 +107,13 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 int main(int argc, char** argv) {
 	// Genertation Step
+
+	addPixelPoint(&ppTable, 0.25f, 0.75f);
+	addPixelPoint(&ppTable, 0.5f, 0.5f);
+	addPixelPoint(&ppTable, 0.75f, 0.25f);
+	addColorPoint(&cpTable, 0xFFFF0000, 0.25f, 0.75f);
+	addColorPoint(&cpTable, 0xFF00FF00, 0.5f, 0.5f);
+	addColorPoint(&cpTable, 0xFF0000FF, 0.75f, 0.25f);
 
 	genImages();
 

@@ -6,24 +6,14 @@ Rasteron_Image* sourceImage1; // BMP Image
 Rasteron_Image* sourceImage2; // TIFF Image
 Rasteron_Image* sourceImage3; // PNG Image
 
-void genFullImagePath(const char* name) {
-	strcpy(fullImagePath, IMAGE_DIR);
-	strcat(fullImagePath, "/");
-	strcat(fullImagePath, name);
-#ifdef _WIN32
-    fixPathDashes(&fullImagePath);
-#endif
-    printf("Image Path: %s \n", fullImagePath);
-}
-
 int main(int argc, char** argv) {
     // Reading Step
 
-    genFullImagePath("Logo.bmp");
+    genFullFilePath("Logo.bmp", &fullImagePath);
     sourceImage1 = createRefImg(fullImagePath);
-    genFullImagePath("Logo.tiff");
+    genFullFilePath("Logo.tiff", &fullImagePath);
     sourceImage2 = createRefImg(fullImagePath);
-    genFullImagePath("Logo.png");
+    genFullFilePath("Logo.png", &fullImagePath);
     sourceImage3 = createRefImg(fullImagePath);
     
     // Cleanup Step

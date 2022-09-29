@@ -1,6 +1,6 @@
 #include "Toolbox.h"
 
-void fixPathDashes(char* str){
+void replaceFwdSlash(char* str){
 	unsigned len = strlen(str);
 	for(unsigned l = 0; l < len; l++) if(*(str + l) == '/') *(str + l) = '\\'; // switch the dash type
 }

@@ -1,5 +1,7 @@
 #include "Image.h"
 
+void genFullFilePath(const char* name, char* fullFilePath);
+
 #ifdef _WIN32 
 	#define TIMER_EVENT_ID 1
  

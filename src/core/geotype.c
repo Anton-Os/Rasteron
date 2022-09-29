@@ -1,4 +1,4 @@
-#include "Dimensional.h"
+#include "geotype.h"
 
 // Sprite operations
 

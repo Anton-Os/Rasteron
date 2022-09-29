@@ -7,27 +7,29 @@
 // Global Definitions
 
 FT_Library freetypeLib;
-const char* fontPath = FONTS_DIR;
+const char* fontPath = ASSETS_DIR;
 const char* fontName = "Tw-Cen-MT.ttf";
 // const char* fontName = "New-Tegomin.ttf";
 // const char* fontName = "MajorMonoDisplay.ttf";
-char targetFontPath[1024];
+char fullFontPath[1024];
 Rasteron_FormatText textObj;
 
 Rasteron_Image* fontImage;
 Rasteron_Image* flipImage;
 
-void genFontFilePath() {
-	strcpy(targetFontPath, fontPath);
-	strcat(targetFontPath, "\\");
-	strcat(targetFontPath, fontName);
-	fixPathDashes(&targetFontPath);
+void genImages(){
+	textObj.bkColor = genRandColorVal();
+	textObj.fgColor = genRandColorVal();
+	textObj.fileName = &fullFontPath;
+	textObj.text = "Rasteron is Dope!";
+
+	fontImage = bakeTextReg(&freetypeLib, &textObj);
+	flipImage = createFlipImg(fontImage, FLIP_Clock);
 }
 
 void cleanup(){
 	deleteImg(fontImage);
 	deleteImg(flipImage);
-	cleanupFreeType(&freetypeLib);
 }
 
 BITMAP bmap;
@@ -38,13 +40,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	RECT rect;
 
 	switch (message) {
-	case (WM_CREATE): {
-		// bmap = createWinBmap(fontImage);
-		bmap = createWinBmap(flipImage);
-	}
-	case (WM_PAINT): {
-		drawWinBmap(hwnd, &bmap);
-	}
+	case (WM_CREATE): { bmap = createWinBmap(fontImage); }
+	case (WM_PAINT): { drawWinBmap(hwnd, &bmap); }
 	case (WM_DESTROY): { }
 	default: return DefWindowProc(hwnd, message, wParam, lParam); 
 	}
@@ -52,18 +49,11 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 }
 
 int main(int argc, char** argv) {
-	genFontFilePath();
-
 	// Generation Step
 
 	initFreeType(&freetypeLib);
-	textObj.bkColor = genRandColorVal();
-	textObj.fgColor = genRandColorVal();
-	textObj.fileName = &targetFontPath;
-	textObj.text = "i";
-
-	fontImage = bakeTextReg(&freetypeLib, &textObj);
-	flipImage = createFlipImg(fontImage, FLIP_Clock);
+	genFullFilePath(fontName, &fullFontPath);
+	genImages();
 
 	// Event Loop
 
@@ -73,6 +63,7 @@ int main(int argc, char** argv) {
 	// Cleanup Step
 
 	cleanup();
+	cleanupFreeType(&freetypeLib);
 
 	return 0;
 }

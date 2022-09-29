@@ -1,5 +1,16 @@
 #include "OS_Util.h"
 
+// Path Generation
+
+void genFullFilePath(const char* name, char* fullFilePath){
+	strcpy(fullFilePath, ASSETS_DIR);
+	strcat(fullFilePath, "\\");
+	strcat(fullFilePath, name);
+	replaceFwdSlash(fullFilePath);
+}
+
+// Windows Specific
+
 void createWindow(WNDPROC wndProc, LPCTSTR name){
 	WNDCLASS wndClass = { 0 };
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;

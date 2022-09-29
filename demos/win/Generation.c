@@ -7,22 +7,16 @@ char fullImagePath[1024];
 
 Rasteron_Image* sourceImage;
 Rasteron_Image* greyImage;
+Rasteron_Image* flipImage;
 Rasteron_Image* redImage;
 Rasteron_Image* blueImage;
 Rasteron_Sprite* sprite;
 Rasteron_Heightmap* heightmap;
 
-// TODO: Move this to Toolbox or OS_Util
-void genFullImagePath(const char* name) {
-	strcpy(fullImagePath, IMAGE_DIR);
-	strcat(fullImagePath, "\\");
-	strcat(fullImagePath, name);	
-	fixPathDashes(&fullImagePath);
-}
-
 void genImages(){
 	sourceImage = createRefImg(fullImagePath);
 	greyImage = createGreyImg(sourceImage);
+	flipImage = createFlipImg(sourceImage, FLIP_Upside);
 	redImage = createFltChanImg(sourceImage, CHANNEL_Red);
 	blueImage = createAvgChanImg(sourceImage, CHANNEL_Blue);
 	sprite = createSprite(sourceImage);
@@ -32,6 +26,7 @@ void genImages(){
 void cleanup(){
 	deleteImg(sourceImage);
 	deleteImg(greyImage);
+	deleteImg(flipImage);
 	deleteImg(redImage);
 	deleteImg(blueImage);
 	deleteSprite(sprite);
@@ -46,12 +41,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	RECT rect;
 
 	switch (message) {
-	case (WM_CREATE): {
-		bmap1 = createWinBmap(greyImage);
-	}
-	case (WM_PAINT): {
-		drawWinBmap(hwnd, &bmap1);
-	}
+	case (WM_CREATE): { bmap1 = createWinBmap(flipImage); }
+	case (WM_PAINT): { drawWinBmap(hwnd, &bmap1); }
 	case (WM_CLOSE): {}
 	default: return DefWindowProc(hwnd, message, wParam, lParam);
 	}
@@ -60,10 +51,9 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 
 int main(int argc, char** argv) {
-	genFullImagePath(imageName);
-	
 	// Genertation Step
-
+	
+	genFullFilePath(imageName, &fullImagePath);
 	genImages();
 
 	// Event Loop

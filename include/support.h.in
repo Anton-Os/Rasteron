@@ -1,7 +1,7 @@
 
 #ifndef RASTERON_SUPPORT_H
 
-#define IMAGE_DIR "${IMAGE_DIR}"
+#define ASSETS_DIR "${ASSETS_DIR}"
 #define FONTS_DIR "${FONTS_DIR}"
 
 #define USE_IMG_TIFF // Enable TIFF Support

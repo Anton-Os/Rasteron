@@ -1,5 +1,15 @@
 #include "OS_Util.h"
 
+// Path Generation
+
+void genFullFilePath(const char* name, char* fullFilePath){
+	strcpy(fullFilePath, ASSETS_DIR);
+	strcat(fullFilePath, "/");
+	strcat(fullFilePath, name);
+}
+
+// Unix Specific
+
 void createWindow(Platform_Context* context, const char* name){
 	context->display = XOpenDisplay(NULL);
 	unsigned long whitePix = WhitePixel(context->display, DefaultScreen(context->display));

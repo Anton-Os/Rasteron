@@ -1,11 +1,12 @@
 #ifndef RASTERON_CELLWISE_H
 
 #include "Image.h"
-#include "PixelPoint.h"
+#include "pixelpoint.h"
 
 #define NEBR_COUNT 8
+#define NEBR_RANDOM (rand() % 8)
 
-enum NBR_CellFlags {
+enum NEBR_CellFlag {
 	NBR_Bot_Right = 0,
 	NBR_Bot = 1,
 	NBR_Bot_Left = 2,
@@ -17,13 +18,12 @@ enum NBR_CellFlags {
 	NBR_None = 8
 };
 
-typedef uint8_t nebrCheckFlags; // type used to check the existance of neighbors
+typedef uint8_t nebrFlags; // type to check existance of neighbors
 
 typedef struct {
     const uint32_t* target;
     uint32_t** nebrs;
-    nebrCheckFlags nebrExistFlags;
-    // unsigned short nebrCount;
+    nebrFlags flags; // 1 or 0 depending on if neighbor exists or not
 } NebrTable;
 
 typedef struct {
@@ -57,7 +57,7 @@ Rasteron_Image* createFieldImg_vornoi(ImageSize size, const ColorPointTable* col
 
 typedef struct {
 	unsigned color;
-	enum NBR_CellFlags direction;
+	enum NEBR_CellFlag direction;
 } ColorStep;
 
 typedef ColorStep (*stepCallback)(const NebrTable* nebrTable, ColorStep prevStep, unsigned short stepCount);

@@ -23,14 +23,8 @@ unsigned vertCallback(unsigned right, unsigned left){
     return ZERO_COLOR;
 }
 
-void genFullImagePath(const char* name) {
-	strcpy(fullImagePath, IMAGE_DIR);
-	strcat(fullImagePath, "/");
-	strcat(fullImagePath, name);
-}
-
 int main(int argc, char** argv) {
-    genFullImagePath(imageName);
+    genFullFilePath1(imageName, &fullImagePath);
 
     // Genertation Step
 

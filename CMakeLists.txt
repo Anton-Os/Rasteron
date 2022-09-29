@@ -19,9 +19,10 @@ set(core_src
     src/Toolbox.c
     src/Loader.c
 
+    src/core/geotype.c
+    src/core/pixelpoint.c
+
     src/core/Image.c
-    src/core/PixelPoint.c
-    src/core/Dimensional.c
     src/core/Cellwise.c
     src/core/Noise.c
 )
@@ -66,11 +67,14 @@ set(plugin_src
 )
 
 if(SUPPORT_FONT_BAKING)
+    set(freetype_found TRUE)
     find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     message(STATUS "freetype_lib variable: ${freetype_lib}")
     
     list(APPEND plugin_src src/plugin/Font.c)
+else()
+    set(freetype_found FALSE)
 endif()
 
 # Helper Sources
@@ -88,6 +92,7 @@ add_library(Rasteron STATIC ${core_src} ${plugin_src} ${helper_src}) # library w
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
 target_link_libraries(Rasteron PUBLIC tiff png zlibstatic)
+# if(SUPPORT_FONT_BAKING AND freetype_found EQUAL TRUE)
 if(SUPPORT_FONT_BAKING)
     # target_link_libraries(Rasteron PUBLIC freetype)
     target_include_directories(Rasteron PUBLIC ${freetype_h})
@@ -167,6 +172,5 @@ configure_file(
     @ONLY
 )
 
-set(IMAGE_DIR "${CMAKE_SOURCE_DIR}/assets/image")
-set(FONTS_DIR "${CMAKE_SOURCE_DIR}/assets/fonts")
+set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 configure_file("${CMAKE_SOURCE_DIR}/include/support.h.in" "${CMAKE_SOURCE_DIR}/include/support.h")

@@ -5,13 +5,19 @@
 
 // Global Definitions
 
-GradientLattice gradientTable = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
-// Rasteron_GradientNoise gradientTable = { 12, 12, 0xFFFF00FF, 0xFF00FFFF };
-// Rasteron_GradientNoise gradientTable = { 64, 64, 0xFF000000, 0xFFFFFFFF };
+GradientLattice lattice1 = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
+GradientLattice lattice2 = { 12, 12, 0xFFFF00FF, 0xFF00FFFF };
+GradientLattice lattice3 = { 64, 64, 0xFF000000, 0xFFFFFFFF };
 
 Rasteron_Image* solidImg;
 Rasteron_Image* randNoiseImg;
 Rasteron_Image* randNoiseImg2;
+
+void genImages() {
+	solidImg = createSolidImg((ImageSize){ 1100, 1200 }, 0xFF73e5ff);
+	randNoiseImg = createNoiseImg_white((ImageSize) { 1100, 1200 }, 0xFFFF0000, 0xFF0000FF);
+	randNoiseImg2 = createNoiseImg_gradient((ImageSize) { 1100, 1200 }, lattice1);
+}
 
 void cleanup(){
 	deleteImg(solidImg);
@@ -28,15 +34,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): {
-		// bmap = createWinBmap(randNoiseImg);
-		bmap1 = createWinBmap(randNoiseImg2);
-		// bmap = createWinBmap(seededImg);
-		// bmap = createWinBmap(paletteImg);
-		// bmap = createWinBmap(proxCellImg);
+		bmap1 = createWinBmap(randNoiseImg);
+		bmap2 = createWinBmap(randNoiseImg2);
 	}
-	case (WM_PAINT): {
-		drawWinBmap(hwnd, &bmap1);
-	}
+	case (WM_PAINT): { drawWinBmap(hwnd, &bmap2); }
 	case (WM_CLOSE): {}
 	default: return DefWindowProc(hwnd, message, wParam, lParam);
 	}
@@ -44,13 +45,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 }
 
 int main(int argc, char** argv) {
-	srand(time(NULL));
-	
 	// Genertation Step
 
-	solidImg = createSolidImg((ImageSize){ 1100, 1200 }, 0xFF73e5ff);
-	randNoiseImg = createNoiseImg_white((ImageSize) { 1100, 1200 }, 0xFFFF0000, 0xFF0000FF);
-	randNoiseImg2 = createNoiseImg_gradient((ImageSize) { 1100, 1200 }, gradientTable);
+	seedRandGen();
+	genImages();
 
 	// Event Loop
 
