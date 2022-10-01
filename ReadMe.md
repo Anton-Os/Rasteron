@@ -6,6 +6,7 @@ zlib, libpng, and libtiff are built by the project and freetype is built optiona
 
 Project Structure:
 
-1. **core** contians format support, basic datatypes, and utility functions. Datatypes are defined in Image.h for raster data and geotype.h for sprites, heightmaps, and extensible types. File formats are supported in Loader.h providing support for the aforementioned format types. Utility functions are defined inside Toolbox.h for manipulating image data.
-2. **plugin** contains optional built-in modules. Containers with multiple images are stored within Animation.h while containers with text objects are stored within Font.h that enables font baking. Neighboring cell logic and distance field equations are defined in Cellwise.h while random-value logic and noise equations are defined in Noise.h
-3. **helper** contains helper modules for working with OS-specific functionality, defined in OS_Util.h
+1. **core** contains core items necessary for generating noise images (Noise), cell algorithm images (Cellwise), and others (Image), with support for types including coordinate (pixelpoint) and volumetric (geotype)
+2. **plugin** contains plugin functionality for optional animation support and font format loading
+3. **helper** contains helper files for Windows and Unix specific functionality
+4  **assets** contains fonts, images, and other resources

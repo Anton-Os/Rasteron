@@ -31,14 +31,16 @@ typedef struct {
     const char* text; // text to display
     uint32_t bkColor; // background color
     uint32_t fgColor; // foreground color
-} Rasteron_FormatText;
+} Rasteron_Text;
 
-void initFreeType(FT_Library* library);
-Rasteron_Image* bakeTextRegSize(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale); // regular sized
-Rasteron_Image* bakeTextReg(FT_Library* library, const Rasteron_FormatText* textObj); // regular
-Rasteron_Image* bakeTextInvSize(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale); // inverted sized
-Rasteron_Image* bakeTextInv(FT_Library* library, const Rasteron_FormatText* textObj); // inverted
-void cleanupFreeType(FT_Library* library);
+FT_Library _freetypeLib; // internal freetype library
+
+void initFreeType();
+Rasteron_Image* bakeText_sized(const Rasteron_Text* textObj, unsigned scale); // regular sized
+Rasteron_Image* bakeText(const Rasteron_Text* textObj); // regular
+Rasteron_Image* bakeTextI_sized(const Rasteron_Text* textObj, unsigned scale); // inverted sized
+Rasteron_Image* bakeTextI(const Rasteron_Text* textObj); // inverted
+void cleanupFreeType();
 
 #define RASTERON_FONT_H
 #endif

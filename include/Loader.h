@@ -1,6 +1,6 @@
 #ifndef IMAGE_LOADER_H
 
-#include "support.h"
+#include "support_def.h"
 #include "string.h"
 
 #include "Toolbox.h"

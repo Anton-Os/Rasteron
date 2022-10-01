@@ -34,10 +34,10 @@ unsigned callback2(unsigned target, unsigned nebrs[2]) {
 unsigned callback8(unsigned target, unsigned nebrs[8]) {
 	unsigned count = 0;
 
-	if(nebrs[NBR_Bot] == SEED_COLOR) count++;
-	if(nebrs[NBR_Right] == SEED_COLOR) count++;
-	if(nebrs[NBR_Left] == SEED_COLOR) count++;
-	if(nebrs[NBR_Top] == SEED_COLOR) count++;
+	if(nebrs[NEBR_Bot] == SEED_COLOR) count++;
+	if(nebrs[NEBR_Right] == SEED_COLOR) count++;
+	if(nebrs[NEBR_Left] == SEED_COLOR) count++;
+	if(nebrs[NEBR_Top] == SEED_COLOR) count++;
 
 	if(count == 1) return SEED_COLOR;
 	// else if(count > 1) return RESULT_COLOR;
@@ -68,7 +68,7 @@ void genImages() {
 	vertImg = createPatternImg_vert(seededImg3, callback2);
 	fieldImg = createFieldImg((ImageSize){ 1100, 1200 }, &cpTable, callback_field);
 	// fieldImg = createFieldImg_vornoi((ImageSize){ 1100, 1200 }, &cpTable);
-	stepImg = createStepImg(seededImg, &ppTable, callback_step);
+	stepImg = createStepImg(solidImg, &ppTable, callback_step);
 	mixImg = createFuseImg(iterativeImg, mapImg);
 	// mixImg = createFuseImg(horzImg, seededImg2);
 }

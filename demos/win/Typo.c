@@ -12,7 +12,7 @@ const char* fontName = "Tw-Cen-MT.ttf";
 // const char* fontName = "New-Tegomin.ttf";
 // const char* fontName = "MajorMonoDisplay.ttf";
 char fullFontPath[1024];
-Rasteron_FormatText textObj;
+Rasteron_Text textObj;
 
 Rasteron_Image* fontImage;
 Rasteron_Image* flipImage;
@@ -23,7 +23,7 @@ void genImages(){
 	textObj.fileName = &fullFontPath;
 	textObj.text = "Rasteron is Dope!";
 
-	fontImage = bakeTextReg(&freetypeLib, &textObj);
+	fontImage = bakeText(&textObj);
 	flipImage = createFlipImg(fontImage, FLIP_Clock);
 }
 
@@ -51,7 +51,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 int main(int argc, char** argv) {
 	// Generation Step
 
-	initFreeType(&freetypeLib);
+	// initFreeType(&freetypeLib);
 	genFullFilePath(fontName, &fullFontPath);
 	genImages();
 

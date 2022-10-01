@@ -19,6 +19,8 @@ set(core_src
     src/Toolbox.c
     src/Loader.c
 
+    src/core/seed.c
+    src/core/swatch.c
     src/core/geotype.c
     src/core/pixelpoint.c
 
@@ -173,4 +175,4 @@ configure_file(
 )
 
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
-configure_file("${CMAKE_SOURCE_DIR}/include/support.h.in" "${CMAKE_SOURCE_DIR}/include/support.h")
+configure_file("${CMAKE_SOURCE_DIR}/include/support_def.h.in" "${CMAKE_SOURCE_DIR}/include/support_def.h")

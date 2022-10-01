@@ -7,15 +7,15 @@
 #define NEBR_RANDOM (rand() % 8)
 
 enum NEBR_CellFlag {
-	NBR_Bot_Right = 0,
-	NBR_Bot = 1,
-	NBR_Bot_Left = 2,
-	NBR_Right = 3,
-	NBR_Left = 4,
-	NBR_Top_Right = 5,
-	NBR_Top = 6,
-	NBR_Top_Left = 7,
-	NBR_None = 8
+	NEBR_Bot_Right = 0,
+	NEBR_Bot = 1,
+	NEBR_Bot_Left = 2,
+	NEBR_Right = 3,
+	NEBR_Left = 4,
+	NEBR_Top_Right = 5,
+	NEBR_Top = 6,
+	NEBR_Top_Left = 7,
+	NEBR_None = 8
 };
 
 typedef uint8_t nebrFlags; // type to check existance of neighbors
@@ -53,16 +53,19 @@ Rasteron_Image* createFieldImg_vornoi(ImageSize size, const ColorPointTable* col
 
 // Step Image operations based on a traced path
 
-#define MAX_COLOR_STEPS 64
+#define MAX_COLOR_STEPS 512
 
 typedef struct {
 	unsigned color;
 	enum NEBR_CellFlag direction;
 } ColorStep;
 
+#define ESCAPE_STEP (ColorStep){ ZERO_COLOR, NEBR_None } // escape step to terminate step image generation
+
 typedef ColorStep (*stepCallback)(const NebrTable* nebrTable, ColorStep prevStep, unsigned short stepCount);
 
 Rasteron_Image* createStepImg(const Rasteron_Image* refImage, const PixelPointTable* pixelPointTable, stepCallback callback); // creates image based on tracing paths
+//Rasteron_Image* createFixedStepImg(const Rasteron_Image* refImage, const PixelPointTable* pixelPointTable, stepCallback callback, unsigned short maxSteps); // creates fixed steps image
 
 #define RASTERON_CELLWISE_H
 #endif

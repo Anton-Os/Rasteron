@@ -12,43 +12,43 @@ static nebrFlags checkExistNebrs(uint32_t index, uint32_t width, uint32_t height
     nebrFlags flags = 0xFF;
 
     if(index < width){
-        clearFlagBit(&flags, NBR_Top_Left);
-        clearFlagBit(&flags, NBR_Top);
-        clearFlagBit(&flags, NBR_Top_Right);
+        clearFlagBit(&flags, NEBR_Top_Left);
+        clearFlagBit(&flags, NEBR_Top);
+        clearFlagBit(&flags, NEBR_Top_Right);
     } else if((width * height) - index - 1 < width){
-        clearFlagBit(&flags, NBR_Bot_Left);
-        clearFlagBit(&flags, NBR_Bot);
-        clearFlagBit(&flags, NBR_Bot_Right);
+        clearFlagBit(&flags, NEBR_Bot_Left);
+        clearFlagBit(&flags, NEBR_Bot);
+        clearFlagBit(&flags, NEBR_Bot_Right);
     }
 
 	if(index % width == 0){
-        clearFlagBit(&flags, NBR_Top_Left);
-        clearFlagBit(&flags, NBR_Left);
-        clearFlagBit(&flags, NBR_Bot_Left);
+        clearFlagBit(&flags, NEBR_Top_Left);
+        clearFlagBit(&flags, NEBR_Left);
+        clearFlagBit(&flags, NEBR_Bot_Left);
     } else if(index % width == width - 1){
-        clearFlagBit(&flags, NBR_Top_Right);
-        clearFlagBit(&flags, NBR_Right);
-        clearFlagBit(&flags, NBR_Bot_Right);
+        clearFlagBit(&flags, NEBR_Top_Right);
+        clearFlagBit(&flags, NEBR_Right);
+        clearFlagBit(&flags, NEBR_Bot_Right);
     }
 
     return flags;
 }
 
 static enum NEBR_CellFlag checkMove(nebrFlags flags, enum NEBR_CellFlag direction){
-	if(direction != NBR_None && flags | (1 << direction)) return direction;
-	else return NBR_None;
+	if(direction != NEBR_None && flags | (1 << direction)) return direction;
+	else return NEBR_None;
 }
 
 static unsigned findNeighborOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr){
 	switch (whichNebr) {
-		case NBR_Bot_Right: return offset + width + 1;
-		case NBR_Bot: return offset + width;
-		case NBR_Bot_Left: return offset + width - 1;
-		case NBR_Right: return offset + 1;
-		case NBR_Left: return offset - 1;
-		case NBR_Top_Right: offset - width + 1;
-		case NBR_Top: return offset - width;
-		case NBR_Top_Left: return offset - width - 1;
+		case NEBR_Bot_Right: return offset + width + 1;
+		case NEBR_Bot: return offset + width;
+		case NEBR_Bot_Left: return offset + width - 1;
+		case NEBR_Right: return offset + 1;
+		case NEBR_Left: return offset - 1;
+		case NEBR_Top_Right: offset - width + 1;
+		case NEBR_Top: return offset - width;
+		case NEBR_Top_Left: return offset - width - 1;
 		default: return offset;
 	}
 }
@@ -83,14 +83,14 @@ NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 			if (currentTable->flags & (1 << n)) {
 				// unsigned* nebr = *(currentTable->nebrs + i);
 				switch (n) {
-				case NBR_Bot_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Bot_Right); break;
-				case NBR_Bot: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Bot); break;
-				case NBR_Bot_Left: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Bot_Left); break;
-				case NBR_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Right); break;
-				case NBR_Left : *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Left); break;
-				case NBR_Top_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Top_Right); break;
-				case NBR_Top: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Top); break;
-				case NBR_Top_Left: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NBR_Top_Left); break;
+				case NEBR_Bot_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Bot_Right); break;
+				case NEBR_Bot: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Bot); break;
+				case NEBR_Bot_Left: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Bot_Left); break;
+				case NEBR_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Right); break;
+				case NEBR_Left : *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Left); break;
+				case NEBR_Top_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Top_Right); break;
+				case NEBR_Top: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Top); break;
+				case NEBR_Top_Left: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Top_Left); break;
 				}
 				i++;
 			}
@@ -129,28 +129,28 @@ Rasteron_Image* createPatternImg(const Rasteron_Image* refImage, nebrCallback8 c
 		unsigned br, b, bl, r, l, tr, t, tl;
 
 		unsigned short i = 0; // index to keep track of neighbor
-		if (currentTable->flags & (1 << NBR_Bot_Right)) {
+		if (currentTable->flags & (1 << NEBR_Bot_Right)) {
 			br = *(*(currentTable->nebrs + i)); i++;
 		} else br = ZERO_COLOR;
-		if (currentTable->flags & (1 << NBR_Bot)) {
+		if (currentTable->flags & (1 << NEBR_Bot)) {
 			b = *(*(currentTable->nebrs + i)); i++;
 		} else b = ZERO_COLOR;
-		if (currentTable->flags & (1 << NBR_Bot_Left)) {
+		if (currentTable->flags & (1 << NEBR_Bot_Left)) {
 			bl = *(*(currentTable->nebrs + i)); i++;
 		} else bl = ZERO_COLOR;
-		if (currentTable->flags & (1 << NBR_Right)) {
+		if (currentTable->flags & (1 << NEBR_Right)) {
 			r = *(*(currentTable->nebrs + i)); i++;
 		} else r = ZERO_COLOR;
-		if (currentTable->flags & (1 << NBR_Left)) {
+		if (currentTable->flags & (1 << NEBR_Left)) {
 			l = *(*(currentTable->nebrs + i)); i++;
 		} else l = ZERO_COLOR;
-		if (currentTable->flags & (1 << NBR_Top_Right)) {
+		if (currentTable->flags & (1 << NEBR_Top_Right)) {
 			tr = *(*(currentTable->nebrs + i)); i++;
 		} else tr = ZERO_COLOR;
-		if (currentTable->flags & (1 << NBR_Top)) {
+		if (currentTable->flags & (1 << NEBR_Top)) {
 			t = *(*(currentTable->nebrs + i)); i++;
 		} else t = ZERO_COLOR;
-		if (currentTable->flags & (1 << NBR_Top_Left)) {
+		if (currentTable->flags & (1 << NEBR_Top_Left)) {
 			tl = *(*(currentTable->nebrs + i)); i++;
 		} else tl = ZERO_COLOR;
 
@@ -200,8 +200,8 @@ Rasteron_Image* createPatternImg_horz(const Rasteron_Image* refImage, nebrCallba
 			unsigned p = (r * stagingImg->width) + c;
 
 			unsigned target = *(stagingImg->data + p);
-			unsigned right = (c < stagingImg->width - 1) ? *findNeighbor(stagingImg, p, NBR_Right) : ZERO_COLOR;
-			unsigned left = (c > 0) ? *findNeighbor(stagingImg, p, NBR_Left) : ZERO_COLOR;
+			unsigned right = (c < stagingImg->width - 1) ? *findNeighbor(stagingImg, p, NEBR_Right) : ZERO_COLOR;
+			unsigned left = (c > 0) ? *findNeighbor(stagingImg, p, NEBR_Left) : ZERO_COLOR;
 
 			unsigned nebrs[] = { right, left };
 
@@ -233,8 +233,8 @@ Rasteron_Image* createPatternImg_vert(const Rasteron_Image* refImage, nebrCallba
 			unsigned p = (r * stagingImg->width) + c;
 
 			unsigned target = *(stagingImg->data + p);
-			unsigned bot = (r < refImage->height - 1)? *findNeighbor(stagingImg, p, NBR_Bot) : ZERO_COLOR;
-			unsigned top = (r > 0) ? *findNeighbor(stagingImg, p, NBR_Top) : ZERO_COLOR;
+			unsigned bot = (r < refImage->height - 1)? *findNeighbor(stagingImg, p, NEBR_Bot) : ZERO_COLOR;
+			unsigned top = (r > 0) ? *findNeighbor(stagingImg, p, NEBR_Top) : ZERO_COLOR;
 
 			unsigned nebrs[] = { bot, top };
 
@@ -304,9 +304,10 @@ Rasteron_Image* createStepImg(const Rasteron_Image* refImage, const PixelPointTa
 	for(unsigned t = 0; t < pixelPointTable->pointCount; t++){
 		unsigned offset = getPixOffset(pixelPointTable->points[t], stepImage);
 		const NebrTable* currentTable = nebrTables->tables + offset;
-		ColorStep colorStep = { *(stepImage->data + offset), NBR_None };
+		ColorStep colorStep = { *(stepImage->data + offset), NEBR_None };
 
-		for(unsigned s = 0; s < MAX_COLOR_STEPS && colorStep.color != ZERO_COLOR; s++){
+		// for(unsigned s = 0; s < MAX_COLOR_STEPS && (colorStep.color != ZERO_COLOR && colorStep.direction != NEBR_None); s++){
+		for(unsigned s = 0; s < MAX_COLOR_STEPS; s++){
 			colorStep = callback(currentTable, colorStep, s);
 			offset = findNeighborOffset(refImage->width, offset, checkMove(currentTable->flags, colorStep.direction));
 			currentTable = nebrTables->tables + offset;

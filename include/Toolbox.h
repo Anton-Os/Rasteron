@@ -1,6 +1,6 @@
 #ifndef RASTERON_TOOLBOX_H
 
-#include "support.h"
+#include "support_def.h"
 
 #include <math.h>
 #include <string.h>

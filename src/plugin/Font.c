@@ -1,5 +1,7 @@
 #include "Font.h"
 
+FT_Library _freetypeLib = NULL;
+
 // Internal Functions
 
 static void getImageTextParams(Rasteron_Image* refImage, Rasteron_TextSizeProperties* sizeParams, uint32_t color, int isInverted) {
@@ -45,9 +47,11 @@ static void drawGlyph(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t color, 
 	else return; // skips space
 }
 
-static Rasteron_Image* bakeTextCustom(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale, int isInverted){
-    FT_Face face;
-    int error = FT_New_Face(*library, textObj->fileName, 0, &face);
+static Rasteron_Image* bakeTextCustom(const Rasteron_Text* textObj, unsigned scale, int isInverted){
+    if(_freetypeLib == NULL){ initFreeType(); }
+	
+	FT_Face face;
+    int error = FT_New_Face(_freetypeLib, textObj->fileName, 0, &face);
 
 	int bboxWidth = face->bbox.xMax - face->bbox.xMin;
 	int bboxHeight = face->bbox.yMax - face->bbox.yMin;
@@ -90,27 +94,27 @@ static Rasteron_Image* bakeTextCustom(FT_Library* library, const Rasteron_Format
 
 // Library Functions
 
-void initFreeType(FT_Library* library){
-    int error = FT_Init_FreeType(library);
+void initFreeType(){
+    int error = FT_Init_FreeType(&_freetypeLib);
     if(error) perror("Error occured initializing freetype library!");
 }
 
-Rasteron_Image* bakeTextRegSize(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
-	return bakeTextCustom(library, textObj, scale, FONT_REGULAR);
+Rasteron_Image* bakeText_sized(const Rasteron_Text* textObj, unsigned scale){
+	return bakeTextCustom(textObj, scale, FONT_REGULAR);
 }
 
-Rasteron_Image* bakeTextReg(FT_Library* library, const Rasteron_FormatText* textObj){
-	return bakeTextRegSize(library, textObj, FONT_SIZE_MED);
+Rasteron_Image* bakeText(const Rasteron_Text* textObj){
+	return bakeText_sized(textObj, FONT_SIZE_MED);
 }
 
-Rasteron_Image* bakeTextInvSize(FT_Library* library, const Rasteron_FormatText* textObj, unsigned scale){
-	return bakeTextCustom(library, textObj, scale, FONT_INVERTED);
+Rasteron_Image* bakeTextI_sized(const Rasteron_Text* textObj, unsigned scale){
+	return bakeTextCustom(textObj, scale, FONT_INVERTED);
 }
 
-Rasteron_Image* bakeTextInv(FT_Library* library, const Rasteron_FormatText* textObj){
-	return bakeTextInvSize(library, textObj, FONT_SIZE_MED);
+Rasteron_Image* bakeTextI(const Rasteron_Text* textObj){
+	return bakeTextI_sized(textObj, FONT_SIZE_MED);
 }
 
-void cleanupFreeType(FT_Library* library){
-    FT_Done_FreeType(*library);
+void cleanupFreeType(){
+    FT_Done_FreeType(_freetypeLib);
 }
