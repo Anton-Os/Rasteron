@@ -5,10 +5,10 @@ extern "C"{
 #endif
 
 // Core
-#include "pixelpoint.h"
+#include "pointtype.h"
+#include "geotype.h"
 
 #include "Image.h"
-#include "geotype.h"
 #include "Cellwise.h"
 #include "Noise.h"
 

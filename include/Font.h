@@ -33,7 +33,7 @@ typedef struct {
     uint32_t fgColor; // foreground color
 } Rasteron_Text;
 
-FT_Library _freetypeLib; // internal freetype library
+static FT_Library _freetypeLib; // internal freetype library
 
 void initFreeType();
 Rasteron_Image* bakeText_sized(const Rasteron_Text* textObj, unsigned scale); // regular sized

@@ -15,10 +15,9 @@ Rasteron_Heightmap* heightmap;
 
 void genImages(){
 	sourceImage = createRefImg(fullImagePath);
-	greyImage = createGreyImg(sourceImage);
-	flipImage = createFlipImg(sourceImage, FLIP_Upside);
-	redImage = createFltChanImg(sourceImage, CHANNEL_Red);
-	blueImage = createAvgChanImg(sourceImage, CHANNEL_Blue);
+	greyImage = createGreyscaleImg(sourceImage);
+	redImage = createFilterImg(sourceImage, CHANNEL_Red);
+	blueImage = createChannelImg(sourceImage, CHANNEL_Blue);
 	sprite = createSprite(sourceImage);
 	heightmap = createHeightmap(sourceImage);
 }

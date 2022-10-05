@@ -53,7 +53,7 @@ Rasteron_Image* createSolidImg(ImageSize size, uint32_t color){
 	return solidImage;
 }
 
-Rasteron_Image* createCopyImg(Rasteron_Image* refImage){
+Rasteron_Image* createCopyImg(const Rasteron_Image* refImage){
 	if (refImage == NULL) {
 		perror("Cannot create copy image! Null pointer provided as reference image!");
 		return NULL;
@@ -67,6 +67,23 @@ Rasteron_Image* createCopyImg(Rasteron_Image* refImage){
 	return copyImage;
 }
 
+Rasteron_Image* createMirrorImg(const Rasteron_Image* refImage){
+	if (refImage == NULL) {
+		perror("Cannot create mirror image! Null pointer provided as reference image!");
+		return NULL;
+	}
+
+	Rasteron_Image* mirrorImage = createCopyImg(refImage);
+
+	for (unsigned r = 0; r < refImage->height; r++) // Mirror Function
+		for (unsigned c = 0; c < refImage->width; c++) {
+			*(mirrorImage->data + (r * refImage->width) + c) = *(refImage->data + ((r + 1) * refImage->width) - c - 1);
+			*(mirrorImage->data + ((r + 1) * refImage->width) - c - 1) = *(refImage->data + (r * refImage->width) + c); // mirror right pixel
+		}
+	
+	return mirrorImage;
+}
+
 Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type flip){
 	if (refImage == NULL) {
 		perror("Cannot create flip image! Null pointer provided as reference image!");
@@ -78,14 +95,14 @@ Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type fli
 		flipImage = allocNewImg("flip", refImage->height, refImage->width); // parameters match source
 		for(unsigned p = 0; p < refImage->height * refImage->width; p++)
 			*(flipImage->data + (refImage->height * refImage->width) - p - 1) = *(refImage->data + p); // copies pixels in reverse
-	} else {
+	} else { // TODO: Fix Orientation
 		flipImage = allocNewImg("flip", refImage->width, refImage->height); // parameters inverse of source
 		unsigned offset = 0;
 
 		for(unsigned w = 0; w < refImage->width; w++){
 			unsigned match = (flip == FLIP_Clock) 
 				? (refImage->width * refImage->height) + w
-				: refImage->width - w;
+				: refImage->width - w - 1;
 	
 			for(unsigned h = 0; h < refImage->height; h++){
 				match = (flip == FLIP_Clock) ? match - refImage->width : match + refImage->width;
@@ -107,7 +124,7 @@ void deleteImg(Rasteron_Image* image) {
 
 // Filtering operations
 
-Rasteron_Image* createGreyImg(const Rasteron_Image* refImage) {
+Rasteron_Image* createGreyscaleImg(const Rasteron_Image* refImage) {
 	if (refImage == NULL) {
 		perror("Cannot create grey image! Null pointer provided as reference image!");
 		return NULL;
@@ -121,7 +138,7 @@ Rasteron_Image* createGreyImg(const Rasteron_Image* refImage) {
 	return greyImage;
 }
 
-Rasteron_Image* createFltChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+Rasteron_Image* createFilterImg(const Rasteron_Image* refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
 		perror("Cannot create filter image! Null pointer provided as reference image!");
 		return NULL;
@@ -153,14 +170,14 @@ Rasteron_Image* createFltChanImg(const Rasteron_Image* refImage, CHANNEL_Type ch
 	return channelImage;
 }
 
-Rasteron_Image* createAvgChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+Rasteron_Image* createChannelImg(const Rasteron_Image* refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
 		perror("Cannot create averaged image! Null pointer provided as reference image!");
 		return NULL;
 	}
 
-	Rasteron_Image* greyImage = createGreyImg(refImage); // greyscale image used as reference
-	Rasteron_Image* channelImage = createFltChanImg(greyImage, channel);
+	Rasteron_Image* greyImage = createGreyscaleImg(refImage); // greyscale image used as reference
+	Rasteron_Image* channelImage = createFilterImg(greyImage, channel);
 
 	switch(channel){ // renaming
 		case CHANNEL_Red: channelImage->name = "average-red"; break;
@@ -232,7 +249,7 @@ Rasteron_Image* createSeedWeightImg(const Rasteron_Image* refImage, const Raster
 	const float defaultSeedWeight = 1.0f / (seedTable->seedCount + 1); // leaves less covered as seed count increases
 
 	double chance = 0.0f;
-	double seedRanges[MAX_COLOR_SEEDS][2];
+	double seedRanges[MAX_SEEDS][2];
 	double seedWeightTotal = 0.0f;
 
 	// calculating weights

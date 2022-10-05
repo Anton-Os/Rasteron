@@ -19,10 +19,9 @@ set(core_src
     src/Toolbox.c
     src/Loader.c
 
-    src/core/seed.c
-    src/core/swatch.c
+    src/core/mixtype.c
     src/core/geotype.c
-    src/core/pixelpoint.c
+    src/core/pointtype.c
 
     src/core/Image.c
     src/core/Cellwise.c

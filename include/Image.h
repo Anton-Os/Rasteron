@@ -1,11 +1,7 @@
 #ifndef RASTERON_IMAGE_H
 
 #include "Loader.h"
-
-// #include "seed.h"
-#include "swatch.h"
-
-// Basic Image operations
+#include "mixtype.h"
 
 enum FLIP_Type { FLIP_Clock, FLIP_CounterClock, FLIP_Upside };
 
@@ -21,20 +17,25 @@ typedef struct {
     uint32_t* data;
 } Rasteron_Image;
 
+typedef const Rasteron_Image *const ref_image_t; // Replace function parameters with this type
+
+// Basic Image operations
+
 Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width); // Image allocation helper
 
 Rasteron_Image* createRefImg(const char* fileName); // creates an image from a file
 Rasteron_Image* createSolidImg(ImageSize size, uint32_t solidColor); // creates a solid color image
-Rasteron_Image* createCopyImg(Rasteron_Image* refImage); // creates copy of reference image
-Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type flip); // creates flipped version of reference image
+Rasteron_Image* createCopyImg(Rasteron_Image* refImage); // creates copy of image
+Rasteron_Image* createMirrorImg(const Rasteron_Image* refImage); // creates mirror version of image
+Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type flip); // creates flipped version of image
 
 void deleteImg(Rasteron_Image* image);
 
 // Filtering Image operations
 
-Rasteron_Image* createGreyImg(const Rasteron_Image* refImage); // creates greyscale version of reference image
-Rasteron_Image* createFltChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-filtered version of reference image
-Rasteron_Image* createAvgChanImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates channel-averaged version of reference image
+Rasteron_Image* createGreyscaleImg(const Rasteron_Image* refImage); // creates greyscale version of image
+Rasteron_Image* createFilterImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates isolated filter version of image
+Rasteron_Image* createChannelImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates averaged channel version of image
 
 // Combination and Seeding Image operations
 

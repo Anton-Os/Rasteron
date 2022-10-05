@@ -1,4 +1,4 @@
-#include "PixelPoint.h"
+#include "pointtype.h"
 
 void addPixelPoint(PixelPointTable* table, double xFrac, double yFrac) {
 	table->points[table->pointCount].xFrac = xFrac;
