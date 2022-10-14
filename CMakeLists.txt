@@ -19,9 +19,9 @@ set(core_src
     src/Toolbox.c
     src/Loader.c
 
-    src/core/mixtype.c
-    src/core/geotype.c
-    src/core/pointtype.c
+    src/core/mix_type.c
+    src/core/geo_type.c
+    src/core/point_type.c
 
     src/core/Image.c
     src/core/Cellwise.c
@@ -30,12 +30,12 @@ set(core_src
 
 list(APPEND core_src src/ImgBmp.c) # BMP does not require dependencies
 
-find_package(zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
-if(zlib_FOUND)
+find_package(Zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
+if(Zlib_FOUND)
     message(STATUS "Zlib located")
 else()
     message(STATUS "Zlib not located, may cause issues")
-endif(zlib_FOUND)
+endif(Zlib_FOUND)
 
 find_package(libpng PATHS ${EXTERNAL_INSTALL_DIR}/lib)
 if(libpng_FOUND)
@@ -63,14 +63,16 @@ endif(libtiff_FOUND)
 
 # Plugin Sources
 
-set(plugin_src
-    src/plugin/Animation.c
-)
+set(SUPPORT_ANIMATION true CACHE BOOL "Include font baking module" FORCE)
+if(SUPPORT_ANIMATION)
+    list(APPEND plugin_src src/plugin/Animation.c)
+endif()
 
 if(SUPPORT_FONT_BAKING)
     set(freetype_found TRUE)
     find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
+    message(STATUS "freetype_h variable: ${freetype_h}")
     message(STATUS "freetype_lib variable: ${freetype_lib}")
     
     list(APPEND plugin_src src/plugin/Font.c)
@@ -92,7 +94,9 @@ endif()
 add_library(Rasteron STATIC ${core_src} ${plugin_src} ${helper_src}) # library with examples
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
+
 target_link_libraries(Rasteron PUBLIC tiff png zlibstatic)
+
 # if(SUPPORT_FONT_BAKING AND freetype_found EQUAL TRUE)
 if(SUPPORT_FONT_BAKING)
     # target_link_libraries(Rasteron PUBLIC freetype)
@@ -140,13 +144,13 @@ if(WIN32) # Large Demos in Win32
     target_include_directories(Sequence PUBLIC include)
     target_link_libraries(Sequence Rasteron)
 elseif(UNIX AND NOT APPLE) # Small Demos in X11
-    add_executable(OpenSesame demos/unix/OpenSesame.c)
-    target_include_directories(OpenSesame PUBLIC include)
-    target_link_libraries(OpenSesame Rasteron)
+    add_executable(Generation demos/unix/Generation.c)
+    target_include_directories(Generation PUBLIC include)
+    target_link_libraries(Generation Rasteron)
 
-    add_executable(Experiment demos/unix/Experiment.c)
-    target_include_directories(Experiment PUBLIC include)
-    target_link_libraries(Experiment Rasteron)
+    add_executable(Typo demos/unix/Typo.c)
+    target_include_directories(Typo PUBLIC include)
+    target_link_libraries(Typo Rasteron)
 endif()
 
 # Install Procedures
@@ -161,6 +165,9 @@ install(TARGETS Rasteron
 
 if(UNIX)
     add_dependencies(Rasteron zlib libpng libtiff)
+    if(SUPPORT_FONT_BAKING)
+        add_dependencies(Rasteron FreeType)
+    endif()
 endif()
 
 file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)

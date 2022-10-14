@@ -4,10 +4,6 @@
 #include FT_FREETYPE_H
 
 #include "Image.h"
-#define FONT_RESOLUTION 3000
-#define FONT_PEN_OFFSET 200 // default starting pen offset
-#define FONT_CANVAS_WIDTH 10000 // large enough to handle any text
-#define FONT_CANVAS_HEIGHT 1000
 
 // custom sizes sizes
 #define FONT_SIZE_SMALL 100
@@ -18,6 +14,12 @@
 
 #define FONT_REGULAR 0
 #define FONT_INVERTED 1
+
+// internal macros
+#define FONT_RESOLUTION 3000
+#define FONT_PEN_OFFSET 200 // default starting pen offset
+#define FONT_CANVAS_WIDTH 10000 // large enough to handle any text
+#define FONT_CANVAS_HEIGHT 1000
 
 typedef struct {
     unsigned xMin;

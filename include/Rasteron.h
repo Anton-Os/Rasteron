@@ -5,8 +5,8 @@ extern "C"{
 #endif
 
 // Core
-#include "pointtype.h"
-#include "geotype.h"
+#include "point_type.h"
+#include "geo_type.h"
 
 #include "Image.h"
 #include "Cellwise.h"

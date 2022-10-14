@@ -53,7 +53,7 @@ Rasteron_Image* createSolidImg(ImageSize size, uint32_t color){
 	return solidImage;
 }
 
-Rasteron_Image* createCopyImg(const Rasteron_Image* refImage){
+Rasteron_Image* createCopyImg(ref_image_t refImage){
 	if (refImage == NULL) {
 		perror("Cannot create copy image! Null pointer provided as reference image!");
 		return NULL;
@@ -67,7 +67,7 @@ Rasteron_Image* createCopyImg(const Rasteron_Image* refImage){
 	return copyImage;
 }
 
-Rasteron_Image* createMirrorImg(const Rasteron_Image* refImage){
+Rasteron_Image* createMirrorImg(ref_image_t refImage){
 	if (refImage == NULL) {
 		perror("Cannot create mirror image! Null pointer provided as reference image!");
 		return NULL;
@@ -84,7 +84,7 @@ Rasteron_Image* createMirrorImg(const Rasteron_Image* refImage){
 	return mirrorImage;
 }
 
-Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type flip){
+Rasteron_Image* createFlipImg(ref_image_t refImage, enum FLIP_Type flip){
 	if (refImage == NULL) {
 		perror("Cannot create flip image! Null pointer provided as reference image!");
 		return NULL;
@@ -124,7 +124,7 @@ void deleteImg(Rasteron_Image* image) {
 
 // Filtering operations
 
-Rasteron_Image* createGreyscaleImg(const Rasteron_Image* refImage) {
+Rasteron_Image* createGreyscaleImg(ref_image_t refImage) {
 	if (refImage == NULL) {
 		perror("Cannot create grey image! Null pointer provided as reference image!");
 		return NULL;
@@ -138,7 +138,7 @@ Rasteron_Image* createGreyscaleImg(const Rasteron_Image* refImage) {
 	return greyImage;
 }
 
-Rasteron_Image* createFilterImg(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+Rasteron_Image* createFilterImg(ref_image_t refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
 		perror("Cannot create filter image! Null pointer provided as reference image!");
 		return NULL;
@@ -170,7 +170,7 @@ Rasteron_Image* createFilterImg(const Rasteron_Image* refImage, CHANNEL_Type cha
 	return channelImage;
 }
 
-Rasteron_Image* createChannelImg(const Rasteron_Image* refImage, CHANNEL_Type channel) {
+Rasteron_Image* createChannelImg(ref_image_t refImage, CHANNEL_Type channel) {
 	if (refImage == NULL) {
 		perror("Cannot create averaged image! Null pointer provided as reference image!");
 		return NULL;
@@ -191,7 +191,7 @@ Rasteron_Image* createChannelImg(const Rasteron_Image* refImage, CHANNEL_Type ch
 
 // Combination and Seeding operations
 
-Rasteron_Image* createBlendImg(const Rasteron_Image* image1, const Rasteron_Image* image2){
+Rasteron_Image* createBlendImg(ref_image_t image1, ref_image_t image2){
 	if (image1 == NULL || image2 == NULL || image1->height != image2->height || image1->width != image2->width) {
 		perror("Cannot create seeded image! Invalid parameters provided!");
 		return NULL;
@@ -204,7 +204,7 @@ Rasteron_Image* createBlendImg(const Rasteron_Image* image1, const Rasteron_Imag
 	return blendImage;
 }
 
-Rasteron_Image* createFuseImg(const Rasteron_Image* image1, const Rasteron_Image* image2){
+Rasteron_Image* createFuseImg(ref_image_t image1, ref_image_t image2){
 	if (image1 == NULL || image2 == NULL || image1->height != image2->height || image1->width != image2->width) {
 		perror("Cannot create seeded image! Invalid parameters provided!");
 		return NULL;
@@ -217,7 +217,7 @@ Rasteron_Image* createFuseImg(const Rasteron_Image* image1, const Rasteron_Image
 	return fuseImage;
 }
 
-Rasteron_Image* createSeedRawImg(const Rasteron_Image* refImage, uint32_t color, double prob){
+Rasteron_Image* createSeedRawImg(ref_image_t refImage, uint32_t color, double prob){
 	if (refImage == NULL) {
 		perror("Cannot create seeded image! Null pointer provided as reference image!");
 		return NULL;
@@ -239,7 +239,7 @@ Rasteron_Image* createSeedRawImg(const Rasteron_Image* refImage, uint32_t color,
 	return seedImage;
 }
 
-Rasteron_Image* createSeedWeightImg(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable){
+Rasteron_Image* createSeedWeightImg(ref_image_t refImage, const Rasteron_SeedTable* seedTable){
 	if (refImage == NULL) {
 		perror("Cannot create palette image! Null pointer provided as reference image!");
 		return NULL;

@@ -1,4 +1,4 @@
-#include "geotype.h"
+#include "geo_type.h"
 
 // Sprite operations
 
@@ -14,13 +14,10 @@ Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
 
 	sprite->bounds.topRight_point[0] = refImage->width / 2.0f / SPRITE_DIM_RATIO ;
 	sprite->bounds.topRight_point[1] = refImage->height / 2.0f / SPRITE_DIM_RATIO ;
-
 	sprite->bounds.topLeft_point[0] = -1.0 * (refImage->width / 2.0f / SPRITE_DIM_RATIO );
 	sprite->bounds.topLeft_point[1] = refImage->height / 2.0f / SPRITE_DIM_RATIO ;
-
 	sprite->bounds.botRight_point[0] = refImage->width / 2.0f / SPRITE_DIM_RATIO ;
 	sprite->bounds.botRight_point[1] = -1.0 * (refImage->height / 2.0f / SPRITE_DIM_RATIO );
-
 	sprite->bounds.botLeft_point[0] = -1.0 * (refImage->width / 2.0f / SPRITE_DIM_RATIO );
 	sprite->bounds.botLeft_point[1] = -1.0 * (refImage->height / 2.0f / SPRITE_DIM_RATIO );
 
@@ -28,6 +25,7 @@ Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
 }
 
 void deleteSprite(Rasteron_Sprite* sprite){
+	if(sprite->image != NULL) deleteImg(sprite->image);
 	if(sprite != NULL) free(sprite);
 	sprite = NULL;
 }
@@ -53,7 +51,7 @@ Rasteron_Heightmap* allocNewHeightmap(uint32_t height, uint32_t width, double mi
 	return heightmap;
 }
 
-Rasteron_Heightmap* createHeightmap(const Rasteron_Image* refImage){
+Rasteron_Heightmap* createHeightmap(ref_image_t refImage){
     if (refImage == NULL) {
 		perror("Cannot create heightmap! Null pointer provided!");
 		return NULL;

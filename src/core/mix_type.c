@@ -1,4 +1,4 @@
-#include "mixtype.h"
+#include "mix_type.h"
 
 // Seed operations
 

@@ -27,8 +27,8 @@ typedef struct {
 void addPixelPoint(PixelPointTable* table, double xFrac, double yFrac);
 void addColorPoint(ColorPointTable* table, unsigned color, double xFrac, double yFrac);
 
-unsigned getPixOffset(PixelPoint pixPos, const Rasteron_Image* refImage); // gets pixel offset from image corner
-unsigned getPixCursorOffset(PixelPoint pixPos, const Rasteron_Image* refImage); // gets pixel offset from cursor window position
+unsigned getPixOffset(PixelPoint pixPos, ref_image_t refImage); // gets pixel offset from image corner
+unsigned getPixCursorOffset(PixelPoint pixPos, ref_image_t refImage); // gets pixel offset from cursor window position
 
 #define RASTERON_PIXELPOINT_H
 #endif

@@ -1,4 +1,4 @@
-#include "pointtype.h"
+#include "point_type.h"
 
 void addPixelPoint(PixelPointTable* table, double xFrac, double yFrac) {
 	table->points[table->pointCount].xFrac = xFrac;
@@ -13,7 +13,7 @@ void addColorPoint(ColorPointTable* table, unsigned color, double xFrac, double 
 	table->pointCount++;
 }
 
-unsigned getPixOffset(PixelPoint pixPoint, const Rasteron_Image* refImage){
+unsigned getPixOffset(PixelPoint pixPoint, ref_image_t refImage){
 	unsigned xOffset; // clamping X
 	if(pixPoint.xFrac <= 0.0) xOffset = 0;
 	else if(pixPoint.xFrac >= 1.0) xOffset = refImage->width - 1;
@@ -28,7 +28,7 @@ unsigned getPixOffset(PixelPoint pixPoint, const Rasteron_Image* refImage){
 	return pixIndex;
 }
 
-unsigned getPixCursorOffset(PixelPoint pixPoint, const Rasteron_Image* refImage){
+unsigned getPixCursorOffset(PixelPoint pixPoint, ref_image_t refImage){
 	double xFrac; // clamping X
 	if(pixPoint.xFrac <= -1.0) xFrac = -1.0;
 	else if(pixPoint.xFrac >= 1.0) xFrac = 1.0;

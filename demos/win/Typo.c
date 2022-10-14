@@ -6,11 +6,7 @@
 
 // Global Definitions
 
-FT_Library freetypeLib;
-const char* fontPath = ASSETS_DIR;
 const char* fontName = "Tw-Cen-MT.ttf";
-// const char* fontName = "New-Tegomin.ttf";
-// const char* fontName = "MajorMonoDisplay.ttf";
 char fullFontPath[1024];
 Rasteron_Text textObj;
 
@@ -51,7 +47,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 int main(int argc, char** argv) {
 	// Generation Step
 
-	// initFreeType(&freetypeLib);
+	srand(time(NULL));
 	genFullFilePath(fontName, &fullFontPath);
 	genImages();
 
@@ -63,7 +59,6 @@ int main(int argc, char** argv) {
 	// Cleanup Step
 
 	cleanup();
-	cleanupFreeType(&freetypeLib);
 
 	return 0;
 }

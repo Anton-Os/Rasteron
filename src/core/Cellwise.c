@@ -58,7 +58,7 @@ static uint32_t* findNeighbor(Rasteron_Image* refImage, uint32_t index, enum NEB
 	return target;
 }
 
-NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
+NebrTable_List* genNebrTables(ref_image_t refImage){
 	NebrTable_List* list = (NebrTable_List*)malloc(sizeof(NebrTable_List));
 	list->count = refImage->width * refImage->height;
 	list->tables = (NebrTable*)malloc(refImage->width * refImage->height * sizeof(NebrTable));
@@ -100,6 +100,20 @@ NebrTable_List* genNebrTables(const Rasteron_Image* refImage){
 	return list; // Return the structure that we generated
 }
 
+unsigned getAvgNebrColor(const NebrTable_List* nebrTables, unsigned offset){
+	unsigned nebrCount = 0;
+	for(unsigned n = 0; n < NEBR_COUNT; n++) 
+		if((nebrTables->tables + offset)->flags | (1 << n)) nebrCount++;
+
+	unsigned long avgColor = 0;
+	for(unsigned n = 0; n < nebrCount; n++)
+		avgColor += *(*((nebrTables->tables + offset)->nebrs + n));
+
+	printf("Neighbor count is %d", nebrCount); // testing
+
+	return (unsigned)(avgColor / nebrCount);
+}
+
 void delNebrTables(NebrTable_List* nebrTables) {
 	for (NebrTable* currentTable = nebrTables->tables;
 		currentTable != nebrTables->tables + nebrTables->count; 
@@ -114,7 +128,7 @@ void delNebrTables(NebrTable_List* nebrTables) {
 
 // Pattern operations
 
-Rasteron_Image* createPatternImg(const Rasteron_Image* refImage, nebrCallback8 callback){
+Rasteron_Image* createPatternImg(ref_image_t refImage, nebrCallback8 callback){
 	if(refImage == NULL){
 		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
@@ -165,7 +179,7 @@ Rasteron_Image* createPatternImg(const Rasteron_Image* refImage, nebrCallback8 c
 	return patternImg;
 }
 
-Rasteron_Image* createMultiPatternImg(const Rasteron_Image* refImage, nebrCallback8 callback, unsigned short iter) {
+Rasteron_Image* createMultiPatternImg(ref_image_t refImage, nebrCallback8 callback, unsigned short iter) {
 	Rasteron_Image* patternImage = allocNewImg("staging", refImage->height, refImage->width);
 	for (unsigned p = 0; p < refImage->width * refImage->height; p++)
 		*(patternImage->data + p) = *(refImage->data + p); // copy pixels from original image
@@ -184,7 +198,7 @@ Rasteron_Image* createMultiPatternImg(const Rasteron_Image* refImage, nebrCallba
 	return patternImage;
 }
 
-Rasteron_Image* createPatternImg_horz(const Rasteron_Image* refImage, nebrCallback2 callback){
+Rasteron_Image* createPatternImg_horz(ref_image_t refImage, nebrCallback2 callback){
 	if(refImage == NULL){
 		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
@@ -217,7 +231,7 @@ Rasteron_Image* createPatternImg_horz(const Rasteron_Image* refImage, nebrCallba
 	return patternImg;
 }
 
-Rasteron_Image* createPatternImg_vert(const Rasteron_Image* refImage, nebrCallback2 callback){
+Rasteron_Image* createPatternImg_vert(ref_image_t refImage, nebrCallback2 callback){
 	if(refImage == NULL){
 		perror("Cannot create pattern image! Null pointer provided as input");
 		return NULL;
@@ -289,7 +303,7 @@ Rasteron_Image* createFieldImg_vornoi(ImageSize size, const ColorPointTable* col
 
 // Step operations
 
-Rasteron_Image* createStepImg(const Rasteron_Image* refImage, const PixelPointTable* pixelPointTable, stepCallback callback){
+Rasteron_Image* createStepImg(ref_image_t refImage, const PixelPointTable* pixelPointTable, stepCallback callback){
 	if(refImage == NULL){
 		perror("Cannot create step image! Null pointer provided as input");
 		return NULL;

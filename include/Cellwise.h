@@ -1,7 +1,7 @@
 #ifndef RASTERON_CELLWISE_H
 
 #include "Image.h"
-#include "pointtype.h"
+#include "point_type.h"
 
 #define NEBR_COUNT 8
 #define NEBR_RANDOM (rand() % 8)
@@ -31,7 +31,8 @@ typedef struct {
 	NebrTable* tables;
 } NebrTable_List;
 
-NebrTable_List* genNebrTables(const Rasteron_Image* image);
+NebrTable_List* genNebrTables(ref_image_t image);
+unsigned getAvgNebrColor(const NebrTable_List* nebrTables, unsigned offset);
 void delNebrTables(NebrTable_List* nebrTables);
 
 // Pattern Image operations based on adjacent pixel values
@@ -39,10 +40,10 @@ void delNebrTables(NebrTable_List* nebrTables);
 typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // accepts target and two neighbors
 typedef unsigned (*nebrCallback8)(unsigned, unsigned[8]); // accepts target and all neighbors
 
-Rasteron_Image* createPatternImg(const Rasteron_Image* refImage, nebrCallback8 callback); // neighbor pattern
-Rasteron_Image* createMultiPatternImg(const Rasteron_Image* refImage, nebrCallback8 callback, unsigned short iter); // iterative pattern
-Rasteron_Image* createPatternImg_horz(const Rasteron_Image* refImage, nebrCallback2 callback); // horizontal pattern
-Rasteron_Image* createPatternImg_vert(const Rasteron_Image* refImage, nebrCallback2 callback); // vertical pattern
+Rasteron_Image* createPatternImg(ref_image_t refImage, nebrCallback8 callback); // neighbor pattern
+Rasteron_Image* createMultiPatternImg(ref_image_t refImage, nebrCallback8 callback, unsigned short iter); // iterative pattern
+Rasteron_Image* createPatternImg_horz(ref_image_t refImage, nebrCallback2 callback); // horizontal pattern
+Rasteron_Image* createPatternImg_vert(ref_image_t refImage, nebrCallback2 callback); // vertical pattern
 
 // Field Image operations based on color points and distance
 
@@ -64,8 +65,8 @@ typedef struct {
 
 typedef ColorStep (*stepCallback)(const NebrTable* nebrTable, ColorStep prevStep, unsigned short stepCount);
 
-Rasteron_Image* createStepImg(const Rasteron_Image* refImage, const PixelPointTable* pixelPointTable, stepCallback callback); // creates image based on tracing paths
-//Rasteron_Image* createFixedStepImg(const Rasteron_Image* refImage, const PixelPointTable* pixelPointTable, stepCallback callback, unsigned short maxSteps); // creates fixed steps image
+Rasteron_Image* createStepImg(ref_image_t refImage, const PixelPointTable* pixelPointTable, stepCallback callback); // creates image based on tracing paths
+//Rasteron_Image* createFixedStepImg(ref_image_t refImage, const PixelPointTable* pixelPointTable, stepCallback callback, unsigned short maxSteps); // creates fixed steps image
 
 #define RASTERON_CELLWISE_H
 #endif

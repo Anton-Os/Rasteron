@@ -1,6 +1,6 @@
 #include "Font.h"
 
-FT_Library _freetypeLib = NULL;
+static FT_Library _freetypeLib = NULL;
 
 // Internal Functions
 

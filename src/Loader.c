@@ -22,6 +22,8 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
 
 void loadFileImage(const char* fileName, FileImage* image){
     enum IMG_FileFormat format = getFormat(fileName);
+
+    // TODO: Check if file exits!
     
     switch(format){
 #ifdef USE_IMG_PNG

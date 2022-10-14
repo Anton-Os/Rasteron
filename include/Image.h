@@ -1,9 +1,9 @@
 #ifndef RASTERON_IMAGE_H
 
 #include "Loader.h"
-#include "mixtype.h"
+#include "mix_type.h"
 
-enum FLIP_Type { FLIP_Clock, FLIP_CounterClock, FLIP_Upside };
+enum FLIP_Type { FLIP_Clock, FLIP_Counter, FLIP_Upside };
 
 typedef struct {
 	uint32_t height;
@@ -25,24 +25,24 @@ Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width); 
 
 Rasteron_Image* createRefImg(const char* fileName); // creates an image from a file
 Rasteron_Image* createSolidImg(ImageSize size, uint32_t solidColor); // creates a solid color image
-Rasteron_Image* createCopyImg(Rasteron_Image* refImage); // creates copy of image
-Rasteron_Image* createMirrorImg(const Rasteron_Image* refImage); // creates mirror version of image
-Rasteron_Image* createFlipImg(const Rasteron_Image* refImage, enum FLIP_Type flip); // creates flipped version of image
+Rasteron_Image* createCopyImg(ref_image_t refImage); // creates copy of image
+Rasteron_Image* createMirrorImg(ref_image_t refImage); // creates mirror version of image
+Rasteron_Image* createFlipImg(ref_image_t refImage, enum FLIP_Type flip); // creates flipped version of image
 
 void deleteImg(Rasteron_Image* image);
 
 // Filtering Image operations
 
-Rasteron_Image* createGreyscaleImg(const Rasteron_Image* refImage); // creates greyscale version of image
-Rasteron_Image* createFilterImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates isolated filter version of image
-Rasteron_Image* createChannelImg(const Rasteron_Image* refImage, CHANNEL_Type channel); // creates averaged channel version of image
+Rasteron_Image* createGreyscaleImg(ref_image_t refImage); // creates greyscale version of image
+Rasteron_Image* createFilterImg(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter version of image
+Rasteron_Image* createChannelImg(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel version of image
 
 // Combination and Seeding Image operations
 
-Rasteron_Image* createBlendImg(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates blended version of image
-Rasteron_Image* createFuseImg(const Rasteron_Image* image1, const Rasteron_Image* image2); // creates fused version of image
-Rasteron_Image* createSeedRawImg(const Rasteron_Image* refImage, uint32_t color, double prob); // seeds pixel over image based on probability
-Rasteron_Image* createSeedWeightImg(const Rasteron_Image* refImage, const Rasteron_SeedTable* seedTable); // seeds pixels over image based on weights
+Rasteron_Image* createBlendImg(ref_image_t image1, ref_image_t image2); // creates blended version of image
+Rasteron_Image* createFuseImg(ref_image_t image1, ref_image_t image2); // creates fused version of image
+Rasteron_Image* createSeedRawImg(ref_image_t refImage, uint32_t color, double prob); // seeds pixel over image based on probability
+Rasteron_Image* createSeedWeightImg(ref_image_t refImage, const Rasteron_SeedTable* seedTable); // seeds pixels over image based on weights
 
 // Mapped Image operations based on x and y coordinates
 
