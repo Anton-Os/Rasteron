@@ -8,6 +8,7 @@ void loadFileImage_TIFF(const char* fileName, Image* image) {
 	TIFF* tiffFile = TIFFOpen(fileName, "r");
 	if (!tiffFile) {
 		printf("Could not open file: %s", fileName);
+		image = NULL;
 		return;
 	}
 

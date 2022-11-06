@@ -10,12 +10,14 @@ void loadFileImage_PNG(const char* fileName, Image* image) {
 	errno_t err = fopen_s(&pngFile, fileName, "rb");
 	if (err) {
 		printf("Error opening %s fopen_s error code %d", fileName, err);
+		image = NULL;
 		return;
 	}
 #else
 	pngFile = fopen(fileName, "rb");
 	if(pngFile == NULL) {
 		printf("Error opening %s", fileName);
+		image = NULL;
 		return;
 	}
 #endif // _WIN32

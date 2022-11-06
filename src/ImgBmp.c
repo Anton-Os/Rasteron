@@ -10,12 +10,14 @@ void loadFileImage_BMP(const char* fileName, Image* image) {
 	errno_t err = fopen_s(&bmpFile, fileName, "rb");
 	if (err) {
 		printf("Error opening %s fopen_s error code %d", fileName, err);
+		image = NULL;
 		return;
 	}
 #else
 	bmpFile = fopen(fileName, "rb");
 	if (bmpFile == NULL) {
 		printf("Error opening %s", fileName);
+		image = NULL;
 		return;
 	}
 #endif // _WIN32

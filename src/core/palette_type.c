@@ -1,4 +1,4 @@
-#include "mix_type.h"
+#include "palette_type.h"
 
 // Seed operations
 

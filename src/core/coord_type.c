@@ -1,4 +1,4 @@
-#include "point_type.h"
+#include "coord_type.h"
 
 void addPixelPoint(PixelPointTable* table, double xFrac, double yFrac) {
 	table->points[table->pointCount].xFrac = xFrac;
@@ -28,7 +28,11 @@ unsigned getPixOffset(PixelPoint pixPoint, ref_image_t refImage){
 	return pixIndex;
 }
 
-unsigned getPixCursorOffset(PixelPoint pixPoint, ref_image_t refImage){
+unsigned getPixColor(PixelPoint pixPos, ref_image_t refImage){
+	return *(refImage->data + getPixOffset(pixPos, refImage));
+}
+
+unsigned getPixOffset_cursor(PixelPoint pixPoint, ref_image_t refImage){
 	double xFrac; // clamping X
 	if(pixPoint.xFrac <= -1.0) xFrac = -1.0;
 	else if(pixPoint.xFrac >= 1.0) xFrac = 1.0;
@@ -42,4 +46,8 @@ unsigned getPixCursorOffset(PixelPoint pixPoint, ref_image_t refImage){
 
 	PixelPoint adjPoint = (PixelPoint){ (xFrac / 2) + 0.5, (yFrac / 2) + 0.5 };
 	return getPixOffset(adjPoint, refImage);
+}
+
+unsigned getPixColor_cursor(PixelPoint cursorPos, ref_image_t refImage){
+	return *(refImage->data + getPixOffset_cursor(cursorPos, refImage));
 }

@@ -19,9 +19,9 @@ set(core_src
     src/Toolbox.c
     src/Loader.c
 
-    src/core/mix_type.c
+    src/core/palette_type.c
     src/core/geo_type.c
-    src/core/point_type.c
+    src/core/coord_type.c
 
     src/core/Image.c
     src/core/Cellwise.c

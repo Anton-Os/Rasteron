@@ -5,7 +5,7 @@ extern "C"{
 #endif
 
 // Core
-#include "point_type.h"
+#include "coord_type.h"
 #include "geo_type.h"
 
 #include "Image.h"

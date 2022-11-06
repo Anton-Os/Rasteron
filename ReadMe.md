@@ -6,7 +6,7 @@ zlib, libpng, and libtiff are built by the project and freetype is built optiona
 
 Project Structure:
 
-1. **core** contains core items necessary for generating noise images (Noise), cell algorithm images (Cellwise), and others (Image), with support for types including coordinates (pointtype) volumetric (geotype) and palettes (mixtype)
+1. **core** contains core items necessary for generating noise images (Noise), cell algorithm images (Cellwise), and others (Image), with support for types including coordinate, geometric, and palette types
 2. **plugin** contains plugin functionality for optional animation support and font format loading
 3. **helper** contains helper files for Windows and Unix specific functionality
 4  **assets** contains fonts, images, and other resources

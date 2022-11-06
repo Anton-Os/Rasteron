@@ -4,7 +4,7 @@
 
 Rasteron_Sprite* createSprite(const Rasteron_Image* refImage){
 	if (refImage == NULL) {
-		perror("Cannot create palette! Null pointer provided as reference image!");
+		perror("Cannot create sprite! Null pointer provided as reference image!");
 		return NULL;
 	}
 

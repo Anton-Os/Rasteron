@@ -1,7 +1,7 @@
 #ifndef RASTERON_CELLWISE_H
 
 #include "Image.h"
-#include "point_type.h"
+#include "coord_type.h"
 
 #define NEBR_COUNT 8
 #define NEBR_RANDOM (rand() % 8)

@@ -1,7 +1,7 @@
 #ifndef RASTERON_IMAGE_H
 
 #include "Loader.h"
-#include "mix_type.h"
+#include "palette_type.h"
 
 enum FLIP_Type { FLIP_Clock, FLIP_Counter, FLIP_Upside };
 

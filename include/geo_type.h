@@ -23,7 +23,7 @@ void deleteSprite(Rasteron_Sprite* sprite);
 
 // Heightmap
 
-#define MAX_HEIGHTMAP_VALS TWOPOWER(16) // 262144
+#define MAX_HEIGHTMAP_VALS TWOPOWER(16)
 
 typedef struct {
     uint32_t width;

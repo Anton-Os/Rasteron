@@ -16,8 +16,9 @@ Rasteron_Image* allocNewImg(const char* name, uint32_t height, uint32_t width){
 Rasteron_Image* createRefImg(const char* fileName){
 	FileImage fileImage;
 	loadFileImage(fileName, &fileImage);
+	if(&fileImage == NULL) return NULL; // Image not loaded
 
-    Rasteron_Image* refImage;
+    Rasteron_Image* refImage = NULL;
     switch(fileImage.fileFormat){
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
