@@ -1,4 +1,3 @@
-#define RASTERON_ENABLE_PLUGIN
 #define RASTERON_ENABLE_FONT
 
 #include "Rasteron.h"

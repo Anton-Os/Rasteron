@@ -1,15 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 project(Rasteron DESCRIPTION "Image Loading and Generation Library")
 
-set(default_build_type "Debug")
-if(NOT CMAKE_BUILD_TYPE)
-  message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
-  set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
-  # Set the possible values of build type for cmake-gui
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-endif()
-message(STATUS "Build Type ${CMAKE_BUILD_TYPE}")
-
 include(externalTargets.cmake)
 include(FindX11)
 
@@ -95,7 +86,11 @@ add_library(Rasteron STATIC ${core_src} ${plugin_src} ${helper_src}) # library w
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
 
-target_link_libraries(Rasteron PUBLIC tiff png zlibstatic)
+if(WIN32)
+    target_link_libraries(Rasteron PUBLIC tiff png ${zlibstatic})
+elseif(UNIX AND NOT APPLE) # Unix Specific
+    target_link_libraries(Rasteron PUBLIC tiff png ${zlib})
+endif()
 
 # if(SUPPORT_FONT_BAKING AND freetype_found EQUAL TRUE)
 if(SUPPORT_FONT_BAKING)

@@ -13,7 +13,7 @@ extern "C"{
 #include "Noise.h"
 
 // Plugins
-#ifdef RASTERON_ENABLE_PLUGIN
+#ifdef RASTERON_ENABLE_ANIM
 #include "Animation.h"
 #endif
 

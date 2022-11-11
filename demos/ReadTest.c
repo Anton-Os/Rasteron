@@ -9,12 +9,15 @@ Rasteron_Image* sourceImage3; // PNG Image
 int main(int argc, char** argv) {
     // Reading Step
 
-    genFullFilePath("Logo.bmp", &fullImagePath);
+    genFullFilePath("User.bmp", &fullImagePath);
     sourceImage1 = createRefImg(fullImagePath);
-    genFullFilePath("Logo.tiff", &fullImagePath);
+    printf("%s image successfully loaded!", sourceImage1->name);
+    genFullFilePath("User.tiff", &fullImagePath);
     sourceImage2 = createRefImg(fullImagePath);
-    genFullFilePath("Logo.png", &fullImagePath);
+    printf("%s image successfully loaded!", sourceImage2->name);
+    genFullFilePath("User.png", &fullImagePath);
     sourceImage3 = createRefImg(fullImagePath);
+    printf("%s image successfully loaded!", sourceImage3->name);
     
     // Cleanup Step
     

@@ -1,25 +1,20 @@
 #include "Animation.h"
 
-static char* getFrameName(char* prefix, unsigned frameIndex) {
-	// Naming the Image by Frame
-	char* name = "";
-	strcpy(name, prefix);
-	char* suffix = (char)frameIndex + '0';
-	strcat(name, &suffix);
-	return name;
-}
+#include "math.h"
 
-Rasteron_Animation* allocNewAnim(const char* prefix, ImageSize size, unsigned frameCount){
+Rasteron_Animation* allocNewAnim(const char* prefix, /* ImageSize size, */ unsigned frameCount){
     Rasteron_Animation* animation = (Rasteron_Animation*)malloc(sizeof(Rasteron_Animation));
     animation->prefix = prefix;
-    animation->height = size.height;
-    animation->width = size.width;
     animation->frameCount = frameCount;
-    animation->bkColor = ANIM_BACKGROUND; // cyan background by default
 
-    animation->data = (Rasteron_Image**)malloc(frameCount * sizeof(Rasteron_Image*));
-    for(unsigned f = 0; f < frameCount; f++)
-        *(animation->data + f) = createSolidImg((ImageSize){ size.height, size.width }, animation->bkColor);
+    animation->frameData = (Rasteron_Image**)malloc(frameCount * sizeof(Rasteron_Image*));
+    for(unsigned f = 0; f < frameCount; f++){
+        *(animation->frameData + f) = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, ANIM_BACKGROUND);
+
+        char frameStr[1024];
+        sprintf(frameStr, "frame%d", f + 1);
+        (*(animation->frameData + f))->name = frameStr;
+    }
     return animation;
 }
 
@@ -28,7 +23,38 @@ Rasteron_Image* getFrame(Rasteron_Animation* animation, unsigned short frameInde
 		perror("Frame index out of range!");
 		return NULL;
 	}
-    return *(animation->data + frameIndex);
+    return *(animation->frameData + frameIndex);
+}
+
+Rasteron_Image* createCompositeImg(Rasteron_Animation* animation){
+    if (animation == NULL) {
+		perror("Cannot create copy image! Null pointer provided as animation");
+		return NULL;
+	}
+
+    unsigned totalSize = 0;
+    for(unsigned f = 0; f < animation->frameCount; f++)
+        totalSize += getFrame(animation, f)->width * getFrame(animation, f)->height;
+
+    unsigned side = totalSize / getFrame(animation, 0)->width; // (unsigned)sqrt(totalSize)
+    Rasteron_Image* compositeImg = allocNewImg("composite", side, totalSize / side);
+    printf("%d size %d width and %d height", totalSize, compositeImg->width, compositeImg->height);
+
+    unsigned frameIndex = 0;
+    unsigned framePixOffset = 0;
+    Rasteron_Image* stagingImg = getFrame(animation, frameIndex);
+    for(unsigned p = 0; p < compositeImg->width * compositeImg->height; p++){
+        *(compositeImg->data + p) = *(stagingImg->data + framePixOffset); // copying pixel operation
+        framePixOffset++;
+        if(framePixOffset > stagingImg->width * stagingImg->height){  // switching to proper staging image
+            framePixOffset = 0; // reset to start of new image 
+            frameIndex++;
+            stagingImg = getFrame(animation, frameIndex); // move to next image
+            if(stagingImg == NULL) break; // frame index out of range
+        }
+    }
+
+    return compositeImg;
 }
 
 void addFrameData(Rasteron_Animation* animation, const Rasteron_Image *const refImage, unsigned short frameIndex){
@@ -37,28 +63,15 @@ void addFrameData(Rasteron_Animation* animation, const Rasteron_Image *const ref
 		return;
 	}
 
-	char* name = getFrameName(animation->prefix, frameIndex);
-
-    // Copying Image Contents
-    Rasteron_Image* targetImage = *(animation->data + frameIndex);
-	if (refImage->width == (targetImage)->width && refImage->height == targetImage->height){ // checks for size compatability
-		targetImage->name = name;
-        for (unsigned p = 0; p < refImage->width * refImage->height; p++)
-			*(targetImage->data + p) = *(refImage->data + p); // copies data pixel by pixel
-    }
-    else {
-        deleteImg(targetImage); // deletes old image contents
-        targetImage = allocNewImg(name, refImage->height, refImage->width);
-        for (unsigned p = 0; p < refImage->width * refImage->height; p++)
-			*(targetImage->data + p) = *(refImage->data + p); // copies data pixel by pixel
-    }
+    deleteImg(*(animation->frameData + frameIndex)); // deleting old image
+    *(animation->frameData + frameIndex) = createCopyImg(refImage); // creating copy image
 }
 
 void deleteAnim(Rasteron_Animation* animation){
     if(animation != NULL){
         for(unsigned f = 0; f < animation->frameCount; f++)
-            deleteImg(*(animation->data + f));
-        free(animation->data);
+            deleteImg(*(animation->frameData + f));
+        free(animation->frameData);
         free(animation);
         animation = NULL;
     }

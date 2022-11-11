@@ -2,12 +2,11 @@
 #include "OS_Util.h"
 
 // Global Definitions
-const char* imageName = "Logo.bmp";
+const char* imageName = "User.png";
 char fullImagePath[1024];
 
 Rasteron_Image* sourceImage;
 Rasteron_Image* greyImage;
-Rasteron_Image* flipImage;
 Rasteron_Image* redImage;
 Rasteron_Image* blueImage;
 Rasteron_Sprite* sprite;
@@ -25,7 +24,6 @@ void genImages(){
 void cleanup(){
 	deleteImg(sourceImage);
 	deleteImg(greyImage);
-	deleteImg(flipImage);
 	deleteImg(redImage);
 	deleteImg(blueImage);
 	deleteSprite(sprite);
@@ -40,7 +38,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	RECT rect;
 
 	switch (message) {
-	case (WM_CREATE): { bmap1 = createWinBmap(flipImage); }
+	case (WM_CREATE): { bmap1 = createWinBmap(sourceImage); }
 	case (WM_PAINT): { drawWinBmap(hwnd, &bmap1); }
 	case (WM_CLOSE): {}
 	default: return DefWindowProc(hwnd, message, wParam, lParam);

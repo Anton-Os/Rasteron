@@ -49,6 +49,7 @@ Rasteron_Image* createSeedWeightImg(ref_image_t refImage, const Rasteron_SeedTab
 typedef unsigned (*mapCallback)(double x, double y);
 
 Rasteron_Image* createMappedImg(ImageSize size, mapCallback callback);
+// Rasteron_Image* createBorderImg(ref_image_t refImage, unsigned color, double size);
 
 #define RASTERON_IMAGE_H
 #endif

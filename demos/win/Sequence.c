@@ -1,39 +1,44 @@
-#define RASTERON_ENABLE_PLUGIN
+#define RASTERON_ENABLE_ANIM
 
 #include "Rasteron.h"
 #include "OS_Util.h"
 
 // Global Definitions
 
-#define ANIM_HEIGHT 1100
-#define ANIM_WIDTH 1200
+// #define ANIM_HEIGHT 1100
+// #define ANIM_WIDTH 1200
 
 unsigned long ticker = 0;
-Rasteron_Animation* animation;
-Rasteron_Image* frame1;
+Rasteron_Animation* animation = NULL;
+// Rasteron_Image* frame1;
 Rasteron_Image* frame2;
 Rasteron_Image* frame3;
 Rasteron_Image* frame4;
+Rasteron_Image* compositeImg = NULL;
 
 void genImages() {
-	frame1 = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 0xFF000000);
-    frame2 = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 0xFFFF0000);
-    frame3 = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 0xFF00FF00);
-    frame4 = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 0xFF0000FF);
+	// frame1 = createSolidImg((ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 0xFF000000);
+    frame2 = createSolidImg((ImageSize){ 256, 2000 }, 0xFFFF0000);
+    frame3 = createSolidImg((ImageSize){ 2000, 256 }, 0xFF00FF00);
+    frame4 = createSolidImg((ImageSize){ 2000, 2000 }, 0xFF0000FF);
 
-	animation = allocNewAnim("sequence", (ImageSize){ ANIM_HEIGHT, ANIM_WIDTH }, 4);
-    addFrameData(animation, frame1, 0);
+	animation = allocNewAnim("sequence", 4);
+    // addFrameData(animation, frame1, 0);
     addFrameData(animation, frame2, 1);
     addFrameData(animation, frame3, 2);
     addFrameData(animation, frame4, 3);
+
+	// if(animation == NULL) puts("animation is null");
+	compositeImg = createCompositeImg(animation);
 }
 
 void cleanup() {
 	deleteAnim(animation);
-	deleteImg(frame1);
+	// deleteImg(frame1);
 	deleteImg(frame2);
 	deleteImg(frame3);
 	deleteImg(frame4);
+	deleteImg(compositeImg);
 }
 
 BITMAP bmap1, bmap2, bmap3, bmap4;
@@ -53,14 +58,13 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 	case (WM_PAINT): {
 		switch (ticker % 8) { // Extending duration per Frame
-		case 0: case 1: drawWinBmap(hwnd, &bmap1); break;
-		case 2: case 3: drawWinBmap(hwnd, &bmap2); break;
-		case 4: case 5: drawWinBmap(hwnd, &bmap3); break;
-		case 6: case 7: drawWinBmap(hwnd, &bmap4); break;
+		case 0: case 1: drawWinBmap(hwnd, &bmap4); break;
+		case 2: case 3: drawWinBmap(hwnd, &bmap3); break;
+		case 4: case 5: drawWinBmap(hwnd, &bmap2); break;
+		case 6: case 7: drawWinBmap(hwnd, &bmap1); break;
 		}
 	}
 	case (WM_TIMER): {
-		puts(" tick ");
 		ticker++; // increment the ticker
 
 		GetClientRect(hwnd, &rect);
@@ -79,7 +83,7 @@ int main(int argc, char** argv) {
 
 	// Event Loop
 
-	createWindow(wndProc, "Cellwise");
+	createWindow(wndProc, "Sequence");
 	eventLoop();
 
 	// Cleanup Step

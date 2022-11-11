@@ -1,5 +1,3 @@
-#define RASTERON_ENABLE_PLUGIN
-
 #include "Rasteron.h"
 #include "OS_Util.h"
 
