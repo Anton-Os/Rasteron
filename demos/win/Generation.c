@@ -16,18 +16,18 @@ void genImages(){
 	sourceImage = createRefImg(fullImagePath);
 	greyImage = createGreyscaleImg(sourceImage);
 	redImage = createFilterImg(sourceImage, CHANNEL_Red);
-	blueImage = createChannelImg(sourceImage, CHANNEL_Blue);
+	blueImage = createChanneledImg(sourceImage, CHANNEL_Blue);
 	sprite = createSprite(sourceImage);
-	heightmap = createHeightmap(sourceImage);
+	heightmap = createRefHeightmap(sourceImage);
 }
 
 void cleanup(){
-	deleteImg(sourceImage);
-	deleteImg(greyImage);
-	deleteImg(redImage);
-	deleteImg(blueImage);
-	deleteSprite(sprite);
-	deleteHeightmap(heightmap);
+	free_image(sourceImage);
+	free_image(greyImage);
+	free_image(redImage);
+	free_image(blueImage);
+	free_sprite(sprite);
+	free_heightmap(heightmap);
 }
 
 BITMAP bmap1, bmap2, bmap3;

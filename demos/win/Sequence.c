@@ -22,23 +22,23 @@ void genImages() {
     frame3 = createSolidImg((ImageSize){ 2000, 256 }, 0xFF00FF00);
     frame4 = createSolidImg((ImageSize){ 2000, 2000 }, 0xFF0000FF);
 
-	animation = allocNewAnim("sequence", 4);
-    // addFrameData(animation, frame1, 0);
-    addFrameData(animation, frame2, 1);
-    addFrameData(animation, frame3, 2);
-    addFrameData(animation, frame4, 3);
+	animation = alloc_animation("sequence", 4);
+    // addFrameAt(animation, frame1, 0);
+    addFrameAt(animation, frame2, 1);
+    addFrameAt(animation, frame3, 2);
+    addFrameAt(animation, frame4, 3);
 
 	// if(animation == NULL) puts("animation is null");
-	compositeImg = createCompositeImg(animation);
+	compositeImg = compositeImg(animation);
 }
 
 void cleanup() {
-	deleteAnim(animation);
-	// deleteImg(frame1);
-	deleteImg(frame2);
-	deleteImg(frame3);
-	deleteImg(frame4);
-	deleteImg(compositeImg);
+	free_animation(animation);
+	// free_image(frame1);
+	free_image(frame2);
+	free_image(frame3);
+	free_image(frame4);
+	free_image(compositeImg);
 }
 
 BITMAP bmap1, bmap2, bmap3, bmap4;

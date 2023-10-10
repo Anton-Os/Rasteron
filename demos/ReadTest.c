@@ -10,20 +10,20 @@ int main(int argc, char** argv) {
     // Reading Step
 
     genFullFilePath("User.bmp", &fullImagePath);
-    sourceImage1 = createRefImg(fullImagePath);
+    sourceImage1 = loadImgOp(fullImagePath);
     printf("%s image successfully loaded!", sourceImage1->name);
     genFullFilePath("User.tiff", &fullImagePath);
-    sourceImage2 = createRefImg(fullImagePath);
+    sourceImage2 = loadImgOp(fullImagePath);
     printf("%s image successfully loaded!", sourceImage2->name);
     genFullFilePath("User.png", &fullImagePath);
-    sourceImage3 = createRefImg(fullImagePath);
+    sourceImage3 = loadImgOp(fullImagePath);
     printf("%s image successfully loaded!", sourceImage3->name);
     
     // Cleanup Step
     
-    deleteImg(sourceImage1);
-    deleteImg(sourceImage2);
-    deleteImg(sourceImage3);
+    free_image(sourceImage1);
+    free_image(sourceImage2);
+    free_image(sourceImage3);
 
     return 0;
 }

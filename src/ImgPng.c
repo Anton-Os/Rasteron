@@ -2,7 +2,7 @@
 
 #ifdef USE_IMG_PNG
 
-void loadFileImage_PNG(const char* fileName, Image* image) {
+void loadFromFile_PNG(const char* fileName, FileImage* image) {
 	image->fileFormat = IMG_Png;
 
 	FILE* pngFile;
@@ -55,10 +55,10 @@ void loadFileImage_PNG(const char* fileName, Image* image) {
 		image->data.png.row_ptrs[r] = (png_byte*)malloc(image->data.png.rowBytesCount);
 
 	png_read_image(png_ptr, image->data.png.row_ptrs);
-	image->data.png.rgbaData = (uint32_t*)malloc(sizeof(uint32_t) * image->data.png.height * image->data.png.width);
+	image->data.png.data = (uint32_t*)malloc(sizeof(uint32_t) * image->data.png.height * image->data.png.width);
 
 	png_byte* src_ptr;
-	uint32_t* dest_ptr = image->data.png.rgbaData;
+	uint32_t* dest_ptr = image->data.png.data;
 	for (unsigned int r = 0; r < image->data.png.height; r++) {
 		src_ptr = image->data.png.row_ptrs[r];
 		for (unsigned int c = 0; c < image->data.png.width; c++) {
@@ -136,7 +136,7 @@ void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width
 
 }
 
-void delFileImage_PNG(Image* image) {
+void delFileImage_PNG(FileImage* image) {
 	if (image->fileFormat != IMG_Png) {
 		puts("Image provided for deletion is not PNG type");
 		return;
@@ -146,7 +146,7 @@ void delFileImage_PNG(Image* image) {
 		free(image->data.png.row_ptrs[r]);
 	free(image->data.png.row_ptrs);
 
-	free(image->data.png.rgbaData);
+	free(image->data.png.data);
 	image->fileFormat = IMG_NonValid;
 }
 

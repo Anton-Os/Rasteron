@@ -6,8 +6,8 @@
 #define SEED_COLOR 0xFFFFFFFF
 #define RESULT_COLOR 0xFF00FF00
 
-Rasteron_Swatch darkSwatch, lightSwatch;
-Rasteron_SeedTable seedTable1, seedTable2;
+ColorSwatch darkSwatch, lightSwatch;
+ColorSeedTable seedTable1, seedTable2;
 PixelPointTable ppTable;
 ColorPointTable cpTable;
 
@@ -55,36 +55,36 @@ void genImages() {
 	seedTable2 = createSeedTable(&darkSwatch);
 
 	solidImg = createSolidImg((ImageSize){ 1100, 1200 }, 0xFF0000FF);
-	seededImg = createSeedRawImg(solidImg, SEED_COLOR, 0.01);
-	seededImg2 = createSeedWeightImg(solidImg, &seedTable1);
-	seededImg3 = createSeedWeightImg(solidImg, &seedTable2);
+	seededImg = createSeededImg(solidImg, SEED_COLOR, 0.01);
+	seededImg2 = createSeedTableImg(solidImg, &seedTable1);
+	seededImg3 = createSeedTableImg(solidImg, &seedTable2);
 
-	mapImg = createMappedImg((ImageSize){ 1100, 1200}, callback_map);
+	mapImg = createMapImg((ImageSize){ 1100, 1200}, callback_map);
 	patternImg = createPatternImg(seededImg, callback8);
-	iterativeImg = createMultiPatternImg(seededImg, callback8, 5);
-	horzImg = createPatternImg_horz(seededImg2, callback2);
-	vertImg = createPatternImg_vert(seededImg3, callback2);
-	fieldImg = createFieldImg((ImageSize){ 1100, 1200 }, &cpTable, callback_field);
-	// fieldImg = createFieldImg_vornoi((ImageSize){ 1100, 1200 }, &cpTable);
+	iterativeImg = cellpatternImg(seededImg, callback8, 5);
+	horzImg = cellpatternImg_horizontal(seededImg2, callback2);
+	vertImg = cellpatternImg_vertical(seededImg3, callback2);
+	fieldImg = fieldImg((ImageSize){ 1100, 1200 }, &cpTable, callback_field);
+	// fieldImg = vornoiImg((ImageSize){ 1100, 1200 }, &cpTable);
 	stepImg = createStepImg(solidImg, &ppTable, callback_step);
 	mixImg = createFuseImg(iterativeImg, mapImg);
 	// mixImg = createFuseImg(horzImg, seededImg2);
 }
 
 void cleanup() {
-	deleteImg(solidImg);
-	deleteImg(seededImg);
-	deleteImg(seededImg2);
-	deleteImg(seededImg3);
+	free_image(solidImg);
+	free_image(seededImg);
+	free_image(seededImg2);
+	free_image(seededImg3);
 
-	deleteImg(mapImg);
-	deleteImg(patternImg);
-	deleteImg(iterativeImg);
-	deleteImg(horzImg);
-	deleteImg(vertImg);
-	deleteImg(fieldImg);
-	deleteImg(stepImg);
-	deleteImg(mixImg);
+	free_image(mapImg);
+	free_image(patternImg);
+	free_image(iterativeImg);
+	free_image(horzImg);
+	free_image(vertImg);
+	free_image(fieldImg);
+	free_image(stepImg);
+	free_image(mixImg);
 }
 
 BITMAP bmap;

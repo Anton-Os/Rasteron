@@ -24,8 +24,8 @@ void genImages(){
 }
 
 void cleanup(){
-    deleteImg(fontImage);
-    deleteImg(flipImage);
+    free_image(fontImage);
+    free_image(flipImage);
 }
 
 int main(int argc, char** argv) {

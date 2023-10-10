@@ -3,9 +3,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "Image.h"
+#include "type.h"
 
-// custom sizes sizes
 #define FONT_SIZE_SMALL 100
 #define FONT_SIZE_MED 200
 #define FONT_SIZE_LARGE 300
@@ -24,9 +23,9 @@
 typedef struct {
     unsigned xMin;
     unsigned xMax;
-    unsigned yMin;
+    unsigned yMin; 
     unsigned yMax;
-} Rasteron_TextSizeProperties;
+} TextSize;
 
 typedef struct {
     const char* fileName; // file used as font
@@ -35,14 +34,26 @@ typedef struct {
     uint32_t fgColor; // foreground color
 } Rasteron_Text;
 
+#define MAX_MESSAGE_LINES 12
+
+typedef struct {
+    const char* fileName; // file used as font
+    const char* message[MAX_MESSAGE_LINES]; // texts to display
+    unsigned lineCount; // number of lines
+    uint32_t bkColor; // background color
+    uint32_t fgColor; // foreground color
+} Rasteron_Message;
+
 static FT_Library _freetypeLib; // internal freetype library
+// static unsigned _textSize = FONT_SIZE_MED; // text size type
 
 void initFreeType();
-Rasteron_Image* bakeText_sized(const Rasteron_Text* textObj, unsigned scale); // regular sized
-Rasteron_Image* bakeText(const Rasteron_Text* textObj); // regular
-Rasteron_Image* bakeTextI_sized(const Rasteron_Text* textObj, unsigned scale); // inverted sized
-Rasteron_Image* bakeTextI(const Rasteron_Text* textObj); // inverted
 void cleanupFreeType();
+
+Rasteron_Image* bakeText(const Rasteron_Text* textObj, unsigned size); // regular
+Rasteron_Image* bakeMessage(const Rasteron_Message* messageObj, unsigned size); // TODO: Implement
+Rasteron_Image* bakeTextI(const Rasteron_Text* textObj, unsigned size); // inverted
+Rasteron_Image* bakeMessageI(const Rasteron_Message* messageObj, unsigned size); // TODO: Implement
 
 #define RASTERON_FONT_H
 #endif

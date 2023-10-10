@@ -1,11 +1,11 @@
 #include <time.h>
 
-#include "Noise.h"
+#include "Rasteron.h"
 
 // Noise Image Operations
 
-Rasteron_Image* createNoiseImg_white(ImageSize size, uint32_t color1, uint32_t color2){
-    Rasteron_Image* noiseImg = allocNewImg("noise-w", size.height, size.width);
+Rasteron_Image* whiteNoiseImgOp(ImageSize size, uint32_t color1, uint32_t color2){
+    Rasteron_Image* noiseImg = alloc_image("noise-w", size.height, size.width);
 
     // Noise Generation Logic
     double noiseVal;
@@ -17,19 +17,16 @@ Rasteron_Image* createNoiseImg_white(ImageSize size, uint32_t color1, uint32_t c
     return noiseImg;
 }
 
-Rasteron_Image* createNoiseImg_gradient(ImageSize size, GradientLattice lattice){
-	if (lattice.xCellDivs == 0 || lattice.yCellDivs == 0) {
-        perror("Cannot create gradient noise! Invalid parameters!");
-        return NULL;
-    }
+Rasteron_Image* gradientNoiseImgOp(ImageSize size, ColorLattice lattice){
+	assert(lattice.xCells > 0 && lattice.yCells > 0);
 
-    Rasteron_Image* noiseImg = allocNewImg("noise-g", size.height, size.width);
+    Rasteron_Image* noiseImg = alloc_image("noise-g", size.height, size.width);
 
 	// generating lattice cells
-    const unsigned xCellPoints = lattice.xCellDivs + 1; // includes leftmost and rightmost vertices +1
-    const unsigned yCellPoints = lattice.yCellDivs + 1; // includes topmost and bottommost vertices +1
+    const unsigned xCellPoints = lattice.xCells + 1; // includes leftmost and rightmost vertices +1
+    const unsigned yCellPoints = lattice.yCells + 1; // includes topmost and bottommost vertices +1
 
-	Rasteron_Image* latticeImg = allocNewImg("lattice", yCellPoints, xCellPoints);
+	Rasteron_Image* latticeImg = alloc_image("lattice", yCellPoints, xCellPoints);
 	for (unsigned p = 0; p < latticeImg->width * latticeImg->height; p++) {
 		double noiseVal = (double)rand() / (double)RAND_MAX; // random value between 0 and 1
 		*(latticeImg->data + p) = blend(lattice.color1, lattice.color2, noiseVal); // blending value between lattice colors
@@ -37,8 +34,8 @@ Rasteron_Image* createNoiseImg_gradient(ImageSize size, GradientLattice lattice)
 
 	// lattice cell values
 	unsigned* topLeft; unsigned* topRight; unsigned* botLeft; unsigned* botRight;
-	const unsigned xSwitch = noiseImg->width / lattice.xCellDivs;
-	const unsigned ySwitch = noiseImg->height / lattice.yCellDivs;
+	const unsigned xSwitch = noiseImg->width / lattice.xCells;
+	const unsigned ySwitch = noiseImg->height / lattice.yCells;
 
     for(unsigned p = 0; p < noiseImg->width * noiseImg->height; p++){
         unsigned xOffset = p % noiseImg->width; // absolute X pixel offset
@@ -70,6 +67,6 @@ Rasteron_Image* createNoiseImg_gradient(ImageSize size, GradientLattice lattice)
         *(noiseImg->data + p) = newColor;
     }
 
-	deleteImg(latticeImg);
+	free_image(latticeImg);
     return noiseImg;
 }

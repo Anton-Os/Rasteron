@@ -61,7 +61,6 @@ XImage* createUnixBmap(Platform_Context* context, Rasteron_Image* image){
 }
 
 void drawUnixBmap(Platform_Context* context, XImage* image){
-
 	XPutImage(
 		context->display, context->window, context->gc, 
 		image,

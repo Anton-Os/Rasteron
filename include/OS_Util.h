@@ -1,4 +1,4 @@
-#include "Image.h"
+#include "Rasteron.h"
 
 void genFullFilePath(const char* name, char* fullFilePath);
 

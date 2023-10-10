@@ -2,15 +2,20 @@ find_package(libpng PATHS @EXTERNAL_INSTALL_DIR@/lib)
 
 if(libpng_FOUND)
     message(STATUS "PNG Support Enabled, Rasteron dependency found")
-else()
-    message(STATUS "PNG Support Disabled, Rasteron dependency not found")
+
+    if(WIN32)
+        find_file(pngDll "libpng16d.dll" PATHS @EXTERNAL_INSTALL_DIR@/bin)
+        if(NOT ${pngDll} EQUAL "pngDll-NOTFOUND")
+            message(STATUS "copying png dll")
+            file(COPY ${pngDll} DESTINATION "${CMAKE_BINARY_DIR}/Debug")
+            file(COPY ${pngDll} DESTINATION "${CMAKE_BINARY_DIR}/Release")
+        endif()
+    endif()
 endif()
 
 find_package(libtiff PATHS @EXTERNAL_INSTALL_DIR@/lib/libtiff)
 
 if(libtiff_FOUND)
     message(STATUS "TIFF Support Enabled, Rasteron dependency found")
-else()
-    message(STATUS "TIFF Support Disabled, Rasteron dependency not found")
 endif()
 

@@ -2,7 +2,7 @@
 
 #ifdef USE_IMG_TIFF
 
-void loadFileImage_TIFF(const char* fileName, Image* image) {
+void loadFromFile_TIFF(const char* fileName, FileImage* image) {
 	image->fileFormat = IMG_Tiff;
 
 	TIFF* tiffFile = TIFFOpen(fileName, "r");
@@ -18,19 +18,19 @@ void loadFileImage_TIFF(const char* fileName, Image* image) {
 	TIFFGetField(tiffFile, TIFFTAG_SAMPLESPERPIXEL, &image->data.tiff.samplesPerPixel);
 	TIFFGetField(tiffFile, TIFFTAG_ORIENTATION, &image->data.tiff.orientation);
 
-	image->data.tiff.raster = (uint32*)_TIFFmalloc(image->data.tiff.length * image->data.tiff.width * sizeof(uint32));
+	image->data.tiff.data = (uint32*)_TIFFmalloc(image->data.tiff.length * image->data.tiff.width * sizeof(uint32));
 	TIFFReadRGBAImageOriented(
 		tiffFile,
 		image->data.tiff.width,
 		image->data.tiff.length,
-		image->data.tiff.raster,
+		image->data.tiff.data,
 		ORIENTATION_TOPRIGHT,
 		0
 	);
 
 	TIFFClose(tiffFile);
 
-	switchRB(image->data.tiff.raster, image->data.tiff.length * image->data.tiff.width); // switch red and blue bits
+	bitSwitchRB(image->data.tiff.data, image->data.tiff.length * image->data.tiff.width); // switch red and blue bits
 	
 	return;
 }
@@ -74,12 +74,12 @@ void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned widt
 	TIFFClose(tiffFile);
 }
 
-void delFileImage_TIFF(Image* image){
+void delFileImage_TIFF(FileImage* image){
 	if (image->fileFormat != IMG_Tiff) {
 		puts("Image provided for deletion is not TIFF type");
 		return;
 	}
-	_TIFFfree(image->data.tiff.raster);
+	_TIFFfree(image->data.tiff.data);
 	image->fileFormat = IMG_NonValid;
 }
 

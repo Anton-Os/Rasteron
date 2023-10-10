@@ -9,7 +9,7 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
         *(fileName + len - 2),
         *(fileName + len - 1),
 		'\0'
-    }; // Gets the last 3 letters of a file extension
+    }; // gets the last 3 letters of a file extension
 
     if(! strcmp(extension, "bmp")) // bmp file check
         return IMG_Bmp;
@@ -20,18 +20,18 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
     else return IMG_NonValid;
 }
 
-void loadFileImage(const char* fileName, FileImage* image){
+void loadFromFile(const char* fileName, FileImage* image){
     enum IMG_FileFormat format = getFormat(fileName);
     
     switch(format){
 #ifdef USE_IMG_PNG
-	case IMG_Png: loadFileImage_PNG(fileName, image); break;
+	case IMG_Png: loadFromFile_PNG(fileName, image); break;
 #endif
 #ifdef USE_IMG_TIFF
-	case IMG_Tiff: loadFileImage_TIFF(fileName, image); break;
+	case IMG_Tiff: loadFromFile_TIFF(fileName, image); break;
 #endif
 #ifdef USE_IMG_BMP
-	case IMG_Bmp: loadFileImage_BMP(fileName, image);break;
+	case IMG_Bmp: loadFromFile_BMP(fileName, image);break;
 #endif
 	default: 
         printf("Unsupported File Type!");

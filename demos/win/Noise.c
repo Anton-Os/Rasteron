@@ -3,9 +3,9 @@
 
 // Global Definitions
 
-GradientLattice lattice1 = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
-GradientLattice lattice2 = { 12, 12, 0xFFFF00FF, 0xFF00FFFF };
-GradientLattice lattice3 = { 64, 64, 0xFF000000, 0xFFFFFFFF };
+Lattice lattice1 = { 3, 3, 0xFF0000FF, 0xFF00FF00 };
+Lattice lattice2 = { 12, 12, 0xFFFF00FF, 0xFF00FFFF };
+Lattice lattice3 = { 64, 64, 0xFF000000, 0xFFFFFFFF };
 
 Rasteron_Image* solidImg;
 Rasteron_Image* randNoiseImg;
@@ -13,14 +13,14 @@ Rasteron_Image* randNoiseImg2;
 
 void genImages() {
 	solidImg = createSolidImg((ImageSize){ 1100, 1200 }, 0xFF73e5ff);
-	randNoiseImg = createNoiseImg_white((ImageSize) { 1100, 1200 }, 0xFFFF0000, 0xFF0000FF);
-	randNoiseImg2 = createNoiseImg_gradient((ImageSize) { 1100, 1200 }, lattice1);
+	randNoiseImg = createWhiteNoiseImg((ImageSize) { 1100, 1200 }, 0xFFFF0000, 0xFF0000FF);
+	randNoiseImg2 = createGradientNoiseImg((ImageSize) { 1100, 1200 }, lattice1);
 }
 
 void cleanup(){
-	deleteImg(solidImg);
-	deleteImg(randNoiseImg);
-	deleteImg(randNoiseImg2);
+	free_image(solidImg);
+	free_image(randNoiseImg);
+	free_image(randNoiseImg2);
 }
 
 BITMAP bmap1, bmap2, bmap3;

@@ -14,8 +14,8 @@ void genImages(){
 }
 
 void cleanup(){
-    deleteImg(blankImage);
-    deleteImg(sourceImage);
+    free_image(blankImage);
+    free_image(sourceImage);
 }
 
 int main(int argc, char** argv) {

@@ -2,7 +2,7 @@
 
 #include "math.h"
 
-Rasteron_Animation* allocNewAnim(const char* prefix, /* ImageSize size, */ unsigned frameCount){
+Rasteron_Animation* alloc_animation(const char* prefix, /* ImageSize size, */ unsigned frameCount){
     Rasteron_Animation* animation = (Rasteron_Animation*)malloc(sizeof(Rasteron_Animation));
     animation->prefix = prefix;
     animation->frameCount = frameCount;
@@ -26,7 +26,7 @@ Rasteron_Image* getFrame(Rasteron_Animation* animation, unsigned short frameInde
     return *(animation->frameData + frameIndex);
 }
 
-Rasteron_Image* createCompositeImg(Rasteron_Animation* animation){
+Rasteron_Image* compositeImg(Rasteron_Animation* animation){
     if (animation == NULL) {
 		perror("Cannot create copy image! Null pointer provided as animation");
 		return NULL;
@@ -36,9 +36,8 @@ Rasteron_Image* createCompositeImg(Rasteron_Animation* animation){
     for(unsigned f = 0; f < animation->frameCount; f++)
         totalSize += getFrame(animation, f)->width * getFrame(animation, f)->height;
 
-    unsigned side = totalSize / getFrame(animation, 0)->width; // (unsigned)sqrt(totalSize)
-    Rasteron_Image* compositeImg = allocNewImg("composite", side, totalSize / side);
-    printf("%d size %d width and %d height", totalSize, compositeImg->width, compositeImg->height);
+    unsigned side = totalSize / getFrame(animation, 0)->width;
+    Rasteron_Image* compositeImg = alloc_image("composite", side, totalSize / side);
 
     unsigned frameIndex = 0;
     unsigned framePixOffset = 0;
@@ -57,20 +56,20 @@ Rasteron_Image* createCompositeImg(Rasteron_Animation* animation){
     return compositeImg;
 }
 
-void addFrameData(Rasteron_Animation* animation, const Rasteron_Image *const refImage, unsigned short frameIndex){
+void addFrameAt(Rasteron_Animation* animation, const Rasteron_Image *const refImage, unsigned short frameIndex){
 	if (frameIndex >= animation->frameCount) {
 		perror("Frame index out of range!");
 		return;
 	}
 
-    deleteImg(*(animation->frameData + frameIndex)); // deleting old image
+    free_image(*(animation->frameData + frameIndex)); // deleting old image
     *(animation->frameData + frameIndex) = createCopyImg(refImage); // creating copy image
 }
 
-void deleteAnim(Rasteron_Animation* animation){
+void free_animation(Rasteron_Animation* animation){
     if(animation != NULL){
         for(unsigned f = 0; f < animation->frameCount; f++)
-            deleteImg(*(animation->frameData + f));
+            free_image(*(animation->frameData + f));
         free(animation->frameData);
         free(animation);
         animation = NULL;

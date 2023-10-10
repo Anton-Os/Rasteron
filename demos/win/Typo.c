@@ -23,8 +23,8 @@ void genImages(){
 }
 
 void cleanup(){
-	deleteImg(fontImage);
-	deleteImg(flipImage);
+	free_image(fontImage);
+	free_image(flipImage);
 }
 
 BITMAP bmap;

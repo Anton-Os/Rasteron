@@ -1,11 +1,11 @@
 #include "Toolbox.h"
 
+void seedRandGen(){ srand (time(NULL)); }
+
 void replaceFwdSlash(char* str){
 	unsigned len = strlen(str);
 	for(unsigned l = 0; l < len; l++) if(*(str + l) == '/') *(str + l) = '\\'; // switch the dash type
 }
-
-void seedRandGen(){ srand (time(NULL)); }
 
 uint32_t genRandColorVal(){
 	uint8_t redBit = rand() % 255;
@@ -14,38 +14,38 @@ uint32_t genRandColorVal(){
 	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
 }
 
-void makeColor(uint32_t* raster, unsigned pixels, uint32_t colorVal) {
+/* void makeColor(uint32_t* data, unsigned pixels, uint32_t colorVal) {
 	for (unsigned i = 0; i < pixels; i++)
-		*(raster + i) = colorVal;
+		*(data + i) = colorVal;
 }
 
-void changeColor(uint32_t* raster, unsigned pixels, uint32_t newColor, uint32_t oldColor) {
+void changeColor(uint32_t* data, unsigned pixels, uint32_t newColor, uint32_t oldColor) {
 	for (unsigned i = 0; i < pixels; i++)
-		if (*(raster + i) == oldColor) 
-			*(raster + i) = newColor;
-}
+		if (*(data + i) == oldColor) 
+			*(data + i) = newColor;
+} */
 
-void switchRB(uint32_t* raster, unsigned pixels) {
+void bitSwitchRB(uint32_t* data, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
-		unsigned val = *(raster + i);
+		unsigned val = *(data + i);
 		unsigned res = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
-		*(raster + i) = res;
+		*(data + i) = res;
 	}
 }
 
-void switchGB(uint32_t* raster, unsigned pixels) {
+void bitSwitchGB(uint32_t* data, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
-		unsigned val = *(raster + i);
+		unsigned val = *(data + i);
 		unsigned res = (val & 0xFF0000) + ((val & 0xFF) << 8) + ((val >> 8) & 0xFF);
-		*(raster + i) = res;
+		*(data + i) = res;
 	}
 }
 
-void switchRG(uint32_t* raster, unsigned pixels) {
+void bitSwitchRG(uint32_t* data, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
-		unsigned val = *(raster + i);
+		unsigned val = *(data + i);
 		unsigned res = ((val & 0xFF00) << 8) + ((val >> 8) & 0xFF00) + (val & 0xFF);
-		*(raster + i) = res;
+		*(data + i) = res;
 	}
 }
 
@@ -86,18 +86,6 @@ int8_t getChanDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 		case CHANNEL_Blue: mask = BLUE_CHANNEL; break;
 	}
 	return (int8_t)((int)(color1 & mask) - (int)(color2 & mask));
-}
-
-double getPixDist(unsigned p1, unsigned p2, unsigned imageWidth){
-	long int x1 = p1 % imageWidth;
-	long int y1 = p1 / imageWidth;
-	long int x2 = p2 % imageWidth;
-	long int y2 = p2 / imageWidth;
-
-	double w = abs(x2 - x1); // length in pixels
-	double l = abs(y2 - y1); // width in pixels
-
-	return sqrt((l * l) + (w * w));
 }
 
 uint32_t grayify32(uint32_t refColor) {
@@ -162,4 +150,55 @@ uint32_t fuse(uint32_t color1, uint32_t color2, double iVal){
 	uint8_t finalBlueBit = fract8(diffColor & BLUE_CHANNEL, iVal);
 
 	return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
+}
+
+double pixelDistance(unsigned p1, unsigned p2, unsigned imageWidth){
+	long int x1 = p1 % imageWidth;
+	long int y1 = p1 / imageWidth;
+	long int x2 = p2 % imageWidth;
+	long int y2 = p2 / imageWidth;
+
+	double w = abs(x2 - x1); // length in pixels
+	double l = abs(y2 - y1); // width in pixels
+
+	return sqrt((l * l) + (w * w));
+}
+
+unsigned pixelPointOffset(PixelPoint pixPoint, ref_image_t refImage){
+	unsigned xOffset; // clamping X
+	if(pixPoint.x <= 0.0) xOffset = 0;
+	else if(pixPoint.x >= 1.0) xOffset = refImage->width - 1;
+	else xOffset = (unsigned)((double)refImage->width * pixPoint.x);
+
+	unsigned yOffset; // claming Y
+	if(pixPoint.y <= 0.0) yOffset = 0;
+	else if(pixPoint.y >= 1.0) yOffset = refImage->height;
+	else yOffset = (unsigned)((double)refImage->height * pixPoint.y);
+
+	unsigned pixIndex = (yOffset * refImage->width) + xOffset;
+	return pixIndex;
+}
+
+unsigned pixelPointColor(PixelPoint pixPos, ref_image_t refImage){
+	return *(refImage->data + pixelPointOffset(pixPos, refImage));
+}
+
+unsigned pixelPointOffset_cursor(PixelPoint pixPoint, ref_image_t refImage){
+	double x; // clamping X
+	if(pixPoint.x <= -1.0) x = -1.0;
+	else if(pixPoint.x >= 1.0) x = 1.0;
+	else x = pixPoint.x;
+
+	double y; // clamping Y
+	if(pixPoint.y <= -1.0) y = -1.0;
+	else if(pixPoint.y >= 1.0) y = 1.0;
+	else y = pixPoint.y;
+	y *= -1.0; // Y value needs to be flipped
+
+	PixelPoint adjPoint = (PixelPoint){ (x / 2) + 0.5, (y / 2) + 0.5 };
+	return pixelPointOffset(adjPoint, refImage);
+}
+
+unsigned pixelPointColor_cursor(PixelPoint cursorPos, ref_image_t refImage){
+	return *(refImage->data + pixelPointOffset_cursor(cursorPos, refImage));
 }

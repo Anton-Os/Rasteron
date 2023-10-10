@@ -10,5 +10,5 @@ Project Structure:
 
 1. **core** contains core items necessary for working with generic images (Image), generating noise images (Noise), cell algorithm images (Cellwise), with support for types including coordinate, geometric, and palette types
 2. **plugin** contains plugin functionality for optional animation support and font format loading
-3. **helper** contains helper files for Windows and Unix specific functionality
+3. **util** contains util files for Windows and Unix specific functionality
 4  **assets** contains fonts, images, and other resources

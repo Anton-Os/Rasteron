@@ -2,7 +2,7 @@
 
 #ifdef USE_IMG_BMP
 
-void loadFileImage_BMP(const char* fileName, Image* image) {
+void loadFromFile_BMP(const char* fileName, FileImage* image) {
 	image->fileFormat = IMG_Bmp;
 
 	FILE* bmpFile;
@@ -111,7 +111,7 @@ void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width
 	fclose(bmpFile);
 }
 
-void delFileImage_BMP(Image* image) {
+void delFileImage_BMP(FileImage* image) {
 	if (image->fileFormat != IMG_Bmp) {
 		puts("Image provided for deletion is not BMP type!");
 		return;

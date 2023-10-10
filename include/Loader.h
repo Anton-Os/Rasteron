@@ -5,9 +5,8 @@
 
 #include "Toolbox.h"
 
-typedef struct _Image Image;
-
 #ifdef USE_IMG_TIFF
+
 #include <tiffio.h>
 
 typedef struct {
@@ -19,16 +18,12 @@ typedef struct {
 	uint32 length;
 	uint16 bitsPerSample;
 	uint16 samplesPerPixel;
-	uint32* raster;
-} ImageData_Tiff; // TIFF-specific Data Structure
+	uint32* data;
+} ImageData_Tiff;
 
-void loadFileImage_TIFF(const char* fileName, Image* image);
-void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned width, unsigned* data);
-void delFileImage_TIFF(Image* image);
 #endif // USE_IMG_TIFF
-
-
 #ifdef USE_IMG_PNG
+
 #include <png.h>
 
 typedef struct {
@@ -38,37 +33,24 @@ typedef struct {
 	int colorType;
 	size_t rowBytesCount;
 	png_byte** row_ptrs;
-	uint32_t* rgbaData;
+	uint32_t* data;
 } ImageData_Png;
 
-void loadFileImage_PNG(const char* fileName, Image* image);
-void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width, unsigned* data);
-void delFileImage_PNG(Image* image);
 #endif // USE_IMG_PNG
-
-
 #ifdef USE_IMG_BMP
+
 typedef struct {
 	uint16_t typeCheck;
 	uint32_t offset;
-	int32_t height; // CAN BE NEGATIVE, always abs(height)
-	int32_t width;  // CAN BE NEGATIVE, always abs(width)
+	int32_t height;
+	int32_t width;
 
 	uint32_t* data;
 } ImageData_Bmp;
 
-void loadFileImage_BMP(const char* fileName, Image* image);
-void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width, unsigned* data);
-void delFileImage_BMP(Image* image);
 #endif // USE_IMG_BMP
 
-
-enum IMG_FileFormat {
-	IMG_NonValid = 0,
-	IMG_Tiff = 1,
-	IMG_Png = 2,
-	IMG_Bmp = 3,
-};
+enum IMG_FileFormat { IMG_NonValid = 0, IMG_Tiff = 1, IMG_Png = 2, IMG_Bmp = 3, };
 
 union ImageData {
 #ifdef USE_IMG_TIFF
@@ -82,18 +64,44 @@ union ImageData {
 #endif
 };
 
-typedef struct _Image {
+typedef struct {
 	enum IMG_FileFormat fileFormat;
 	union ImageData data;
-} Image;
+} FileImage;
 
-// Loader Functions, see Loader.c
+// Generic Loader Functions
 
-typedef Image FileImage; // just makes an easier distinction between Rasteron Image and file Image
-
-void loadFileImage(const char* fileName, FileImage* image);
+void loadFromFile(const char* fileName, FileImage* image);
 void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data);
 void delFileImage(FileImage* image);
+
+// TIFF Loader Functions
+#ifdef USE_IMG_JPEG
+void loadFromFile_JPEG(const char* fileName, FileImage* image);
+void writeFileImageRaw_JPEG(const char* fileName, unsigned height, unsigned width, unsigned* data);
+void delFileImage_JPEG(FileImage* image);
+#endif
+
+// TIFF Loader Functions
+#ifdef USE_IMG_TIFF
+void loadFromFile_TIFF(const char* fileName, FileImage* image);
+void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned width, unsigned* data);
+void delFileImage_TIFF(FileImage* image);
+#endif
+
+// PNG Loader Functions
+#ifdef USE_IMG_PNG
+void loadFromFile_PNG(const char* fileName, FileImage* image);
+void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width, unsigned* data);
+void delFileImage_PNG(FileImage* image);
+#endif
+
+// BMP Loader Functions
+#ifdef USE_IMG_BMP
+void loadFromFile_BMP(const char* fileName, FileImage* image);
+void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width, unsigned* data);
+void delFileImage_BMP(FileImage* image);
+#endif
 
 #define IMAGE_LOADER_H
 #endif

@@ -3,10 +3,10 @@
 #define SIZE 1024
 
 Rasteron_Image* blankImage;
-Rasteron_Image* colorImage;
+Rasteron_Image* testImage;
 
-Rasteron_Image* genTestImage(){
-    Rasteron_Image* testImage = createSolidImg((ImageSize){SIZE, SIZE}, 0xFFFF0000); // red
+Rasteron_Image* testImgOp(){
+    Rasteron_Image* testImage = solidImgOp((ImageSize){SIZE, SIZE}, 0xFFFF0000); // red
     
     for(unsigned p = 0; p < (SIZE * SIZE) / 2; p++)
         *(testImage->data + p) = 0xFF0000FF; // blue
@@ -21,19 +21,25 @@ Rasteron_Image* genTestImage(){
 int main(int argc, char** argv) {
     // Generation Step
 
-    blankImage = createSolidImg((ImageSize){SIZE, SIZE}, 0xFF666666);
-    colorImage = genTestImage();
+    blankImage = solidImgOp((ImageSize){SIZE, SIZE}, 0xFF666666);
+    testImage = testImgOp();
 
     // Writing Step
 
-    writeFileImageRaw("Generated.bmp", IMG_Bmp, SIZE, SIZE, colorImage->data);
-	writeFileImageRaw("Generated.tiff", IMG_Tiff, SIZE, SIZE, colorImage->data);
-	writeFileImageRaw("Generated.png", IMG_Png, SIZE, SIZE, colorImage->data);
+#ifdef USE_IMG_BMP
+    writeFileImageRaw("Generated.bmp", IMG_Bmp, SIZE, SIZE, testImage->data);
+#endif
+#ifdef USE_IMG_TIFF
+	writeFileImageRaw("Generated.tiff", IMG_Tiff, SIZE, SIZE, testImage->data);
+#endif
+#ifdef USE_IMG_PNG
+	writeFileImageRaw("Generated.png", IMG_Png, SIZE, SIZE, testImage->data);
+#endif  
 
     // Cleanup Step
 
-    deleteImg(blankImage);
-    deleteImg(colorImage);
+    free_image(blankImage);
+    free_image(testImage);
 
     return 0;
 }
