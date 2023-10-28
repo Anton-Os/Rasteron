@@ -2,12 +2,18 @@
 
 #include "type.h"
 
+// --------------------------------   Image    -------------------------------- //
+
+Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width);
+void free_image(Rasteron_Image* image);
+
 // --------------------------------   Callbacks    -------------------------------- //
 
 typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // target and 2 neighbors
 typedef unsigned (*nebrCallback4)(unsigned, unsigned[8]); // target and 4 neighbors
 typedef unsigned (*nebrCallback8)(unsigned, unsigned[8]); // target and all 8 neighbors
 typedef unsigned (*recolorCallback)(unsigned color);
+typedef unsigned (*dualcolorCallback)(unsigned color1, unsigned color2);
 typedef unsigned (*mapCallback)(double x, double y);
 typedef unsigned (*fieldCallback)(unsigned color, double distance);
 
@@ -25,11 +31,6 @@ ColorSwatch createSwatch(unsigned color, uint8_t deviation);
 
 void pixelPointToTable(PixelPointTable* table, double xFrac, double yFrac);
 void colorPointToTable(ColorPointTable* table, unsigned color, double xFrac, double yFrac);
-
-// --------------------------------   Image    -------------------------------- //
-
-Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width);
-void free_image(Rasteron_Image* image);
 
 // --------------------------------   Sprite    -------------------------------- //
 

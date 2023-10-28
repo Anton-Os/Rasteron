@@ -9,9 +9,10 @@ int main(int argc, char** argv) {
     if(argc > 1) canvasImage = loadImgOp(argv[1]); // use first argument as reference image path
     else canvasImage = solidImgOp((ImageSize){1024, 1024 }, BLACK_COLOR); // black canvas by default
 
+    puts("\tPainter running...\n");
     while(inputBuff[0] != '\n'){ // TODO: parse commands and draw on canvas image
         scanf("%s", inputBuff);
-        printf("\t Input text: %s", inputBuff);
+        printf("\tInput text: %s\n", inputBuff);
     }
 
 #ifdef USE_IMG_BMP

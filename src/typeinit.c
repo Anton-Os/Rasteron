@@ -1,5 +1,24 @@
 #include "typeinit.h"
 
+// --------------------------------   Image    -------------------------------- //
+
+Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width){
+	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+	
+	image->name = name;
+	image->width = width;
+	image->height = height;
+	image->data = (uint32_t*)malloc(width * height * sizeof(uint32_t));
+
+	return image;
+}
+
+void free_image(Rasteron_Image* image){
+	if(image->data != NULL) free(image->data);
+    if(image != NULL) free(image);
+	image = NULL; // set address to null
+}
+
 // --------------------------------   Seed    -------------------------------- //
 
 void seedToTable(ColorSeedTable* table, unsigned color){ 
@@ -74,25 +93,6 @@ void colorPointToTable(ColorPointTable* table, unsigned color, double xFrac, dou
 	table->points[table->pointCount].y = yFrac;
 	table->points[table->pointCount].color = color;
 	table->pointCount++;
-}
-
-// --------------------------------   Image    -------------------------------- //
-
-Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width){
-	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
-	
-	image->name = name;
-	image->width = width;
-	image->height = height;
-	image->data = (uint32_t*)malloc(width * height * sizeof(uint32_t));
-
-	return image;
-}
-
-void free_image(Rasteron_Image* image){
-	if(image->data != NULL) free(image->data);
-    if(image != NULL) free(image);
-	image = NULL; // set address to null
 }
 
 // --------------------------------   Sprite    -------------------------------- //
@@ -264,13 +264,15 @@ NebrTable_List* loadNebrTables(ref_image_t refImage){
 }
 
 void delNebrTables(NebrTable_List* nebrTables) {
-	for (NebrTable* currentTable = nebrTables->tables;
-		currentTable != nebrTables->tables + nebrTables->count; 
-		currentTable++) {
-		free(currentTable->nebrs);
+	if(nebrTables != NULL){
+		for (NebrTable* currentTable = nebrTables->tables;
+			currentTable != nebrTables->tables + nebrTables->count; 
+			currentTable++) {
+			if(currentTable != NULL) free(currentTable->nebrs);
+		}
+		free(nebrTables->tables);
+		nebrTables->tables = NULL;
+		free(nebrTables);
+		nebrTables = NULL;
 	}
-	free(nebrTables->tables);
-	nebrTables->tables = NULL;
-	free(nebrTables);
-	nebrTables = NULL;
 }

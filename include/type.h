@@ -7,6 +7,7 @@
 // --------------------------------   Image    -------------------------------- //
 
 enum FLIP_Type { FLIP_Clock, FLIP_Counter, FLIP_Upside };
+enum CROP_Type { CROP_Top, CROP_Bottom, CROP_Left, CROP_Right };
 
 typedef struct {
 	uint32_t height;

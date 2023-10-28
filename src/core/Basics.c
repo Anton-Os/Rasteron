@@ -44,7 +44,7 @@ Rasteron_Image* solidImgOp(ImageSize size, uint32_t color){
 	return solidImage;
 }
 
-Rasteron_Image* copyedImgOp(ref_image_t refImage){
+Rasteron_Image* copyImgOp(ref_image_t refImage){
 	assert(refImage != NULL);
 
 	Rasteron_Image* copyImage = alloc_image("copy", refImage->height, refImage->width);
@@ -55,10 +55,36 @@ Rasteron_Image* copyedImgOp(ref_image_t refImage){
 	return copyImage;
 }
 
+Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double factor){
+	assert(refImage != NULL);
+
+	if(factor > 1.0) factor = 1.0 / factor;
+
+	unsigned height = (type != CROP_Bottom && type != CROP_Top)? refImage->height : (unsigned)(refImage->height * factor);
+	unsigned width = (type != CROP_Left && type != CROP_Right)? refImage->width : (unsigned)(refImage->width * factor);
+
+	Rasteron_Image* cropImage = alloc_image("crop", height, width);
+
+	unsigned offset;
+	if(type == CROP_Left) offset = refImage->width - width;
+	else if(type == CROP_Top) offset = (refImage->height - height) * width;
+	else offset = 0;
+
+	for(unsigned c = 0; c < height; c++){
+		for(unsigned r = 0; r < width; r++){
+			*(cropImage + (r + (c * width))) = *(refImage + offset); //  copy from source to destination
+			offset++;
+		}
+		if(type == CROP_Left || type == CROP_Right) offset += refImage->width - width; // skip to next row position
+	}
+
+	return cropImage;
+}
+
 Rasteron_Image* mirroredImgOp(ref_image_t refImage){
 	assert(refImage != NULL);
 
-	Rasteron_Image* mirrorImage = copyedImgOp(refImage);
+	Rasteron_Image* mirrorImage = copyImgOp(refImage);
 
 	for (unsigned r = 0; r < refImage->height; r++) // Mirror Function
 		for (unsigned c = 0; c < refImage->width; c++) {

@@ -51,6 +51,8 @@ static Rasteron_Image* cellpatternImgOp_single(ref_image_t refImage, nebrCallbac
 }
 
 Rasteron_Image* cellpatternImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
+	assert(refImage != NULL);
+	
 	Rasteron_Image* patternImage = alloc_image("staging", refImage->height, refImage->width);
 	for (unsigned p = 0; p < refImage->width * refImage->height; p++)
 		*(patternImage->data + p) = *(refImage->data + p); // copy pixels from original image
@@ -69,11 +71,8 @@ Rasteron_Image* cellpatternImgOp(ref_image_t refImage, nebrCallback8 callback, u
 	return patternImage;
 }
 
-Rasteron_Image* cellpatternImg_horizontal(ref_image_t refImage, nebrCallback2 callback){
-	if(refImage == NULL){
-		perror("Cannot create pattern image! Null pointer provided as input");
-		return NULL;
-	}
+Rasteron_Image* cellpatternImgOp_horizontal(ref_image_t refImage, nebrCallback2 callback){
+	assert(refImage != NULL);
 
 	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
 		for (unsigned r = 0; r < refImage->width; r++)
@@ -102,11 +101,8 @@ Rasteron_Image* cellpatternImg_horizontal(ref_image_t refImage, nebrCallback2 ca
 	return patternImg;
 }
 
-Rasteron_Image* cellpatternImg_vertical(ref_image_t refImage, nebrCallback2 callback){
-	if(refImage == NULL){
-		perror("Cannot create pattern image! Null pointer provided as input");
-		return NULL;
-	}
+Rasteron_Image* cellpatternImgOp_vertical(ref_image_t refImage, nebrCallback2 callback){
+	assert(refImage != NULL);
 
 	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
 	for (unsigned c = 0; c < refImage->height; c++)

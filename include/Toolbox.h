@@ -3,14 +3,9 @@
 #include "support_def.h"
 #include "type.h"
 
-// #include <math.h>
-// #include <string.h>
-
 void seedRandGen(); // seeds the random number generator
 void replaceFwdSlash(char* str); // utility for replacing forward-slashes with back-slashes
 
-// void makeColor(uint32_t* data, unsigned pixels, uint32_t colorVal); // override data to uniform color
-// void changeColor(uint32_t* data, unsigned pixels, uint32_t newColor, uint32_t oldColor); // switches old color to new
 void bitSwitchRB(uint32_t* data, unsigned pixels); // switch red and blue bits
 void bitSwitchGB(uint32_t* data, unsigned pixels); // switch green and blue bits
 void bitSwitchRG(uint32_t* data, unsigned pixels); // switch red and green bits
@@ -29,11 +24,12 @@ uint32_t fract32(uint32_t refColor, double frac); // produces an 32 bit color va
 uint32_t blend(uint32_t color1, uint32_t color2, double bVal); // blends values between two colors
 uint32_t fuse(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
 
-double pixelDistance(unsigned p1, unsigned p2, unsigned imageWidth); // gets pixel distance based on 2 offsets
+double pixelDistance(unsigned p1, unsigned p2, unsigned imageWidth); // get s pixel distance based on2 offsets
 unsigned pixelPointOffset(PixelPoint pixPos, ref_image_t refImage); // gets pixel offset from image coordinates
 unsigned pixelPointColor(PixelPoint pixPos, ref_image_t refImage); // gets pixel color from image coordinates
 unsigned pixelPointOffset_cursor(PixelPoint cursorPos, ref_image_t refImage); // gets pixel offset from cursor coordinates
 unsigned pixelPointColor_cursor(PixelPoint cursorPos, ref_image_t refImage); // gets pixel color from cursor coordinates
+// TODO: Add a function to calculate direction
 
 #define RASTERON_TOOLBOX_H
 #endif

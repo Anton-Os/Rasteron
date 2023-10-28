@@ -60,7 +60,7 @@ endif(libtiff_FOUND)
 
 set(SUPPORT_ANIMATION true CACHE BOOL "Include font baking module" FORCE)
 if(SUPPORT_ANIMATION)
-    list(APPEND plugin_src src/plugin/Animation.c)
+    list(APPEND plugin_src src/plugin/Queue.c)
 endif()
 
 if(SUPPORT_FONT_BAKING)
@@ -69,7 +69,7 @@ if(SUPPORT_FONT_BAKING)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     message(STATUS "freetype_h variable: ${freetype_h}")
     message(STATUS "freetype_lib variable: ${freetype_lib}")
-    list(APPEND plugin_src src/plugin/Font.c)
+    list(APPEND plugin_src src/plugin/Text.c)
 else()
     set(freetype_found FALSE)
 endif()
@@ -120,35 +120,9 @@ add_executable(WriteTest demos/WriteTest.c)
 target_include_directories(WriteTest PUBLIC include)
 target_link_libraries(WriteTest Rasteron)
 
-if(WIN32) # Full Demos in Win32
-#    add_executable(Cellwise demos/win/Cellwise.c)
-#    target_include_directories(Cellwise PUBLIC include)
-#    target_link_libraries(Cellwise Rasteron)
-
-#    add_executable(Generation demos/win/Generation.c)
-#    target_include_directories(Generation PUBLIC include)
-#    target_link_libraries(Generation Rasteron)
-
-#    add_executable(Noise demos/win/Noise.c)
-#    target_include_directories(Noise PUBLIC include)
-#    target_link_libraries(Noise Rasteron)
-
-#    add_executable(Typo demos/win/Typo.c)
-#    target_include_directories(Typo PUBLIC include)
-#    target_link_libraries(Typo Rasteron)
-
-#    add_executable(Sequence demos/win/Sequence.c)
-#    target_include_directories(Sequence PUBLIC include)
-#    target_link_libraries(Sequence Rasteron)
-elseif(UNIX AND NOT APPLE) # Miniature Demos in X11
-#    add_executable(Generation demos/unix/Generation.c)
-#    target_include_directories(Generation PUBLIC include)
-#    target_link_libraries(Generation Rasteron)
-
-#    add_executable(Typo demos/unix/Typo.c)
-#    target_include_directories(Typo PUBLIC include)
-#    target_link_libraries(Typo Rasteron)
-endif()
+add_executable(Canvas demos/Canvas.c)
+target_include_directories(Canvas PUBLIC include)
+target_link_libraries(Canvas Rasteron)
 
 add_executable(Painter demos/Painter.c)
 target_include_directories(Painter PUBLIC include)
@@ -157,11 +131,11 @@ target_link_libraries(Painter Rasteron)
 # Install Procedures
 
 install(TARGETS Rasteron
-        EXPORT Rasteron
-        RUNTIME DESTINATION bin
-	    LIBRARY DESTINATION lib
-	    ARCHIVE DESTINATION lib
-	    FRAMEWORK DESTINATION lib
+    EXPORT Rasteron
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    FRAMEWORK DESTINATION lib
 )
 
 if(UNIX)

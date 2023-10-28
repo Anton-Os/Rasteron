@@ -3,7 +3,7 @@
 Rasteron_Image* seededImgOp(ref_image_t refImage, uint32_t color, double prob){
 	assert(refImage != NULL);
 
-	Rasteron_Image* seedImage = copyedImgOp(refImage);
+	Rasteron_Image* seedImage = copyImgOp(refImage);
 	
 	if(prob <= 0.0) return seedImage;
 	else if(prob >= 1.0){

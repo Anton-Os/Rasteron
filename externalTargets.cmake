@@ -32,12 +32,9 @@ ExternalProject_Add(libpng
     DEPENDS zlib
 )
 
-add_custom_target(pngconfig # renames the configuration file from libpng16 to libpng
-    COMMAND ${CMAKE_COMMAND}
-        -E copy ${EXTERNAL_INSTALL_DIR}/lib/libpng16.cmake ${EXTERNAL_INSTALL_DIR}/lib/libpng-config.cmake
-    DEPENDS libpng
-)
-
+if(EXISTS ${EXTERNAL_INSTALL_DIR}/lib/libpng16.cmake)
+    file(RENAME ${EXTERNAL_INSTALL_DIR}/lib/libpng16.cmake ${EXTERNAL_INSTALL_DIR}/lib/libpng-config.cmake)
+endif()
 if(EXISTS ${EXTERNAL_INSTALL_DIR}/bin/libpng16d.dll)
     file(COPY ${EXTERNAL_INSTALL_DIR}/bin/libpng16d.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 endif()
@@ -61,13 +58,13 @@ ExternalProject_Add(libtiff
 
 set(LIBJPEG_DIR "${EXTERNAL_PROJ_DIR}/libjpeg")
 ExternalProject_Add(libjpeg
-    GIT_REPOSITORY "https://github.com/thorfdbg/libjpeg.git"
-    GIT_TAG "9e0cea29d7ba7a2c1e763865391bc94b336da25e"
+    GIT_REPOSITORY "https://github.com/stohrendorf/libjpeg-cmake.git"
+    GIT_TAG "d4a4f23031ea45be4f5ed7f1e603aa54deb0c313"
 
     CMAKE_ARGS ${EXTERNAL_ARGS}
 
     PREFIX ${LIBJPEG_DIR}
-    PREFIX ${LIBJPEG_DIR/Build}
+    BINARY_DIR ${LIBJPEG_DIR}/Build
 )
 
 set(SUPPORT_FONT_BAKING true CACHE BOOL "Include font baking module" FORCE)
