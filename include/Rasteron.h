@@ -6,67 +6,84 @@ extern "C"{
 
 #include "Loader.h"
 
-// #include "type.h"
+#include "type.h"
 #include "typeinit.h"
 
-// --------------------------------   Basics Operations    -------------------------------- //
+// --------------------------------   Basic Operations    -------------------------------- //
+//
+//      Involves the most basic operations such as loading from files, fillin in a solid color,
+//      copying, cropping, mirroring, and flipping
 
 Rasteron_Image* loadImgOp(const char* fileName); // creates an image from a file
 Rasteron_Image* solidImgOp(ImageSize size, uint32_t color); // creates a solid color image
 Rasteron_Image* copyImgOp(ref_image_t refImage); // creates copy of image
 Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double factor); // creates cropped image
-Rasteron_Image* mirroredImgOp(ref_image_t refImage); // creates horizontal mirror image
-Rasteron_Image* flippedImgOp(ref_image_t refImage, enum FLIP_Type type); // creates flipped image
+Rasteron_Image* mirrorImgOp(ref_image_t refImage); // creates horizontal mirror image
+Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates flipped image
+
 
 // --------------------------------   Filtering Operations    -------------------------------- //
+//
+//      Distills an image by modifying data by channels
 
 Rasteron_Image* greyscaledImgOp(ref_image_t refImage); // creates greyscale image
 Rasteron_Image* filteredImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter image
 Rasteron_Image* channeledImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
 
-// --------------------------------   Mixing Operations    -------------------------------- //
 
-Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, float scale); // inserts image to create border effect
-Rasteron_Image* dualcolorImgOp(ref_image_t image1, ref_image_t image2, dualcolorCallback callback); // creates effect per pixel from 2 images 
+// --------------------------------   Mixing Operations    -------------------------------- //
+//
+//     Operations requiring two or more images to calculate or combine into a final color,
+//     in most cases require matching width and height for both target images
+
+Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, int offsetX, int offsetY); // insert image at a given offset
+Rasteron_Image* twocolorImgOp(ref_image_t image1, ref_image_t image2, dualcolorCallback callback); // creates effect per pixel from 2 images 
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2); // creates blended image
 Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2);  // creates fused image
 
+
 // --------------------------------   Seeding Operations    -------------------------------- //
+//
+//      Seeds pixels at randomized intervals over an image based on color and probability
 
-Rasteron_Image* seededImgOp(ref_image_t refImage, uint32_t color, double prob); // seeds pixels on image from probability
-Rasteron_Image* seedweightedImgOp(ref_image_t refImage, const ColorSeedTable* seedTable); // seeds pixels on image from seed weights
+Rasteron_Image* seededImgOp(ref_image_t refImage, ColorSeed seed); // seeds pixels on image from probability
+Rasteron_Image* seededImgOp_tabled(ref_image_t refImage, const ColorSeedTable* seedTable); // seeds pixels on image from seed weights
 
-// --------------------------------  Functional Operations   -------------------------------- //
-
-// Rasteron_Image* checkerImgOp(ImageSize size, ColorLatice lattice);
-Rasteron_Image* recoloredImgOp(ref_image_t refImage, recolorCallback callback); // callbacks from input color
-Rasteron_Image* mapImgOp(ImageSize size, mapCallback callback); // callbacks from x and y coordinates
-Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback callback); // callbacks from distance
-Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable);
 
 // --------------------------------   Cellwise Opertaions    -------------------------------- //
+//
+//      For each pixel adjascent neighbors are determined and used to compute the final color
 
 Rasteron_Image* cellpatternImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned iterations); // pattern image from neighbors with iterations
 Rasteron_Image* cellpatternImgOp_horizontal(ref_image_t refImage, nebrCallback2 callback); // horizontal pattern image from left & right neighbors
 Rasteron_Image* cellpatternImgOp_vertical(ref_image_t refImage, nebrCallback2 callback); // vertical pattern image from top & down neighbors
 
-// --------------------------------  Noise Operations  -------------------------------- //
 
-Rasteron_Image* whiteNoiseImgOp(ImageSize size, uint32_t color1, uint32_t color2); // white noise generated between two values
-Rasteron_Image* gradientNoiseImgOp(ImageSize size, ColorLattice lattice); // gradient noise over lattice
-Rasteron_Image* fbmNoiseImgOp(ImageSize size, ColorLatticeTable latticeTable); // fbm noise over layered gradients
+// --------------------------------  Noise Operations  -------------------------------- //
+//
+//      Operations for creating various types of noises
+
+Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2); // white noise generated between two values
+Rasteron_Image* noiseImgOp_gradient(ImageSize size, ColorLattice lattice); // gradient noise over lattice
+Rasteron_Image* noiseImgOp_fbm(ImageSize size, ColorLatticeTable latticeTable); // fbm noise over layered gradients
 // TODO: Include domain warping function
 
-#ifdef RASTERON_ENABLE_ANIM
-#include "Queue.h"
-#endif
+
+// --------------------------------  Functional Operations   -------------------------------- //
+//
+//      Generates images based on various callbacks with inputs as data and outputs as colors
+
+// Rasteron_Image* checkerImgOp(ImageSize size, ColorLatice lattice);
+Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback); // callbacks from input color
+Rasteron_Image* mapImgOp(ImageSize size, mapCallback callback); // callbacks from x and y coordinates
+Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback callback); // callbacks based on distance to nearest point
+Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
+
+#include "Feat_Queue.h" // enables sequenced image types with potential animation support
+#include "Feat_Space.h" // enables spatial types, including sprite and heightmap
 
 #ifdef RASTERON_ENABLE_FONT
-#include "Text.h"
-#endif
-
-#if defined(RASTERON_ENABLE_ANIM) && defined(RASTERON_ENABLE_FONT)
-#include "Menu.h"
+#include "Feat_Text.h" // enables single line text and expanded message objects
 #endif
 
 // TODO: Include Rasteron_Factory

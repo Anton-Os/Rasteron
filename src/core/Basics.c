@@ -81,7 +81,7 @@ Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double fact
 	return cropImage;
 }
 
-Rasteron_Image* mirroredImgOp(ref_image_t refImage){
+Rasteron_Image* mirrorImgOp(ref_image_t refImage){
 	assert(refImage != NULL);
 
 	Rasteron_Image* mirrorImage = copyImgOp(refImage);
@@ -95,7 +95,7 @@ Rasteron_Image* mirroredImgOp(ref_image_t refImage){
 	return mirrorImage;
 }
 
-Rasteron_Image* flippedImgOp(ref_image_t refImage, enum FLIP_Type flip){
+Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type flip){
 	assert(refImage != NULL);
 	
 	Rasteron_Image* flipImage = NULL;

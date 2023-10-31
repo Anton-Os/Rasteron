@@ -1,4 +1,4 @@
-#include "OS_Util.h"
+#include "Util_OS.h"
 
 // Path Generation
 
@@ -23,7 +23,7 @@ void createWindow(WNDPROC wndProc, LPCTSTR name){
 		"Rasteron",
 		name,
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 1100,
+		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
 		NULL, NULL, GetModuleHandle(NULL), NULL
 	);
 

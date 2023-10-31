@@ -4,7 +4,7 @@
 
 // Noise Image Operations
 
-Rasteron_Image* whiteNoiseImgOp(ImageSize size, uint32_t color1, uint32_t color2){
+Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2){
     Rasteron_Image* noiseImg = alloc_image("white_noise", size.height, size.width);
 
     // Noise Generation Logic
@@ -17,7 +17,7 @@ Rasteron_Image* whiteNoiseImgOp(ImageSize size, uint32_t color1, uint32_t color2
     return noiseImg;
 }
 
-Rasteron_Image* gradientNoiseImgOp(ImageSize size, ColorLattice lattice){
+Rasteron_Image* noiseImgOp_gradient(ImageSize size, ColorLattice lattice){
 	assert(lattice.xCells > 0 && lattice.yCells > 0);
 
     Rasteron_Image* noiseImg = alloc_image("gradient_noise", size.height, size.width);
@@ -71,13 +71,13 @@ Rasteron_Image* gradientNoiseImgOp(ImageSize size, ColorLattice lattice){
     return noiseImg;
 }
 
-Rasteron_Image* fbmNoiseImgOp(ImageSize size, const ColorLatticeTable* latticeTable){
+Rasteron_Image* noiseImgOp_fbm(ImageSize size, const ColorLatticeTable* latticeTable){
 	assert(latticeTable->latticeCount > 0);
 
 	Rasteron_Image** noiseImages = (Rasteron_Image**)malloc(sizeof(Rasteron_Image*) * latticeTable->latticeCount);
 	
 	for(unsigned l = 0; l < latticeTable->latticeCount; l++)
-		*(noiseImages + l) = gradientNoiseImgOp(size, latticeTable->lattices[l]);
+		*(noiseImages + l) = noiseImgOp_gradient(size, latticeTable->lattices[l]);
 
 	Rasteron_Image* fbmNoiseImg = copyImgOp(*noiseImages);
 	for(unsigned l = 1; l < latticeTable->latticeCount; l++)

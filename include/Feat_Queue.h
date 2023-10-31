@@ -1,6 +1,8 @@
-#ifndef RASTERON_ANIM_H
+#ifndef RASTERON_QUEUE_H
 
 #include "type.h"
+
+// --------------------------------  Queue  -------------------------------- //
 
 // #define QUEUE_IMAGE_HEIGHT 1024
 // #define QUEUE_IMAGE_WIDTH 1024
@@ -25,5 +27,21 @@ void free_queue(Rasteron_Queue* queue);
 void addFrameAt(Rasteron_Queue* queue, ref_image_t refImage, unsigned short frameIndex); // copies target image into index of queue struct
 Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); // gets frame from an index within queue
 
-#define RASTERON_ANIM_H
+
+// --------------------------------  MenuItem  -------------------------------- //
+
+// TODO: Implement menu and GUI support features
+
+
+
+// --------------------------------  Animation  -------------------------------- //
+
+#ifdef RASTERON_ENABLE_ANIM
+
+// TODO: Implement Aimation and Video encoding features
+
+#endif
+
+
+#define RASTERON_QUEUE_H
 #endif

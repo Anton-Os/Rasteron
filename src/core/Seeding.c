@@ -1,20 +1,20 @@
 #include "Rasteron.h"
 
-Rasteron_Image* seededImgOp(ref_image_t refImage, uint32_t color, double prob){
+Rasteron_Image* seededImgOp(ref_image_t refImage, ColorSeed seed){
 	assert(refImage != NULL);
 
 	Rasteron_Image* seedImage = copyImgOp(refImage);
 	
-	if(prob <= 0.0) return seedImage;
-	else if(prob >= 1.0){
+	if(seed.weight <= 0.0) return seedImage;
+	else if(seed.weight >= 1.0){
 		for (unsigned i = 0; i < seedImage->height * seedImage->width; i++)
-			*(seedImage->data + i) = color;
+			*(seedImage->data + i) = seed.color;
 		return seedImage;
 	} else {
 		double chance = 0.0;
 		for (unsigned p = 0; p < seedImage->width * seedImage->height; p++) {
 			chance = (double)rand() / (double)RAND_MAX;
-			if (chance <= prob) *(seedImage->data + p) = color; // if chance is less than probability change to target color
+			if (chance <= seed.weight) *(seedImage->data + p) = seed.color; // if chance is less than seed.weightability change to target color
 			else *(seedImage->data + p) = *(refImage->data + p); // otherwise copy ref contents
 		}
 	}
@@ -22,7 +22,7 @@ Rasteron_Image* seededImgOp(ref_image_t refImage, uint32_t color, double prob){
 	return seedImage;
 }
 
-Rasteron_Image* seedweightedImgOp(ref_image_t refImage, const ColorSeedTable* seedTable){
+Rasteron_Image* seededImgOp_tabled(ref_image_t refImage, const ColorSeedTable* seedTable){
 	assert(refImage != NULL);
 
 	Rasteron_Image* seedImage = alloc_image("palette", refImage->height, refImage->width);

@@ -1,18 +1,13 @@
 #ifndef RASTERON_TYPE_H
 
-#include <stdint.h>
-
 #include "support_def.h"
 
 // --------------------------------   Image    -------------------------------- //
+//
+//		Most important type representing images plus helper struct for sizing
+//		and enums for mirroring and cropping images
 
-enum FLIP_Type { FLIP_Clock, FLIP_Counter, FLIP_Upside };
-enum CROP_Type { CROP_Top, CROP_Bottom, CROP_Left, CROP_Right };
-
-typedef struct {
-	uint32_t height;
-	uint32_t width;
-} ImageSize;
+typedef struct { uint32_t height; uint32_t width; } ImageSize;
 
 typedef struct {
     char* name;
@@ -22,6 +17,11 @@ typedef struct {
 } Rasteron_Image;
 
 typedef const Rasteron_Image *const ref_image_t;
+
+enum FLIP_Type { FLIP_Clock, FLIP_Counter, FLIP_Upside };
+enum CROP_Type { CROP_Top, CROP_Bottom, CROP_Left, CROP_Right };
+
+
 
 // --------------------------------   Seed    -------------------------------- //
 
@@ -70,47 +70,18 @@ typedef struct {
 	unsigned pointCount;
 } ColorPointTable;
 
-// --------------------------------   Sprite    -------------------------------- //
-
-#define SPRITE_SIZE 1000
-
-typedef struct {
-    float topLeft[2];
-    float topRight[2];
-    float botLeft[2];
-    float botRight[2];
-} BoxBounds;
-
-typedef struct {
-    const Rasteron_Image* image;
-    BoxBounds bounds;
-} Rasteron_Sprite;
-
-
-// --------------------------------   Heightmap    -------------------------------- //
-
-typedef struct {
-    uint32_t width;
-	uint32_t height;
-    
-    double minBound;
-    double maxBound;
-    double* data;
-} Rasteron_Heightmap;
-
 // --------------------------------  Noise    -------------------------------- //
 
 typedef struct {
-	unsigned xCells;
-	unsigned yCells;
-	unsigned color1;
-	unsigned color2;
+	unsigned xCells; unsigned yCells;
+	unsigned color1; unsigned color2;
 } ColorLattice;
 
 typedef struct {
     ColorLattice lattices[2046];
 	unsigned latticeCount;
 } ColorLatticeTable;
+
 
 // --------------------------------   Cellwise    -------------------------------- //
 
@@ -133,13 +104,6 @@ typedef struct {
 	uint32_t count;
 	NebrTable* tables;
 } NebrTable_List;
-
-typedef struct {
-	unsigned color;
-	enum NEBR_CellFlag direction;
-} ColorStep;
-
-#define ESCAPE_STEP (ColorStep){ ZERO_COLOR, NEBR_None } // escape step to terminate step image generation
 
 #define RASTERON_TYPE_H
 #endif

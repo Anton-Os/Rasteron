@@ -1,4 +1,4 @@
-#include "Text.h"
+#include "Feat_Text.h"
 
 static FT_Library _freetypeLib = NULL;
 

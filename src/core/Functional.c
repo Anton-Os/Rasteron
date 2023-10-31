@@ -2,7 +2,7 @@
 
 static unsigned callback_vornoi(unsigned color, double distance){ return color; }
 
-Rasteron_Image* recoloredImgOp(ref_image_t refImage, recolorCallback callback){
+Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback){
 	assert(refImage != NULL);
     
     Rasteron_Image* recolorImage = alloc_image("recolor", refImage->height, refImage->width);

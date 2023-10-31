@@ -58,10 +58,9 @@ endif(libtiff_FOUND)
 
 # Plugin Sources
 
-set(SUPPORT_ANIMATION true CACHE BOOL "Include font baking module" FORCE)
-if(SUPPORT_ANIMATION)
-    list(APPEND plugin_src src/plugin/Queue.c)
-endif()
+list(APPEND feat_src src/feature/Feat_Queue.c)
+
+list(APPEND feat_src src/feature/Feat_Space.c)
 
 if(SUPPORT_FONT_BAKING)
     set(freetype_found TRUE)
@@ -69,7 +68,7 @@ if(SUPPORT_FONT_BAKING)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     message(STATUS "freetype_h variable: ${freetype_h}")
     message(STATUS "freetype_lib variable: ${freetype_lib}")
-    list(APPEND plugin_src src/plugin/Text.c)
+    list(APPEND feat_src src/feature/Feat_Text.c)
 else()
     set(freetype_found FALSE)
 endif()
@@ -77,15 +76,15 @@ endif()
 # Helper Sources
 
 if(WIN32) # Windows Specific
-    list(APPEND util_src src/util/Win_Util.c)
+    list(APPEND util_src src/util/Util_Win.c)
 elseif(UNIX AND NOT APPLE) # Unix Specific
-    list(APPEND util_src src/util/Unix_Util.c)
+    list(APPEND util_src src/util/Util_Unix.c)
 endif()
 
 # Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${plugin_src}) # library only
-add_library(Rasteron STATIC ${core_src} ${plugin_src} ${util_src}) # library with examples
+# add_library(Rasteron STATIC ${core_src} ${feat_src}) # library only
+add_library(Rasteron STATIC ${core_src} ${feat_src} ${util_src}) # library with examples
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
 
