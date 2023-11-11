@@ -21,7 +21,7 @@ set(core_src
     src/core/Filtering.c
     src/core/Seeding.c
     src/core/Mixing.c
-    src/core/Functional.c
+    src/core/Procedural.c
     src/core/Cellwise.c
     src/core/Noise.c
 )
@@ -60,7 +60,7 @@ endif(libtiff_FOUND)
 
 list(APPEND feat_src src/feature/Feat_Queue.c)
 
-list(APPEND feat_src src/feature/Feat_Space.c)
+list(APPEND feat_src src/feature/Feat_Spatial.c)
 
 if(SUPPORT_FONT_BAKING)
     set(freetype_found TRUE)
@@ -119,13 +119,16 @@ add_executable(WriteTest demos/WriteTest.c)
 target_include_directories(WriteTest PUBLIC include)
 target_link_libraries(WriteTest Rasteron)
 
-add_executable(Canvas demos/Canvas.c)
-target_include_directories(Canvas PUBLIC include)
+add_executable(Canvas 
+    demos/Canvas.c 
+    demos/catalouge/Catalouge.c
+)
+target_include_directories(Canvas PUBLIC include demos)
 target_link_libraries(Canvas Rasteron)
 
-add_executable(Painter demos/Painter.c)
-target_include_directories(Painter PUBLIC include)
-target_link_libraries(Painter Rasteron)
+# add_executable(Painter demos/Painter.c)
+# target_include_directories(Painter PUBLIC include)
+# target_link_libraries(Painter Rasteron)
 
 # Install Procedures
 

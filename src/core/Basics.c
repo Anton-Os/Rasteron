@@ -24,7 +24,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
 #endif
 #ifdef USE_IMG_PNG
 	case(IMG_Png):
-		refImage = alloc_image("ref-png", fileImage.data.png.width, fileImage.data.png.height);
+		refImage = alloc_image("ref-png", fileImage.data.png.height, fileImage.data.png.width);
 		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
 			*(refImage->data + i) = *(fileImage.data.png.data + i); // copying operation
 		break;
@@ -57,8 +57,9 @@ Rasteron_Image* copyImgOp(ref_image_t refImage){
 
 Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double factor){
 	assert(refImage != NULL);
+	if(type == CROP_None || factor <= 0.0) return copyImgOp(refImage);
 
-	if(factor > 1.0) factor = 1.0 / factor;
+	if(factor > 1.0) factor = 1.0 / factor; // ensure that crop factor is less than 1
 
 	unsigned height = (type != CROP_Bottom && type != CROP_Top)? refImage->height : (unsigned)(refImage->height * factor);
 	unsigned width = (type != CROP_Left && type != CROP_Right)? refImage->width : (unsigned)(refImage->width * factor);
@@ -72,7 +73,7 @@ Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double fact
 
 	for(unsigned c = 0; c < height; c++){
 		for(unsigned r = 0; r < width; r++){
-			*(cropImage + (r + (c * width))) = *(refImage + offset); //  copy from source to destination
+			*(cropImage->data + (r + (c * width))) = *(refImage->data + offset); //  copy from source to destination
 			offset++;
 		}
 		if(type == CROP_Left || type == CROP_Right) offset += refImage->width - width; // skip to next row position
@@ -95,31 +96,32 @@ Rasteron_Image* mirrorImgOp(ref_image_t refImage){
 	return mirrorImage;
 }
 
-Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type flip){
+Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type){
 	assert(refImage != NULL);
+	if(type == FLIP_None) return copyImgOp(refImage);
 	
-	Rasteron_Image* flipImage = NULL;
-	if(flip == FLIP_Upside){
-		flipImage = alloc_image("flip", refImage->height, refImage->width); // parameters match source
+	Rasteron_Image* flipImg = NULL;
+	if(type == FLIP_Upside){
+		flipImg = alloc_image("flip", refImage->height, refImage->width); // parameters srcOffset source
 		for(unsigned p = 0; p < refImage->height * refImage->width; p++)
-			*(flipImage->data + (refImage->height * refImage->width) - p - 1) = *(refImage->data + p); // copies pixels in reverse
-	} else { // TODO: Fix Orientation
-		flipImage = alloc_image("flip", refImage->width, refImage->height); // parameters inverse of source
-		unsigned offset = 0;
+			*(flipImg->data + (refImage->height * refImage->width) - p - 1) = *(refImage->data + p); // copies pixels in reverse
+	} else if(type == FLIP_Clock) {
+		flipImg = alloc_image("flip", refImage->width, refImage->height); // parameters inverse of source
+		unsigned dstOffset = 0;
 
 		for(unsigned w = 0; w < refImage->width; w++){
-			unsigned match = (flip == FLIP_Clock) 
-				? (refImage->width * refImage->height) + w
-				: refImage->width - w - 1;
-	
+			unsigned srcOffset = (refImage->width * refImage->height) + w;
 			for(unsigned h = 0; h < refImage->height; h++){
-				match = (flip == FLIP_Clock) ? match - refImage->width : match + refImage->width;
-				*(flipImage->data + offset) = *(refImage->data + match); // copies to image from match index
-
-				offset++; // move to next pixel
+				srcOffset -= refImage->width;
+				*(flipImg->data + dstOffset) = *(refImage->data + srcOffset);
+				dstOffset++;
 			}
 		}
+	} else if(type == FLIP_Counter){
+		Rasteron_Image* flipUpsideImg = flipImgOp(refImage, FLIP_Upside);
+		flipImg = flipImgOp(flipUpsideImg, FLIP_Clock);
+		dealloc_image(flipUpsideImg);
 	}
 
-	return flipImage;
+	return flipImg;
 }

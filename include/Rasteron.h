@@ -1,6 +1,7 @@
 #ifndef RASTERON_H
 
 #ifdef __cplusplus
+// namespace Rasteron {
 extern "C"{
 #endif
 
@@ -8,6 +9,7 @@ extern "C"{
 
 #include "type.h"
 #include "typeinit.h"
+
 
 // --------------------------------   Basic Operations    -------------------------------- //
 //
@@ -36,7 +38,7 @@ Rasteron_Image* channeledImgOp(ref_image_t refImage, CHANNEL_Type channel); // c
 //     Operations requiring two or more images to calculate or combine into a final color,
 //     in most cases require matching width and height for both target images
 
-Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, int offsetX, int offsetY); // insert image at a given offset
+Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coordX, double coordY); // insert image at a given offset
 Rasteron_Image* twocolorImgOp(ref_image_t image1, ref_image_t image2, dualcolorCallback callback); // creates effect per pixel from 2 images 
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2); // creates blended image
 Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2);  // creates fused image
@@ -54,9 +56,9 @@ Rasteron_Image* seededImgOp_tabled(ref_image_t refImage, const ColorSeedTable* s
 //
 //      For each pixel adjascent neighbors are determined and used to compute the final color
 
-Rasteron_Image* cellpatternImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned iterations); // pattern image from neighbors with iterations
-Rasteron_Image* cellpatternImgOp_horizontal(ref_image_t refImage, nebrCallback2 callback); // horizontal pattern image from left & right neighbors
-Rasteron_Image* cellpatternImgOp_vertical(ref_image_t refImage, nebrCallback2 callback); // vertical pattern image from top & down neighbors
+Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned iterations); // pattern image from neighbors with iterations
+Rasteron_Image* cellwiseImgOp_horizontal(ref_image_t refImage, nebrCallback2 callback); // horizontal pattern image from left & right neighbors
+Rasteron_Image* cellwiseImgOp_vertical(ref_image_t refImage, nebrCallback2 callback); // vertical pattern image from top & down neighbors
 
 
 // --------------------------------  Noise Operations  -------------------------------- //
@@ -69,7 +71,7 @@ Rasteron_Image* noiseImgOp_fbm(ImageSize size, ColorLatticeTable latticeTable); 
 // TODO: Include domain warping function
 
 
-// --------------------------------  Functional Operations   -------------------------------- //
+// --------------------------------  Procedural Operations   -------------------------------- //
 //
 //      Generates images based on various callbacks with inputs as data and outputs as colors
 
@@ -80,7 +82,7 @@ Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTabl
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
 #include "Feat_Queue.h" // enables sequenced image types with potential animation support
-#include "Feat_Space.h" // enables spatial types, including sprite and heightmap
+#include "Feat_Spatial.h" // enables spatial types, including sprite and heightmap
 
 #ifdef RASTERON_ENABLE_FONT
 #include "Feat_Text.h" // enables single line text and expanded message objects
@@ -89,7 +91,7 @@ Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTab
 // TODO: Include Rasteron_Factory
 
 #ifdef __cplusplus
-}
+} // }
 #endif
 
 #define RASTERON_H

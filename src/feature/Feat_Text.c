@@ -87,7 +87,7 @@ static Rasteron_Image* bakeText_custom(const Rasteron_Text* textObj, unsigned sc
 		: createSolidImg((ImageSize){ sizeProps.xMax - sizeProps.xMin, sizeProps.yMax - sizeProps.yMin }, textObj->bkColor); // Inved
 	cropTextImage(canvasImage, fontImage, sizeProps);
 	
-	free_image(canvasImage);
+	dealloc_image(canvasImage);
     FT_Done_Face(face);
 	return fontImage; // return fontImage;
 }

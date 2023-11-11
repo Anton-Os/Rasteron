@@ -38,8 +38,8 @@ int main(int argc, char** argv) {
 
     // Cleanup Step
 
-    free_image(blankImage);
-    free_image(testImage);
+    dealloc_image(blankImage);
+    dealloc_image(testImage);
 
     return 0;
 }

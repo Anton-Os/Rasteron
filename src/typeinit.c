@@ -13,7 +13,7 @@ Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width){
 	return image;
 }
 
-void free_image(Rasteron_Image* image){
+void dealloc_image(Rasteron_Image* image){
 	if(image->data != NULL) free(image->data);
     if(image != NULL) free(image);
 	image = NULL; // set address to null

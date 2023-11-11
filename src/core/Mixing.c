@@ -1,38 +1,43 @@
 #include "Rasteron.h"
 
-// Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, float scale){
-Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, int offsetX, int offsetY){
-	// assert(image1 != NULL && image2 != NULL && image1->width == image2->width && image1->height == image2->height);
-
+Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coordX, double coordY){
 	ref_image_t innerImg = (image1->width * image1->height < image2->width * image2->height)? image1 : image2; // (scale < 1.0)? image1 : image2; 
 	ref_image_t outerImg = (image1->width * image1->height < image2->width * image2->height)? image2 : image1; // (scale < 1.0)? image2 : image1;
-	// if(scale > 1.0) scale = 1.0 / scale;
 
-	unsigned xBounds[2] = { 0, innerImg->width }; // TODO: compute real X bounds
-	// unsigned xBounds[2] = { floor(innerImg->width * scale), ceil(innerImg->width - (innerImg->width * scale)) };
-	unsigned yBounds[2] = { 0, innerImg->height }; // TODO: compute real Y bounds
-	// unsigned yBounds[2] = { floor(innerImg->height * scale), ceil(innerImg->height - (innerImg->height * scale)) };
+	unsigned midpoint[2] = { (outerImg->width / 2) - (innerImg->width / 2), (outerImg->height / 2) - (innerImg->height / 2) };
+	unsigned xBounds[2] = { midpoint[0], midpoint[0] + innerImg->width };
+	unsigned yBounds[2] = { midpoint[1], midpoint[1] + innerImg->height };
+	if(coordX != 0.0){
+		unsigned maxX = (unsigned)((outerImg->width / 2) - (innerImg->width / 2));
+		if(coordX >= 1.0){ xBounds[0] += maxX; xBounds[1] += maxX; }
+		else if(coordX <= -1.0){ xBounds[0] -= maxX; xBounds[1] -= maxX; }
+		else{
+			xBounds[0] += (coordX > 0.0)? (int)(coordX * maxX) : -(int)(coordX * maxX);
+			xBounds[1] += (coordX > 0.0)? (int)(coordX * maxX) : -(int)(coordX * maxX);
+		}
+	}
+	if(coordY != 0.0){
+		unsigned maxY = (unsigned)((outerImg->height / 2) - (innerImg->height / 2));
+		if(coordY >= 1.0){ yBounds[0] += maxY; yBounds[1] += maxY; }
+		else if(coordY <= -1.0){ yBounds[0] -= maxY; yBounds[1] -= maxY; }
+		else{
+			yBounds[0] += (coordY > 0.0)? (int)(coordY * maxY) : -(int)(coordY * maxY);
+			yBounds[1] += (coordY > 0.0)? (int)(coordY * maxY) : -(int)(coordY * maxY);
+		}
+	}
 
 	Rasteron_Image* insertImg = alloc_image("insert", outerImg->height, outerImg->width);
 	unsigned ip = 0; // tracks inner image pixel position
 
 	for(unsigned op = 0; op < outerImg->width * outerImg->height; op++){
-		unsigned xOffset = op % insertImg->width; // absolute X pixel offset
-        unsigned yOffset = op / insertImg->width; // absolute Y pixel offset
-		if(xOffset > xBounds[0] && xOffset < xBounds[2] && yOffset > yBounds[0] && yOffset < yBounds[1]){
+		unsigned coordX = op % insertImg->width; // absolute X pixel offset
+        unsigned coordY = op / insertImg->width; // absolute Y pixel offset
+		if(coordX >= xBounds[0] && coordX < xBounds[1] && coordY >= yBounds[0] && coordY < yBounds[1]){
+			// TODO: Check against alpha channel
 			*(insertImg->data + op) = *(innerImg->data + ip);
 			ip++;
 		} else *(insertImg->data + op) = *(outerImg->data + op);
 	}
-
-	/* for(unsigned p = 0; p < innerImg->width * innerImg->height; p++){
-		unsigned xOffset = p % insertImg->width; // absolute X pixel offset
-        unsigned yOffset = p / insertImg->width; // absolute Y pixel offset
-
-		if((xOffset > xBounds[0] && xOffset < xBounds[1]) && (yOffset > yBounds[0] && yOffset < yBounds[1])) 
-			*(insertImg->data + p) = *(innerImg->data + p); // copies from inner image if inside
-		else *(insertImg->data + p) = *(outerImg->data + p); // copies from outer image if outside
-	} */
 
 	return insertImg;
 }

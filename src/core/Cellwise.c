@@ -2,7 +2,7 @@
 
 // Cellular operations
 
-static Rasteron_Image* cellpatternImgOp_single(ref_image_t refImage, nebrCallback8 callback){
+static Rasteron_Image* cellwiseImgOp_single(ref_image_t refImage, nebrCallback8 callback){
 	assert(refImage != NULL);
 
 	NebrTable_List* nebrTables = loadNebrTables(refImage);
@@ -50,7 +50,7 @@ static Rasteron_Image* cellpatternImgOp_single(ref_image_t refImage, nebrCallbac
 	return patternImg;
 }
 
-Rasteron_Image* cellpatternImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
+Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
 	assert(refImage != NULL);
 	
 	Rasteron_Image* patternImage = alloc_image("staging", refImage->height, refImage->width);
@@ -61,17 +61,17 @@ Rasteron_Image* cellpatternImgOp(ref_image_t refImage, nebrCallback8 callback, u
 
 	unsigned short i = 0;
 	do {
-		stagingImg = cellpatternImgOp_single(patternImage, callback);
+		stagingImg = cellwiseImgOp_single(patternImage, callback);
 		for (unsigned p = 0; p < stagingImg->width * stagingImg->height; p++)
 			*(patternImage->data + p) = *(stagingImg->data + p); // copy pixels from pattern image
-		free_image(stagingImg);
+		dealloc_image(stagingImg);
 		i++;
 	} while (i < iterations);
 
 	return patternImage;
 }
 
-Rasteron_Image* cellpatternImgOp_horizontal(ref_image_t refImage, nebrCallback2 callback){
+Rasteron_Image* cellwiseImgOp_horizontal(ref_image_t refImage, nebrCallback2 callback){
 	assert(refImage != NULL);
 
 	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
@@ -97,11 +97,11 @@ Rasteron_Image* cellpatternImgOp_horizontal(ref_image_t refImage, nebrCallback2 
 				*(stagingImg->data + p + stagingImg->width) = *(patternImg->data + p);
 		}
 
-	free_image(stagingImg);
+	dealloc_image(stagingImg);
 	return patternImg;
 }
 
-Rasteron_Image* cellpatternImgOp_vertical(ref_image_t refImage, nebrCallback2 callback){
+Rasteron_Image* cellwiseImgOp_vertical(ref_image_t refImage, nebrCallback2 callback){
 	assert(refImage != NULL);
 
 	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
@@ -128,6 +128,6 @@ Rasteron_Image* cellpatternImgOp_vertical(ref_image_t refImage, nebrCallback2 ca
 		}
 	}
 
-	free_image(stagingImg);
+	dealloc_image(stagingImg);
 	return patternImg;
 }

@@ -52,6 +52,6 @@ Rasteron_Image* channeledImgOp(ref_image_t refImage, CHANNEL_Type channel) {
 		case CHANNEL_Blue: channelImage->name = "average-blue"; break;
 	}
 
-	free_image(greyImage);
+	dealloc_image(greyImage);
 	return channelImage;
 }

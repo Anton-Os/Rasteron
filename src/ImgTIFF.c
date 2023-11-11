@@ -24,14 +24,12 @@ void loadFromFile_TIFF(const char* fileName, FileImage* image) {
 		image->data.tiff.width,
 		image->data.tiff.length,
 		image->data.tiff.data,
-		ORIENTATION_TOPRIGHT,
+		ORIENTATION_TOPLEFT,
 		0
 	);
 
 	TIFFClose(tiffFile);
 
-	bitSwitchRB(image->data.tiff.data, image->data.tiff.length * image->data.tiff.width); // switch red and blue bits
-	
 	return;
 }
 

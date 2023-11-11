@@ -67,7 +67,7 @@ Rasteron_Image* noiseImgOp_gradient(ImageSize size, ColorLattice lattice){
         *(noiseImg->data + p) = newColor;
     }
 
-	free_image(latticeImg);
+	dealloc_image(latticeImg);
     return noiseImg;
 }
 
@@ -85,6 +85,6 @@ Rasteron_Image* noiseImgOp_fbm(ImageSize size, const ColorLatticeTable* latticeT
 			*(fbmNoiseImg->data + p) = blend(*(fbmNoiseImg->data + p), *((*(noiseImages + l))->data + p), 0.5);
 
 	for(unsigned l = 0; l < latticeTable->latticeCount; l++)
-		free_image(*(noiseImages + l));
+		dealloc_image(*(noiseImages + l));
 	free(noiseImages);
 }

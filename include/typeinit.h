@@ -5,7 +5,7 @@
 // --------------------------------   Image    -------------------------------- //
 
 Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width);
-void free_image(Rasteron_Image* image);
+void dealloc_image(Rasteron_Image* image);
 
 
 

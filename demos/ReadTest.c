@@ -21,9 +21,9 @@ int main(int argc, char** argv) {
     
     // Cleanup Step
     
-    free_image(sourceImage1);
-    free_image(sourceImage2);
-    free_image(sourceImage3);
+    dealloc_image(sourceImage1);
+    dealloc_image(sourceImage2);
+    dealloc_image(sourceImage3);
 
     return 0;
 }

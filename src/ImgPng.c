@@ -44,6 +44,7 @@ void loadFromFile_PNG(const char* fileName, FileImage* image) {
 	png_get_IHDR(
 		png_ptr, info_ptr,
 		&image->data.png.width, &image->data.png.height,
+		// &image->data.png.height, &image->data.png.width,
 		&image->data.png.bitDepth, &image->data.png.colorType,
 		NULL, NULL, NULL
 	);
@@ -60,8 +61,10 @@ void loadFromFile_PNG(const char* fileName, FileImage* image) {
 	png_byte* src_ptr;
 	uint32_t* dest_ptr = image->data.png.data;
 	for (unsigned int r = 0; r < image->data.png.height; r++) {
+	// for (unsigned int r = 0; r < image->data.png.width; r++){
 		src_ptr = image->data.png.row_ptrs[r];
 		for (unsigned int c = 0; c < image->data.png.width; c++) {
+		// for (unsigned int c = 0; c < image->data.png.height; c++) {
 			png_byte red = *src_ptr;
 			png_byte green = *(++src_ptr);
 			png_byte blue = *(++src_ptr);

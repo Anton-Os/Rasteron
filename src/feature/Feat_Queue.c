@@ -24,7 +24,7 @@ Rasteron_Queue* alloc_queue(const char* prefix, ImageSize size, unsigned frameCo
 
 void addFrameAt(Rasteron_Queue* queue, const Rasteron_Image *const refImage, unsigned short frameIndex){
 	assert(frameIndex >= queue->frameCount);
-    free_image(*(queue->frameData + frameIndex)); // deleting old image if exists
+    dealloc_image(*(queue->frameData + frameIndex)); // deleting old image if exists
 
     queue->index = frameIndex;
     *(queue->frameData + frameIndex) = createCopyImg(refImage); // creating copy image
@@ -39,10 +39,10 @@ Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex){
     return *(queue->frameData + frameIndex);
 }
 
-void free_queue(Rasteron_Queue* queue){
+void dealloc_queue(Rasteron_Queue* queue){
     if(queue != NULL){
         for(unsigned f = 0; f < queue->frameCount; f++)
-            free_image(*(queue->frameData + f));
+            dealloc_image(*(queue->frameData + f));
         free(queue->frameData);
         free(queue);
         queue = NULL;

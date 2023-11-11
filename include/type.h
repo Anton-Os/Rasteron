@@ -18,10 +18,6 @@ typedef struct {
 
 typedef const Rasteron_Image *const ref_image_t;
 
-enum FLIP_Type { FLIP_Clock, FLIP_Counter, FLIP_Upside };
-enum CROP_Type { CROP_Top, CROP_Bottom, CROP_Left, CROP_Right };
-
-
 
 // --------------------------------   Seed    -------------------------------- //
 
@@ -104,6 +100,11 @@ typedef struct {
 	uint32_t count;
 	NebrTable* tables;
 } NebrTable_List;
+
+// --------------------------------   Other    -------------------------------- //
+
+enum FLIP_Type { FLIP_None, FLIP_Clock, FLIP_Counter, FLIP_Upside };
+enum CROP_Type { CROP_None, CROP_Top, CROP_Bottom, CROP_Left, CROP_Right };
 
 #define RASTERON_TYPE_H
 #endif

@@ -22,7 +22,7 @@ typedef struct {
 } Rasteron_Queue;
 
 Rasteron_Queue* alloc_queue(const char* prefix, ImageSize size, unsigned frameCount);
-void free_queue(Rasteron_Queue* queue);
+void dealloc_queue(Rasteron_Queue* queue);
 
 void addFrameAt(Rasteron_Queue* queue, ref_image_t refImage, unsigned short frameIndex); // copies target image into index of queue struct
 Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); // gets frame from an index within queue
