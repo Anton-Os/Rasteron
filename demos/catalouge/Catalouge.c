@@ -1,5 +1,7 @@
 #include "Catalouge.h"
 
+static char fullImagePath[1024];
+
 Rasteron_Image* supernestImgOp(double x, double y){
     Rasteron_Image* nestedImgs[9] = {
         solidImgOp((ImageSize){ 768, 768 }, 0xFFFF00FF),
@@ -29,7 +31,6 @@ Rasteron_Image* supernestImgOp(double x, double y){
 }
 
 Rasteron_Image* slicediceImgOp(enum FLIP_Type flip, int isMirrored, enum CROP_Type crop, double factor){ 
-    char fullImagePath[1024];
     genFullFilePath("Zero+.png", &fullImagePath);
 
     Rasteron_Image* loadedImg = loadImgOp(fullImagePath);
@@ -44,9 +45,39 @@ Rasteron_Image* slicediceImgOp(enum FLIP_Type flip, int isMirrored, enum CROP_Ty
     return finalImg;
 }
 
-Rasteron_Image* distillingImgOp(){ 
-    // TODO: Add body
-    return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00); 
+static unsigned distill(unsigned color){
+    /* static const unsigned levels[5] = { 0x00, 0x40, 0x80, 0xC0, 0xFF };
+
+    unsigned short levelIndex = 0;
+    for(unsigned l = 0; l < color; l++) 
+        if(getLightDiff(color, levels[l]) < getLightDiff(color, levels[levelIndex]))
+            levelIndex = l; // finding closest matching level */
+
+    uint8_t red = color & RED_CHANNEL;
+    uint8_t green = color & GREEN_CHANNEL;
+    uint8_t blue = color & BLUE_CHANNEL;
+
+    // if(red > green && red > blue) return red; // return red if dominant
+    // else if(green > red && green > blue) return green; // return green if dominant
+    // else if(blue > red && blue > green) return blue; // return blue if dominant
+
+    return color; // 0x00; // return black by default
+}
+
+Rasteron_Image* distillingImgOp(enum CHANNEL_Type channel){ 
+    genFullFilePath("User.png", &fullImagePath);
+
+    Rasteron_Image* loadedImg = loadImgOp(fullImagePath);
+    // Rasteron_Image* finalImg = filterImgOp(loadedImg, channel);
+    Rasteron_Image* finalImg = recolorImgOp(loadedImg, distill);
+
+    dealloc_image(loadedImg);
+
+    return finalImg; 
+}
+
+static unsigned overlayer(unsigned color1, unsigned color2){
+    return blend(color1, color2, 0.5); // TODO: Perform some kind of overlay
 }
 
 Rasteron_Image* overlayerImgOp(){ 

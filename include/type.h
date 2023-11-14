@@ -39,7 +39,8 @@ typedef struct {
 
 enum SWATCH_Colors {
     SWATCH_Yellow_Add = 0, SWATCH_Cyan_Add = 1, SWATCH_Magenta_Add = 2, 
-	SWATCH_Light = 3, SWATCH_Dark = 4, 
+	SWATCH_Light = 3,
+	SWATCH_Dark = 4,
 	SWATCH_Yellow_Sub = 5, SWATCH_Cyan_Sub = 6, SWATCH_Magenta_Sub = 7,
 };
 

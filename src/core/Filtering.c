@@ -11,7 +11,7 @@ Rasteron_Image* greyscaledImgOp(ref_image_t refImage) {
 	return greyImage;
 }
 
-Rasteron_Image* filteredImgOp(ref_image_t refImage, CHANNEL_Type channel) {
+Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel) {
 	assert(refImage != NULL);
 
 	Rasteron_Image* channelImage;
@@ -40,11 +40,11 @@ Rasteron_Image* filteredImgOp(ref_image_t refImage, CHANNEL_Type channel) {
 	return channelImage;
 }
 
-Rasteron_Image* channeledImgOp(ref_image_t refImage, CHANNEL_Type channel) {
+Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel) {
 	assert(refImage != NULL);
 
 	Rasteron_Image* greyImage = greyscaledImgOp(refImage); // greyscale image used as reference
-	Rasteron_Image* channelImage = filteredImgOp(greyImage, channel);
+	Rasteron_Image* channelImage = filterImgOp(greyImage, channel);
 
 	switch(channel){ // renaming
 		case CHANNEL_Red: channelImage->name = "average-red"; break;

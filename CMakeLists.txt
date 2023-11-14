@@ -58,9 +58,9 @@ endif(libtiff_FOUND)
 
 # Plugin Sources
 
-list(APPEND feat_src src/feature/Feat_Queue.c)
+list(APPEND feat_src src/feature/Queue_Feature.c)
 
-list(APPEND feat_src src/feature/Feat_Spatial.c)
+list(APPEND feat_src src/feature/Spatial_Feature.c)
 
 if(SUPPORT_FONT_BAKING)
     set(freetype_found TRUE)
@@ -68,7 +68,7 @@ if(SUPPORT_FONT_BAKING)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     message(STATUS "freetype_h variable: ${freetype_h}")
     message(STATUS "freetype_lib variable: ${freetype_lib}")
-    list(APPEND feat_src src/feature/Feat_Text.c)
+    list(APPEND feat_src src/feature/Text_Feature.c)
 else()
     set(freetype_found FALSE)
 endif()
@@ -125,6 +125,13 @@ add_executable(Canvas
 )
 target_include_directories(Canvas PUBLIC include demos)
 target_link_libraries(Canvas Rasteron)
+
+add_executable(Carousel
+    demos/Carousel.c 
+    demos/catalouge/Catalouge.c
+)
+target_include_directories(Carousel PUBLIC include demos)
+target_link_libraries(Carousel Rasteron)
 
 # add_executable(Painter demos/Painter.c)
 # target_include_directories(Painter PUBLIC include)

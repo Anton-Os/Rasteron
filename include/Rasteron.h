@@ -29,8 +29,8 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates
 //      Distills an image by modifying data by channels
 
 Rasteron_Image* greyscaledImgOp(ref_image_t refImage); // creates greyscale image
-Rasteron_Image* filteredImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter image
-Rasteron_Image* channeledImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
+Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter image
+Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
 
 
 // --------------------------------   Mixing Operations    -------------------------------- //
@@ -81,11 +81,11 @@ Rasteron_Image* mapImgOp(ImageSize size, mapCallback callback); // callbacks fro
 Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback callback); // callbacks based on distance to nearest point
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
-#include "Feat_Queue.h" // enables sequenced image types with potential animation support
-#include "Feat_Spatial.h" // enables spatial types, including sprite and heightmap
+#include "Queue_Feature.h" // enables sequenced image types with potential animation support
+#include "Spatial_Feature.h" // enables spatial types, including sprite and heightmap
 
 #ifdef RASTERON_ENABLE_FONT
-#include "Feat_Text.h" // enables single line text and expanded message objects
+#include "Text_Feature.h" // enables single line text and expanded message objects
 #endif
 
 // TODO: Include Rasteron_Factory

@@ -1,4 +1,4 @@
-#include "Feat_Text.h"
+#include "Text_Feature.h"
 
 static FT_Library _freetypeLib = NULL;
 
@@ -58,7 +58,7 @@ static Rasteron_Image* bakeText_custom(const Rasteron_Text* textObj, unsigned sc
 	error = FT_Set_Char_Size(face, 0, scale, FONT_RESOLUTION, FONT_RESOLUTION);
     if(error) perror("Error occured baking text");
 
-	Rasteron_Image* canvasImage = createSolidImg((ImageSize){ FONT_CANVAS_HEIGHT, FONT_CANVAS_WIDTH }, textObj->bkColor);
+	Rasteron_Image* canvasImage = solidImgOp((ImageSize){ FONT_CANVAS_HEIGHT, FONT_CANVAS_WIDTH }, textObj->bkColor);
 	int pen_x = FONT_PEN_OFFSET; int pen_y = FONT_PEN_OFFSET;
 
     for(unsigned t = 0; t < strlen(textObj->text); t++){
@@ -83,8 +83,8 @@ static Rasteron_Image* bakeText_custom(const Rasteron_Text* textObj, unsigned sc
 	// Copy from large canvas to real image
 
 	Rasteron_Image* fontImage = (!isInverted)
-		? createSolidImg((ImageSize){ sizeProps.yMax - sizeProps.yMin, sizeProps.xMax - sizeProps.xMin }, textObj->bkColor) // regular
-		: createSolidImg((ImageSize){ sizeProps.xMax - sizeProps.xMin, sizeProps.yMax - sizeProps.yMin }, textObj->bkColor); // Inved
+		? solidImgOp((ImageSize){ sizeProps.yMax - sizeProps.yMin, sizeProps.xMax - sizeProps.xMin }, textObj->bkColor) // regular
+		: solidImgOp((ImageSize){ sizeProps.xMax - sizeProps.xMin, sizeProps.yMax - sizeProps.yMin }, textObj->bkColor); // Inved
 	cropTextImage(canvasImage, fontImage, sizeProps);
 	
 	dealloc_image(canvasImage);

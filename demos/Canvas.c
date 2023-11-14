@@ -4,7 +4,7 @@
 
 #include "catalouge/Catalouge.h"
 
-Rasteron_Image* canvasImg;
+Rasteron_Image* canvasImg; // Global variable for drawing onto canvas
 
 enum CANVAS_Mode { CANVAS_Blank, 
 	CANVAS_Slice, CANVAS_Nesting,
@@ -13,16 +13,23 @@ enum CANVAS_Mode { CANVAS_Blank,
 	CANVAS_Prox, CANVAS_Fractal 
 };
 
+#define CANVAS_MODE_MIN -1
+#define CANVAS_MODE_MAX 1
+
+static int mode = 0;
 static double arg1 = 0.0;
 static double arg2 = 0.0;
 
-Rasteron_Image* createCanvasImg(enum CANVAS_Mode mode){
+static Rasteron_Image* createCanvasImg(enum CANVAS_Mode mode){
 	Rasteron_Image* image;
 
 	switch(mode){
 		case CANVAS_Slice: return slicediceImgOp(FLIP_None, 0, CROP_None, 0.0);
 		case CANVAS_Nesting: return supernestImgOp(arg1, arg2);
-		case CANVAS_Distill: return distillingImgOp();
+		case CANVAS_Distill: 
+			enum CHANNEL_Type channel = CHANNEL_Green;
+			if(mode == CANVAS_MODE_MAX) channel = CHANNEL_Red; else if(mode == CANVAS_MODE_MIN) channel = CHANNEL_Blue;
+			return distillingImgOp(channel);
 		case CANVAS_Overlay: return overlayerImgOp();
 		case CANVAS_MNoise: return multiNoiseImgOp();
 		case CANVAS_CAuto: return cellAutomataImgOp(); 
@@ -58,15 +65,16 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		}
 
 		switch((char)wParam){
-			case '0': arg1 = 0.0; arg2 = 0.0; break; // reset arguments
-			case '1': arg1 = 1.0; break; case '2': arg2 = 1.0; break;
-			case '3': arg1 = -1.0; break; case '4': arg2 = -1.0; break;
-			case '5': arg1 += 0.05; break; case '6': arg2 += 0.05; break;
-			case '7': arg1 -= 0.05; break; case '8': arg2 -= 0.05; break;
-			case '9': arg1 = -1.0 + (((double)rand()) / RAND_MAX); // randomize arg1
-					  arg2 = -1.0 + (((double)rand()) / RAND_MAX); // randomize arg2
-					  break;
+			case '0': arg1 = 0.0; arg2 = 0.0; mode = 0; break;
+			case '1': mode ++; break; case '3': mode--; break;
+			case '8': arg2 += 0.05F; break; case '2': arg2 -= 0.05F; break;
+			case '6': arg1 += 0.05F; break; case '4': arg1 -= 0.05F; break;
+			case '7': double temp = arg1; arg1 = arg2; arg2 = temp; break; // flip arguments 1 and 2
+			case '9': arg1 = (rand() / (double)(RAND_MAX)) * 2 - 1; // randomize arg 1
+					  arg2 = (rand() / (double)(RAND_MAX)) * 2 - 1; // randomize arg 2
 		}
+		if(mode > CANVAS_MODE_MAX) mode = CANVAS_MODE_MIN; // bounds mode to upper limit
+		else if(mode < CANVAS_MODE_MIN) mode = CANVAS_MODE_MAX;
 
 		switch(keysave){
 			case 'a': canvasImg = createCanvasImg(CANVAS_Slice); break;

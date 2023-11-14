@@ -28,17 +28,36 @@ void addFrameAt(Rasteron_Queue* queue, ref_image_t refImage, unsigned short fram
 Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); // gets frame from an index within queue
 
 
-// --------------------------------  MenuItem  -------------------------------- //
+// --------------------------------  UI  -------------------------------- //
 
-// TODO: Implement menu and GUI support features
+enum MENU_Size { MENU_Tiny, MENU_Small, Menu_Medium, Menu_Large, Menu_XL };
 
+ImageSize getUI_ImageSize(enum MENU_Size size);
 
+enum MENU_Style { MENU_Regular }; // TODO: Add support for at least 2 alternate styles
+
+// void setUI_style();
+// void setUI_colorScheme();
+
+// enum TOGGLE_Type { TOGGLE_Switch }; // TODO: Add radio, checkmark, and other toggles
+
+Rasteron_Queue* loadUI_keyButton(enum MENU_Size size, char character);
+
+Rasteron_Queue* loadUI_toggleButton(enum MENU_Size size/* enum TOGGLE_Type type */);
+
+Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short steps);
+
+Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels);
 
 // --------------------------------  Animation  -------------------------------- //
 
 #ifdef RASTERON_ENABLE_ANIM
 
-// TODO: Implement Aimation and Video encoding features
+Rasteron_Queue* loadAnim_frame30(ImageSize size);
+
+Rasteron_Queue* loadAnim_frame60(ImageSize size);
+
+Rasteron_Queue* loadAnim_frame120(ImageSize size);
 
 #endif
 
