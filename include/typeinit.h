@@ -11,8 +11,8 @@ void dealloc_image(Rasteron_Image* image);
 // --------------------------------   Callbacks    -------------------------------- //
 
 typedef unsigned (*recolorCallback)(unsigned color);
-typedef unsigned (*dualcolorCallback)(unsigned color1, unsigned color2);
-typedef unsigned (*mapCallback)(double x, double y);
+typedef unsigned (*mixCallback)(unsigned color1, unsigned color2);
+typedef unsigned (*coordCallback)(double x, double y);
 typedef unsigned (*fieldCallback)(unsigned color, double distance);
 
 typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // target and 2 neighbors

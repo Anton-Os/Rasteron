@@ -17,7 +17,7 @@ Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback){
 }
 
 
-Rasteron_Image* mapImgOp(ImageSize size, mapCallback callback){
+Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback){
 	Rasteron_Image* mappedImage = alloc_image("map", size.height, size.width);
 
 	for(unsigned p = 0; p < mappedImage->width * mappedImage->height; p++){

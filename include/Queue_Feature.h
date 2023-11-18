@@ -15,7 +15,7 @@ typedef struct {
     char* prefix; // each child name follows the prefix with a number
 
     unsigned short index; // index to retrieve the state
-    Rasteron_Image* state; // active state from index
+    // Rasteron_Image** state; // active state from index
 
     unsigned short frameCount; // total number of frames
     Rasteron_Image** frameData; // data contents of frames
@@ -29,6 +29,10 @@ Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); //
 
 
 // --------------------------------  UI  -------------------------------- //
+
+#define MENU_BG_COLOR 0xFF111111 // background
+#define MENU_FG_COLOR 0xFF2A2A2A // foreground
+#define MENU_SG_COLOR 0xFFE2E2E2 // surface
 
 enum MENU_Size { MENU_Tiny, MENU_Small, Menu_Medium, Menu_Large, Menu_XL };
 

@@ -10,32 +10,42 @@ Rasteron_Queue* alloc_queue(const char* prefix, ImageSize size, unsigned frameCo
 
     queue->frameData = (Rasteron_Image**)malloc(frameCount * sizeof(Rasteron_Image*));
     for(unsigned f = 0; f < frameCount; f++){
-        *(queue->frameData + f) = solidImgOp(size, QUEUE_IMAGE_BACKGROUND);
+        *(queue->frameData + f) = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
+        Rasteron_Image* frame = *(queue->frameData + f);
 
         char frameStr[1024];
         sprintf(frameStr, "frame%d", f + 1);
-        (*(queue->frameData + f))->name = frameStr;
+
+        frame->name = frameStr;
+        frame->width = size.width;
+        frame->height = size.height;
+        frame->data = (uint32_t*)malloc(size.width * size.height * sizeof(uint32_t));
+        
+        for (unsigned i = 0; i < size.height * size.width; i++){
+		    uint8_t frameColorBit = (unsigned)(f * (256.0 / frameCount));
+            *(frame->data + i) = 0xFF000000 | (frameColorBit << 16) | (frameColorBit << 8) | frameColorBit;
+        }
     }
 
-    queue->state = *queue->frameData;
+    // queue->state = *queue->frameData;
 
     return queue;
 }
 
 void addFrameAt(Rasteron_Queue* queue, const Rasteron_Image *const refImage, unsigned short frameIndex){
-	assert(frameIndex >= queue->frameCount);
+	assert(frameIndex < queue->frameCount);
     dealloc_image(*(queue->frameData + frameIndex)); // deleting old image if exists
 
     queue->index = frameIndex;
     *(queue->frameData + frameIndex) = copyImgOp(refImage); // creating copy image
-    queue->state = *(queue->frameData + frameIndex);
+    // queue->state = *(queue->frameData + frameIndex);
 }
 
 Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex){
-    assert(frameIndex >= queue->frameCount);
+    assert(frameIndex < queue->frameCount);
 
     queue->index = frameIndex;
-    queue->state = *(queue->frameData + frameIndex);
+    // queue->state = *(queue->frameData + frameIndex);
     return *(queue->frameData + frameIndex);
 }
 
@@ -64,39 +74,39 @@ ImageSize getUI_ImageSize(enum MENU_Size size){
 }
 
 Rasteron_Queue* loadUI_keyButton(enum MENU_Size size, char character){
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("key", getUI_ImageSize(size), 2);
+    ImageSize menuSize = getUI_ImageSize(size);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("toggle", getUI_ImageSize(size), 2);
 
-    // TODO: Update queue data
+    Rasteron_Image* bgImg = solidImgOp(menuSize, MENU_BG_COLOR);
+
+    ImageSize buttonSize = (ImageSize){ (unsigned)(menuSize.height * 0.9), (unsigned)(menuSize.width * 0.9) };
+    Rasteron_Image* fgImg1 = solidImgOp(buttonSize, MENU_FG_COLOR); // released state
+    Rasteron_Image* releasedImg = insertImgOp(fgImg1, bgImg); // TODO: Add character
+    Rasteron_Image* fgImg2 = solidImgOp(buttonSize, MENU_BG_COLOR); // pressed state
+    Rasteron_Image* pressedImg = insertImgOp(fgImg2, bgImg); // TODO: Add character 
+
+    addFrameAt(menuQueue, releasedImg, 0);
+    addFrameAt(menuQueue, pressedImg, 0);
+
+    dealloc_image(bgImg);
+    dealloc_image(fgImg1); dealloc_image(releasedImg);
+    dealloc_image(fgImg2); dealloc_image(pressedImg);
 
     return menuQueue;
 }
 
 Rasteron_Queue* loadUI_toggleButton(enum MENU_Size size){
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("toggle", getUI_ImageSize(size), 2);
-
-    // TODO: Update queue data
-
-    return menuQueue;
+    return (Rasteron_Queue*)alloc_queue("toggle", getUI_ImageSize(size), 2);
 }
 
 Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short steps){
     assert(steps > 1);
-
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("dial", getUI_ImageSize(size), steps);
-
-    // TODO: Update queue data
-
-    return menuQueue;
+    return (Rasteron_Queue*)alloc_queue("dial", getUI_ImageSize(size), steps);
 }
 
 Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
     assert(levels > 1);
-
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("slider", getUI_ImageSize(size), levels);
-
-    // TODO: Update queue data
-
-    return menuQueue;
+    return (Rasteron_Queue*)alloc_queue("slider",  getUI_ImageSize(size), levels);
 }
 
 // --------------------------------  Animation Operations  -------------------------------- //

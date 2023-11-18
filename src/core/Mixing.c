@@ -33,8 +33,10 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 		unsigned coordX = op % insertImg->width; // absolute X pixel offset
         unsigned coordY = op / insertImg->width; // absolute Y pixel offset
 		if(coordX >= xBounds[0] && coordX < xBounds[1] && coordY >= yBounds[0] && coordY < yBounds[1]){
-			// TODO: Check against alpha channel
-			*(insertImg->data + op) = *(innerImg->data + ip);
+			uint8_t iAlphaVal = (*(innerImg->data + ip) & ALPHA_CHANNEL) >> 24;
+			if(iAlphaVal == 0xFF) 
+				*(insertImg->data + op) = *(innerImg->data + ip);
+			// else *(insertImg->data + op) = blendColors(*(innerImg->data + ip), *(outerImg->data + op), (double)(0xFF / iAlphaVal) );
 			ip++;
 		} else *(insertImg->data + op) = *(outerImg->data + op);
 	}
@@ -42,14 +44,14 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 	return insertImg;
 }
 
-Rasteron_Image* twocolorImgOp(ref_image_t image1, ref_image_t image2, dualcolorCallback callback){
+Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback){
 	assert(image1 != NULL && image2 != NULL && image1->width == image2->width && image1->height == image2->height);
 
-	Rasteron_Image* dualImage = alloc_image("dual", image1->height, image1->width);
+	Rasteron_Image* mixImage = alloc_image("mix", image1->height, image1->width);
 	for(unsigned p = 0; p < image1->width * image1->height; p++)
-		*(dualImage->data + p) = callback(*(image1->data + p), *(image2->data + p));
+		*(mixImage->data + p) = callback(*(image1->data + p), *(image2->data + p));
 
-	return dualImage;
+	return mixImage;
 }
 
 
@@ -58,7 +60,7 @@ Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2){
 
 	Rasteron_Image* blendImage = alloc_image("blend", image1->height, image1->width);
 	for(unsigned p = 0; p < image1->width * image1->height; p++)
-		*(blendImage->data + p) = blend(*(image1->data + p), *(image2->data + p), 0.5); // blends halfway
+		*(blendImage->data + p) = blendColors(*(image1->data + p), *(image2->data + p), 0.5); // blends halfway
 
 	return blendImage;
 }
@@ -68,7 +70,7 @@ Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2){
 
 	Rasteron_Image* fuseImage = alloc_image("fuse", image1->height, image1->width);
 	for(unsigned p = 0; p < image1->width * image1->height; p++)
-		*(fuseImage->data + p) = fuse(*(image1->data + p), *(image2->data + p), 0.5); // fuses halfway
+		*(fuseImage->data + p) = fuseColors(*(image1->data + p), *(image2->data + p), 0.5); // fuses halfway
 
 	return fuseImage;
 }

@@ -17,10 +17,10 @@
 #define BLUE_CHANNEL 0x000000FF // blue channel represented by last two bytes
 
 typedef enum {
-    CHANNEL_Alpha,
-    CHANNEL_Red,
-    CHANNEL_Green,
-    CHANNEL_Blue
+    CHANNEL_Alpha = -1,
+    CHANNEL_Red = 0,
+    CHANNEL_Green = 1,
+    CHANNEL_Blue = 2
 } CHANNEL_Type;
 
 #define TWOPOWER(x) (1 << (x))
@@ -30,6 +30,7 @@ typedef enum {
 #include <stdio.h>
 #include <assert.h>
 #include <time.h>
+#include <math.h>
 
 #define RASTERON_SUPPORT_H
 #endif

@@ -1,6 +1,6 @@
 #include "Rasteron.h"
 
-Rasteron_Image* greyscaledImgOp(ref_image_t refImage) {
+Rasteron_Image* greyImgOp(ref_image_t refImage) {
 	assert(refImage != NULL);
     
 	Rasteron_Image* greyImage = alloc_image("grey", refImage->height, refImage->width);
@@ -43,13 +43,13 @@ Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel) {
 Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel) {
 	assert(refImage != NULL);
 
-	Rasteron_Image* greyImage = greyscaledImgOp(refImage); // greyscale image used as reference
+	Rasteron_Image* greyImage = greyImgOp(refImage); // greyscale image used as reference
 	Rasteron_Image* channelImage = filterImgOp(greyImage, channel);
 
 	switch(channel){ // renaming
-		case CHANNEL_Red: channelImage->name = "average-red"; break;
-		case CHANNEL_Green: channelImage->name = "average-green"; break;
-		case CHANNEL_Blue: channelImage->name = "average-blue"; break;
+		case CHANNEL_Red: channelImage->name = "channel-red"; break;
+		case CHANNEL_Green: channelImage->name = "channel-green"; break;
+		case CHANNEL_Blue: channelImage->name = "channel-blue"; break;
 	}
 
 	dealloc_image(greyImage);

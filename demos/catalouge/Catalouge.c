@@ -2,7 +2,7 @@
 
 static char fullImagePath[1024];
 
-Rasteron_Image* supernestImgOp(double x, double y){
+Rasteron_Image* concentricImgOp(double x, double y){
     Rasteron_Image* nestedImgs[9] = {
         solidImgOp((ImageSize){ 768, 768 }, 0xFFFF00FF),
         solidImgOp((ImageSize){ 512, 512 }, 0xFF00FFFF),
@@ -30,46 +30,44 @@ Rasteron_Image* supernestImgOp(double x, double y){
     return finalImg;
 }
 
-Rasteron_Image* slicediceImgOp(enum FLIP_Type flip, int isMirrored, enum CROP_Type crop, double factor){ 
-    genFullFilePath("Zero+.png", &fullImagePath);
+Rasteron_Image* slicediceImgOp(enum FLIP_Type flip, double xCrop, double yCrop){ 
+    genFullFilePath("Zero+.bmp", &fullImagePath);
 
     Rasteron_Image* loadedImg = loadImgOp(fullImagePath);
-    Rasteron_Image* flipImg = flipImgOp(loadedImg, flip);
-    Rasteron_Image* mirrorIfImg = (isMirrored)? mirrorImgOp(flipImg) : copyImgOp(flipImg);
-    Rasteron_Image* finalImg = cropImgOp(mirrorIfImg, crop, factor);
+
+    enum CROP_Type cropX = (xCrop > 0.0)? CROP_Right : CROP_Left;
+    Rasteron_Image* cropImgX = cropImgOp(loadedImg, cropX, xCrop);
+
+    enum CROP_Type cropY = (yCrop > 0.0)? CROP_Top : CROP_Bottom;
+    Rasteron_Image* cropImgY = cropImgOp(cropImgX, cropY, yCrop);
+
+    Rasteron_Image* finalImg = flipImgOp(cropImgY, flip); // final operation is flip
 
     dealloc_image(loadedImg);
-    dealloc_image(flipImg);
-    dealloc_image(mirrorIfImg);
+    dealloc_image(cropImgX, cropImgY);
 
     return finalImg;
 }
 
 static unsigned distill(unsigned color){
-    /* static const unsigned levels[5] = { 0x00, 0x40, 0x80, 0xC0, 0xFF };
-
-    unsigned short levelIndex = 0;
-    for(unsigned l = 0; l < color; l++) 
-        if(getLightDiff(color, levels[l]) < getLightDiff(color, levels[levelIndex]))
-            levelIndex = l; // finding closest matching level */
-
-    uint8_t red = color & RED_CHANNEL;
-    uint8_t green = color & GREEN_CHANNEL;
+    uint8_t red = (color & RED_CHANNEL) >> 16;
+    uint8_t green = (color & GREEN_CHANNEL) >> 8;
     uint8_t blue = color & BLUE_CHANNEL;
 
-    // if(red > green && red > blue) return red; // return red if dominant
-    // else if(green > red && green > blue) return green; // return green if dominant
-    // else if(blue > red && blue > green) return blue; // return blue if dominant
+    if(red > green && red > blue) return red;
+    else if(green > red && green > blue) return green;
+    else if(blue > red && blue > green) return blue;
 
     return color; // 0x00; // return black by default
 }
 
 Rasteron_Image* distillingImgOp(enum CHANNEL_Type channel){ 
-    genFullFilePath("User.png", &fullImagePath);
+    genFullFilePath("Zero+.bmp", &fullImagePath);
 
     Rasteron_Image* loadedImg = loadImgOp(fullImagePath);
-    // Rasteron_Image* finalImg = filterImgOp(loadedImg, channel);
-    Rasteron_Image* finalImg = recolorImgOp(loadedImg, distill);
+    Rasteron_Image* finalImg = (channel >= 0 && channel <= 2) 
+        ? filterImgOp(loadedImg, channel) 
+        : recolorImgOp(loadedImg, distill);
 
     dealloc_image(loadedImg);
 
@@ -77,30 +75,67 @@ Rasteron_Image* distillingImgOp(enum CHANNEL_Type channel){
 }
 
 static unsigned overlayer(unsigned color1, unsigned color2){
-    return blend(color1, color2, 0.5); // TODO: Perform some kind of overlay
+    return (grayify8(color1) > grayify8(color2))? color1 * color2 : color2 * color1; // pretty cool effect
 }
 
-Rasteron_Image* overlayerImgOp(){ 
-    // TODO: Add body
-    return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00); 
+Rasteron_Image* overlayerImgOp(unsigned pArg, unsigned color1, unsigned color2){ 
+    Rasteron_Image* gradientImgs[5]= { 
+        alloc_image("gradient-left", 1024, 1024),
+        alloc_image("gradient-right", 1024, 1024),
+        alloc_image("gradient-top", 1024, 1024),
+        alloc_image("gradient-bottom", 1024, 1024),
+        alloc_image("gradient-center", 1024, 1024)
+    };
+
+    for(unsigned p = 0; p < 1024 * 1024; p++){
+		double x = (1.0 / (double)1024) * (unsigned)(p % 1024);
+		double y = (1.0 / (double)1024) * (double)(p / 1024.0);
+
+        *(gradientImgs[0]->data + p) = fuseColors(0xFFFFFFFF, color1, x);
+        *(gradientImgs[1]->data + p) = fuseColors(0xFFFFFFFF, color2, 1.0 - x);
+        *(gradientImgs[2]->data + p) = fuseColors(0xFFFFFFFF, invertColor(color1), 1.0 - y);
+        *(gradientImgs[3]->data + p) = fuseColors(0xFFFFFFFF, invertColor(color2), y);
+
+        // double centerDist = sqrt((fabs(0.5 - x) * fabs(0.5 - x)) + (fabs(0.5 - y) * fabs(0.5 - y)));
+        double centerDist = pixelDistance(p, ((1024 * 1024) / 2) + (1024 / 2), 1024) * (1.0 / (double)1024);
+        *(gradientImgs[4]->data + p) = fuseColors(0xFFFFFFFF, 0xFF000000, centerDist);
+	}
+
+    Rasteron_Image* mixImg1 = mixingImgOp(gradientImgs[0], gradientImgs[1], overlayer);
+    Rasteron_Image* mixImg2 = mixingImgOp(gradientImgs[2], gradientImgs[3], overlayer);
+    Rasteron_Image* mixImg3 = mixingImgOp(mixImg1, mixImg2, overlayer);
+
+    // Rasteron_Image* finalImg = mixingImgOp(gradientImgs[0], gradientImgs[1], overlayer);
+    Rasteron_Image* finalImg; // = mixingImgOp(mixImg3, gradientImgs[4], overlayer);
+    switch(pArg){
+        case 0: finalImg = copyImgOp(mixImg1); break;
+        case 1: finalImg = copyImgOp(mixImg2); break;
+        case 2: finalImg = copyImgOp(mixImg3); break;
+        default: finalImg = mixingImgOp(mixImg2, gradientImgs[4], overlayer); break;
+    }
+    
+    for(unsigned g = 0; g < 5; g++) dealloc_image(gradientImgs[g]);
+    dealloc_image(mixImg1); dealloc_image(mixImg2); dealloc_image(mixImg3);
+
+    return finalImg; 
 } 
 
 Rasteron_Image* multiNoiseImgOp(){ 
     // TODO: Add body
-    return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00);
+    return solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal());
 }
 
 Rasteron_Image* cellAutomataImgOp(){
     // TODO: Add body 
-    return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00); 
+    return solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal()); 
 }
 
 Rasteron_Image* proxPatternImgOp(){ 
     // TODO: Add body
-    return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00); 
+    return solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal()); 
 }
 
-Rasteron_Image* fractalsImgOp(){ 
+Rasteron_Image* dynamicTextImgOp(){ 
     // TODO: Add body
-    return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00); 
+    return solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal()); 
 }

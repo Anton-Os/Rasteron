@@ -21,8 +21,9 @@ uint8_t grayify8(uint32_t refColor); // produces a 8 bit grey value based on ref
 uint32_t grayify32(uint32_t refColor); // produces a 32 bit grey value based on reference color
 uint8_t fract8(uint8_t refColor, double frac); // produces an 8 bit color value based on fraction of reference color
 uint32_t fract32(uint32_t refColor, double frac); // produces an 32 bit color value based on fraction of reference color
-uint32_t blend(uint32_t color1, uint32_t color2, double bVal); // blends values between two colors
-uint32_t fuse(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
+uint32_t invertColor(uint32_t refColor); // inverts red, green, and blue values
+uint32_t blendColors(uint32_t color1, uint32_t color2, double bVal); // blends values between two colors
+uint32_t fuseColors(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
 
 double pixelDistance(unsigned p1, unsigned p2, unsigned imageWidth); // get s pixel distance based on2 offsets
 unsigned pixelPointOffset(PixelPoint pixPos, ref_image_t refImage); // gets pixel offset from image coordinates

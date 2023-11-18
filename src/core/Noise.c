@@ -11,7 +11,7 @@ Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color
     double noiseVal;
     for (unsigned p = 0; p < noiseImg->width * noiseImg->height; p++){
         noiseVal = (double)rand() / (double)RAND_MAX;
-		*(noiseImg->data + p) = fuse(color1, color2, noiseVal);
+		*(noiseImg->data + p) = fuseColors(color1, color2, noiseVal);
     }
 
     return noiseImg;
@@ -29,7 +29,7 @@ Rasteron_Image* noiseImgOp_gradient(ImageSize size, ColorLattice lattice){
 	Rasteron_Image* latticeImg = alloc_image("lattice", yCellPoints, xCellPoints);
 	for (unsigned p = 0; p < latticeImg->width * latticeImg->height; p++) {
 		double noiseVal = (double)rand() / (double)RAND_MAX; // random value between 0 and 1
-		*(latticeImg->data + p) = blend(lattice.color1, lattice.color2, noiseVal); // blending value between lattice colors
+		*(latticeImg->data + p) = blendColors(lattice.color1, lattice.color2, noiseVal); // blending value between lattice colors
 	}
 
 	// lattice cell values
@@ -58,9 +58,9 @@ Rasteron_Image* noiseImgOp_gradient(ImageSize size, ColorLattice lattice){
 		double xFrac = (double)(xOffset % xSwitch) / (double)xSwitch; // relative X offset inside lattice cell
 		double yFrac = (double)(yOffset % ySwitch) / (double)ySwitch; // relative Y offset inside lattice cell
 
-		unsigned newColor = blend(
-			blend(*topLeft, *topRight, xFrac),
-			blend(*botLeft, *botRight, xFrac),
+		unsigned newColor = blendColors(
+			blendColors(*topLeft, *topRight, xFrac),
+			blendColors(*botLeft, *botRight, xFrac),
 			yFrac
 		);
         
@@ -82,7 +82,7 @@ Rasteron_Image* noiseImgOp_fbm(ImageSize size, const ColorLatticeTable* latticeT
 	Rasteron_Image* fbmNoiseImg = copyImgOp(*noiseImages);
 	for(unsigned l = 1; l < latticeTable->latticeCount; l++)
 		for(unsigned p = 0; p < fbmNoiseImg->width * fbmNoiseImg->height; p++)
-			*(fbmNoiseImg->data + p) = blend(*(fbmNoiseImg->data + p), *((*(noiseImages + l))->data + p), 0.5);
+			*(fbmNoiseImg->data + p) = blendColors(*(fbmNoiseImg->data + p), *((*(noiseImages + l))->data + p), 0.5);
 
 	for(unsigned l = 0; l < latticeTable->latticeCount; l++)
 		dealloc_image(*(noiseImages + l));

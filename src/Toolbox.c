@@ -14,16 +14,6 @@ uint32_t genRandColorVal(){
 	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
 }
 
-/* void makeColor(uint32_t* data, unsigned pixels, uint32_t colorVal) {
-	for (unsigned i = 0; i < pixels; i++)
-		*(data + i) = colorVal;
-}
-
-void changeColor(uint32_t* data, unsigned pixels, uint32_t newColor, uint32_t oldColor) {
-	for (unsigned i = 0; i < pixels; i++)
-		if (*(data + i) == oldColor) 
-			*(data + i) = newColor;
-} */
 
 void bitSwitchRB(uint32_t* data, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
@@ -123,7 +113,17 @@ uint32_t fract32(uint32_t refColor, double frac){
 	return result;
 }
 
-uint32_t blend(uint32_t color1, uint32_t color2, double bVal){
+uint32_t invertColor(uint32_t refColor){
+	uint8_t alpha = (refColor & ALPHA_CHANNEL) >> 24;
+	uint8_t red = 0xFF - ((refColor & RED_CHANNEL) >> 16);
+	uint8_t green = 0xFF - ((refColor & GREEN_CHANNEL) >> 8);
+	uint8_t blue = 0xFF - (refColor & BLUE_CHANNEL);
+
+	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
+	return result;
+}
+
+uint32_t blendColors(uint32_t color1, uint32_t color2, double bVal){
 	if(bVal <= 0.0) return color1;
 	else if(bVal >= 1.0) return color2;
 	
@@ -133,7 +133,7 @@ uint32_t blend(uint32_t color1, uint32_t color2, double bVal){
 	return bColor1 + bColor2; 
 }
 
-uint32_t fuse(uint32_t color1, uint32_t color2, double iVal){
+uint32_t fuseColors(uint32_t color1, uint32_t color2, double iVal){
 	uint8_t loRedBit = getLoChanBit(color1, color2, CHANNEL_Red); uint8_t hiRedBit = getHiChanBit(color1, color2, CHANNEL_Red);
     uint8_t loGreenBit = getLoChanBit(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = getHiChanBit(color1, color2, CHANNEL_Green);
     uint8_t loBlueBit = getLoChanBit(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = getHiChanBit(color1, color2, CHANNEL_Blue);
@@ -161,7 +161,7 @@ double pixelDistance(unsigned p1, unsigned p2, unsigned imageWidth){
 	double w = abs(x2 - x1); // length in pixels
 	double l = abs(y2 - y1); // width in pixels
 
-	return sqrt((l * l) + (w * w));
+	return (double)sqrt((l * l) + (w * w));
 }
 
 unsigned pixelPointOffset(PixelPoint pixPoint, ref_image_t refImage){

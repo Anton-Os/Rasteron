@@ -39,11 +39,11 @@ typedef struct {
 
 // Image Creation Functions
 
-Rasteron_Image* slicediceImgOp(enum FLIP_Type flip, int isMirrored, enum CROP_Type crop, double factor); // Flipping, mirroring, and cropping
-Rasteron_Image* supernestImgOp(double x, double y); // Looped nesting of ever-smaller squares
-Rasteron_Image* distillingImgOp(); // Distilling image to color ranges and performing channel operations
-Rasteron_Image* overlayerImgOp(); // Visual lense effects and enhancements to base image
+Rasteron_Image* slicediceImgOp(enum FLIP_Type flip, double xCrop, double yCrop); // Flipping, mirroring, and cropping
+Rasteron_Image* concentricImgOp(double x, double y); // Looped nesting of ever-smaller squares
+Rasteron_Image* distillingImgOp(enum CHANNEL_Type channel); // Distilling image to color ranges and performing channel operations
+Rasteron_Image* overlayerImgOp(unsigned pArg, unsigned color1, unsigned color2); // Visual lense effects and enhancements to base image
 Rasteron_Image* multiNoiseImgOp(); // Mixing and matching various noise functions while adding experimental arguments
 Rasteron_Image* cellAutomataImgOp(); // Seeding and performing cellular logic operations between neighbors iteratively
 Rasteron_Image* proxPatternImgOp(); // Vornoi and other distance related functions
-Rasteron_Image* fractalsImgOp(); // Playing and expirementing with fractal patterns
+Rasteron_Image* dynamicTextImgOp(); // Playing and expirementing with fractal patterns

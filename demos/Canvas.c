@@ -4,6 +4,8 @@
 
 #include "catalouge/Catalouge.h"
 
+
+
 Rasteron_Image* canvasImg; // Global variable for drawing onto canvas
 
 enum CANVAS_Mode { CANVAS_Blank, 
@@ -13,29 +15,26 @@ enum CANVAS_Mode { CANVAS_Blank,
 	CANVAS_Prox, CANVAS_Fractal 
 };
 
-#define CANVAS_MODE_MIN -1
-#define CANVAS_MODE_MAX 1
+#define CANVAS_PRESET_MIN -1
+#define CANVAS_PRESET_MAX 2
 
-static int mode = 0;
-static double arg1 = 0.0;
-static double arg2 = 0.0;
+static int pArg = -1;
+static double xArg = 0.0;
+static double yArg = 0.0;
 
 static Rasteron_Image* createCanvasImg(enum CANVAS_Mode mode){
 	Rasteron_Image* image;
 
 	switch(mode){
-		case CANVAS_Slice: return slicediceImgOp(FLIP_None, 0, CROP_None, 0.0);
-		case CANVAS_Nesting: return supernestImgOp(arg1, arg2);
-		case CANVAS_Distill: 
-			enum CHANNEL_Type channel = CHANNEL_Green;
-			if(mode == CANVAS_MODE_MAX) channel = CHANNEL_Red; else if(mode == CANVAS_MODE_MIN) channel = CHANNEL_Blue;
-			return distillingImgOp(channel);
-		case CANVAS_Overlay: return overlayerImgOp();
+		case CANVAS_Slice: return slicediceImgOp(pArg, xArg, yArg);
+		case CANVAS_Nesting: return concentricImgOp(xArg, yArg);
+		case CANVAS_Distill: return distillingImgOp(pArg);
+		case CANVAS_Overlay: return overlayerImgOp(pArg, 0xFFFF0000, 0xFF00FF00);
 		case CANVAS_MNoise: return multiNoiseImgOp();
 		case CANVAS_CAuto: return cellAutomataImgOp(); 
 		case CANVAS_Prox: return proxPatternImgOp();
-		case CANVAS_Fractal: return fractalsImgOp();
-		default: return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00);
+		case CANVAS_Fractal: return dynamicTextImgOp();
+		default: return NULL; // solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00);
 	}
 
 	return image;
@@ -45,7 +44,8 @@ static Rasteron_Image* createCanvasImg(enum CANVAS_Mode mode){
 
 BITMAP bmap;
 
-static char keysave = '\0';
+static char keysave = 'd';
+static char textBuffer[1024];
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
@@ -55,26 +55,26 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): { 
-		canvasImg = createCanvasImg(CANVAS_Slice);
+		canvasImg = createCanvasImg(CANVAS_Overlay);
 		bmap = createWinBmap(canvasImg); 
 	}
 	case (WM_CHAR): { if(wParam != 0){
 		if(isalnum(wParam)) {
-			dealloc_image(canvasImg);
+			if(canvasImg != NULL) dealloc_image(canvasImg);
 			if(isalpha(wParam)) keysave = (char)tolower(wParam);
 		}
 
 		switch((char)wParam){
-			case '0': arg1 = 0.0; arg2 = 0.0; mode = 0; break;
-			case '1': mode ++; break; case '3': mode--; break;
-			case '8': arg2 += 0.05F; break; case '2': arg2 -= 0.05F; break;
-			case '6': arg1 += 0.05F; break; case '4': arg1 -= 0.05F; break;
-			case '7': double temp = arg1; arg1 = arg2; arg2 = temp; break; // flip arguments 1 and 2
-			case '9': arg1 = (rand() / (double)(RAND_MAX)) * 2 - 1; // randomize arg 1
-					  arg2 = (rand() / (double)(RAND_MAX)) * 2 - 1; // randomize arg 2
+			case '0': xArg = 0.0; yArg = 0.0; pArg = 0; break;
+			case '1': pArg++; break; case '3': pArg--; break;
+			case '8': yArg += 0.05F; break; case '2': yArg -= 0.05F; break;
+			case '6': xArg += 0.05F; break; case '4': xArg -= 0.05F; break;
+			case '7': double temp = xArg; xArg = yArg; yArg = temp; break; // flip arguments 1 and 2
+			case '9': xArg = (rand() / (double)(RAND_MAX)) * 2 - 1; // randomize arg 1
+					  yArg = (rand() / (double)(RAND_MAX)) * 2 - 1; // randomize arg 2
 		}
-		if(mode > CANVAS_MODE_MAX) mode = CANVAS_MODE_MIN; // bounds mode to upper limit
-		else if(mode < CANVAS_MODE_MIN) mode = CANVAS_MODE_MAX;
+		if(pArg > CANVAS_PRESET_MAX) pArg = CANVAS_PRESET_MIN; // bounds pArg to upper limit
+		else if(pArg < CANVAS_PRESET_MIN) pArg = CANVAS_PRESET_MAX;
 
 		switch(keysave){
 			case 'a': canvasImg = createCanvasImg(CANVAS_Slice); break;
