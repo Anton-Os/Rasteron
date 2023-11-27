@@ -16,33 +16,33 @@ static Rasteron_Image* cellwiseImgOp_single(ref_image_t refImage, nebrCallback8 
 		unsigned short i = 0; // index to keep track of neighbor
 		if (currentTable->flags & (1 << NEBR_Bot_Right)) {
 			br = *(*(currentTable->nebrs + i)); i++;
-		} else br = ZERO_COLOR;
+		} else br = NO_COLOR;
 		if (currentTable->flags & (1 << NEBR_Bot)) {
 			b = *(*(currentTable->nebrs + i)); i++;
-		} else b = ZERO_COLOR;
+		} else b = NO_COLOR;
 		if (currentTable->flags & (1 << NEBR_Bot_Left)) {
 			bl = *(*(currentTable->nebrs + i)); i++;
-		} else bl = ZERO_COLOR;
+		} else bl = NO_COLOR;
 		if (currentTable->flags & (1 << NEBR_Right)) {
 			r = *(*(currentTable->nebrs + i)); i++;
-		} else r = ZERO_COLOR;
+		} else r = NO_COLOR;
 		if (currentTable->flags & (1 << NEBR_Left)) {
 			l = *(*(currentTable->nebrs + i)); i++;
-		} else l = ZERO_COLOR;
+		} else l = NO_COLOR;
 		if (currentTable->flags & (1 << NEBR_Top_Right)) {
 			tr = *(*(currentTable->nebrs + i)); i++;
-		} else tr = ZERO_COLOR;
+		} else tr = NO_COLOR;
 		if (currentTable->flags & (1 << NEBR_Top)) {
 			t = *(*(currentTable->nebrs + i)); i++;
-		} else t = ZERO_COLOR;
+		} else t = NO_COLOR;
 		if (currentTable->flags & (1 << NEBR_Top_Left)) {
 			tl = *(*(currentTable->nebrs + i)); i++;
-		} else tl = ZERO_COLOR;
+		} else tl = NO_COLOR;
 
 		unsigned nebrs[] = { br, b, bl, r, l, tr, t, tl };
 
 		unsigned newColor = callback(target, nebrs);
-		if (newColor != ZERO_COLOR) *(patternImg->data + p) = newColor; // override color
+		if (newColor != NO_COLOR) *(patternImg->data + p) = newColor; // override color
 		else *(patternImg->data + p) = *(refImage->data + p); // preserve color
 	}
 
@@ -84,13 +84,13 @@ Rasteron_Image* cellwiseImgOp_horizontal(ref_image_t refImage, nebrCallback2 cal
 			unsigned p = (r * stagingImg->width) + c;
 
 			unsigned target = *(stagingImg->data + p);
-			unsigned right = (c < stagingImg->width - 1) ? *findNeighbor(stagingImg, p, NEBR_Right) : ZERO_COLOR;
-			unsigned left = (c > 0) ? *findNeighbor(stagingImg, p, NEBR_Left) : ZERO_COLOR;
+			unsigned right = (c < stagingImg->width - 1) ? *findNeighbor(stagingImg, p, NEBR_Right) : NO_COLOR;
+			unsigned left = (c > 0) ? *findNeighbor(stagingImg, p, NEBR_Left) : NO_COLOR;
 
 			unsigned nebrs[] = { right, left };
 
 			unsigned newColor = callback(target, nebrs);
-			if(newColor != ZERO_COLOR) *(patternImg->data + p) = newColor; // override color
+			if(newColor != NO_COLOR) *(patternImg->data + p) = newColor; // override color
 			else *(patternImg->data + p) = *(stagingImg->data + p); // preserve color
 
 			if(r < refImage->height - 1) // copy pixel to next row of staging image
@@ -114,13 +114,13 @@ Rasteron_Image* cellwiseImgOp_vertical(ref_image_t refImage, nebrCallback2 callb
 			unsigned p = (r * stagingImg->width) + c;
 
 			unsigned target = *(stagingImg->data + p);
-			unsigned bot = (r < refImage->height - 1)? *findNeighbor(stagingImg, p, NEBR_Bot) : ZERO_COLOR;
-			unsigned top = (r > 0) ? *findNeighbor(stagingImg, p, NEBR_Top) : ZERO_COLOR;
+			unsigned bot = (r < refImage->height - 1)? *findNeighbor(stagingImg, p, NEBR_Bot) : NO_COLOR;
+			unsigned top = (r > 0) ? *findNeighbor(stagingImg, p, NEBR_Top) : NO_COLOR;
 
 			unsigned nebrs[] = { bot, top };
 
 			unsigned newColor = callback(target, nebrs);
-			if (newColor != ZERO_COLOR) *(patternImg->data + p) = newColor; // override color
+			if (newColor != NO_COLOR) *(patternImg->data + p) = newColor; // override color
 			else *(patternImg->data + p) = *(stagingImg->data + p); // preserve color
 
 			if (c < refImage->width - 1) // copy pixel to next row of staging image

@@ -1,21 +1,20 @@
 #ifndef RASTERON_FONT_H
-
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include "type.h"
 
+#define FONT_SIZE_TINY 50
 #define FONT_SIZE_SMALL 100
 #define FONT_SIZE_MED 200
-#define FONT_SIZE_LARGE 300
-#define FONT_SIZE_EXTRA 400
-#define FONT_SIZE_GIANT 500
+#define FONT_SIZE_LARGE 400
+#define FONT_SIZE_XL 800
 
 #define FONT_REGULAR 0
 #define FONT_INVERTED 1
 
 // internal macros
-#define FONT_RESOLUTION 3000
+#define FONT_RESOLUTION 1200
 #define FONT_PEN_OFFSET 200 // default starting pen offset
 #define FONT_CANVAS_WIDTH 10000 // large enough to handle any text
 #define FONT_CANVAS_HEIGHT 1000

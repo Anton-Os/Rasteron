@@ -64,10 +64,9 @@ list(APPEND feat_src src/feature/Spatial_Feature.c)
 
 if(SUPPORT_FONT_BAKING)
     set(freetype_found TRUE)
-    find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
-    message(STATUS "freetype_h variable: ${freetype_h}")
-    message(STATUS "freetype_lib variable: ${freetype_lib}")
+    find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
+    message(STATUS "freetype_h is ${freetype_h}, freetype_lib is ${freetype_lib}")
     list(APPEND feat_src src/feature/Text_Feature.c)
 else()
     set(freetype_found FALSE)
@@ -86,7 +85,7 @@ endif()
 # add_library(Rasteron STATIC ${core_src} ${feat_src}) # library only
 add_library(Rasteron STATIC ${core_src} ${feat_src} ${util_src}) # library with examples
 
-target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) #  include necessary external libs
+target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) # include necessary external libs
 
 if(WIN32)
     target_link_libraries(Rasteron PUBLIC tiff png ${zlibstatic})
@@ -111,27 +110,27 @@ target_include_directories(Rasteron
 
 # Demo Applications
 
-add_executable(ReadTest demos/ReadTest.c)
-target_include_directories(ReadTest PUBLIC include)
-target_link_libraries(ReadTest Rasteron)
+add_executable(TestRead demos/TestRead.c)
+target_include_directories(TestRead PUBLIC include)
+target_link_libraries(TestRead Rasteron)
 
-add_executable(WriteTest demos/WriteTest.c)
-target_include_directories(WriteTest PUBLIC include)
-target_link_libraries(WriteTest Rasteron)
+add_executable(TestWrite demos/TestWrite.c)
+target_include_directories(TestWrite PUBLIC include)
+target_link_libraries(TestWrite Rasteron)
 
-add_executable(Canvas 
-    demos/Canvas.c 
-    demos/catalouge/Catalouge.c
+add_executable(Painter 
+    demos/Painter.c 
+    demos/experimental/Experimental.c
 )
-target_include_directories(Canvas PUBLIC include demos)
-target_link_libraries(Canvas Rasteron)
+target_include_directories(Painter PUBLIC include demos)
+target_link_libraries(Painter Rasteron)
 
-add_executable(Carousel
-    demos/Carousel.c 
-    demos/catalouge/Catalouge.c
+add_executable(Roulette
+    demos/Roulette.c 
+    demos/experimental/Experimental.c
 )
-target_include_directories(Carousel PUBLIC include demos)
-target_link_libraries(Carousel Rasteron)
+target_include_directories(Roulette PUBLIC include demos)
+target_link_libraries(Roulette Rasteron)
 
 # add_executable(Painter demos/Painter.c)
 # target_include_directories(Painter PUBLIC include)

@@ -50,7 +50,12 @@ typedef struct {
 
 #endif // USE_IMG_BMP
 
-enum IMG_FileFormat { IMG_NonValid = 0, IMG_Tiff = 1, IMG_Png = 2, IMG_Bmp = 3, };
+enum IMG_FileFormat { 
+	IMG_NonValid = 0, 
+	IMG_Tiff = 1, 
+	IMG_Png = 2, 
+	IMG_Bmp = 3, 
+};
 
 union ImageData {
 #ifdef USE_IMG_TIFF

@@ -7,14 +7,19 @@
 #define USE_IMG_PNG // Enable PNG Support
 #define USE_IMG_BMP // Enable BMP Support
 
-#define ZERO_COLOR 0x00000000
-#define WHITE_COLOR 0xFFFFFFFF
-#define BLACK_COLOR 0xFF000000
+#define NO_COLOR 0x00000000
 
-#define ALPHA_CHANNEL 0xFF000000 // alpha channel represented by first two bytes
-#define RED_CHANNEL 0x00FF0000 // red channel represented by second two bytes
-#define GREEN_CHANNEL 0x0000FF00 // green channel represented by third two bytes
-#define BLUE_CHANNEL 0x000000FF // blue channel represented by last two bytes
+#define BLACK_COLOR 0xFF000000 // level 0
+#define DARK_COLOR 0xFF333333 // level 1
+#define MID_LO_COLOR 0xFF666666 // level 2
+#define MID_HI_COLOR 0xFF999999 // level 3
+#define LIGHT_COLOR 0xFFCCCCCC // level 4
+#define WHITE_COLOR 0xFFFFFFFF // level 5
+
+#define ALPHA_CHANNEL 0xFF000000 // alpha channel mask from first two bytes
+#define RED_CHANNEL 0x00FF0000 // red channel mask from second two bytes
+#define GREEN_CHANNEL 0x0000FF00 // green channel mask from third two bytes
+#define BLUE_CHANNEL 0x000000FF // blue channel mask from last two bytes
 
 typedef enum {
     CHANNEL_Alpha = -1,

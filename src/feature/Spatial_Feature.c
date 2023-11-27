@@ -38,20 +38,20 @@ void dealloc_sprite(Rasteron_Sprite* sprite){
 
 // --------------------------------   Heightmap    -------------------------------- //
 
-static float calcHeight(unsigned inputColor, float minHeight, float maxHeight){;
+static float calcHeight(unsigned inputColor, float minDepth, float maxDepth){;
 	uint8_t greyColorRef = grayify8(inputColor);
 	float heightVal = (float)greyColorRef; // conversion to double
-	heightVal /= (255.0 / maxHeight);
+	heightVal /= (255.0 / maxDepth);
 
-	return heightVal + minHeight;
+	return heightVal + minDepth;
 }
 
-Rasteron_Heightmap* alloc_heightmap(uint32_t height, uint32_t width, double minHeight, double maxHeight){
+Rasteron_Heightmap* alloc_heightmap(uint32_t height, uint32_t width, double minDepth, double maxDepth){
 	Rasteron_Heightmap* heightmap = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
     
 	heightmap->bounds = createSpaceBounds(height, width);
-	heightmap->minHeight = minHeight; // default min is zero
-	heightmap->maxHeight = maxHeight; // default max is one
+	heightmap->minDepth = minDepth; // default min is zero
+	heightmap->maxDepth = maxDepth; // default max is one
     heightmap->data = (double*)malloc(height * width * sizeof(double));
 
 	return heightmap;
@@ -63,7 +63,7 @@ Rasteron_Heightmap* loadHeightmap(ref_image_t refImage){
     Rasteron_Heightmap* heightmap = alloc_heightmap(refImage->width, refImage->height, 0.0, 1.0);
 
 	for (unsigned p = 0; p < refImage->width * refImage->height; p++)
-		*(heightmap->data + p) = calcHeight(*(refImage->data + p), heightmap->minHeight, heightmap->maxHeight);
+		*(heightmap->data + p) = calcHeight(*(refImage->data + p), heightmap->minDepth, heightmap->maxDepth);
 	
     return heightmap;
 }

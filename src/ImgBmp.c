@@ -68,8 +68,8 @@ void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width
 	// https://stackoverflow.com/questions/2654480/writing-bmp-image-in-pure-c-c-without-other-libraries
 	// Writing Meta-Data
 
-	int filesize = 54 + (width * height * 3);
-	// int filesize = 54 + (4 * width * height);
+	// int filesize = 54 + (width * height * 3);
+	int filesize = 54 + (4 * width * height);
 
 	unsigned char bmpFileHeader[14] = { 'B','M', 0,0,0,0, 0,0, 0,0, 54,0,0,0 };
 	unsigned char bmpInfoHeader[40] = { 40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0, 24,0 };

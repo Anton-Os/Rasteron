@@ -9,7 +9,7 @@ Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback){
 
 	for(unsigned p = 0; p < recolorImage->width * recolorImage->height; p++){
 		unsigned newColor = callback(*(refImage->data + p));
-		if(newColor != ZERO_COLOR) *(recolorImage->data + p) = newColor; // override color
+		if(newColor != NO_COLOR) *(recolorImage->data + p) = newColor; // override color
 		else *(recolorImage->data + p) = *(refImage->data + p); // preserve
 	}
 
@@ -79,7 +79,7 @@ Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTab
 		const NebrTable* currentTable = nebrTables->tables + offset;
 		ColorStep colorStep = { *(stepImage->data + offset), NEBR_None };
 
-		// for(unsigned s = 0; s < MAX_COLOR_STEPS && (colorStep.color != ZERO_COLOR && colorStep.direction != NEBR_None); s++){
+		// for(unsigned s = 0; s < MAX_COLOR_STEPS && (colorStep.color != NO_COLOR && colorStep.direction != NEBR_None); s++){
 		for(unsigned s = 0; s < MAX_COLOR_STEPS; s++){
 			colorStep = callback(currentTable, colorStep, s);
 			offset = findNeighborOffset(refImage->width, offset, checkCanMove(currentTable->flags, colorStep.direction));
