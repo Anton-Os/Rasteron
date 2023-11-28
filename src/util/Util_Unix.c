@@ -10,7 +10,7 @@ void genFullFilePath(const char* name, char* fullFilePath){
 
 // Unix Specific
 
-void createWindow(Platform_Context* context, const char* name){
+void createWindow(Platform_Context* context, const char* name, unsigned width, unsigned height){
 	context->display = XOpenDisplay(NULL);
 	unsigned long whitePix = WhitePixel(context->display, DefaultScreen(context->display));
 	unsigned long blackPix = BlackPixel(context->display, DefaultScreen(context->display));
@@ -18,7 +18,8 @@ void createWindow(Platform_Context* context, const char* name){
 	int screenNum = DefaultScreen(context->display);
 	context->window = XCreateSimpleWindow(
 		context->display, RootWindow(context->display, screenNum),
-		50, 0, 1200, 1100,
+		50, 0,
+		width, height,
 		1, 0, 0
 		// 1, blackPix, whitePix
 	);

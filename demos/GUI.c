@@ -1,0 +1,82 @@
+
+#define RASTERON_WIN_HEIGHT 256
+
+#include "Util_OS.h"
+
+#include "Experimental.h"
+
+#define MQUEUE_COUNT 8
+// #define MQUEUE_COUNT 14
+
+Rasteron_Queue* masterQueue;
+
+unsigned long elapseSecs = 0;
+
+#ifdef _WIN32
+
+BITMAP bmap;
+
+void CALLBACK timerCallback(HWND hwnd, UINT uMsg, UINT timerId, DWORD dwTime){ elapseSecs++; }
+
+LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    RECT rect;
+
+    switch(message){
+        case (WM_CREATE): { 
+            SetTimer(hwnd, 0, 1000, &timerCallback);
+            bmap = createWinBmap(getFrameAt(masterQueue, 0));
+        }
+        case (WM_PAINT): { drawWinBmap(hwnd, &bmap); }
+	    case (WM_CLOSE): {}
+        case (WM_TIMER): {
+            GetClientRect(hwnd, &rect);
+            InvalidateRect(hwnd, &rect, FALSE);
+
+            masterQueue->index = elapseSecs % MQUEUE_COUNT;
+            // printf("Elapse secs: %d, GUI index: %d \n", elapseSecs, masterQueue->index);
+            bmap = createWinBmap(getFrameAt(masterQueue, masterQueue->index));
+        }
+        default: return DefWindowProc(hwnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+#endif
+
+int main(int argc, char** argv) {
+    masterQueue = alloc_queue("master", (ImageSize){ 256, 256}, MQUEUE_COUNT);
+    
+    Rasteron_Queue* mQueue_button = loadUI_checkBtn(MENU_XL);
+    Rasteron_Queue* mQueue_dial = loadUI_dial(MENU_XL, 4);
+    Rasteron_Queue* mQueue_slider = loadUI_slider(MENU_XL, 2);
+    // Rasteron_Queue* mQueue_slider = loadUI_slider(MENU_XL, 7);
+
+    addFrameAt(masterQueue, getFrameAt(mQueue_button, 0), 0);
+    addFrameAt(masterQueue, getFrameAt(mQueue_button, 1), 1);
+    for(unsigned t = 0; t < 4; t++) addFrameAt(masterQueue, getFrameAt(mQueue_dial, t), t + 2);
+    for(unsigned l = 0; l < 2; l++) addFrameAt(masterQueue, getFrameAt(mQueue_slider, l), l + 6);
+    // for(unsigned l = 0; l < 7; l++) addFrameAt(masterQueue, getFrameAt(mQueue_slider, l), l + 7);
+#ifdef _WIN32
+    createWindow(wndProc, "GUI", 270, 292);
+	eventLoop();
+#elif defined __linux__
+    Platform_Context platformContext;
+    createWindow(&platformContext, "GUI", 256, 256);
+
+    XImage* bmap = createUnixBmap(&platformContext, getFrameAt(masterQueue, 0));
+    XEvent event;
+	while(1) {
+		XNextEvent(platformContext.display, &event);
+		if(event.type == Expose)
+		    drawUnixBmap(&platformContext, bmap);
+	}
+#endif
+
+    // dealloc_image(bgImg);
+    // dealloc_image(menuImg1); dealloc_image(menuImg2);
+
+    dealloc_queue(masterQueue);
+    dealloc_queue(mQueue_button); dealloc_queue(mQueue_dial); dealloc_queue(mQueue_slider);
+
+    return 0;
+}

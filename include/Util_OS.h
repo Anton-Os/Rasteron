@@ -8,7 +8,7 @@ void genFullFilePath(const char* name, char* fullFilePath);
 	#define WIN32_LEAN_AND_MEAN
 	#include <Windows.h>
 
-	void createWindow(WNDPROC wndProc, LPCTSTR name); // Window creation
+	void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height); // Window creation
 	void eventLoop(); // Event loop
 	BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data); // raw data call
 	BITMAP createWinBmap(Rasteron_Image* image); // formatted data call
@@ -31,7 +31,7 @@ void genFullFilePath(const char* name, char* fullFilePath);
 		int depth;
 	} Platform_Context;
 
-	void createWindow(Platform_Context* context, const char* name); // Window creatiom
+	void createWindow(Platform_Context* context, const char* name, unsigned width, unsigned height); // Window creatiom
 	void eventLoop(Display* display); // Event loop
 	// XImage createUnixBmap(const Image* image); // formatted data call
 	XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data); // raw data call

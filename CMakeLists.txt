@@ -82,8 +82,8 @@ endif()
 
 # Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${feat_src}) # library only
-add_library(Rasteron STATIC ${core_src} ${feat_src} ${util_src}) # library with examples
+# add_library(Rasteron STATIC ${core_src} ${feat_src} "src/Experimental.c") # library only
+add_library(Rasteron STATIC ${core_src} ${feat_src} ${util_src} "src/Experimental.c") # library with examples
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) # include necessary external libs
 
@@ -118,19 +118,13 @@ add_executable(TestWrite demos/TestWrite.c)
 target_include_directories(TestWrite PUBLIC include)
 target_link_libraries(TestWrite Rasteron)
 
-add_executable(Painter 
-    demos/Painter.c 
-    demos/experimental/Experimental.c
-)
+add_executable(Painter demos/Painter.c)
 target_include_directories(Painter PUBLIC include demos)
 target_link_libraries(Painter Rasteron)
 
-add_executable(Roulette
-    demos/Roulette.c 
-    demos/experimental/Experimental.c
-)
-target_include_directories(Roulette PUBLIC include demos)
-target_link_libraries(Roulette Rasteron)
+add_executable(GUI demos/GUI.c)
+target_include_directories(GUI PUBLIC include demos)
+target_link_libraries(GUI Rasteron)
 
 # add_executable(Painter demos/Painter.c)
 # target_include_directories(Painter PUBLIC include)

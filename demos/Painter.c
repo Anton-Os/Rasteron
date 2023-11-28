@@ -1,6 +1,6 @@
 #include "Util_OS.h"
 
-#include "experimental/Experimental.h"
+#include "Experimental.h"
 
 Rasteron_Image* canvasImg; // Global variable for drawing onto canvas
 
@@ -114,11 +114,11 @@ int main(int argc, char** argv) {
 
 	puts("\n Alphabetical characters A to H output images dedicated to various Rasteron API functionalities. Refer to experimental/Experimental.h for output examples \n");
 #ifdef _WIN32
-    createWindow(wndProc, "Canvas");
+    createWindow(wndProc, "Canvas", 1024, 1024);
 	eventLoop();
 #elif defined __linux__
     Platform_Context platformContext;
-    createWindow(&platformContext, "Canvas");
+    createWindow(&platformContext, "Canvas", 1024, 1024);
 
     XImage* bmap = createUnixBmap(&platformContext, canvasImg);
     XEvent event;

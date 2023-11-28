@@ -11,7 +11,7 @@ void genFullFilePath(const char* name, char* fullFilePath){
 
 // Windows Specific
 
-void createWindow(WNDPROC wndProc, LPCTSTR name){
+void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height){
 	WNDCLASS wndClass = { 0 };
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.hInstance = GetModuleHandle(NULL);
@@ -23,7 +23,8 @@ void createWindow(WNDPROC wndProc, LPCTSTR name){
 		"Rasteron",
 		name,
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		width, height,
 		NULL, NULL, GetModuleHandle(NULL), NULL
 	);
 
