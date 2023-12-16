@@ -14,7 +14,7 @@ Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){
 
     Rasteron_Image* flipImg = flipImgOp(cropImgY, flip);
 
-   Rasteron_Image* finalImg = scaleImgOp((ImageSize){ 512, 512 }, flipImg); // attempting to resize
+   Rasteron_Image* finalImg = resizeImgOp((ImageSize){ 512, 512 }, flipImg); // attempting to resize
 
     dealloc_image(loadedImg);
     dealloc_image(cropImgX, cropImgY);

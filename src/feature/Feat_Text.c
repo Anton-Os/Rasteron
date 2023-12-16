@@ -1,6 +1,6 @@
 #include "Rasteron.h"
 
-#include "Text_Feature.h"
+#include "Feat_Text.h"
 
 extern int _invertFont = FONT_INVERT;
 extern FT_Library _freetypeLib = NULL;

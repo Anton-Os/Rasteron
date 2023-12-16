@@ -18,7 +18,7 @@ extern "C"{
 Rasteron_Image* loadImgOp(const char* fileName); // creates an image from a file
 Rasteron_Image* solidImgOp(ImageSize size, uint32_t color); // creates a solid color image
 Rasteron_Image* copyImgOp(ref_image_t refImage); // creates copy of image
-Rasteron_Image* scaleImgOp(ImageSize size, ref_image_t refImage); // resize image to size
+Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage); // resize image to size
 Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double factor); // creates cropped image
 Rasteron_Image* mirrorImgOp(ref_image_t refImage); // creates horizontal mirror image
 Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates flipped image
@@ -80,11 +80,11 @@ Rasteron_Image* cellwiseImgOp_horizontal(ref_image_t refImage, nebrCallback2 cal
 Rasteron_Image* cellwiseImgOp_vertical(ref_image_t refImage, nebrCallback2 callback); // vertical pattern image from top & down neighbors
 Rasteron_Image* antialiasImgOp(ref_image_t refImage); // performs antialiasing operation
 
-#include "Queue_Feature.h" // enables sequenced image types with potential animation support
-#include "Spatial_Feature.h" // enables spatial types, including sprite and heightmap
+#include "Feat_Queue.h" // enables sequenced image types with potential animation support
+#include "Feat_Space.h" // enables spatial types, including sprite and heightmap
 
 #ifdef RASTERON_ENABLE_FONT
-#include "Text_Feature.h" // enables single line text and expanded message objects
+#include "Feat_Text.h" // enables single line text and expanded message objects
 #endif
 
 // TODO: Include Rasteron_Factory

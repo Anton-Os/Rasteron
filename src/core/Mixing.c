@@ -45,32 +45,28 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 }
 
 Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback){
-	assert(image1 != NULL && image2 != NULL && image1->width == image2->width && image1->height == image2->height);
+	assert(image1 != NULL && image2 != NULL);
 
-	Rasteron_Image* mixImage = alloc_image("mix", image1->height, image1->width);
-	for(unsigned p = 0; p < image1->width * image1->height; p++)
-		*(mixImage->data + p) = callback(*(image1->data + p), *(image2->data + p));
+	Rasteron_Image* sizedImg1 = (image1->width * image1->height > image2->width * image2->height)
+		? resizeImgOp((ImageSize){image2->height, image2->width}, image1) : copyImgOp(image1);
+	Rasteron_Image* sizedImg2 = (image2->width * image2->height > image1->width * image1->height)
+		? resizeImgOp((ImageSize){image1->height, image1->width}, image1) : copyImgOp(image2);
+
+	Rasteron_Image* mixImage = alloc_image("mixing", sizedImg1->height, sizedImg1->width);
+	for(unsigned p = 0; p < sizedImg1->width * sizedImg1->height; p++)
+		*(mixImage->data + p) = callback(*(sizedImg1->data + p), *(sizedImg2->data + p));
 
 	return mixImage;
 }
 
+static unsigned equalBlend(unsigned color1, unsigned color2){ return blendColors(color1, color2, 0.5); }
 
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2){
-	assert(image1 != NULL && image2 != NULL && image1->width == image2->width && image1->height == image2->height);
-
-	Rasteron_Image* blendImage = alloc_image("blend", image1->height, image1->width);
-	for(unsigned p = 0; p < image1->width * image1->height; p++)
-		*(blendImage->data + p) = blendColors(*(image1->data + p), *(image2->data + p), 0.5); // blends halfway
-
-	return blendImage;
+	return mixingImgOp(image1, image2, equalBlend);
 }
 
+static unsigned equalFusion(unsigned color1, unsigned color2){ return blendColors(color1, color2, 0.5); }
+
 Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2){
-	assert(image1 != NULL && image2 != NULL && image1->width == image2->width && image1->height == image2->height);
-
-	Rasteron_Image* fuseImage = alloc_image("fuse", image1->height, image1->width);
-	for(unsigned p = 0; p < image1->width * image1->height; p++)
-		*(fuseImage->data + p) = fuseColors(*(image1->data + p), *(image2->data + p), 0.5); // fuses halfway
-
-	return fuseImage;
+	return mixingImgOp(image1, image2, equalFusion);
 }

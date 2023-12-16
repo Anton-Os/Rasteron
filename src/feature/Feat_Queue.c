@@ -1,6 +1,6 @@
 #include "Rasteron.h"
 
-#include "Queue_Feature.h"
+#include "Feat_Queue.h"
 
 static char frameName[1024];
 
@@ -106,7 +106,7 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
     strcat(iconPath, name);
     strcat(iconPath, ".png");
     Rasteron_Image* iconImg = loadImgOp(iconPath);
-    Rasteron_Image* sizedIconImg = scaleImgOp((ImageSize){ (unsigned)(menuSize.height * 0.8), (unsigned)(menuSize.width * 0.8) }, iconImg);
+    Rasteron_Image* sizedIconImg = resizeImgOp((ImageSize){ (unsigned)(menuSize.height * 0.8), (unsigned)(menuSize.width * 0.8) }, iconImg);
 
     Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("icon-btn", menuSize, 3);
     Rasteron_Image* defaultImg = *(menuQueue->frameData + 0);

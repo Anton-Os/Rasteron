@@ -58,16 +58,16 @@ endif(libtiff_FOUND)
 
 # Plugin Sources
 
-list(APPEND feat_src src/feature/Queue_Feature.c)
+list(APPEND feat_src src/feature/Feat_Queue.c)
 
-list(APPEND feat_src src/feature/Spatial_Feature.c)
+list(APPEND feat_src src/feature/Feat_Space.c)
 
 if(SUPPORT_FONT_BAKING)
     set(freetype_found TRUE)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
     message(STATUS "freetype_h is ${freetype_h}, freetype_lib is ${freetype_lib}")
-    list(APPEND feat_src src/feature/Text_Feature.c)
+    list(APPEND feat_src src/feature/Feat_Text.c)
 else()
     set(freetype_found FALSE)
 endif()

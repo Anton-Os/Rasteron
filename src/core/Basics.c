@@ -57,7 +57,7 @@ Rasteron_Image* copyImgOp(ref_image_t refImage){
 	return copyImage;
 }
 
-Rasteron_Image* scaleImgOp(ImageSize size, ref_image_t refImage){
+Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage){
 	assert(refImage != NULL);
 
 	Rasteron_Image* resizeImage = alloc_image("resize", size.height, size.width);
