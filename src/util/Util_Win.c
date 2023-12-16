@@ -34,7 +34,7 @@ void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height
 	SetTimer(wndWindow, TIMER_EVENT_ID, 1000, NULL); // creates timer event for every second
 }
 
-void eventLoop(){
+void eventLoop(eventLoopCallback callback){
 	MSG message;
 	BOOL bRet;
 
@@ -43,8 +43,10 @@ void eventLoop(){
 		if (bRet > 0){  // (bRet > 0 indicates a message that must be processed.)
 			TranslateMessage(&message);
 			DispatchMessage(&message);
-		}  // (bRet == -1 indicates an error.)
+		} 
 		else break;  // (bRet == 0 indicates "exit program".)
+
+		if(callback != NULL) callback();
 	}
 }
 

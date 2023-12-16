@@ -2,7 +2,8 @@
 
 #include "Text_Feature.h"
 
-static FT_Library _freetypeLib = NULL;
+extern int _invertFont = FONT_INVERT;
+extern FT_Library _freetypeLib = NULL;
 
 // Internal Functions
 
@@ -40,34 +41,55 @@ static TextSize getImageTextParams(Rasteron_Image* refImage, uint32_t color, int
 	return sizeParams;
 }
 
-static void cropTextImgToSize(Rasteron_Image* refImage, Rasteron_Image* fontImage, TextSize sizeParams) {
+static void cropTextImgToSize(Rasteron_Image* refImage, Rasteron_Image* sizedTextImg, TextSize sizeParams) {
 	unsigned writeOffset = 0;
 
 	for (unsigned r = 0; r < refImage->height; r++)
 		for (unsigned c = 0; c < refImage->width; c++)
-			if (r >= sizeParams.yMin && r < sizeParams.yMax && c >= sizeParams.xMin && c < sizeParams.xMax && writeOffset < (fontImage->width * fontImage->height)) {
-				*(fontImage->data + writeOffset) = *(refImage->data + (r * refImage->width) + c);
+			if (r >= sizeParams.yMin && r < sizeParams.yMax && c >= sizeParams.xMin && c < sizeParams.xMax && writeOffset < (sizedTextImg->width * sizedTextImg->height)) {
+				*(sizedTextImg->data + writeOffset) = *(refImage->data + (r * refImage->width) + c);
 				writeOffset++;
 			}
 }
 
-static Rasteron_Image* bakeText_custom(const Rasteron_Text* textObj, unsigned scale, int isInverted){
-    if(_freetypeLib == NULL){ initFreeType(); }
+// Library Functions
+
+void initFreeType(){
+    int error = FT_Init_FreeType(&_freetypeLib);
+    if(error) perror("Error occured initializing freetype library!");
+}
+
+void cleanupFreeType(){ FT_Done_FreeType(_freetypeLib); }
+
+Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
+	if(_freetypeLib == NULL){ initFreeType(); }
 
 	FT_Face face;
-    int error = FT_New_Face(_freetypeLib, textObj->fileName, 0, &face);
+    int error = FT_New_Face(_freetypeLib, textObj->fontFile, 0, &face);
 	if(error) perror("Error occured loading face");
-	error = FT_Set_Char_Size(face, 0, scale, FONT_RESOLUTION, FONT_RESOLUTION);
+	error = FT_Set_Char_Size(face, 0, size, FONT_RESOLUTION, FONT_RESOLUTION);
     if(error) perror("Error occured setting character size");
 
-	Rasteron_Image* textImage = (Rasteron_Image*)solidImgOp((ImageSize){ FONT_CANVAS_HEIGHT, FONT_CANVAS_WIDTH }, textObj->bkColor);
+	unsigned tcanvasHeight = FONT_CANVAS_HEIGHT;
+	unsigned tcanvasWidth = FONT_CANVAS_HEIGHT;
+	for(unsigned t = 0; t < strlen(textObj->text); t++){
+		FT_UInt charIndex = FT_Get_Char_Index(face, (FT_ULong)textObj->text[t]);
+		error = FT_Load_Glyph(face, charIndex, FT_LOAD_RENDER);
+        if(error) perror("Error loading glyph %c at %d\n", textObj->text[t], t);
+
+		/* printf("Glyph left: %d, Glyph top: %d, Glyph rows: %d, Glyph width: %d \n", 
+			face->glyph->bitmap_left, face->glyph->bitmap_top, 
+			face->glyph->bitmap.rows, face->glyph->bitmap.width
+		); */ // For testing
+		// TODO: Calculate height and width
+	}
+
+	Rasteron_Image* textImage = (Rasteron_Image*)solidImgOp((ImageSize){ tcanvasHeight, tcanvasWidth }, textObj->bkColor);
 	int pen_x = FONT_PEN_OFFSET; int pen_y = FONT_PEN_OFFSET;
 
     for(unsigned t = 0; t < strlen(textObj->text); t++){
-		char glyphRef = textObj->text[t]; // for viewing current character being processed
-		FT_UInt charIndex = FT_Get_Char_Index(face, (FT_ULong)glyphRef);
-		error = FT_Load_Glyph(face, charIndex, FT_LOAD_RENDER);
-        if(error) perror("Error loading glyph %c at %d\n", glyphRef, t);
+		FT_UInt charIndex = FT_Get_Char_Index(face, (FT_ULong)textObj->text[t]);
+		FT_Load_Glyph(face, charIndex, FT_LOAD_RENDER);
 
 		drawGlyphToImg(
 			textImage,
@@ -81,41 +103,48 @@ static Rasteron_Image* bakeText_custom(const Rasteron_Text* textObj, unsigned sc
 
 	// Crop from large canvas onto final image
 
-	TextSize sizeParams = getImageTextParams(textImage, textObj->fgColor, isInverted);
+	TextSize sizeParams = getImageTextParams(textImage, textObj->fgColor, _invertFont);
 
-	Rasteron_Image* fontImage = (!isInverted)
+	Rasteron_Image* sizedTextImg = (!_invertFont)
 		? solidImgOp((ImageSize){ sizeParams.yMax - sizeParams.yMin, sizeParams.xMax - sizeParams.xMin }, textObj->bkColor) // regular
 		: solidImgOp((ImageSize){ sizeParams.xMax - sizeParams.xMin, sizeParams.yMax - sizeParams.yMin }, textObj->bkColor); // inverted
 
-	cropTextImgToSize(textImage, fontImage, sizeParams);
+	cropTextImgToSize(textImage, sizedTextImg, sizeParams);
+
+	Rasteron_Image* antialiasImg = antialiasImgOp(sizedTextImg);
 	
-	dealloc_image(textImage);
+	dealloc_image(textImage); 
+	dealloc_image(antialiasImg); // dealloc_image(sizedTextImg);
     FT_Done_Face(face);
-	return fontImage; // return fontImage;
+	return sizedTextImg; // return antialiasImg;
 }
 
-// Library Functions
+Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size){
+	unsigned totalHeight = 0;
+	unsigned maxWidth = 0;
+	
+	Rasteron_Image** textImages = (Rasteron_Image**)malloc(messageObj->messageCount * sizeof(Rasteron_Image*));
+	for(unsigned t = 0; t < messageObj->messageCount; t++){
+		Rasteron_Text textObj = { messageObj->fontFile, messageObj->messages[t], messageObj->bkColor, messageObj->fgColor };
+		*(textImages + t) = textImgOp(&textObj, size);
+		totalHeight += (*(textImages + t))->height;
+		if((*(textImages + t))->width > maxWidth) maxWidth = (*(textImages + t))->width;
+	}
 
-void initFreeType(){
-    int error = FT_Init_FreeType(&_freetypeLib);
-    if(error) perror("Error occured initializing freetype library!");
-	else puts("Successfully initialized freetype library");
-}
+	Rasteron_Image* messageImg = solidImgOp((ImageSize){ totalHeight, maxWidth }, messageObj->bkColor);
+	Rasteron_Image* stagingImgOp = NULL;
+	for(unsigned t = 0; t < messageObj->messageCount; t++){ // TODO: Test this logic
+		if(stagingImgOp != NULL) dealloc_image(stagingImgOp);
+		double yOffset = (((double)t / (double)messageObj->messageCount) * 2.0) - 1.0;
+		stagingImgOp = insertImgOp(*(textImages + t), messageImg, 0.0, 1.0 - yOffset);
+		dealloc_image(messageImg);
+		messageImg = copyImgOp(stagingImgOp);
+	}
 
-void cleanupFreeType(){ FT_Done_FreeType(_freetypeLib); }
 
-/* Rasteron_Image* bakeText_sized(const Rasteron_Text* textObj, unsigned scale){
-	return bakeText_custom(textObj, scale, FONT_REGULAR);
-} */
+	for(unsigned t = 0; t < messageObj->messageCount; t++) dealloc_image(*(textImages + t));
+	free(textImages);
 
-Rasteron_Image* bakeText(const Rasteron_Text* textObj, unsigned size){
-	return bakeText_custom(textObj, size, FONT_REGULAR);
-}
-
-/* Rasteron_Image* bakeTextI_sized(const Rasteron_Text* textObj, unsigned scale){
-	return bakeText_custom(textObj, scale, FONT_INVERTED);
-} */
-
-Rasteron_Image* bakeTextI(const Rasteron_Text* textObj, unsigned size){
-	return bakeText_custom(textObj, size, FONT_INVERTED);
+	dealloc_image(stagingImgOp);
+	return messageImg;
 }

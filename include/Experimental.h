@@ -1,3 +1,5 @@
+#ifndef RASTERON_EXPERIMENTAL_H
+
 #define RASTERON_ENABLE_ANIM
 #define RASTERON_ENABLE_FONT
 
@@ -39,11 +41,14 @@ typedef struct {
 
 // Image Creation Functions
 
-Rasteron_Image* slicediceImgOp(enum FLIP_Type flip, double xCrop, double yCrop); // Flipping, mirroring, and cropping
+Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop); // Flipping, mirroring, and cropping
 Rasteron_Image* nestboxesImgOp(double x, double y); // Looped nesting of ever-smaller squares
 Rasteron_Image* distillingImgOp(enum CHANNEL_Type channel); // Distilling image to color ranges and performing channel operations
 Rasteron_Image* overlayerImgOp(unsigned pArg, unsigned color1, unsigned color2); // Visual lense effects and enhancements to base image
-Rasteron_Image* multiNoiseImgOp(); // Mixing and matching various noise functions while adding experimental arguments
-Rasteron_Image* cellAutomataImgOp(); // Seeding and performing cellular logic operations between neighbors iteratively
-Rasteron_Image* proxPatternImgOp(); // Vornoi and other distance related functions
-Rasteron_Image* dynamicTextImgOp(const char* text); // Playing and expirementing with fractal patterns
+Rasteron_Image* wordsmithImgOp(const char* text); // Drawing text example
+Rasteron_Image* multiNoiseImgOp(int noiseOp); // Mixing and matching various noise functions while adding experimental arguments
+Rasteron_Image* cellAutomataImgOp(int seedOp); // Seeding and performing cellular logic operations between neighbors iteratively
+Rasteron_Image* proxPatternImgOp(unsigned short points); // Vornoi and other distance related functions
+
+#define RASTERON_EXPERIMENTAL_H
+#endif

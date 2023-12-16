@@ -170,9 +170,9 @@ unsigned pixelPointOffset(PixelPoint pixPoint, ref_image_t refImage){
 	else if(pixPoint.x >= 1.0) xOffset = refImage->width - 1;
 	else xOffset = (unsigned)((double)refImage->width * pixPoint.x);
 
-	unsigned yOffset; // claming Y
+	unsigned yOffset; // clamping Y
 	if(pixPoint.y <= 0.0) yOffset = 0;
-	else if(pixPoint.y >= 1.0) yOffset = refImage->height;
+	else if(pixPoint.y >= 1.0) yOffset = refImage->height - 1;
 	else yOffset = (unsigned)((double)refImage->height * pixPoint.y);
 
 	unsigned pixIndex = (yOffset * refImage->width) + xOffset;

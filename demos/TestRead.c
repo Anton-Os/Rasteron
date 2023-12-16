@@ -10,14 +10,14 @@ int main(int argc, char** argv) {
     // Reading Step
 
     genFullFilePath("User.bmp", &fullImagePath);
-    sourceImage1 = loadImgOp(fullImagePath);
-    printf("%s image successfully loaded!", sourceImage1->name);
+    sourceImage1 = loadImgOp((argc < 1)? fullImagePath : argv[1]);
+    printf("%s image read operation successful", sourceImage1->name);
     genFullFilePath("User.tiff", &fullImagePath);
-    sourceImage2 = loadImgOp(fullImagePath);
-    printf("%s image successfully loaded!", sourceImage2->name);
+    sourceImage2 = loadImgOp((argc < 2)? fullImagePath : argv[2]);
+    printf("%s image read operation successful", sourceImage2->name);
     genFullFilePath("User.png", &fullImagePath);
-    sourceImage3 = loadImgOp(fullImagePath);
-    printf("%s image successfully loaded!", sourceImage3->name);
+    sourceImage3 = loadImgOp((argc < 3)? fullImagePath : argv[3]);
+    printf("%s image read operation successful", sourceImage3->name);
     
     // Cleanup Step
     

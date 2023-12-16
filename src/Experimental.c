@@ -2,6 +2,27 @@
 
 static char fullFilePath[1024];
 
+Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){ 
+    genFullFilePath("Logroller.bmp", &fullFilePath);
+
+    Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
+
+    enum CROP_Type cropX = (xCrop > 0.0)? CROP_Right : CROP_Left;
+    Rasteron_Image* cropImgX = cropImgOp(loadedImg, cropX, xCrop);
+    enum CROP_Type cropY = (yCrop > 0.0)? CROP_Top : CROP_Bottom;
+    Rasteron_Image* cropImgY = cropImgOp(cropImgX, cropY, yCrop);
+
+    Rasteron_Image* flipImg = flipImgOp(cropImgY, flip);
+
+   Rasteron_Image* finalImg = scaleImgOp((ImageSize){ 512, 512 }, flipImg); // attempting to resize
+
+    dealloc_image(loadedImg);
+    dealloc_image(cropImgX, cropImgY);
+    dealloc_image(flipImg);
+
+    return finalImg;
+}
+
 Rasteron_Image* nestboxesImgOp(double x, double y){
     Rasteron_Image* nestedImgs[9] = {
         solidImgOp((ImageSize){ 768, 768 }, 0xFFFF00FF),
@@ -21,32 +42,13 @@ Rasteron_Image* nestboxesImgOp(double x, double y){
         combineImgs[i] = insertImgOp(combineImgs[i - 1], nestedImgs[8 - i - 1], x, y);
 
     Rasteron_Image* outerImg = solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00);
-    Rasteron_Image* finalImg = insertImgOp(combineImgs[7], outerImg, x, y);
+    Rasteron_Image* flipImg = insertImgOp(combineImgs[7], outerImg, x, y);
 
     for(unsigned i = 0; i < 9; i++) dealloc_image(nestedImgs[i]);
     for(unsigned i = 0; i < 8; i++) dealloc_image(combineImgs[i]);  
     dealloc_image(outerImg);
 
-    return finalImg;
-}
-
-Rasteron_Image* slicediceImgOp(enum FLIP_Type flip, double xCrop, double yCrop){ 
-    genFullFilePath("Logroller.bmp", &fullFilePath);
-
-    Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
-
-    enum CROP_Type cropX = (xCrop > 0.0)? CROP_Right : CROP_Left;
-    Rasteron_Image* cropImgX = cropImgOp(loadedImg, cropX, xCrop);
-
-    enum CROP_Type cropY = (yCrop > 0.0)? CROP_Top : CROP_Bottom;
-    Rasteron_Image* cropImgY = cropImgOp(cropImgX, cropY, yCrop);
-
-    Rasteron_Image* finalImg = flipImgOp(cropImgY, flip); // final operation is flip
-
-    dealloc_image(loadedImg);
-    dealloc_image(cropImgX, cropImgY);
-
-    return finalImg;
+    return flipImg;
 }
 
 static unsigned distill(unsigned color){
@@ -65,13 +67,13 @@ Rasteron_Image* distillingImgOp(enum CHANNEL_Type channel){
     genFullFilePath("Gumdrops.bmp", &fullFilePath);
 
     Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
-    Rasteron_Image* finalImg = (channel >= 0 && channel <= 2) 
+    Rasteron_Image* flipImg = (channel >= 0 && channel <= 2) 
         ? filterImgOp(loadedImg, channel) 
         : recolorImgOp(loadedImg, distill);
 
     dealloc_image(loadedImg);
 
-    return finalImg; 
+    return flipImg; 
 }
 
 static unsigned overlayer(unsigned color1, unsigned color2){
@@ -106,59 +108,106 @@ Rasteron_Image* overlayerImgOp(unsigned pArg, unsigned color1, unsigned color2){
     Rasteron_Image* mixImg2 = mixingImgOp(gradientImgs[2], gradientImgs[3], overlayer);
     Rasteron_Image* mixImg3 = mixingImgOp(mixImg1, mixImg2, overlayer);
 
-    // Rasteron_Image* finalImg = mixingImgOp(gradientImgs[0], gradientImgs[1], overlayer);
-    Rasteron_Image* finalImg; // = mixingImgOp(mixImg3, gradientImgs[4], overlayer);
+    // Rasteron_Image* flipImg = mixingImgOp(gradientImgs[0], gradientImgs[1], overlayer);
+    Rasteron_Image* flipImg; // = mixingImgOp(mixImg3, gradientImgs[4], overlayer);
     switch(pArg){
-        case 0: finalImg = copyImgOp(mixImg1); break;
-        case 1: finalImg = copyImgOp(mixImg2); break;
-        case 2: finalImg = copyImgOp(mixImg3); break;
-        default: finalImg = mixingImgOp(mixImg2, gradientImgs[4], overlayer); break;
+        case 0: flipImg = copyImgOp(mixImg1); break;
+        case 1: flipImg = copyImgOp(mixImg2); break;
+        case 2: flipImg = copyImgOp(mixImg3); break;
+        default: flipImg = mixingImgOp(mixImg2, gradientImgs[4], overlayer); break;
     }
     
     for(unsigned g = 0; g < 5; g++) dealloc_image(gradientImgs[g]);
     dealloc_image(mixImg1); dealloc_image(mixImg2); dealloc_image(mixImg3);
 
-    return finalImg; 
+    return flipImg; 
 } 
 
-Rasteron_Image* multiNoiseImgOp(){ 
-    // TODO: Add body
+Rasteron_Image* multiNoiseImgOp(int noiseOp){ 
+    ColorLattice lattice1 = (ColorLattice){ 8, 8, 0xFF0000FF, 0xFFFFFFFF }; // blue and white lattice
+    ColorLattice lattice2 = (ColorLattice){ 32, 32, 0xFF00FF00, 0xFF888888 }; // grey and green lattice
+    ColorLattice lattice3 = (ColorLattice){ 128, 128, 0xFFFF0000, 0xFF000000 }; // red and black lattice
+
+    ColorLatticeTable latticeTable;
+    latticeTable.latticeCount = 3;
+    latticeTable.lattices[0] = lattice1;
+    latticeTable.lattices[1] = lattice2;
+    latticeTable.lattices[2] = lattice3;
+
+    switch(noiseOp){
+        case 0: return noiseImgOp_lattice((ImageSize){ 1024, 1024}, lattice1);
+        case 1: return noiseImgOp_lattice((ImageSize){ 1024, 1024}, lattice2);
+        case 2: return noiseImgOp_lattice((ImageSize){ 1024, 1024}, lattice3);
+        default: return noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF000000, 0xFFFFFFFF);
+    }
+
     return solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal());
 }
 
-Rasteron_Image* cellAutomataImgOp(){
-    // TODO: Add body 
-    return solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal()); 
+Rasteron_Image* cellAutomataImgOp(int seedOp){
+    genFullFilePath("Starcase.bmp", &fullFilePath);
+
+    Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
+    Rasteron_Image* flipImg;
+    
+    ColorSeed seed1 = (ColorSeed){ 0xFFFF0000, 0.05 };
+    ColorSeed seed2 = (ColorSeed){ 0xFF00FF00, 0.15 };
+    ColorSeed seed3 = (ColorSeed){ 0xFF0000FF, 0.35 };
+
+    ColorSeedTable seedTable;
+    seedTable.seedCount = 3;
+    seedTable.seeds[0] = seed1;
+    seedTable.seeds[1] = seed2;
+    seedTable.seeds[2] = seed3;
+
+    switch(seedOp){
+        case 0: flipImg = seededImgOp(loadedImg, seed1); break;
+        case 1: flipImg = seededImgOp(loadedImg, seed2); break;
+        case 2: flipImg = seededImgOp(loadedImg, seed3); break;
+        default: flipImg = seededImgOp_tabled(loadedImg, &seedTable);
+    }
+ 
+    dealloc_image(loadedImg);
+    return flipImg; 
 }
 
-Rasteron_Image* proxPatternImgOp(){ 
-    // TODO: Add body
-    return solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal()); 
+void proxPattern(unsigned color, double distance){ return color; }
+
+Rasteron_Image* proxPatternImgOp(unsigned short points){ 
+    ColorPointTable colorPointTable;
+    colorPointTable.pointCount = points;
+    for(unsigned p = 0; p < points; p++){
+        colorPointTable.points[p] = (ColorPoint){
+            (double)rand() / RAND_MAX,
+            (double)rand() / RAND_MAX,
+            genRandColorVal()
+        };
+    }
+
+    return fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, proxPattern); 
 }
 
-Rasteron_Image* dynamicTextImgOp(const char* text){ 
+Rasteron_Image* wordsmithImgOp(const char* text){ 
     genFullFilePath("Tw-Cen-MT.ttf", &fullFilePath);
 
     Rasteron_Text textObj;
-    textObj.fileName = fullFilePath;
+    textObj.fontFile = fullFilePath;
     textObj.text = text;
     textObj.bkColor = 0xFF000000;
-    textObj.fgColor = 0xFFFFFFFF;
+    textObj.fgColor = 0xFFEEEEEE;
 
-    Rasteron_Image* outerImg = solidImgOp((ImageSize){1024, 1024}, 0xDDDDDDDD);
+    Rasteron_Message messageObj;
+    messageObj.fontFile = fullFilePath;
+    messageObj.messageCount = 3;
+    messageObj.messages[0] = "Rasteron is Dope!";
+    messageObj.messages[1] = "Rasteron is Dope!!";
+    messageObj.messages[2] = "Rasteron is Dope!!!";
+    messageObj.bkColor = 0xFF000000;
+    messageObj.fgColor = 0xFFEEEEEE;
 
-    Rasteron_Image* textImgs[5] = { 
-        bakeText(&textObj, FONT_SIZE_TINY),
-        bakeText(&textObj, FONT_SIZE_SMALL),
-        bakeText(&textObj, FONT_SIZE_MED),
-        bakeText(&textObj, FONT_SIZE_LARGE),
-        bakeText(&textObj, FONT_SIZE_XL)
-    };
+    Rasteron_Image* textImg = textImgOp(&textObj, FONT_SIZE_MED);
+    Rasteron_Image* finalImg = antialiasImgOp(textImg);
 
-    Rasteron_Image* finalImg = copyImgOp(textImgs[2]);
-    
-    for(unsigned t = 0; t < 5; t++) dealloc_image(textImgs[t]);
-    dealloc_image(outerImg);
-
+    dealloc_image(textImg);
     return finalImg; 
 }

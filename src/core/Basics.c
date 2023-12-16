@@ -1,3 +1,5 @@
+#include "Toolbox.h"
+
 #include "Rasteron.h"
 
 Rasteron_Image* loadImgOp(const char* fileName){
@@ -53,6 +55,23 @@ Rasteron_Image* copyImgOp(ref_image_t refImage){
 		*(copyImage->data + p) = *(refImage->data + p); // copy each pixel
 
 	return copyImage;
+}
+
+Rasteron_Image* scaleImgOp(ImageSize size, ref_image_t refImage){
+	assert(refImage != NULL);
+
+	Rasteron_Image* resizeImage = alloc_image("resize", size.height, size.width);
+
+	for(unsigned c = 0; c < resizeImage->height; c++)
+		for(unsigned r = 0; r < resizeImage->width; r++){
+			PixelPoint pixelPoint = (PixelPoint){ (double)r / resizeImage->width, (double)c / resizeImage->height };
+			// PixelPoint pixelPoint = (PixelPoint){ 0, 0 };
+			*(resizeImage->data + (c * resizeImage->width) + r) = pixelPointColor(pixelPoint, refImage);
+		}
+
+	/* for(unsigned p = 0; p < resizeImage->width * resizeImage->height; p++){} */
+
+	return resizeImage;
 }
 
 Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double factor){

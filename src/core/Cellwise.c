@@ -131,3 +131,20 @@ Rasteron_Image* cellwiseImgOp_vertical(ref_image_t refImage, nebrCallback2 callb
 	dealloc_image(stagingImg);
 	return patternImg;
 }
+
+unsigned antialias(unsigned target, unsigned neighbors[8]){
+	unsigned finalColor = neighbors[0];
+
+	for(unsigned n = 1; n < 8; n++)
+		if(neighbors[n] != NO_COLOR)
+			finalColor = blendColors(finalColor, neighbors[n], 0.5F);
+		else continue;
+	
+	return finalColor;
+}
+
+Rasteron_Image* antialiasImgOp(ref_image_t refImage){
+	assert(refImage != NULL);
+
+	return cellwiseImgOp(refImage, antialias, 1);
+}

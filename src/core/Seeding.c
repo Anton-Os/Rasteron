@@ -25,7 +25,7 @@ Rasteron_Image* seededImgOp(ref_image_t refImage, ColorSeed seed){
 Rasteron_Image* seededImgOp_tabled(ref_image_t refImage, const ColorSeedTable* seedTable){
 	assert(refImage != NULL);
 
-	Rasteron_Image* seedImage = alloc_image("palette", refImage->height, refImage->width);
+	Rasteron_Image* seedImage = copyImgOp(refImage);
 	const float defaultSeedWeight = 1.0f / (seedTable->seedCount + 1); // leaves less covered as seed count increases
 
 	double chance = 0.0f;
@@ -42,7 +42,7 @@ Rasteron_Image* seededImgOp_tabled(ref_image_t refImage, const ColorSeedTable* s
 
 	// setting proper colors
 	for (unsigned p = 0; p < seedImage->width * seedImage->height; p++) {
-		chance = ((double)rand() / (double)RAND_MAX) * seedWeightTotal;
+		chance = (seedWeightTotal > 1.0)? ((double)rand() / (double)RAND_MAX) * seedWeightTotal : ((double)rand() / (double)RAND_MAX);
 		unsigned color = *(refImage->data + p);
 		for(unsigned s = 0; s < seedTable->seedCount; s++)
 			if(chance > seedRanges[s][0] && chance < seedRanges[s][1]){ // checks if rand number is within bounds

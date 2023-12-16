@@ -30,6 +30,8 @@ Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); //
 
 // --------------------------------  UI  -------------------------------- //
 
+#define NO_QUEUE NULL
+
 #define UI_COLOR_BACKGROUND 0xFF111111
 #define UI_COLOR_FOREGROUND 0xFF333333
 #define UI_COLOR_PLUS 0xFF00FF00
@@ -38,19 +40,14 @@ Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); //
 
 enum MENU_Size { MENU_Tiny, MENU_Small, MENU_Medium, MENU_Large, MENU_XL };
 
-ImageSize getUI_ImageSize(enum MENU_Size size);
-
-enum MENU_Style { MENU_Regular }; // TODO: Add support for at least 2 alternate styles
+// enum MENU_Style { MENU_Regular }; // TODO: Add support for at least 2 alternate styles
 
 // void setUI_style();
 void setUI_colorScheme(unsigned bgColor, unsigned fgColor, unsigned contentColors[3]); // sets background, foreground, and content
 
-// enum TOGGLE_Type { TOGGLE_Switch }; // TODO: Add radio, checkmark, and other toggles
-
+Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name);
 Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size);
-
 // Rasteron_Queue* loadUI_keyBtn(enum MENU_Size size, char key);
-// Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name);
 
 Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short turns);
 

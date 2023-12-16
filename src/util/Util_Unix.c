@@ -33,7 +33,7 @@ void createWindow(Platform_Context* context, const char* name, unsigned width, u
 	XFlushGC(context->display, context->gc);
 }
 
-void eventLoop(Display* display){
+void eventLoop(Display* display, eventLoopCallback callback){
 	XEvent event;
     while(1){
         XNextEvent(display, &event);
@@ -42,6 +42,8 @@ void eventLoop(Display* display){
 		case (KeyPress): return;
 		}
     }
+
+	if(callback != NULL) callback();
 }
 
 XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data){

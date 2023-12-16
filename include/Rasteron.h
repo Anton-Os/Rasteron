@@ -1,7 +1,6 @@
 #ifndef RASTERON_H
 
 #ifdef __cplusplus
-// namespace Rasteron {
 extern "C"{
 #endif
 
@@ -19,6 +18,7 @@ extern "C"{
 Rasteron_Image* loadImgOp(const char* fileName); // creates an image from a file
 Rasteron_Image* solidImgOp(ImageSize size, uint32_t color); // creates a solid color image
 Rasteron_Image* copyImgOp(ref_image_t refImage); // creates copy of image
+Rasteron_Image* scaleImgOp(ImageSize size, ref_image_t refImage); // resize image to size
 Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double factor); // creates cropped image
 Rasteron_Image* mirrorImgOp(ref_image_t refImage); // creates horizontal mirror image
 Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates flipped image
@@ -59,9 +59,8 @@ Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTab
 //      Operations for creating various types of noises
 
 Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2); // white noise generated between two values
-Rasteron_Image* noiseImgOp_gradient(ImageSize size, ColorLattice lattice); // gradient noise over lattice
-Rasteron_Image* noiseImgOp_fbm(ImageSize size, ColorLatticeTable latticeTable); // fbm noise over layered gradients
-// TODO: Include domain warping function
+Rasteron_Image* noiseImgOp_lattice(ImageSize size, ColorLattice lattice); // gradient noise over lattice
+Rasteron_Image* noiseImgOp_warp(ImageSize size, ColorLattice domain, ColorLattice reference); // warping over domain
 
 
 // --------------------------------   Seeding Operations    -------------------------------- //
@@ -76,10 +75,10 @@ Rasteron_Image* seededImgOp_tabled(ref_image_t refImage, const ColorSeedTable* s
 //
 //      For each pixel adjascent neighbors are determined and used to compute the final color
 
-Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned iterations); // pattern image from neighbors with iterations
+Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations); // pattern image from neighbors with iterations
 Rasteron_Image* cellwiseImgOp_horizontal(ref_image_t refImage, nebrCallback2 callback); // horizontal pattern image from left & right neighbors
 Rasteron_Image* cellwiseImgOp_vertical(ref_image_t refImage, nebrCallback2 callback); // vertical pattern image from top & down neighbors
-
+Rasteron_Image* antialiasImgOp(ref_image_t refImage); // performs antialiasing operation
 
 #include "Queue_Feature.h" // enables sequenced image types with potential animation support
 #include "Spatial_Feature.h" // enables spatial types, including sprite and heightmap

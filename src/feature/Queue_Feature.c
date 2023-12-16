@@ -64,17 +64,17 @@ void dealloc_queue(Rasteron_Queue* queue){
 
 static unsigned _background = UI_COLOR_BACKGROUND;
 static unsigned _foreground = UI_COLOR_FOREGROUND;
-static unsigned _contentPlus = UI_COLOR_PLUS;
-static unsigned _contentNeutral = UI_COLOR_NEUTRAL;
-static unsigned _contentMinus = UI_COLOR_MINUS;
+static unsigned _content_plus = UI_COLOR_PLUS;
+static unsigned _content_default = UI_COLOR_NEUTRAL;
+static unsigned _content_minus = UI_COLOR_MINUS;
 
-ImageSize getUI_ImageSize(enum MENU_Size size){
+static ImageSize getUI_ImageSize(enum MENU_Size size){
     switch(size){
         case MENU_Tiny: return (ImageSize){ 32, 32 };
         case MENU_Small: return (ImageSize){ 64, 64 }; 
-        case MENU_Medium: return (ImageSize){ 96, 96 };
-        case MENU_Large: return (ImageSize){ 128, 128 };
-        case MENU_XL: return (ImageSize){ 256, 256 };
+        case MENU_Medium: return (ImageSize){ 104, 104 };
+        case MENU_Large: return (ImageSize){ 152, 152 };
+        case MENU_XL: return (ImageSize){ 202, 202 };
     }
 
     return (ImageSize){ 0, 0 };
@@ -83,17 +83,73 @@ ImageSize getUI_ImageSize(enum MENU_Size size){
 void setUI_colorScheme(unsigned bgColor, unsigned fgColor, unsigned contentColors[3]){
     if(bgColor != NO_COLOR) _background = bgColor;
     if(fgColor != NO_COLOR) _foreground = fgColor;
-    if(contentColors[0] != NO_COLOR) _contentPlus = contentColors[0];
-    if(contentColors[1] != NO_COLOR) _contentNeutral = contentColors[1];
-    if(contentColors[2] != NO_COLOR) _contentMinus = contentColors[2];
+    if(contentColors[0] != NO_COLOR) _content_plus = contentColors[0];
+    if(contentColors[1] != NO_COLOR) _content_default = contentColors[1];
+    if(contentColors[2] != NO_COLOR) _content_minus = contentColors[2];
+}
+
+Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
+    /* FILE* iconsFile;
+#ifdef _WIN32
+    if(fopen_s(&iconsFile, MATERIAL_ICONS_FILE, "r")) return NO_QUEUE; // error
+#else
+    iconsFile = fopen(MATERIAL_ICONS_FILE, "r");
+    if(iconsFile == NULL) return NO_QUEUE; // error
+#endif
+    int c;
+    while((c = getc(iconsFile)) != EOF) putchar(c); */ // TODO: Implement lookup
+    
+    ImageSize menuSize = getUI_ImageSize(size);
+
+    char iconPath[1024];
+    genFullFilePath("material-icons-png\\", &iconPath);
+    strcat(iconPath, name);
+    strcat(iconPath, ".png");
+    Rasteron_Image* iconImg = loadImgOp(iconPath);
+    Rasteron_Image* sizedIconImg = scaleImgOp((ImageSize){ (unsigned)(menuSize.height * 0.8), (unsigned)(menuSize.width * 0.8) }, iconImg);
+
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("icon-btn", menuSize, 3);
+    Rasteron_Image* defaultImg = *(menuQueue->frameData + 0);
+    Rasteron_Image* plusImg = *(menuQueue->frameData + 1);
+    Rasteron_Image* minusImg = *(menuQueue->frameData + 2);
+
+    unsigned iconPix = 0;
+    for(unsigned p = 0; p < menuSize.width * menuSize.height; p++){
+        double x = (1.0 / (double)menuSize.width) * (p % menuSize.width);
+		double y = (1.0 / (double)menuSize.height) * (p / menuSize.width);
+        PixelPoint pixelPoint = { x, y };
+
+        if(x < 0.1 || x > 0.9 || y < 0.1 || y > 0.9){
+        // if(x < 0.15 || x > 0.85 || y < 0.15 || y > 0.85){
+            *(defaultImg->data + p) = _background;
+            *(plusImg->data + p) = _background;
+            *(minusImg->data + p) = _background;
+        }
+        else {
+            unsigned iconColor = *(sizedIconImg->data + iconPix);
+            
+            *(defaultImg->data + p) = (iconColor != NO_COLOR)? _content_default : blendColors(_background, _foreground, 0.75);
+            *(plusImg->data + p) = (iconColor != NO_COLOR)? _content_plus : _foreground;
+            *(minusImg->data + p) = (iconColor != NO_COLOR)? _content_minus : _foreground;
+
+            iconPix++;
+        }
+    }
+
+    dealloc_image(iconImg);
+    dealloc_image(sizedIconImg);
+
+    // fclose(iconsFile);
+    return menuQueue;
 }
 
 Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
     ImageSize menuSize = getUI_ImageSize(size);
 
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("kbutton", menuSize, 2);
-    Rasteron_Image* releaseImg = *(menuQueue->frameData + 0);
-    Rasteron_Image* pressImg = *(menuQueue->frameData + 1);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("check-btn", menuSize, 3);
+    Rasteron_Image* uncheckImg = *(menuQueue->frameData + 0);
+    Rasteron_Image* checkImg = *(menuQueue->frameData + 1);
+    Rasteron_Image* excheckImg = *(menuQueue->frameData + 2);
 
     for(unsigned p = 0; p < menuSize.width * menuSize.height; p++){
         double x = (1.0 / (double)menuSize.width) * (p % menuSize.width);
@@ -102,29 +158,27 @@ Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
 
         if(x < 0.1 || x > 0.9 || y < 0.1 || y > 0.9){
         // if(x < 0.15 || x > 0.85 || y < 0.15 || y > 0.85){
-            *(releaseImg->data + p) = _background;
-            *(pressImg->data + p) = _background;
+            *(uncheckImg->data + p) = _background;
+            *(checkImg->data + p) = _background;
+            *(excheckImg->data + p) = _background;
         }
         else {
-            *(releaseImg->data + p) = blendColors(_background, _foreground, 0.75);
-            *(pressImg->data + p) = _foreground;
+            *(uncheckImg->data + p) = blendColors(_background, _foreground, 0.75);
+            *(checkImg->data + p) = _foreground;
+            *(excheckImg->data + p) = _foreground;
 
             if(((x < y + 0.1F && x > y - 0.1F) || ((1.0 - x) < y + 0.1F && (1.0 - x) > y - 0.1F)) && centerDist < 0.4) 
-                *(releaseImg->data + p) = _contentMinus;
+                *(excheckImg->data + p) = _content_minus;
 
             if((1.0 - x + 0.25) < y + 0.1F + 0.1 && (1.0 - x + 0.25) > y - 0.1F + 0.1 && x < 0.85 && y < x + 0.251) // right side checkmark
-                *(pressImg->data + p) = _contentPlus; // right side of checkmark
+                *(checkImg->data + p) = _content_plus; // right side of checkmark
             if(x + 0.5 < y + 0.15F + 0.1 && x + 0.5 > y - 0.05F + 0.1 && x > 0.15 && y < (1.0 - x) + 0.251) 
-                *(pressImg->data + p) = _contentPlus; // left side of checkmark
+                *(checkImg->data + p) = _content_plus; // left side of checkmark
         }
     }
 
     return menuQueue;
 }
-
-/* Rasteron_Queue* loadUI_toggleButton(enum MENU_Size size){
-    return (Rasteron_Queue*)alloc_queue("toggle", getUI_ImageSize(size), 2);
-} */
 
 Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short turns){
     assert(turns > 1);
@@ -147,7 +201,7 @@ Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short turns){
             indicatorPos[1] += 0.5 + -cos(t * ((3.141592653 * 2) / turns)) * 0.25; // y calculation
             double indicatorDist = sqrt((fabs(indicatorPos[0] - x) * fabs(indicatorPos[0] - x)) + (fabs(indicatorPos[1] - y) * fabs(indicatorPos[1] - y)));
 
-            if(indicatorDist < 0.05) *(dialImg->data + p) = _contentNeutral; // draws indicator
+            if(indicatorDist < 0.05) *(dialImg->data + p) = _content_default; // draws indicator
             else if(centerDist < 0.35) *(dialImg->data + p) = _foreground; // draws circular dial 
             else *(dialImg->data + p) = _background;
         }
@@ -170,17 +224,16 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
             double x = (1.0 / (double)menuSize.width) * (p % menuSize.width);
             double y = (1.0 / (double)menuSize.height) * (p / menuSize.width);
 
-            // double sliderX = (0.1 * (0.5 * levels)) + (l * ((1.0 / levels) * (0.5 * levels)));
             double sliderX = (0.1 * (0.5 * levels)) + (l * ((0.8 / (levels - 1)) * (0.5 * levels)));
             double adjustX = x * (0.5 * levels);
             double sliderDist = sqrt(fabs(sliderX - adjustX) * fabs(sliderX - adjustX) + (fabs(0.5 - y) * fabs(0.5 - y)));
 
             if(x < 0.1 || x > 0.9 || y < 0.4 || y > 0.6) *(sliderImg->data + p) = _background;
-            else if(l == 0) *(sliderImg->data + p) = _contentMinus;
-            else if(l == levels - 1) *(sliderImg->data + p) = _contentPlus;
+            else if(l == 0) *(sliderImg->data + p) = _content_minus;
+            else if(l == levels - 1) *(sliderImg->data + p) = _content_plus;
             else *(sliderImg->data + p) = _foreground;
 
-            if(sliderDist < 0.1) *(sliderImg->data + p) = _contentNeutral;
+            if(sliderDist < 0.09) *(sliderImg->data + p) = _content_default;
         }
     }
 
