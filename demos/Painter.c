@@ -37,12 +37,12 @@ void setupCanvas(char input){
 		case 'a': canvasImg = oragamiImgOp(pArg, xArg, yArg); break;
 		case 'b': canvasImg = nestboxesImgOp(xArg, yArg); break;
 		case 'c': canvasImg = distillingImgOp(pArg); break;
-		case 'd': canvasImg = overlayerImgOp(pArg, 0xFFFF0000, 0xFF00FF00); break;
+		case 'd': canvasImg = overlayerImgOp(pArg, 0xFFFF0000, 0xFF00FFFF); break;
 		case 'e': canvasImg = wordsmithImgOp("Rasteron is Dope!!!"); break;
 		case 'f': canvasImg = multiNoiseImgOp(pArg); break;
 		case 'g': canvasImg = cellAutomataImgOp(pArg); break;
 		case 'h': canvasImg = proxPatternImgOp(100); break;
-		default: canvasImg = solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal()); break;
+		default: canvasImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR()); break;
 	}
 }
 
@@ -58,7 +58,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): { 
-		canvasImg = solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal());
+		canvasImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
 		bmap = createWinBmap(canvasImg); 
 	}
 	case (WM_CHAR): { if(wParam != 0){

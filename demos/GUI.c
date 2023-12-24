@@ -5,7 +5,7 @@
 
 #include "Experimental.h"
 
-#define MQUEUE_COUNT 12
+#define MQUEUE_COUNT 16
 // #define MQUEUE_COUNT 14
 
 Rasteron_Queue* masterQueue;
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     Rasteron_Queue* mQueue_icon = loadUI_iconBtn(MENU_Large, "zoom_out");
     Rasteron_Queue* mQueue_button = loadUI_checkBtn(MENU_Large);
     Rasteron_Queue* mQueue_dial = loadUI_dial(MENU_Large, 4);
-    Rasteron_Queue* mQueue_slider = loadUI_slider(MENU_Large, 2);
+    Rasteron_Queue* mQueue_slider = loadUI_slider(MENU_Large, 6);
     // Rasteron_Queue* mQueue_slider = loadUI_slider(MENU_Large, 7);
 
     addFrameAt(masterQueue, getFrameAt(mQueue_icon, 0), 0);
@@ -59,8 +59,7 @@ int main(int argc, char** argv) {
     addFrameAt(masterQueue, getFrameAt(mQueue_button, 1), 4);
     addFrameAt(masterQueue, getFrameAt(mQueue_button, 2), 5);
     for(unsigned t = 0; t < 4; t++) addFrameAt(masterQueue, getFrameAt(mQueue_dial, t), t + 6);
-    for(unsigned l = 0; l < 2; l++) addFrameAt(masterQueue, getFrameAt(mQueue_slider, l), l + 9);
-    // for(unsigned l = 0; l < 7; l++) addFrameAt(masterQueue, getFrameAt(mQueue_slider, l), l + 6);
+    for(unsigned l = 0; l < 6; l++) addFrameAt(masterQueue, getFrameAt(mQueue_slider, l), l + 10);
 #ifdef _WIN32
     createWindow(wndProc, "GUI", 210, 225);
 	eventLoop(NULL);

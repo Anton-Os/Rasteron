@@ -10,15 +10,13 @@
 #define IMAGES_MAX 4096
 
 typedef struct {
-    ColorSeed seeds[PRIMITIVES_MAX];
-    ColorSeedTable seedTables[TABLES_MAX];
     ColorSwatch swatches[PRIMITIVES_MAX];
     PixelPoint pixelPoints[PRIMITIVES_MAX];
     PixelPointTable pixelPointTables[TABLES_MAX];
     ColorPoint colorPoints[PRIMITIVES_MAX];
     ColorPointTable colorPointTables[TABLES_MAX];
-    ColorLattice lattices[PRIMITIVES_MAX];
-    ColorLatticeTable latticeTables[TABLES_MAX];
+    ColorGrid grids[PRIMITIVES_MAX];
+    ColorGridTable gridTables[TABLES_MAX];
 
     Rasteron_Image* images[IMAGES_MAX]; // unsigned short imageIndex; // for tracking active images
     

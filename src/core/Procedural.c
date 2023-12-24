@@ -56,8 +56,56 @@ Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTabl
 	return fieldImage;
 }
 
+Rasteron_Image* fieldImgOp_ext(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback) {
+	Rasteron_Image* fieldImage = alloc_image("field", size.height, size.width);
+
+	unsigned* colorPoints = malloc(colorPointTable->pointCount * sizeof(unsigned));
+	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
+		*(colorPoints + t) = pixelPointOffset((PixelPoint){colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
+		// *(colorPoints + t) = pixelPointOffset({colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
+
+	double pixelSize = 1.0 / (double)(fieldImage->width); // fractional size of a pixel
+	double pixColors[3] = { NO_COLOR, NO_COLOR, NO_COLOR };
+	double pixDistances[3] = { 1.0, 1.0, 1.0 };
+
+	for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
+		for(unsigned t = 0; t < colorPointTable->pointCount; t++){
+			double dist = pixelDistance(p, *(colorPoints + t), fieldImage->width) * pixelSize;
+			if(dist < pixDistances[0]){
+				pixDistances[0] = dist;
+				pixColors[0] = colorPointTable->points[t].color;
+			} else if(dist < pixDistances[1]){
+				pixDistances[1] = dist;
+				pixColors[1] = colorPointTable->points[t].color;
+			} else if(dist < pixDistances[2]){
+				pixDistances[2] = dist;
+				pixColors[2] = colorPointTable->points[t].color;
+			}
+		}
+
+		*(fieldImage->data + p) = callback(pixColors, pixDistances);
+	}
+
+	free(colorPoints);
+	return fieldImage;
+}
+
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable){
 	return fieldImgOp(size, colorPointTable, callback_vornoi);
+}
+
+Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable){
+	assert(refImage != NULL);
+
+	Rasteron_Image* seedImage = copyImgOp(refImage);
+
+	printf("Point count is %d", colorPointTable->pointCount);
+	for(unsigned p = 0; p < colorPointTable->pointCount; p++){
+		ColorPoint colorPoint = colorPointTable->points[p];
+		*(seedImage->data + pixelPointOffset((PixelPoint){ colorPoint.x, colorPoint.y }, refImage)) = colorPoint.color;
+	}
+
+	return seedImage;
 }
 
 // Step operations

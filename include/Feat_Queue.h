@@ -1,6 +1,6 @@
 #ifndef RASTERON_QUEUE_H
 
-#include "type.h"
+#include "typedef.h"
 
 // --------------------------------  Queue  -------------------------------- //
 
@@ -32,10 +32,14 @@ Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); //
 
 #define NO_QUEUE NULL
 
+#define UI_STATE_PLUS 1
+#define UI_STATE_DEFAULT 0 
+#define UI_STATE_MINUS 2 
+
 #define UI_COLOR_BACKGROUND 0xFF111111
 #define UI_COLOR_FOREGROUND 0xFF333333
 #define UI_COLOR_PLUS 0xFF00FF00
-#define UI_COLOR_NEUTRAL 0xFFAAAAAA
+#define UI_COLOR_DEFAULT 0xFFAAAAAA
 #define UI_COLOR_MINUS 0xFFFF0000
 
 enum MENU_Size { MENU_Tiny, MENU_Small, MENU_Medium, MENU_Large, MENU_XL };

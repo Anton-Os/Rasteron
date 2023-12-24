@@ -14,7 +14,7 @@ Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){
 
     Rasteron_Image* flipImg = flipImgOp(cropImgY, flip);
 
-   Rasteron_Image* finalImg = resizeImgOp((ImageSize){ 512, 512 }, flipImg); // attempting to resize
+    Rasteron_Image* finalImg = resizeImgOp((ImageSize){ 512, 512 }, flipImg); // attempting to resize
 
     dealloc_image(loadedImg);
     dealloc_image(cropImgX, cropImgY);
@@ -124,51 +124,41 @@ Rasteron_Image* overlayerImgOp(unsigned pArg, unsigned color1, unsigned color2){
 } 
 
 Rasteron_Image* multiNoiseImgOp(int noiseOp){ 
-    ColorLattice lattice1 = (ColorLattice){ 8, 8, 0xFF0000FF, 0xFFFFFFFF }; // blue and white lattice
-    ColorLattice lattice2 = (ColorLattice){ 32, 32, 0xFF00FF00, 0xFF888888 }; // grey and green lattice
-    ColorLattice lattice3 = (ColorLattice){ 128, 128, 0xFFFF0000, 0xFF000000 }; // red and black lattice
+    ColorGrid grid1 = (ColorGrid){ 8, 8, 0xFF0000FF, 0xFFFFFFFF }; // blue and white grid
+    ColorGrid grid2 = (ColorGrid){ 32, 32, 0xFF00FF00, 0xFF888888 }; // grey and green grid
+    ColorGrid grid3 = (ColorGrid){ 128, 128, 0xFFFF0000, 0xFF000000 }; // red and black grid
 
-    ColorLatticeTable latticeTable;
-    latticeTable.latticeCount = 3;
-    latticeTable.lattices[0] = lattice1;
-    latticeTable.lattices[1] = lattice2;
-    latticeTable.lattices[2] = lattice3;
+    ColorGridTable gridTable;
+    gridTable.gridCount = 3;
+    gridTable.grids[0] = grid1;
+    gridTable.grids[1] = grid2;
+    gridTable.grids[2] = grid3;
 
     switch(noiseOp){
-        case 0: return noiseImgOp_lattice((ImageSize){ 1024, 1024}, lattice1);
-        case 1: return noiseImgOp_lattice((ImageSize){ 1024, 1024}, lattice2);
-        case 2: return noiseImgOp_lattice((ImageSize){ 1024, 1024}, lattice3);
+        case 0: return noiseImgOp_grid((ImageSize){ 1024, 1024}, grid1);
+        case 1: return noiseImgOp_grid((ImageSize){ 1024, 1024}, grid2);
+        case 2: return noiseImgOp_grid((ImageSize){ 1024, 1024}, grid3);
         default: return noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF000000, 0xFFFFFFFF);
     }
 
-    return solidImgOp((ImageSize){ 1024, 1024 }, genRandColorVal());
+    return solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
 }
 
 Rasteron_Image* cellAutomataImgOp(int seedOp){
     genFullFilePath("Starcase.bmp", &fullFilePath);
 
+    ColorPointTable table;
+    table.pointCount = 0;
+    for(unsigned p = 0; p < MAX_PIXELPOINTS; p++)
+        colorPointToTable(&table, RAND_COLOR(), rand() / (double)RAND_MAX, rand() / (double)RAND_MAX);
+
     Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
-    Rasteron_Image* flipImg;
-    
-    ColorSeed seed1 = (ColorSeed){ 0xFFFF0000, 0.05 };
-    ColorSeed seed2 = (ColorSeed){ 0xFF00FF00, 0.15 };
-    ColorSeed seed3 = (ColorSeed){ 0xFF0000FF, 0.35 };
+    Rasteron_Image* seedImg;
 
-    ColorSeedTable seedTable;
-    seedTable.seedCount = 3;
-    seedTable.seeds[0] = seed1;
-    seedTable.seeds[1] = seed2;
-    seedTable.seeds[2] = seed3;
-
-    switch(seedOp){
-        case 0: flipImg = seededImgOp(loadedImg, seed1); break;
-        case 1: flipImg = seededImgOp(loadedImg, seed2); break;
-        case 2: flipImg = seededImgOp(loadedImg, seed3); break;
-        default: flipImg = seededImgOp_tabled(loadedImg, &seedTable);
-    }
+    seedImg = seededImgOp(loadedImg, &table);
  
     dealloc_image(loadedImg);
-    return flipImg; 
+    return seedImg; 
 }
 
 void proxPattern(unsigned color, double distance){ return color; }
@@ -180,7 +170,7 @@ Rasteron_Image* proxPatternImgOp(unsigned short points){
         colorPointTable.points[p] = (ColorPoint){
             (double)rand() / RAND_MAX,
             (double)rand() / RAND_MAX,
-            genRandColorVal()
+            RAND_COLOR()
         };
     }
 

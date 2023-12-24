@@ -19,21 +19,6 @@ void dealloc_image(Rasteron_Image* image){
 	image = NULL; // set address to null
 }
 
-// --------------------------------   Seed    -------------------------------- //
-
-void seedToTable(ColorSeedTable* table, unsigned color){ 
-    table->seeds[table->seedCount].color = color;
-	table->seeds[table->seedCount].weight = 0.0; // default seed weight
-	table->seedCount++;
-}
-
-void seedweightToTable(ColorSeedTable* table, unsigned color, double weight){
-    table->seeds[table->seedCount].color = color;
-	table->seeds[table->seedCount].weight = weight; // custom seed weight
-	table->seedCount++;
-}
-
-
 // --------------------------------   Swatch    -------------------------------- //
 
 ColorSwatch createSwatch(unsigned color, uint8_t deviation){
@@ -66,33 +51,23 @@ ColorSwatch createSwatch(unsigned color, uint8_t deviation){
 	return swatch;
 }
 
-/* ColorSeedTable createSeedTable(const ColorSwatch* swatch){
-    ColorSeedTable seedTable = { 0 };
-	addSeed(&seedTable, swatch->colors[SWATCH_Yellow_Add]);
-	addSeed(&seedTable, swatch->colors[SWATCH_Cyan_Add]);
-	addSeed(&seedTable, swatch->colors[SWATCH_Magenta_Add]);
-	addSeed(&seedTable, swatch->colors[SWATCH_Light]);
-	addSeed(&seedTable, swatch->colors[SWATCH_Dark]);
-	addSeed(&seedTable, swatch->colors[SWATCH_Yellow_Sub]);
-	addSeed(&seedTable, swatch->colors[SWATCH_Cyan_Sub]);
-	addSeed(&seedTable, swatch->colors[SWATCH_Magenta_Sub]);
-
-	return seedTable;
-} */
-
 // --------------------------------   PixelPoint & ColorPoint    -------------------------------- //
 
 void pixelPointToTable(PixelPointTable* table, double xFrac, double yFrac){
-    table->points[table->pointCount].x = xFrac;
-	table->points[table->pointCount].y = yFrac;
-	table->pointCount++;
+    if(table->pointCount < MAX_PIXELPOINTS){
+		table->points[table->pointCount].x = xFrac;
+		table->points[table->pointCount].y = yFrac;
+		table->pointCount++;
+	}
 }
 
 void colorPointToTable(ColorPointTable* table, unsigned color, double xFrac, double yFrac){
-    table->points[table->pointCount].x = xFrac;
-	table->points[table->pointCount].y = yFrac;
-	table->points[table->pointCount].color = color;
-	table->pointCount++;
+	if(table->pointCount < MAX_PIXELPOINTS){
+		table->points[table->pointCount].x = xFrac;
+		table->points[table->pointCount].y = yFrac;
+		table->points[table->pointCount].color = color;
+		table->pointCount++;
+	}
 }
 
 // --------------------------------   Cellwise    -------------------------------- //

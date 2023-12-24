@@ -1,7 +1,9 @@
 #ifndef RASTERON_TOOLBOX_H
 
 #include "support_def.h"
-#include "type.h"
+#include "typedef.h"
+
+#define RAND_COLOR() (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255))
 
 void seedRandGen(); // seeds the random number generator
 void replaceFwdSlash(char* str); // utility for replacing forward-slashes with back-slashes
@@ -10,7 +12,6 @@ void bitSwitchRB(uint32_t* data, unsigned pixels); // switch red and blue bits
 void bitSwitchGB(uint32_t* data, unsigned pixels); // switch green and blue bits
 void bitSwitchRG(uint32_t* data, unsigned pixels); // switch red and green bits
 
-uint32_t genRandColorVal();
 // enum CHANNEL_Type getDominantChan(unsigned color);
 uint8_t getLoChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
 uint8_t getHiChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel);

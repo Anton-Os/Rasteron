@@ -19,7 +19,7 @@ set(core_src
 
     src/core/Basics.c
     src/core/Filtering.c
-    src/core/Seeding.c
+    # src/core/Seeding.c
     src/core/Mixing.c
     src/core/Procedural.c
     src/core/Cellwise.c

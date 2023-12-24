@@ -7,12 +7,12 @@ void replaceFwdSlash(char* str){
 	for(unsigned l = 0; l < len; l++) if(*(str + l) == '/') *(str + l) = '\\'; // switch the dash type
 }
 
-uint32_t genRandColorVal(){
+/* uint32_t RAND_COLOR(){
 	uint8_t redBit = rand() % 255;
 	uint8_t greenBit = rand() % 255;
 	uint8_t blueBit = rand() % 255;
 	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
-}
+} */
 
 
 void bitSwitchRB(uint32_t* data, unsigned pixels) {

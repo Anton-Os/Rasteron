@@ -18,23 +18,6 @@ typedef struct {
 
 typedef const Rasteron_Image *const ref_image_t;
 
-
-// --------------------------------   Seed    -------------------------------- //
-
-#define MAX_SEEDS 2046
-#define DEFAULT_SEED_WEIGHT 0.0
-
-typedef struct {
-	unsigned color;
-	double weight;
-} ColorSeed;
-
-typedef struct {
-    ColorSeed seeds[2046];
-	unsigned seedCount; // = 0;
-} ColorSeedTable;
-
-
 // --------------------------------   Swatch    -------------------------------- //
 
 enum SWATCH_Colors {
@@ -53,31 +36,35 @@ typedef struct {
 
 // --------------------------------   PixelPoint & ColorPoint    -------------------------------- //
 
+#define MAX_PIXELPOINTS 40000
+
 typedef struct { double x; double y; } PixelPoint; // x and y fractional offset
 
 typedef struct {
-	PixelPoint points[2046];
+	PixelPoint points[MAX_PIXELPOINTS];
 	unsigned pointCount;
 } PixelPointTable;
 
 typedef struct { double x; double y; unsigned color; } ColorPoint; // x and y fractional offset with color
 
 typedef struct {
-	ColorPoint points[2046];
+	ColorPoint points[MAX_PIXELPOINTS];
 	unsigned pointCount;
 } ColorPointTable;
 
 // --------------------------------  Noise    -------------------------------- //
 
+#define MAX_grid 256
+
 typedef struct {
 	unsigned xCells; unsigned yCells;
 	unsigned color1; unsigned color2;
-} ColorLattice;
+} ColorGrid;
 
 typedef struct {
-    ColorLattice lattices[2046];
-	unsigned latticeCount;
-} ColorLatticeTable;
+    ColorGrid grids[MAX_grid];
+	unsigned gridCount;
+} ColorGridTable;
 
 
 // --------------------------------   Cellwise    -------------------------------- //
