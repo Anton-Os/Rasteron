@@ -6,9 +6,6 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-include(externalTargets.cmake)
-include(FindX11)
-
 # Core Sources
 
 set(core_src
@@ -28,62 +25,34 @@ set(core_src
 
 list(APPEND core_src src/ImgBmp.c) # BMP does not require dependencies
 
-find_package(Zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
-if(Zlib_FOUND)
-    message(STATUS "Zlib located")
-else()
-    message(STATUS "Zlib not located, may cause issues")
-endif(Zlib_FOUND)
+# Feature Sources
 
-find_package(libpng PATHS ${EXTERNAL_INSTALL_DIR}/lib)
-if(libpng_FOUND)
-    set(PNG_SUPPORT_STR "#define USE_IMG_PNG")
-    message(STATUS "PNG Support Enabled")
-    list(APPEND core_src src/ImgPng.c) # Add png functionality
-else(NOT libpng_FOUND)
-    set(PNG_SUPPORT_STR "// #define USE_IMG_PNG")
-    message(STATUS "PNG Support Disabled, build png")
-endif(libpng_FOUND)
+set(feature_src
+    src/feature/Feat_Space.c
+    src/feature/Feat_Queue.c
+)
 
-find_package(libtiff PATHS ${EXTERNAL_INSTALL_DIR}/lib/libtiff)
-if(libtiff_FOUND)
-    set(TIFF_SUPPORT_STR "#define USE_IMG_TIFF")
-    message(STATUS "TIFF Support Enabled")
-    list(APPEND core_src src/ImgTIFF.c) # add tiff functionality
-else(NOT libtiff_FOUND)
-    set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
-
-    message(STATUS "TIFF Support Disabled, build tiff")
-endif(libtiff_FOUND)
-
-# Plugin Sources
-
-list(APPEND feat_src src/feature/Feat_Queue.c)
-
-list(APPEND feat_src src/feature/Feat_Space.c)
-
-if(SUPPORT_FONT_BAKING)
-    set(freetype_found TRUE)
-    set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
-    find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
-    message(STATUS "freetype_h is ${freetype_h}, freetype_lib is ${freetype_lib}")
-    list(APPEND feat_src src/feature/Feat_Text.c)
-else()
-    set(freetype_found FALSE)
-endif()
-
-# Helper Sources
+# Utility Sources
 
 if(WIN32) # Windows Specific
     list(APPEND util_src src/util/Util_Win.c)
 elseif(UNIX AND NOT APPLE) # Unix Specific
+    include(FindX11)
     list(APPEND util_src src/util/Util_Unix.c)
 endif()
 
-# Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${feat_src} "src/Experimental.c") # library only
-add_library(Rasteron STATIC ${core_src} ${feat_src} ${util_src} "src/Experimental.c") # library with examples
+
+### External Libraries
+
+include(externalTargets.cmake)
+
+
+
+### Rasteron Library
+
+# add_library(Rasteron STATIC ${core_src} ${feature_src} "src/Experimental.c") # library only
+add_library(Rasteron STATIC ${core_src} ${feature_src} ${util_src} "src/Experimental.c") # library with examples
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) # include necessary external libs
 
@@ -130,7 +99,9 @@ target_link_libraries(GUI Rasteron)
 # target_include_directories(Painter PUBLIC include)
 # target_link_libraries(Painter Rasteron)
 
-# Install Procedures
+
+
+### Installation
 
 install(TARGETS Rasteron
     EXPORT Rasteron

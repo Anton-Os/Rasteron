@@ -15,9 +15,8 @@ typedef struct {
     char* prefix; // each child name follows the prefix with a number
 
     unsigned short index; // index to retrieve the state
-    // Rasteron_Image** state; // active state from index
-
     unsigned short frameCount; // total number of frames
+    
     Rasteron_Image** frameData; // data contents of frames
 } Rasteron_Queue;
 

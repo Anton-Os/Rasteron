@@ -1,5 +1,3 @@
-# Adding Internal Libraries
-
 include(ExternalProject)
 
 set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
@@ -7,6 +5,8 @@ set(EXTERNAL_INSTALL_DIR "${EXTERNAL_PROJ_DIR}/Install")
 
 list(APPEND EXTERNAL_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_INSTALL_DIR}")
 list(APPEND EXTERNAL_ARGS "-DCMAKE_BUILD_TYPE:STRING=Debug") # Temporary fix
+
+# Support for ZLIB
 
 set(ZLIB_DIR "${EXTERNAL_PROJ_DIR}/zlib")
 ExternalProject_Add(zlib
@@ -18,6 +18,15 @@ ExternalProject_Add(zlib
     PREFIX ${ZLIB_DIR}
     BINARY_DIR ${ZLIB_DIR}/Build
 )
+
+find_package(Zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
+if(Zlib_FOUND)
+    message(STATUS "Zlib located")
+else()
+    message(STATUS "Zlib not located, may cause issues")
+endif(Zlib_FOUND)
+
+# Support for PNG
 
 set(LIBPNG_DIR "${EXTERNAL_PROJ_DIR}/libpng")
 ExternalProject_Add(libpng
@@ -42,6 +51,17 @@ if(EXISTS ${EXTERNAL_INSTALL_DIR}/bin/libpng16.dll)
     file(COPY ${EXTERNAL_INSTALL_DIR}/bin/libpng16.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 endif()
 
+find_package(libpng PATHS ${EXTERNAL_INSTALL_DIR}/lib)
+if(libpng_FOUND)
+    set(PNG_SUPPORT_STR "#define USE_IMG_PNG")
+    message(STATUS "PNG Support Enabled")
+    list(APPEND core_src src/ImgPng.c)
+else(NOT libpng_FOUND)
+    set(PNG_SUPPORT_STR "// #define USE_IMG_PNG")
+    message(STATUS "PNG Support Disabled, build png")
+endif(libpng_FOUND)
+
+# Support for TIFF
 
 set(LIBTIFF_DIR "${EXTERNAL_PROJ_DIR}/libtiff")
 ExternalProject_Add(libtiff
@@ -56,6 +76,19 @@ ExternalProject_Add(libtiff
     DEPENDS zlib
 )
 
+find_package(libtiff PATHS ${EXTERNAL_INSTALL_DIR}/lib/libtiff)
+if(libtiff_FOUND)
+    set(TIFF_SUPPORT_STR "#define USE_IMG_TIFF")
+    message(STATUS "TIFF Support Enabled")
+    list(APPEND core_src src/ImgTIFF.c)
+else(NOT libtiff_FOUND)
+    set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
+
+    message(STATUS "TIFF Support Disabled, build tiff")
+endif(libtiff_FOUND)
+
+#TODO: Add support for JPEG
+
 set(LIBJPEG_DIR "${EXTERNAL_PROJ_DIR}/libjpeg")
 ExternalProject_Add(libjpeg
     GIT_REPOSITORY "https://github.com/stohrendorf/libjpeg-cmake.git"
@@ -67,9 +100,11 @@ ExternalProject_Add(libjpeg
     BINARY_DIR ${LIBJPEG_DIR}/Build
 )
 
+# Support for FreeType
+
 set(SUPPORT_FONT_BAKING true CACHE BOOL "Include font baking module" FORCE)
 if(SUPPORT_FONT_BAKING)
-ExternalProject_Add(FreeType # Font Loading
+ExternalProject_Add(FreeType
     GIT_REPOSITORY "https://gitlab.freedesktop.org/freetype/freetype.git"
     GIT_TAG "801cd842e27c85cb1d5000f6397f382ffe295daa"
 
@@ -80,4 +115,12 @@ ExternalProject_Add(FreeType # Font Loading
 )
 endif()
 
-# Checks on Status of External Libraries
+if(SUPPORT_FONT_BAKING)
+    set(freetype_found TRUE)
+    set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
+    find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
+    message(STATUS "freetype_h is ${freetype_h}, freetype_lib is ${freetype_lib}")
+    list(APPEND feature_src src/feature/Feat_Text.c)
+else()
+    set(freetype_found FALSE)
+endif()

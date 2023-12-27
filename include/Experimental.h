@@ -5,6 +5,7 @@
 
 #include "Rasteron.h"
 
+/* 
 #define PRIMITIVES_MAX 1024
 #define TABLES_MAX 512
 #define IMAGES_MAX 4096
@@ -27,10 +28,11 @@ typedef struct {
     Rasteron_Queue* queues[256]; // unsigned short queueIndex; // for tracking active queues
 #endif
 #ifdef RASTERON_ENABLE_FONT
-    // Rasteron_Text textObjs[1024];
-    // Rasteron_Message messageObjs[256];
+    Rasteron_Text textObjs[1024];
+    Rasteron_Message messageObjs[256];
 #endif
-} Custom_Experimental;
+} Custom_Experimental; 
+*/
 
 // Management Functions
 

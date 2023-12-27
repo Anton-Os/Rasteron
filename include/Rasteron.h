@@ -32,6 +32,7 @@ Rasteron_Image* greyImgOp(ref_image_t refImage); // creates greyscale image
 Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter image
 Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
 
+
 // --------------------------------   Mixing Operations    -------------------------------- //
 //
 //     Operations requiring two or more images to calculate or combine into a final color,
@@ -40,7 +41,7 @@ Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel); // cre
 Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coordX, double coordY); // insert image at a given offset
 Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback); // creates effect per pixel from 2 images 
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2); // creates blended image
-Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2);  // creates fused image
+Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2); // creates fused image
 
 
 // --------------------------------  Procedural Operations   -------------------------------- //
@@ -54,6 +55,8 @@ Rasteron_Image* fieldImgOp_ext(ImageSize size, const ColorPointTable* colorPoint
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
 Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable);
+// Rasteron_Image* turingPatternImgOp();
+
 
 // --------------------------------  Noise Operations  -------------------------------- //
 //
@@ -63,6 +66,7 @@ Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color
 Rasteron_Image* noiseImgOp_grid(ImageSize size, ColorGrid grid); // gradient noise over grid
 Rasteron_Image* noiseImgOp_warp(ImageSize size, ColorGrid grid, ColorGrid domain); // warping grid over domain
 
+
 // --------------------------------   Cellwise Opertaions    -------------------------------- //
 //
 //      For each pixel adjascent neighbors are determined and used to compute the final color
@@ -70,11 +74,18 @@ Rasteron_Image* noiseImgOp_warp(ImageSize size, ColorGrid grid, ColorGrid domain
 Rasteron_Image* cellwiseImgOp2_horz(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
 Rasteron_Image* cellwiseImgOp2_vert(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
 Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations); // 2D generated image from 8 neighbors
+
 Rasteron_Image* antialiasImgOp(ref_image_t refImage); // performs antialiasing operation
 
-#include "Feat_Queue.h" // enables sequenced image types with potential animation support
+
+
+// --------------------------------   Rasteron Features   -------------------------------- //
+
 #include "Feat_Space.h" // enables spatial types, including sprite and heightmap
 
+#ifdef RASTERON_ENABLE_ANIM
+#include "Feat_Queue.h" // enables sequenced image types with potential animation support
+#endif
 #ifdef RASTERON_ENABLE_FONT
 #include "Feat_Text.h" // enables single line text and expanded message objects
 #endif
