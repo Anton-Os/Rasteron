@@ -41,7 +41,7 @@ void setupCanvas(char input){
 		case 'e': canvasImg = wordsmithImgOp("Rasteron is Dope!!!"); break;
 		case 'f': canvasImg = multiNoiseImgOp(pArg); break;
 		case 'g': canvasImg = cellAutomataImgOp(pArg); break;
-		case 'h': canvasImg = proxPatternImgOp(100); break;
+		case 'h': canvasImg = proxPatternImgOp((pArg + 2) * 5); break;
 		default: canvasImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR()); break;
 	}
 }
@@ -58,7 +58,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): { 
-		canvasImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
+		canvasImg = proxPatternImgOp(20);
 		bmap = createWinBmap(canvasImg); 
 	}
 	case (WM_CHAR): { if(wParam != 0){

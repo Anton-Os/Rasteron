@@ -124,9 +124,9 @@ Rasteron_Image* overlayerImgOp(unsigned pArg, unsigned color1, unsigned color2){
 } 
 
 Rasteron_Image* multiNoiseImgOp(int noiseOp){ 
-    ColorGrid grid1 = (ColorGrid){ 8, 8, 0xFF0000FF, 0xFFFFFFFF }; // blue and white grid
-    ColorGrid grid2 = (ColorGrid){ 32, 32, 0xFF00FF00, 0xFF888888 }; // grey and green grid
-    ColorGrid grid3 = (ColorGrid){ 128, 128, 0xFFFF0000, 0xFF000000 }; // red and black grid
+    ColorGrid grid1 = (ColorGrid){ 8, 8, 0xFFFFFF00, 0xFFFFFFFF };
+    ColorGrid grid2 = (ColorGrid){ 32, 32, 0xFFFF00FF, 0xFF888888 };
+    ColorGrid grid3 = (ColorGrid){ 128, 128, 0xFF00FFFF, 0xFF000000 };
 
     ColorGridTable gridTable;
     gridTable.gridCount = 3;
@@ -134,14 +134,24 @@ Rasteron_Image* multiNoiseImgOp(int noiseOp){
     gridTable.grids[1] = grid2;
     gridTable.grids[2] = grid3;
 
+    Rasteron_Image* noiseImg1 = noiseImgOp_grid((ImageSize){ 1024, 1024}, grid1);
+    Rasteron_Image* noiseImg2 = noiseImgOp_grid((ImageSize){ 1024, 1024}, grid2);
+    Rasteron_Image* noiseImg3 = noiseImgOp_grid((ImageSize){ 1024, 1024}, grid3);
+
+    Rasteron_Image* blendImg = (noiseOp % 2 == 0)? blendImgOp(noiseImg1, noiseImg2) : blendImgOp(noiseImg3, noiseImg2);
+    Rasteron_Image* finalImg;
+
     switch(noiseOp){
-        case 0: return noiseImgOp_grid((ImageSize){ 1024, 1024}, grid1);
-        case 1: return noiseImgOp_grid((ImageSize){ 1024, 1024}, grid2);
-        case 2: return noiseImgOp_grid((ImageSize){ 1024, 1024}, grid3);
-        default: return noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF000000, 0xFFFFFFFF);
+        case 0: finalImg = blendImgOp(blendImg, noiseImg3); break;
+        case 1: finalImg = blendImgOp(blendImg, noiseImg1); break;
+        case 2: finalImg = fusionImgOp(noiseImg1, noiseImg3); break;
+        default: finalImg = fusionImgOp(blendImg, blendImg); break;
     }
 
-    return solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
+    dealloc_image(noiseImg1); dealloc_image(noiseImg2); dealloc_image(noiseImg3);
+    dealloc_image(blendImg);
+
+    return finalImg;
 }
 
 Rasteron_Image* cellAutomataImgOp(int seedOp){

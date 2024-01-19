@@ -63,6 +63,9 @@ void cleanupFreeType(){ FT_Done_FreeType(_freetypeLib); }
 
 Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
 	if(_freetypeLib == NULL){ initFreeType(); }
+#ifdef _WIN32
+	replaceFwdSlash(textObj->fontFile);
+#endif
 
 	FT_Face face;
     int error = FT_New_Face(_freetypeLib, textObj->fontFile, 0, &face);

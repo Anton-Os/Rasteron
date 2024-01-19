@@ -4,6 +4,9 @@
 
 Rasteron_Image* loadImgOp(const char* fileName){
 	FileImage fileImage;
+#ifdef _WIN32
+	replaceFwdSlash(fileName);
+#endif
 	loadFromFile(fileName, &fileImage);
 	if(&fileImage == NULL) return NULL; // Image not loaded
 
@@ -11,7 +14,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
     switch(fileImage.fileFormat){
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
-		refImage = alloc_image("ref-tiff", fileImage.data.tiff.length, fileImage.data.tiff.width);
+		refImage = alloc_image("tiff", fileImage.data.tiff.length, fileImage.data.tiff.width);
 		bitSwitchRB(fileImage.data.tiff.data, fileImage.data.tiff.width * fileImage.data.tiff.length);
 		for(unsigned i = 0; i < refImage->width * refImage->height; i++)
 		   *(refImage->data + i) = *(fileImage.data.tiff.data + i); // copying operation
@@ -19,14 +22,14 @@ Rasteron_Image* loadImgOp(const char* fileName){
 #endif
 #ifdef USE_IMG_BMP
 	case(IMG_Bmp):
-		refImage = alloc_image("ref-bmp", abs(fileImage.data.bmp.height), abs(fileImage.data.bmp.width));
+		refImage = alloc_image("bmp", abs(fileImage.data.bmp.height), abs(fileImage.data.bmp.width));
 		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
 			*(refImage->data + i) = *(fileImage.data.bmp.data + i); // copying operation
 		break;
 #endif
 #ifdef USE_IMG_PNG
 	case(IMG_Png):
-		refImage = alloc_image("ref-png", fileImage.data.png.height, fileImage.data.png.width);
+		refImage = alloc_image("png", fileImage.data.png.height, fileImage.data.png.width);
 		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
 			*(refImage->data + i) = *(fileImage.data.png.data + i); // copying operation
 		break;
@@ -105,6 +108,7 @@ Rasteron_Image* mirrorImgOp(ref_image_t refImage){
 	assert(refImage != NULL);
 
 	Rasteron_Image* mirrorImage = copyImgOp(refImage);
+	mirrorImage->name = "mirror";
 
 	for (unsigned r = 0; r < refImage->height; r++) // Mirror Function
 		for (unsigned c = 0; c < refImage->width; c++) {

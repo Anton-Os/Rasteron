@@ -77,15 +77,17 @@ target_include_directories(Rasteron
     $<INSTALL_INTERFACE:include/Rasteron>
 )
 
+# Test Applications
+
+add_executable(Read test/Read.c)
+target_include_directories(Read PUBLIC include)
+target_link_libraries(Read Rasteron)
+
+add_executable(Write test/Write.c)
+target_include_directories(Write PUBLIC include)
+target_link_libraries(Write Rasteron)
+
 # Demo Applications
-
-add_executable(TestRead demos/TestRead.c)
-target_include_directories(TestRead PUBLIC include)
-target_link_libraries(TestRead Rasteron)
-
-add_executable(TestWrite demos/TestWrite.c)
-target_include_directories(TestWrite PUBLIC include)
-target_link_libraries(TestWrite Rasteron)
 
 add_executable(Painter demos/Painter.c)
 target_include_directories(Painter PUBLIC include demos)
@@ -94,11 +96,6 @@ target_link_libraries(Painter Rasteron)
 add_executable(GUI demos/GUI.c)
 target_include_directories(GUI PUBLIC include demos)
 target_link_libraries(GUI Rasteron)
-
-# add_executable(Painter demos/Painter.c)
-# target_include_directories(Painter PUBLIC include)
-# target_link_libraries(Painter Rasteron)
-
 
 
 ### Installation
