@@ -1,13 +1,15 @@
 #include "typeinit.h"
 
+extern int _invertImage = INVERT_IMG_FALSE; // false for within Rasteron
+
 // --------------------------------   Image    -------------------------------- //
 
 Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width){
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	
 	image->name = name;
-	image->width = width;
-	image->height = height;
+	image->width = (!_invertImage)? width: height;
+	image->height = (!_invertImage)? height : width;
 	image->data = (uint32_t*)malloc(width * height * sizeof(uint32_t));
 
 	return image;

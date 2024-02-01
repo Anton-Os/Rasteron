@@ -21,6 +21,7 @@ typedef struct {
 } Rasteron_Sprite;
 
 Rasteron_Sprite* loadSprite(const Rasteron_Image* refImage);
+// Rasteron_Sprite* loadRefSprite(const char* imagePath);
 void dealloc_sprite(Rasteron_Sprite* sprite);
 
 

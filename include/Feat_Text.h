@@ -11,16 +11,8 @@
 #define FONT_SIZE_XL 500
 
 // internal macros
-#define FONT_RESOLUTION 2000
-#define FONT_PEN_OFFSET 200 // default starting pen offset
-#define FONT_CANVAS_WIDTH 10000 // large enough to handle any text
-#define FONT_CANVAS_HEIGHT 1000
-
-#ifdef __cplusplus
-    #define FONT_INVERT 1
-#else
-    #define FONT_INVERT 0
-#endif
+#define FONT_RESOLUTION 1800
+#define FONT_PEN_OFFSET 100 // default starting pen offset
 
 typedef struct { unsigned xMin; unsigned xMax; unsigned yMin;  unsigned yMax; } TextSize;
 
@@ -33,15 +25,19 @@ typedef struct {
 
 #define MAX_MESSAGE_LINES 64
 
+#define TEXT_ALIGN_LEFT -1.0
+#define TEXT_ALIGN_CENTER 0.0
+#define TEXT_ALIGN_RIGHT 1.0
+
 typedef struct {
     const char* fontFile; // file used as font
     const char* messages[MAX_MESSAGE_LINES]; // texts to display
+    double alignment; // used which side the text is focused
     unsigned messageCount; // number of lines
     uint32_t bkColor; // background color
     uint32_t fgColor; // foreground color
 } Rasteron_Message;
 
-extern int _invertFont;
 extern FT_Library _freetypeLib; // internal freetype library
 // static unsigned _textSize = FONT_SIZE_MED; // text size type
 

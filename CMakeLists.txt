@@ -89,6 +89,10 @@ target_link_libraries(Write Rasteron)
 
 # Demo Applications
 
+add_executable(Picker demos/Picker.c)
+target_include_directories(Picker PUBLIC include demos)
+target_link_libraries(Picker Rasteron)
+
 add_executable(Painter demos/Painter.c)
 target_include_directories(Painter PUBLIC include demos)
 target_link_libraries(Painter Rasteron)

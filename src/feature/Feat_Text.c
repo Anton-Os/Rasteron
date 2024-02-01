@@ -2,7 +2,6 @@
 
 #include "Feat_Text.h"
 
-extern int _invertFont = FONT_INVERT;
 extern FT_Library _freetypeLib = NULL;
 
 // Internal Functions
@@ -22,11 +21,8 @@ static void drawGlyphToImg(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t co
 	else return; // skips space
 }
 
-static TextSize getImageTextParams(Rasteron_Image* refImage, uint32_t color, int isInverted) {
-	TextSize sizeParams = {
-		(!isInverted)? refImage->width : refImage->height, 0,
-		(!isInverted)? refImage->width : refImage->width, 0
-	};
+static TextSize getImageTextParams(Rasteron_Image* refImage, uint32_t color) {
+	TextSize sizeParams = { refImage->width, 0, refImage->width, 0 };
 
 	for(unsigned r = 0; r < refImage->height; r++)
 		for (unsigned c = 0; c < refImage->width; c++)
@@ -41,13 +37,13 @@ static TextSize getImageTextParams(Rasteron_Image* refImage, uint32_t color, int
 	return sizeParams;
 }
 
-static void cropTextImgToSize(Rasteron_Image* refImage, Rasteron_Image* sizedTextImg, TextSize sizeParams) {
+static void cropTextImgToSize(Rasteron_Image* refImage, Rasteron_Image* textImg, TextSize sizeParams) {
 	unsigned writeOffset = 0;
 
 	for (unsigned r = 0; r < refImage->height; r++)
 		for (unsigned c = 0; c < refImage->width; c++)
-			if (r >= sizeParams.yMin && r < sizeParams.yMax && c >= sizeParams.xMin && c < sizeParams.xMax && writeOffset < (sizedTextImg->width * sizedTextImg->height)) {
-				*(sizedTextImg->data + writeOffset) = *(refImage->data + (r * refImage->width) + c);
+			if (r >= sizeParams.yMin && r < sizeParams.yMax && c >= sizeParams.xMin && c < sizeParams.xMax && writeOffset < (textImg->width * textImg->height)) {
+				*(textImg->data + writeOffset) = *(refImage->data + (r * refImage->width) + c);
 				writeOffset++;
 			}
 }
@@ -73,29 +69,34 @@ Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
 	error = FT_Set_Char_Size(face, 0, size, FONT_RESOLUTION, FONT_RESOLUTION);
     if(error) perror("Error occured setting character size");
 
-	unsigned tcanvasHeight = FONT_CANVAS_HEIGHT;
-	unsigned tcanvasWidth = FONT_CANVAS_HEIGHT;
+	// Creating Text Canvas
+
+	/* unsigned textCanvasHeight = 0;
+	unsigned textCanvasWidth = 0;
 	for(unsigned t = 0; t < strlen(textObj->text); t++){
 		FT_UInt charIndex = FT_Get_Char_Index(face, (FT_ULong)textObj->text[t]);
 		error = FT_Load_Glyph(face, charIndex, FT_LOAD_RENDER);
         if(error) perror("Error loading glyph %c at %d\n", textObj->text[t], t);
 
-		/* printf("Glyph left: %d, Glyph top: %d, Glyph rows: %d, Glyph width: %d \n", 
-			face->glyph->bitmap_left, face->glyph->bitmap_top, 
-			face->glyph->bitmap.rows, face->glyph->bitmap.width
-		); */ // For testing
-		// TODO: Calculate height and width
-	}
+		if(face->glyph->bitmap.rows + face->glyph->bitmap_top > textCanvasHeight)
+			textCanvasHeight = face->glyph->bitmap.rows + face->glyph->bitmap_top;
+		
+		textCanvasWidth += face->glyph->bitmap.width;
+	} */
 
-	Rasteron_Image* textImage = (Rasteron_Image*)solidImgOp((ImageSize){ tcanvasHeight, tcanvasWidth }, textObj->bkColor);
+	// Rasteron_Image* textCanvasImg = (Rasteron_Image*)solidImgOp((ImageSize){ textCanvasHeight * 2 + FONT_PEN_OFFSET, textCanvasWidth * 2 + FONT_PEN_OFFSET}, textObj->bkColor);
+	// Rasteron_Image* textCanvasImg = (Rasteron_Image*)solidImgOp((ImageSize){ 1500, 3000 }, textObj->bkColor);
+	Rasteron_Image* textCanvasImg = (Rasteron_Image*)solidImgOp((ImageSize){ size * 3, size * 6 }, textObj->bkColor);
 	int pen_x = FONT_PEN_OFFSET; int pen_y = FONT_PEN_OFFSET;
+
+	// Drawing Glyphs 1 by 1
 
     for(unsigned t = 0; t < strlen(textObj->text); t++){
 		FT_UInt charIndex = FT_Get_Char_Index(face, (FT_ULong)textObj->text[t]);
 		FT_Load_Glyph(face, charIndex, FT_LOAD_RENDER);
 
 		drawGlyphToImg(
-			textImage,
+			textCanvasImg,
 			&face->glyph->bitmap,
 			textObj->fgColor,
 			pen_x + face->glyph->bitmap_left,
@@ -106,20 +107,15 @@ Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
 
 	// Crop from large canvas onto final image
 
-	TextSize sizeParams = getImageTextParams(textImage, textObj->fgColor, _invertFont);
+	TextSize sizeParams = getImageTextParams(textCanvasImg, textObj->fgColor);
 
-	Rasteron_Image* sizedTextImg = (!_invertFont)
-		? solidImgOp((ImageSize){ sizeParams.yMax - sizeParams.yMin, sizeParams.xMax - sizeParams.xMin }, textObj->bkColor) // regular
-		: solidImgOp((ImageSize){ sizeParams.xMax - sizeParams.xMin, sizeParams.yMax - sizeParams.yMin }, textObj->bkColor); // inverted
+	Rasteron_Image* textImg = solidImgOp((ImageSize){ sizeParams.yMax - sizeParams.yMin, sizeParams.xMax - sizeParams.xMin }, textObj->bkColor); // regular
 
-	cropTextImgToSize(textImage, sizedTextImg, sizeParams);
-
-	Rasteron_Image* antialiasImg = antialiasImgOp(sizedTextImg);
+	cropTextImgToSize(textCanvasImg, textImg, sizeParams);
 	
-	dealloc_image(textImage); 
-	dealloc_image(antialiasImg); // dealloc_image(sizedTextImg);
+	dealloc_image(textCanvasImg); 
     FT_Done_Face(face);
-	return sizedTextImg; // return antialiasImg;
+	return textImg;
 }
 
 Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size){
@@ -138,8 +134,8 @@ Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size){
 	Rasteron_Image* stagingImgOp = NULL;
 	for(unsigned t = 0; t < messageObj->messageCount; t++){ // TODO: Test this logic
 		if(stagingImgOp != NULL) dealloc_image(stagingImgOp);
-		double yOffset = (((double)t / (double)messageObj->messageCount) * 2.0) - 1.0;
-		stagingImgOp = insertImgOp(*(textImages + t), messageImg, 0.0, 1.0 - yOffset);
+		double yOffset = (((double)t / ((double)messageObj->messageCount - 1.0)) * 2.0) - 1.0;
+		stagingImgOp = insertImgOp(*(textImages + t), messageImg, messageObj->alignment, yOffset);
 		dealloc_image(messageImg);
 		messageImg = copyImgOp(stagingImgOp);
 	}

@@ -7,12 +7,17 @@
 //		Most important type representing images plus helper struct for sizing
 //		and enums for mirroring and cropping images
 
+#define INVERT_IMG_FALSE 0
+#define INVERT_IMG_TRUE 1
+
+extern int _invertImage; // invertImage needed in allocation
+
 typedef struct { uint32_t height; uint32_t width; } ImageSize;
 
 typedef struct {
     char* name;
-    uint32_t width;
 	uint32_t height;
+    uint32_t width;
     uint32_t* data;
 } Rasteron_Image;
 
@@ -22,8 +27,7 @@ typedef const Rasteron_Image *const ref_image_t;
 
 enum SWATCH_Colors {
     SWATCH_Yellow_Add = 0, SWATCH_Cyan_Add = 1, SWATCH_Magenta_Add = 2, 
-	SWATCH_Light = 3,
-	SWATCH_Dark = 4,
+	SWATCH_Light = 3, SWATCH_Dark = 4,
 	SWATCH_Yellow_Sub = 5, SWATCH_Cyan_Sub = 6, SWATCH_Magenta_Sub = 7,
 };
 

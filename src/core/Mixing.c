@@ -11,18 +11,18 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 		unsigned maxX = (unsigned)((outerImg->width / 2) - (innerImg->width / 2));
 		if(coordX >= 1.0){ xBounds[0] += maxX; xBounds[1] += maxX; }
 		else if(coordX <= -1.0){ xBounds[0] -= maxX; xBounds[1] -= maxX; }
-		else{
-			xBounds[0] += (coordX > 0.0)? (int)(coordX * maxX) : -(int)(coordX * maxX);
-			xBounds[1] += (coordX > 0.0)? (int)(coordX * maxX) : -(int)(coordX * maxX);
+		else {
+			xBounds[0] += (int)(coordX * maxX);
+			xBounds[1] += (int)(coordX * maxX);
 		}
 	}
 	if(coordY != 0.0){
 		unsigned maxY = (unsigned)((outerImg->height / 2) - (innerImg->height / 2));
 		if(coordY >= 1.0){ yBounds[0] += maxY; yBounds[1] += maxY; }
 		else if(coordY <= -1.0){ yBounds[0] -= maxY; yBounds[1] -= maxY; }
-		else{
-			yBounds[0] += (coordY > 0.0)? (int)(coordY * maxY) : -(int)(coordY * maxY);
-			yBounds[1] += (coordY > 0.0)? (int)(coordY * maxY) : -(int)(coordY * maxY);
+		else {
+			yBounds[0] += (int)(coordY * maxY);
+			yBounds[1] += (int)(coordY * maxY);
 		}
 	}
 

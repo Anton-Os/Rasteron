@@ -123,7 +123,7 @@ Rasteron_Image* overlayerImgOp(unsigned pArg, unsigned color1, unsigned color2){
     return flipImg; 
 } 
 
-Rasteron_Image* multiNoiseImgOp(int noiseOp){ 
+Rasteron_Image* multiNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells){ 
     ColorGrid grid1 = (ColorGrid){ 8, 8, 0xFFFFFF00, 0xFFFFFFFF };
     ColorGrid grid2 = (ColorGrid){ 32, 32, 0xFFFF00FF, 0xFF888888 };
     ColorGrid grid3 = (ColorGrid){ 128, 128, 0xFF00FFFF, 0xFF000000 };
@@ -134,18 +134,18 @@ Rasteron_Image* multiNoiseImgOp(int noiseOp){
     gridTable.grids[1] = grid2;
     gridTable.grids[2] = grid3;
 
-    Rasteron_Image* noiseImg1 = noiseImgOp_grid((ImageSize){ 1024, 1024}, grid1);
-    Rasteron_Image* noiseImg2 = noiseImgOp_grid((ImageSize){ 1024, 1024}, grid2);
-    Rasteron_Image* noiseImg3 = noiseImgOp_grid((ImageSize){ 1024, 1024}, grid3);
+    Rasteron_Image* noiseImg1 = noiseImgOp_grid((ImageSize){ xCells, yCells}, grid1);
+    Rasteron_Image* noiseImg2 = noiseImgOp_grid((ImageSize){ xCells, yCells}, grid2);
+    Rasteron_Image* noiseImg3 = noiseImgOp_grid((ImageSize){ xCells, yCells}, grid3);
 
     Rasteron_Image* blendImg = (noiseOp % 2 == 0)? blendImgOp(noiseImg1, noiseImg2) : blendImgOp(noiseImg3, noiseImg2);
     Rasteron_Image* finalImg;
 
     switch(noiseOp){
-        case 0: finalImg = blendImgOp(blendImg, noiseImg3); break;
-        case 1: finalImg = blendImgOp(blendImg, noiseImg1); break;
-        case 2: finalImg = fusionImgOp(noiseImg1, noiseImg3); break;
-        default: finalImg = fusionImgOp(blendImg, blendImg); break;
+        case 0: finalImg = fusionImgOp(blendImg, noiseImg3); break;
+        case 1: finalImg = fusionImgOp(blendImg, noiseImg1); break;
+        case 2: finalImg = blendImgOp(noiseImg1, noiseImg3); break;
+        default: finalImg = blendImgOp(blendImg, blendImg); break;
     }
 
     dealloc_image(noiseImg1); dealloc_image(noiseImg2); dealloc_image(noiseImg3);
@@ -198,16 +198,21 @@ Rasteron_Image* wordsmithImgOp(const char* text){
 
     Rasteron_Message messageObj;
     messageObj.fontFile = fullFilePath;
-    messageObj.messageCount = 3;
-    messageObj.messages[0] = "Rasteron is Dope!";
-    messageObj.messages[1] = "Rasteron is Dope!!";
-    messageObj.messages[2] = "Rasteron is Dope!!!";
+    messageObj.alignment = TEXT_ALIGN_LEFT;
+    messageObj.messageCount = 4;
+    messageObj.messages[0] = "Hello World";
+    messageObj.messages[1] = "Ive come to say";
+    messageObj.messages[2] = "Have a lovely day";
+    messageObj.messages[3] = "And a good night";
     messageObj.bkColor = 0xFF000000;
     messageObj.fgColor = 0xFFEEEEEE;
 
-    Rasteron_Image* textImg = textImgOp(&textObj, FONT_SIZE_MED);
-    Rasteron_Image* finalImg = antialiasImgOp(textImg);
+    Rasteron_Image* textImg = textImgOp(&textObj, FONT_SIZE_TINY);
+    Rasteron_Image* messageImg = messageImgOp(&messageObj, FONT_SIZE_LARGE);
+    Rasteron_Image* finalImg = antialiasImgOp(messageImg);
 
     dealloc_image(textImg);
+    dealloc_image(messageImg);
+
     return finalImg; 
 }

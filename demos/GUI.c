@@ -1,5 +1,6 @@
 
 #define RASTERON_WIN_HEIGHT 256
+#define RASTERON_ENABLE_ANIM
 
 #include "Util_OS.h"
 

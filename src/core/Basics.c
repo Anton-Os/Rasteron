@@ -2,6 +2,7 @@
 
 #include "Rasteron.h"
 
+
 Rasteron_Image* loadImgOp(const char* fileName){
 	FileImage fileImage;
 #ifdef _WIN32
@@ -17,6 +18,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
 		refImage = alloc_image("tiff", fileImage.data.tiff.length, fileImage.data.tiff.width);
 		bitSwitchRB(fileImage.data.tiff.data, fileImage.data.tiff.width * fileImage.data.tiff.length);
 		for(unsigned i = 0; i < refImage->width * refImage->height; i++)
+		   // *(refImage->data + (refImage->width * refImage->height) - 1 - i) = *(fileImage.data.tiff.data + i); // copying operation
 		   *(refImage->data + i) = *(fileImage.data.tiff.data + i); // copying operation
 		break;
 #endif
@@ -24,6 +26,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
 	case(IMG_Bmp):
 		refImage = alloc_image("bmp", abs(fileImage.data.bmp.height), abs(fileImage.data.bmp.width));
 		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
+			// *(refImage->data + (refImage->width * refImage->height) - 1 - i) = *(fileImage.data.bmp.data + i); // copying operation
 			*(refImage->data + i) = *(fileImage.data.bmp.data + i); // copying operation
 		break;
 #endif
@@ -31,6 +34,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
 	case(IMG_Png):
 		refImage = alloc_image("png", fileImage.data.png.height, fileImage.data.png.width);
 		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
+			// *(refImage->data + (refImage->width * refImage->height) - 1 - i) = *(fileImage.data.png.data + i); // copying operation
 			*(refImage->data + i) = *(fileImage.data.png.data + i); // copying operation
 		break;
 #endif
@@ -132,10 +136,10 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type){
 		flipImg = alloc_image("flip", refImage->width, refImage->height); // parameters inverse of source
 		unsigned dstOffset = 0;
 
-		for(unsigned w = 0; w < refImage->width; w++){
+		for(unsigned w = 0; w < ((!_invertImage)? refImage->width : refImage->height); w++){
 			unsigned srcOffset = (refImage->width * refImage->height) + w;
-			for(unsigned h = 0; h < refImage->height; h++){
-				srcOffset -= refImage->width;
+			for(unsigned h = 0; h < ((!_invertImage)? refImage->height : refImage->width); h++){
+				srcOffset -= ((!_invertImage)? refImage->width : refImage->height);
 				*(flipImg->data + dstOffset) = *(refImage->data + srcOffset);
 				dstOffset++;
 			}

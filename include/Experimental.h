@@ -46,7 +46,7 @@ Rasteron_Image* nestboxesImgOp(double x, double y); // Looped nesting of ever-sm
 Rasteron_Image* distillingImgOp(enum CHANNEL_Type channel); // Distilling image to color ranges and performing channel operations
 Rasteron_Image* overlayerImgOp(unsigned pArg, unsigned color1, unsigned color2); // Visual lense effects and enhancements to base image
 Rasteron_Image* wordsmithImgOp(const char* text); // Drawing text example
-Rasteron_Image* multiNoiseImgOp(int noiseOp); // Mixing and matching various noise functions while adding experimental arguments
+Rasteron_Image* multiNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells); // Mixing and matching various noise functions while adding experimental arguments
 Rasteron_Image* cellAutomataImgOp(int seedOp); // Seeding and performing cellular logic operations between neighbors iteratively
 Rasteron_Image* proxPatternImgOp(unsigned short points); // Vornoi and other distance related functions
 
