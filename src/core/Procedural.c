@@ -99,7 +99,6 @@ Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPo
 
 	Rasteron_Image* seedImage = copyImgOp(refImage);
 
-	printf("Point count is %d", colorPointTable->pointCount);
 	for(unsigned p = 0; p < colorPointTable->pointCount; p++){
 		ColorPoint colorPoint = colorPointTable->points[p];
 		*(seedImage->data + pixelPointOffset((PixelPoint){ colorPoint.x, colorPoint.y }, refImage)) = colorPoint.color;

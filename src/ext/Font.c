@@ -1,6 +1,6 @@
 #include "Rasteron.h"
 
-#include "Feat_Text.h"
+#include "Font.h"
 
 extern FT_Library _freetypeLib = NULL;
 
@@ -12,8 +12,7 @@ static void drawGlyphToImg(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t co
 		for (unsigned r = 0; r < ftBmap->rows; r++) {
 			for (unsigned w = 0; w < ftBmap->width; w++) {
 				uint32_t bmapColor = ftBmap->buffer[(r * ftBmap->width) + w];
-				if(bmapColor > 0)
-					*(image->data + imageOff) = color;
+				if(bmapColor > 0) *(image->data + imageOff) = color;
 				imageOff++; // move to adjascent pixel
 			}
 			imageOff += image->width - ftBmap->width; // move to start of next row
@@ -69,28 +68,20 @@ Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
 	error = FT_Set_Char_Size(face, 0, size, FONT_RESOLUTION, FONT_RESOLUTION);
     if(error) perror("Error occured setting character size");
 
-	// Creating Text Canvas
-
-	/* unsigned textCanvasHeight = 0;
-	unsigned textCanvasWidth = 0;
+	unsigned totalWidth = FONT_PEN_OFFSET; unsigned totalHeight = FONT_PEN_OFFSET;
 	for(unsigned t = 0; t < strlen(textObj->text); t++){
 		FT_UInt charIndex = FT_Get_Char_Index(face, (FT_ULong)textObj->text[t]);
-		error = FT_Load_Glyph(face, charIndex, FT_LOAD_RENDER);
-        if(error) perror("Error loading glyph %c at %d\n", textObj->text[t], t);
+		FT_Load_Glyph(face, charIndex, FT_LOAD_RENDER);
+		totalWidth += face->glyph->bitmap.width + face->glyph->bitmap_left + (face->glyph->advance.x >> 6);
+		if(face->glyph->bitmap.rows + FONT_PEN_OFFSET > totalHeight) totalHeight = face->glyph->bitmap.rows + FONT_PEN_OFFSET;
+    }
 
-		if(face->glyph->bitmap.rows + face->glyph->bitmap_top > textCanvasHeight)
-			textCanvasHeight = face->glyph->bitmap.rows + face->glyph->bitmap_top;
-		
-		textCanvasWidth += face->glyph->bitmap.width;
-	} */
-
-	// Rasteron_Image* textCanvasImg = (Rasteron_Image*)solidImgOp((ImageSize){ textCanvasHeight * 2 + FONT_PEN_OFFSET, textCanvasWidth * 2 + FONT_PEN_OFFSET}, textObj->bkColor);
-	// Rasteron_Image* textCanvasImg = (Rasteron_Image*)solidImgOp((ImageSize){ 1500, 3000 }, textObj->bkColor);
-	Rasteron_Image* textCanvasImg = (Rasteron_Image*)solidImgOp((ImageSize){ size * 3, size * 6 }, textObj->bkColor);
+	Rasteron_Image* textCanvasImg = (!_invertImage)
+		? (Rasteron_Image*)solidImgOp((ImageSize){ totalHeight, totalWidth }, textObj->bkColor)
+		: (Rasteron_Image*)solidImgOp((ImageSize){ totalWidth, totalHeight }, textObj->bkColor);
 	int pen_x = FONT_PEN_OFFSET; int pen_y = FONT_PEN_OFFSET;
 
-	// Drawing Glyphs 1 by 1
-
+	// TODO: Include error handling
     for(unsigned t = 0; t < strlen(textObj->text); t++){
 		FT_UInt charIndex = FT_Get_Char_Index(face, (FT_ULong)textObj->text[t]);
 		FT_Load_Glyph(face, charIndex, FT_LOAD_RENDER);

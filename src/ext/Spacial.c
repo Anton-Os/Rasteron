@@ -1,21 +1,24 @@
-#include "Feat_Space.h"
+#include "Spacial.h"
 
 // --------------------------------   Space    -------------------------------- //
 
-SpaceBounds createSpaceBounds(unsigned height, unsigned width){
-	SpaceBounds bounds;
+SpacialBounds createSpacialBounds(unsigned height, unsigned width){
+	SpacialBounds bounds;
 
-	bounds.topRight[0] = width / 2.0f / SPACE_SCALE;
-	bounds.topRight[1] = height / 2.0f / SPACE_SCALE;
-	bounds.topLeft[0] = -1.0 * (width / 2.0f / SPACE_SCALE);
-	bounds.topLeft[1] = height / 2.0f / SPACE_SCALE;
-	bounds.botRight[0] = width / 2.0f / SPACE_SCALE;
-	bounds.botRight[1] = -1.0 * (height / 2.0f / SPACE_SCALE);
-	bounds.botLeft[0] = -1.0 * (width / 2.0f / SPACE_SCALE);
-	bounds.botLeft[1] = -1.0 * (height / 2.0f / SPACE_SCALE);
+	bounds.topRight[0] = width / 2.0f / SPRITE_SCALE;
+	bounds.topRight[1] = height / 2.0f / SPRITE_SCALE;
+	bounds.topLeft[0] = -1.0 * (width / 2.0f / SPRITE_SCALE);
+	bounds.topLeft[1] = height / 2.0f / SPRITE_SCALE;
+	bounds.botRight[0] = width / 2.0f / SPRITE_SCALE;
+	bounds.botRight[1] = -1.0 * (height / 2.0f / SPRITE_SCALE);
+	bounds.botLeft[0] = -1.0 * (width / 2.0f / SPRITE_SCALE);
+	bounds.botLeft[1] = -1.0 * (height / 2.0f / SPRITE_SCALE);
 
 	return bounds;
 }
+
+float getSpacialHeight(SpacialBounds bounds){ return !(_invertImage)? bounds.topRight[1] - bounds.botRight[1] : bounds.topRight[0] - bounds.botLeft[0]; }
+float getSpacialWidth(SpacialBounds bounds){ return !(_invertImage)? bounds.topRight[0] - bounds.botLeft[0] : bounds.topRight[1] - bounds.botRight[1]; }
 
 // --------------------------------   Sprite    -------------------------------- //
 
@@ -24,7 +27,7 @@ Rasteron_Sprite* loadSprite(const Rasteron_Image* refImage){
 
 	Rasteron_Sprite* sprite = (Rasteron_Sprite*)malloc(sizeof(Rasteron_Sprite));
 
-	sprite->bounds = createSpaceBounds(refImage->height, refImage->width);
+	sprite->bounds = createSpacialBounds(refImage->height, refImage->width);
 	sprite->image = refImage; // store a const pointer to the image
 
 	return sprite;
@@ -49,7 +52,7 @@ static float calcHeight(unsigned inputColor, float minDepth, float maxDepth){;
 Rasteron_Heightmap* alloc_heightmap(uint32_t height, uint32_t width, double minDepth, double maxDepth){
 	Rasteron_Heightmap* heightmap = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
     
-	heightmap->bounds = createSpaceBounds(height, width);
+	heightmap->bounds = createSpacialBounds(height, width);
 	heightmap->minDepth = minDepth; // default min is zero
 	heightmap->maxDepth = maxDepth; // default max is one
     heightmap->data = (double*)malloc(height * width * sizeof(double));

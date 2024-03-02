@@ -78,6 +78,28 @@ int8_t getChanDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	return (int8_t)((int)(color1 & mask) - (int)(color2 & mask));
 }
 
+uint32_t colorID(){ // TODO: CHANGE START TO WHITE
+	static unsigned invoke = 0; // increases each invocation
+	unsigned color = 0xFFFFFFFF;
+
+	for(unsigned i = 0; i < invoke; i++){
+		if(i % 0xFF == 0xFE){
+			puts("Increment green color at 0xFE");
+			color |= 0x000000FF; // &= 0xFFFFFF00; // reset blue bit
+			color -= 0x100; // += 0x100; // increment green bit
+		}
+		if(i % 0xFFFF == 0xFFFE){
+			puts("Increment blue color at 0xFFFE");
+			color |= 0x0000FF00; // &= 0xFFFF00FF; // reset green bit
+			color -= 0x10000; // += 0x10000; // increment red bit
+		}
+		color -= 0x1; // += 0x1; // increment blue bit
+	}
+
+	invoke++;
+	return color;
+}
+
 uint32_t grayify32(uint32_t refColor) {
 	if (refColor == WHITE_COLOR) return WHITE_COLOR;
 	if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;

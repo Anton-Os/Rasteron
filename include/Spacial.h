@@ -2,21 +2,23 @@
 
 // --------------------------------   Space    -------------------------------- //
 
-#define SPACE_SCALE 1000
-
 typedef struct {
     float topLeft[2]; 
     float topRight[2];
     float botLeft[2]; 
     float botRight[2];
-} SpaceBounds;
+} SpacialBounds;
 
-SpaceBounds createSpaceBounds(unsigned height, unsigned width);
+SpacialBounds createSpacialBounds(unsigned height, unsigned width);
+float getSpacialHeight(SpacialBounds bounds);
+float getSpacialWidth(SpacialBounds bounds);
 
 // --------------------------------   Sprite    -------------------------------- //
 
+#define SPRITE_SCALE 1000
+
 typedef struct {
-    SpaceBounds bounds;
+    SpacialBounds bounds;
     const Rasteron_Image* image;
 } Rasteron_Sprite;
 
@@ -30,7 +32,7 @@ void dealloc_sprite(Rasteron_Sprite* sprite);
 #define HEIGHTMAP_STEP 0.001 // 1 / 1000
 
 typedef struct {
-    SpaceBounds bounds;
+    SpacialBounds bounds;
     float minDepth; float maxDepth;
     float* data;
 } Rasteron_Heightmap;

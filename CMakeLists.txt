@@ -25,11 +25,11 @@ set(core_src
 
 list(APPEND core_src src/ImgBmp.c) # BMP does not require dependencies
 
-# Feature Sources
+# ext Sources
 
-set(feature_src
-    src/feature/Feat_Space.c
-    src/feature/Feat_Queue.c
+set(ext_src
+    src/ext/Spacial.c
+    src/ext/Queue.c
 )
 
 # Utility Sources
@@ -51,8 +51,8 @@ include(externalTargets.cmake)
 
 ### Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${feature_src} "src/Experimental.c") # library only
-add_library(Rasteron STATIC ${core_src} ${feature_src} ${util_src} "src/Experimental.c") # library with examples
+# add_library(Rasteron STATIC ${core_src} ${ext_src} "src/Experimental.c") # library only
+add_library(Rasteron STATIC ${core_src} ${ext_src} ${util_src} "src/Experimental.c") # library with examples
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) # include necessary external libs
 
@@ -89,9 +89,9 @@ target_link_libraries(Write Rasteron)
 
 # Demo Applications
 
-add_executable(Picker demos/Picker.c)
-target_include_directories(Picker PUBLIC include demos)
-target_link_libraries(Picker Rasteron)
+add_executable(Catalouge demos/Catalouge.c)
+target_include_directories(Catalouge PUBLIC include demos)
+target_link_libraries(Catalouge Rasteron)
 
 add_executable(Painter demos/Painter.c)
 target_include_directories(Painter PUBLIC include demos)

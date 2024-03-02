@@ -2,7 +2,7 @@
 
 // Cellular operations
 
-static Rasteron_Image* cellswiseImgOp_nebr8(ref_image_t refImage, nebrCallback8 callback){
+static Rasteron_Image* cellwiseNbrImgOp(ref_image_t refImage, nebrCallback8 callback){
 	assert(refImage != NULL);
 
 	NebrTable_List* nebrTables = loadNebrTables(refImage);
@@ -50,7 +50,7 @@ static Rasteron_Image* cellswiseImgOp_nebr8(ref_image_t refImage, nebrCallback8 
 	return patternImg;
 }
 
-Rasteron_Image* cellwiseImgOp2_horz(ref_image_t refImage, nebrCallback2 callback){
+Rasteron_Image* cellwiseHorzImgOp(ref_image_t refImage, nebrCallback2 callback){
 	assert(refImage != NULL);
 
 	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
@@ -80,7 +80,7 @@ Rasteron_Image* cellwiseImgOp2_horz(ref_image_t refImage, nebrCallback2 callback
 	return patternImg;
 }
 
-Rasteron_Image* cellwiseImgOp2_vert(ref_image_t refImage, nebrCallback2 callback){
+Rasteron_Image* cellwiseVertImgOp(ref_image_t refImage, nebrCallback2 callback){
 	assert(refImage != NULL);
 
 	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
@@ -123,7 +123,7 @@ Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsi
 
 	unsigned short i = 0;
 	do {
-		stagingImg = cellswiseImgOp_nebr8(patternImage, callback);
+		stagingImg = cellwiseNbrImgOp(patternImage, callback);
 		for (unsigned p = 0; p < stagingImg->width * stagingImg->height; p++)
 			*(patternImage->data + p) = *(stagingImg->data + p); // copy pixels from pattern image
 		dealloc_image(stagingImg);

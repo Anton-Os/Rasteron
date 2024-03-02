@@ -31,17 +31,15 @@ Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); //
 
 #define NO_QUEUE NULL
 
-#define UI_STATE_PLUS 1
-#define UI_STATE_DEFAULT 0 
-#define UI_STATE_MINUS 2 
+enum MENU_Size { MENU_Tiny, MENU_Small, MENU_Medium, MENU_Large, MENU_XL };
+
+enum MENU_ItemState { MENU_None = 0, MENU_On = 1, MENU_Off = 2 };
 
 #define UI_COLOR_BACKGROUND 0xFF111111
 #define UI_COLOR_FOREGROUND 0xFF333333
-#define UI_COLOR_PLUS 0xFF00FF00
+#define UI_COLOR_ON 0xFF00FF00
 #define UI_COLOR_DEFAULT 0xFFAAAAAA
-#define UI_COLOR_MINUS 0xFFFF0000
-
-enum MENU_Size { MENU_Tiny, MENU_Small, MENU_Medium, MENU_Large, MENU_XL };
+#define UI_COLOR_OFF 0xFFFF0000
 
 // enum MENU_Style { MENU_Regular }; // TODO: Add support for at least 2 alternate styles
 
@@ -50,10 +48,7 @@ void setUI_colorScheme(unsigned bgColor, unsigned fgColor, unsigned contentColor
 
 Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name);
 Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size);
-// Rasteron_Queue* loadUI_keyBtn(enum MENU_Size size, char key);
-
 Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short turns);
-
 Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels);
 
 // --------------------------------  Animation  -------------------------------- //
@@ -61,9 +56,7 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels);
 #ifdef RASTERON_ENABLE_ANIM
 
 Rasteron_Queue* loadAnim_frame30(ImageSize size);
-
 Rasteron_Queue* loadAnim_frame60(ImageSize size);
-
 Rasteron_Queue* loadAnim_frame120(ImageSize size);
 
 #endif

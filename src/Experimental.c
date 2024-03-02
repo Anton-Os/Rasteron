@@ -2,6 +2,31 @@
 
 static char fullFilePath[1024];
 
+Rasteron_Image* experimentalImgOp(){
+    Rasteron_Image* experimentalImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
+
+    int direction = 1; // positive
+
+    unsigned color = 0xFF000000 | RAND_COLOR();
+    for(unsigned p = 0; p < 1024 * 1024; p++){
+        *(experimentalImg->data + p) = 0xFF000000 | color;
+
+        if(direction == 1 && color > 0xFFAAFFFF) direction = 0;
+        else if(direction == 0 && color < 0xFF0000AA) direction = 1;
+
+        if(direction) color += rand() % 256;
+        else color -= rand() % 256;
+
+        /* switch(rand() % 3){
+            case 0: color += rand() % 256;
+            case 1: color += (rand() % 256) << 8;
+            case 2: color += (rand() % 256) << 16;
+        } */
+    }
+
+    return experimentalImg;
+}
+
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){ 
     genFullFilePath("Logroller.bmp", &fullFilePath);
 
@@ -154,28 +179,74 @@ Rasteron_Image* multiNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells){
     return finalImg;
 }
 
-Rasteron_Image* cellAutomataImgOp(int seedOp){
-    genFullFilePath("Starcase.bmp", &fullFilePath);
-
-    ColorPointTable table;
-    table.pointCount = 0;
-    for(unsigned p = 0; p < MAX_PIXELPOINTS; p++)
-        colorPointToTable(&table, RAND_COLOR(), rand() / (double)RAND_MAX, rand() / (double)RAND_MAX);
-
-    Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
-    Rasteron_Image* seedImg;
-
-    seedImg = seededImgOp(loadedImg, &table);
- 
-    dealloc_image(loadedImg);
-    return seedImg; 
+static unsigned rampantGrowth(unsigned color, unsigned neighbors[8]){
+    if(color == 0xFFFF0000 || color == 0xFF00FFFF) return 0xFF00FF00;
+    else if(0xFF00FFFF == neighbors[NEBR_Top_Left] || 0xFF00FFFF == neighbors[NEBR_Top_Right] || 0xFF00FFFF == neighbors[NEBR_Bot_Left] || 0xFF00FFFF == neighbors[NEBR_Bot_Right])
+        return 0xFFFF0000;
+    else if(0xFFFF00FF == neighbors[NEBR_Top] || 0xFFFF00FF == neighbors[NEBR_Right] || 0xFFFF00FF == neighbors[NEBR_Left] || 0xFFFF00FF == neighbors[NEBR_Bot] || 0xFFFF0000 == neighbors[NEBR_Top] || 0xFFFF0000 == neighbors[NEBR_Right] || 0xFFFF0000 == neighbors[NEBR_Left] || 0xFFFF0000 == neighbors[NEBR_Bot])
+        return 0xFF00FFFF;
+    else if(0xFFFF00FF == neighbors[NEBR_Top_Left] || 0xFFFF00FF == neighbors[NEBR_Top_Right] || 0xFFFF00FF == neighbors[NEBR_Bot_Left] || 0xFFFF00FF == neighbors[NEBR_Bot_Right])
+        return 0xFFFF00FF;
+    else if(color == 0xFFFF00FF) return 0xFFFF0000;
+    else return NO_COLOR;
 }
 
-void proxPattern(unsigned color, double distance){ return color; }
+static unsigned infectGrowth(unsigned color, unsigned neighbors[8]){
+    if((0xFFFF00FF == neighbors[NEBR_Top] && 0xFFFF00FF == neighbors[NEBR_Left]) || (0xFFFF00FF == neighbors[NEBR_Bot] && 0xFFFF00FF == neighbors[NEBR_Right]))
+        return (rand() % 2 == 0)? 0xFF00FFFF : 0xFFFF0000;
+    if(0xFFFF00FF == neighbors[NEBR_Top] || 0xFFFF00FF == neighbors[NEBR_Right] || 0xFFFF00FF == neighbors[NEBR_Left] || 0xFFFF00FF == neighbors[NEBR_Bot])
+        return (rand() % 2 == 0)? 0xFFFF00FF : 0xFF00FF00;
+    else return NO_COLOR;
+}
+
+/* static unsigned branchInfectGrowth(unsigned color, unsigned neighbors[8]){
+    unsigned randNbr = neighbors[rand() % 8];
+
+    if(randNbr == 0xFF00FFFF) return 0xFFFF0000;
+    else if(randNbr == 0xFFFF0000) return 0xFF00FFFF;
+    else if(randNbr == 0xFFFF00FF) return 0xFF00FF00;
+    else if(randNbr == 0xFF00FF00) return 0xFFFF00FF;
+    else return NO_COLOR;
+} */
+
+Rasteron_Image* organicGrowthImgOp(int iterations){
+    ColorPointTable table;
+    table.pointCount = 0;
+
+    unsigned color = 0xFFFF00FF;
+    // if(iterations % 3 == 0) color = 0xFFFF0000;
+    // else if(iterations % 3 == 1) color = 0xFF00FFFF;
+
+    for(unsigned p = 0; p < MAX_PIXELPOINTS; p++)
+        colorPointToTable(&table, color, rand() / (double)RAND_MAX, rand() / (double)RAND_MAX);
+
+    Rasteron_Image* solidImg = solidImgOp((ImageSize){1024, 1024}, 0xFF333333);
+    
+    Rasteron_Image* seedImg = seededImgOp(solidImg, &table);
+    while(iterations > 1){
+        Rasteron_Image* tempImg = seededImgOp(seedImg, &table);
+        dealloc_image(seedImg);
+        seedImg = copyImgOp(tempImg);
+        dealloc_image(tempImg);
+
+        iterations--;
+    }
+
+    Rasteron_Image* growthImg = cellwiseImgOp(seedImg, infectGrowth, iterations * 3);
+    Rasteron_Image* growthImg2 = cellwiseImgOp(seedImg, rampantGrowth, iterations);
+ 
+    dealloc_image(solidImg);
+    dealloc_image(seedImg);
+    dealloc_image(growthImg);
+    return growthImg2; 
+}
+
+static unsigned proxPattern(unsigned color, double distance){ return color - (distance * 2048); }
 
 Rasteron_Image* proxPatternImgOp(unsigned short points){ 
     ColorPointTable colorPointTable;
     colorPointTable.pointCount = points;
+
     for(unsigned p = 0; p < points; p++){
         colorPointTable.points[p] = (ColorPoint){
             (double)rand() / RAND_MAX,
@@ -215,4 +286,37 @@ Rasteron_Image* wordsmithImgOp(const char* text){
     dealloc_image(messageImg);
 
     return finalImg; 
+}
+
+static unsigned zigzag(double x, double y){
+    return 0xFF00FF00;
+}
+
+Rasteron_Image* domainWarpingImgOp(){
+    Rasteron_Image* zigzagImg = mapImgOp((ImageSize){ 1024, 1024, }, zigzag);
+
+    for(unsigned p = 0; p < 1024 * 1024; p++){
+        // TODO: Warp zigzagImg
+    }
+
+    return experimentalImgOp();
+}
+
+Rasteron_Image* mosaicImgOp(){
+    // TODO: Create a regular tiling of different colors likely through pxiel points
+    return experimentalImgOp();
+}
+
+Rasteron_Image* knittingImgOp(){
+    // TODO: Create an interconnected weave of different colors and patterns
+    return experimentalImgOp();
+}
+
+Rasteron_Image* sculptingImgOp(){
+    // TODO: Create detials like bumps and shapes with gradients
+    return experimentalImgOp();
+}
+
+Rasteron_Image* turingPatternImgOp(unsigned color1, unsigned color2){
+    return solidImgOp((ImageSize){ 1024, 1024}, blendColors(color1, color2, 0.5));
 }

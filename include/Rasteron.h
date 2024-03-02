@@ -71,23 +71,23 @@ Rasteron_Image* noiseImgOp_warp(ImageSize size, ColorGrid grid, ColorGrid domain
 //
 //      For each pixel adjascent neighbors are determined and used to compute the final color
 
-Rasteron_Image* cellwiseImgOp2_horz(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
-Rasteron_Image* cellwiseImgOp2_vert(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
+Rasteron_Image* cellwiseHorzImgOp(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
+Rasteron_Image* cellwiseVertImgOp(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
 Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations); // 2D generated image from 8 neighbors
 
 Rasteron_Image* antialiasImgOp(ref_image_t refImage); // performs antialiasing operation
 
 
 
-// --------------------------------   Rasteron Features   -------------------------------- //
+// --------------------------------   Rasteron exts   -------------------------------- //
 
-#include "Feat_Space.h" // enables spatial types, including sprite and heightmap
+#include "Spacial.h" // enables spatial types, including sprite and heightmap
 
 #ifdef RASTERON_ENABLE_ANIM
-#include "Feat_Queue.h" // enables sequenced image types with potential animation support
+#include "Queue.h" // enables sequenced image types with potential animation support
 #endif
 #ifdef RASTERON_ENABLE_FONT
-#include "Feat_Text.h" // enables single line text and expanded message objects
+#include "Font.h" // enables single line text and expanded message objects
 #endif
 
 // TODO: Include Rasteron_Factory

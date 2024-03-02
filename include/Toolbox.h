@@ -18,6 +18,7 @@ uint8_t getHiChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
 int8_t getLightDiff(uint32_t color1, uint32_t color2); // returns positive if lighter, negative if darker, zero on match
 int8_t getChanDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel); // returns positive if lighter, negative if darker, zero on match
 
+uint32_t colorID(); // produces reusable color identifier
 uint8_t grayify8(uint32_t refColor); // produces a 8 bit grey value based on reference color
 uint32_t grayify32(uint32_t refColor); // produces a 32 bit grey value based on reference color
 uint8_t fract8(uint8_t refColor, double frac); // produces an 8 bit color value based on fraction of reference color

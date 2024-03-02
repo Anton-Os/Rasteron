@@ -11,7 +11,7 @@
 #define FONT_SIZE_XL 500
 
 // internal macros
-#define FONT_RESOLUTION 1800
+#define FONT_RESOLUTION 1500
 #define FONT_PEN_OFFSET 100 // default starting pen offset
 
 typedef struct { unsigned xMin; unsigned xMax; unsigned yMin;  unsigned yMax; } TextSize;

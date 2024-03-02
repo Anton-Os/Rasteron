@@ -37,12 +37,29 @@ void setupCanvas(char input){
 		case 'a': canvasImg = oragamiImgOp(pArg, xArg, yArg); break;
 		case 'b': canvasImg = nestboxesImgOp(xArg, yArg); break;
 		case 'c': canvasImg = distillingImgOp(pArg); break;
-		// case 'd': canvasImg = overlayerImgOp(pArg, 0xFFFFFF00 | (0x88 << (unsigned)(xArg * 20)), 0xFF00FFFF | (0x88 << (unsigned)(yArg * 20))); break;
 		case 'd': canvasImg = overlayerImgOp(pArg, 0xFFFF0000 | (0x88 << ((unsigned)(xArg * 20) % 5)) | (0x88 << ((unsigned)(yArg * 20) % 5)), 0xFF00FFFF); break;
 		case 'e': canvasImg = wordsmithImgOp("Rasteron is Dope!!!"); break;
 		case 'f': canvasImg = multiNoiseImgOp(pArg, 1024, 1024); break;
-		case 'g': canvasImg = cellAutomataImgOp(pArg); break;
+		case 'g': canvasImg = organicGrowthImgOp((pArg + 2) * 5); break;
 		case 'h': canvasImg = proxPatternImgOp((pArg + 2) * 5); break;
+		case 'i': canvasImg = domainWarpingImgOp(); break;
+		case 'j': canvasImg = mosaicImgOp(); break;
+		case 'k': canvasImg = knittingImgOp(); break;
+		case 'l': canvasImg = sculptingImgOp(); break;
+		case 'm': canvasImg = turingPatternImgOp(RAND_COLOR(), RAND_COLOR()); break;
+		case 'n': canvasImg = experimentalImgOp(); break;
+		case 'o': canvasImg = experimentalImgOp(); break;
+		case 'p': canvasImg = experimentalImgOp(); break;
+		case 'q': canvasImg = experimentalImgOp(); break;
+		case 'r': canvasImg = experimentalImgOp(); break;
+		case 's': canvasImg = experimentalImgOp(); break;
+		case 't': canvasImg = experimentalImgOp(); break;
+		case 'u': canvasImg = experimentalImgOp(); break;
+		case 'v': canvasImg = experimentalImgOp(); break;
+		case 'w': canvasImg = experimentalImgOp(); break;
+		case 'x': canvasImg = experimentalImgOp(); break;
+		case 'y': canvasImg = experimentalImgOp(); break;
+		case 'z': canvasImg = experimentalImgOp(); break;
 		default: canvasImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR()); break;
 	}
 }
@@ -88,11 +105,11 @@ int main(int argc, char** argv) {
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities\n");
 	puts("\nPress numbered keys 0-9 to tweak function parameters and modify the image outputs. \n");
 #ifdef _WIN32
-    createWindow(wndProc, "Picker", 1024, 1024);
+    createWindow(wndProc, "Catalouge", 1024, 1024);
 	eventLoop(NULL);
 #elif defined __linux__
     Platform_Context platformContext;
-    createWindow(&platformContext, "Picker", 1024, 1024);
+    createWindow(&platformContext, "Catalouge", 1024, 1024);
 
     XImage* bmap = createUnixBmap(&platformContext, canvasImg);
     eventLoop(platformContext.display, NULL);

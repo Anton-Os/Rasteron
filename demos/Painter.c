@@ -2,12 +2,18 @@
 
 #include "Experimental.h"
 
-unsigned setupImgOp(double x, double y){
-    // return ((x < 0.5 && y > 0.5) || (x > 0.5 && y < 0.5))? 0xFF333333 : 0xFFEEEEEE;
-    return 0xFFFFFF00;
+unsigned checkerXY(double x, double y){
+    unsigned c = x * 10;
+	unsigned r = y * 10;
+
+	if(c % 2 == 0 && r % 2 == 0) return 0xFF111111;
+	else if(c % 2 == 0 && r % 2 == 1) return 0xFF111166; 
+	else if(c % 1 == 0 && r % 2 == 0) return 0xFF116611; 
+	else return 0xFF661111; 
 }
 
 Rasteron_Image* canvasImg;
+char inputStr[1024];
 
 #ifdef _WIN32
 
@@ -18,7 +24,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): { 
-		canvasImg = proxPatternImgOp(20);
+		canvasImg = mapImgOp((ImageSize){1024, 1024}, checkerXY);
 		bmap = createWinBmap(canvasImg); 
 	}
 	case (WM_CHAR): { if(wParam != 0){
@@ -39,20 +45,27 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 #endif
 
-int main(int argc, char** argv){
-    canvasImg = mapImgOp((ImageSize){1024, 1024}, setupImgOp); // global canvas for drawing
+void inputCallback(){
+	puts("Enter a command: ");
+	scanf("%s", &inputStr);
+	
+	// TODO: Parse input and change canvas
+	if(inputStr[0] == '0' && inputStr[1] == 'x') puts("Solid color detected");
+	else puts("Unkown operation!");
+}
 
-    // TODO: Get input and draw over canvas
+int main(int argc, char** argv){
+    canvasImg = mapImgOp((ImageSize){1024, 1024}, checkerXY); // global canvas for drawing
 
 #ifdef _WIN32
     createWindow(wndProc, "Painter", 1024, 1024);
-	eventLoop(NULL);
+	eventLoop(inputCallback);
 #elif defined __linux__
     Platform_Context platformContext;
     createWindow(&platformContext, "Painter", 1024, 1024);
 
     XImage* bmap = createUnixBmap(&platformContext, canvasImg);
-    eventLoop(platformContext.display, NULL);
+    eventLoop(platformContext.display, inputCallback);
 #endif
 
     dealloc_image(canvasImg); // cleanup

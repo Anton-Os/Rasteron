@@ -1,6 +1,6 @@
 #include "Rasteron.h"
 
-#include "Feat_Queue.h"
+#include "Queue.h"
 
 static char frameName[1024];
 
@@ -63,9 +63,9 @@ void dealloc_queue(Rasteron_Queue* queue){
 
 static unsigned _color_bk = UI_COLOR_BACKGROUND;
 static unsigned _color_fg = UI_COLOR_FOREGROUND;
-static unsigned _color_pos = UI_COLOR_PLUS;
+static unsigned _color_pos = UI_COLOR_ON;
 static unsigned _color_def = UI_COLOR_DEFAULT;
-static unsigned _color_neg = UI_COLOR_MINUS;
+static unsigned _color_neg = UI_COLOR_OFF;
 
 static ImageSize getUI_ImageSize(enum MENU_Size size){
     switch(size){
@@ -88,16 +88,6 @@ void setUI_colorScheme(unsigned bgColor, unsigned fgColor, unsigned contentColor
 }
 
 Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
-    /* FILE* iconsFile;
-#ifdef _WIN32
-    if(fopen_s(&iconsFile, MATERIAL_ICONS_FILE, "r")) return NO_QUEUE; // error
-#else
-    iconsFile = fopen(MATERIAL_ICONS_FILE, "r");
-    if(iconsFile == NULL) return NO_QUEUE; // error
-#endif
-    int c;
-    while((c = getc(iconsFile)) != EOF) putchar(c); */ // TODO: Implement lookup
-    
     ImageSize menuSize = getUI_ImageSize(size);
 
     char iconPath[1024];
@@ -108,9 +98,9 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
     Rasteron_Image* sizedIconImg = resizeImgOp((ImageSize){ (unsigned)(menuSize.height * 0.8), (unsigned)(menuSize.width * 0.8) }, iconImg);
 
     Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("icon-btn", menuSize, 3);
-    Rasteron_Image* defaultImg = *(menuQueue->frameData + UI_STATE_DEFAULT);
-    Rasteron_Image* plusImg = *(menuQueue->frameData + UI_STATE_PLUS);
-    Rasteron_Image* minusImg = *(menuQueue->frameData + UI_STATE_MINUS);
+    Rasteron_Image* noneImg = *(menuQueue->frameData + MENU_Off);
+    Rasteron_Image* onImg = *(menuQueue->frameData + MENU_On);
+    Rasteron_Image* offImg = *(menuQueue->frameData + MENU_None);
 
     unsigned iconPix = 0;
     for(unsigned p = 0; p < menuSize.width * menuSize.height; p++){
@@ -119,17 +109,16 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
         PixelPoint pixelPoint = { x, y };
 
         if(x < 0.1 || x > 0.9 || y < 0.1 || y > 0.9){
-        // if(x < 0.15 || x > 0.85 || y < 0.15 || y > 0.85){
-            *(defaultImg->data + p) = _color_bk;
-            *(plusImg->data + p) = _color_bk;
-            *(minusImg->data + p) = _color_bk;
+            *(offImg->data + p) = _color_bk;
+            *(onImg->data + p) = _color_bk;
+            *(noneImg->data + p) = _color_bk;
         }
         else {
             unsigned iconColor = *(sizedIconImg->data + iconPix);
             
-            *(defaultImg->data + p) = (iconColor != NO_COLOR)? _color_def : blendColors(_color_bk, _color_fg, 0.75);
-            *(plusImg->data + p) = (iconColor != NO_COLOR)? _color_pos : _color_fg;
-            *(minusImg->data + p) = (iconColor != NO_COLOR)? _color_neg : _color_fg;
+            *(offImg->data + p) = (iconColor != NO_COLOR)? _color_def : blendColors(_color_bk, _color_fg, 0.75);
+            *(onImg->data + p) = (iconColor != NO_COLOR)? _color_pos : _color_fg;
+            *(noneImg->data + p) = (iconColor != NO_COLOR)? _color_neg : _color_fg;
 
             iconPix++;
         }
@@ -146,9 +135,9 @@ Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
     ImageSize menuSize = getUI_ImageSize(size);
 
     Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("check-btn", menuSize, 3);
-    Rasteron_Image* uncheckImg = *(menuQueue->frameData + UI_STATE_DEFAULT);
-    Rasteron_Image* checkImg = *(menuQueue->frameData + UI_STATE_PLUS);
-    Rasteron_Image* excheckImg = *(menuQueue->frameData + UI_STATE_MINUS);
+    Rasteron_Image* checkNoImg = *(menuQueue->frameData + MENU_None);
+    Rasteron_Image* checkOnImg = *(menuQueue->frameData + MENU_On);
+    Rasteron_Image* checkOffImg = *(menuQueue->frameData + MENU_Off);
 
     for(unsigned p = 0; p < menuSize.width * menuSize.height; p++){
         double x = (1.0 / (double)menuSize.width) * (p % menuSize.width);
@@ -157,22 +146,21 @@ Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
 
         if(x < 0.1 || x > 0.9 || y < 0.1 || y > 0.9){
         // if(x < 0.15 || x > 0.85 || y < 0.15 || y > 0.85){
-            *(uncheckImg->data + p) = _color_bk;
-            *(checkImg->data + p) = _color_bk;
-            *(excheckImg->data + p) = _color_bk;
+            *(checkNoImg->data + p) = _color_bk;
+            *(checkOnImg->data + p) = _color_bk;
+            *(checkOffImg->data + p) = _color_bk;
         }
         else {
-            *(uncheckImg->data + p) = blendColors(_color_bk, _color_fg, 0.75);
-            *(checkImg->data + p) = _color_fg;
-            *(excheckImg->data + p) = _color_fg;
+            *(checkNoImg->data + p) = blendColors(_color_bk, _color_fg, 0.75);
+            *(checkOnImg->data + p) = _color_fg;
+            *(checkOffImg->data + p) = _color_fg;
 
             if(((x < y + 0.1F && x > y - 0.1F) || ((1.0 - x) < y + 0.1F && (1.0 - x) > y - 0.1F)) && centerDist < 0.4) 
-                *(excheckImg->data + p) = _color_neg;
-
+                *(checkOffImg->data + p) = _color_neg;
             if((1.0 - x + 0.25) < y + 0.1F + 0.1 && (1.0 - x + 0.25) > y - 0.1F + 0.1 && x < 0.85 && y < x + 0.251) // right side checkmark
-                *(checkImg->data + p) = _color_pos; // right side of checkmark
+                *(checkOnImg->data + p) = _color_pos; // right side of checkmark
             if(x + 0.5 < y + 0.15F + 0.1 && x + 0.5 > y - 0.05F + 0.1 && x > 0.15 && y < (1.0 - x) + 0.251) 
-                *(checkImg->data + p) = _color_pos; // left side of checkmark
+                *(checkOnImg->data + p) = _color_pos; // left side of checkmark
         }
     }
 
@@ -195,14 +183,20 @@ Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short turns){
 		    double y = (1.0 / (double)menuSize.width) * (double)(p / menuSize.width);
 
             double centerDist = sqrt((fabs(0.5 - x) * fabs(0.5 - x)) + (fabs(0.5 - y) * fabs(0.5 - y)));
-            double indicatorPos[2] = { 0.0, 0.0 };
-            indicatorPos[0] += 0.5 + sin(t * ((3.141592653 * 2) / turns)) * 0.25; // x calculation
-            indicatorPos[1] += 0.5 + -cos(t * ((3.141592653 * 2) / turns)) * 0.25; // y calculation
-            double indicatorDist = sqrt((fabs(indicatorPos[0] - x) * fabs(indicatorPos[0] - x)) + (fabs(indicatorPos[1] - y) * fabs(indicatorPos[1] - y)));
+            double indicX = 0.5 + sin(t * ((3.141592653 * 2) / turns)) * 0.25; // x calculation
+            double indicY = 0.5 + -cos(t * ((3.141592653 * 2) / turns)) * 0.25; // y calculation
+            double indicatorDist = sqrt((fabs(indicX - x) * fabs(indicX - x)) + (fabs(indicY - y) * fabs(indicY - y)));
 
             if(indicatorDist < 0.05) *(dialImg->data + p) = (t == 0)? _color_pos : (turns % 2 == 0 && t == turns / 2)? _color_neg : _color_def;
             else if(centerDist < 0.35) *(dialImg->data + p) = _color_fg; // draws circular dial 
             else *(dialImg->data + p) = _color_bk;
+
+            /* for(unsigned i = 0; i < turns; i++){
+                double perimX = 0.5 + sin(i * ((3.141592653 * 2) / turns)) * 0.425; 
+                double perimY = 0.5 + -cos(i * ((3.141592653 * 2) / turns)) * 0.425;
+                double distance = sqrt((fabs(perimX - x) * fabs(perimX - x)) + (fabs(perimY - y) * fabs(perimY - y)));
+                if(distance < 0.035) *(dialImg->data + p) = _color_fg;
+            } */
         }
     }
 
@@ -222,15 +216,20 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
             double x = (!_invertImage)? ((1.0 / (double)menuSize.width) * (p % menuSize.width)) : ((1.0 / (double)menuSize.height) * (p % menuSize.height));
             double y = (!_invertImage)? ((1.0 / (double)menuSize.height) * (p / menuSize.width)) : ((1.0 / (double)menuSize.width) * (p / menuSize.height));
 
-            double sliderX = (0.1 * (0.5 * levels)) + (l * ((0.8 / (levels - 1)) * (0.5 * levels)));
-            double adjustX = x * (0.5 * levels);
-            double sliderDist = sqrt(fabs(sliderX - adjustX) * fabs(sliderX - adjustX) + (fabs(0.5 - y) * fabs(0.5 - y)));
-
+            double sliderX = 0.15 + (((double)0.7 / ((double)levels - 1)) * l); // position along slider
+ 
             if(x < 0.1 || x > 0.9 || y < 0.4 || y > 0.6) *(sliderImg->data + p) = _color_bk;
-            else *(sliderImg->data + p) = _color_fg;
-
-            if(sliderDist < 0.09) 
+            else if(sliderX > x - 0.05 && sliderX < x + 0.05) 
                 *(sliderImg->data + p) = (l == levels - 1)? _color_pos : (l == 0)? _color_neg : _color_def;
+            else *(sliderImg->data + p) = _color_fg; /* {
+                for(unsigned s = 0; s < levels; s++){
+                    double sliderX = 0.15 + (((double)0.7 / ((double)levels - 1)) * s);
+                    if(sliderX > x - 0.0035 && sliderX < x + 0.0035)
+                        *(sliderImg->data + p) = _color_bk;
+                    else if(*(sliderImg->data + p) != _color_bk) 
+                        *(sliderImg->data + p) = _color_fg;
+                }
+            } */
         }
     }
 
