@@ -2,7 +2,7 @@
 
 // Cellular operations
 
-static Rasteron_Image* cellwiseNbrImgOp(ref_image_t refImage, nebrCallback8 callback){
+static Rasteron_Image* cellwiseImgOp_nebr8(ref_image_t refImage, nebrCallback8 callback){
 	assert(refImage != NULL);
 
 	NebrTable_List* nebrTables = loadNebrTables(refImage);
@@ -50,7 +50,7 @@ static Rasteron_Image* cellwiseNbrImgOp(ref_image_t refImage, nebrCallback8 call
 	return patternImg;
 }
 
-Rasteron_Image* cellwiseHorzImgOp(ref_image_t refImage, nebrCallback2 callback){
+Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback){
 	assert(refImage != NULL);
 
 	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
@@ -80,7 +80,7 @@ Rasteron_Image* cellwiseHorzImgOp(ref_image_t refImage, nebrCallback2 callback){
 	return patternImg;
 }
 
-Rasteron_Image* cellwiseVertImgOp(ref_image_t refImage, nebrCallback2 callback){
+Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback){
 	assert(refImage != NULL);
 
 	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
@@ -112,7 +112,7 @@ Rasteron_Image* cellwiseVertImgOp(ref_image_t refImage, nebrCallback2 callback){
 }
 
 
-Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
+Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
 	assert(refImage != NULL);
 	
 	Rasteron_Image* patternImage = alloc_image("staging", refImage->height, refImage->width);
@@ -123,7 +123,7 @@ Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsi
 
 	unsigned short i = 0;
 	do {
-		stagingImg = cellwiseNbrImgOp(patternImage, callback);
+		stagingImg = cellwiseImgOp_nebr8(patternImage, callback);
 		for (unsigned p = 0; p < stagingImg->width * stagingImg->height; p++)
 			*(patternImage->data + p) = *(stagingImg->data + p); // copy pixels from pattern image
 		dealloc_image(stagingImg);
@@ -147,5 +147,5 @@ unsigned antialias(unsigned target, unsigned neighbors[8]){
 Rasteron_Image* antialiasImgOp(ref_image_t refImage){
 	assert(refImage != NULL);
 
-	return cellwiseImgOp(refImage, antialias, 1);
+	return cellwiseExtImgOp(refImage, antialias, 1);
 }

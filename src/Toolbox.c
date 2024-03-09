@@ -174,14 +174,23 @@ uint32_t fuseColors(uint32_t color1, uint32_t color2, double iVal){
 	return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
 }
 
+uint32_t levelColor(uint32_t color, double level){
+	if(level >= 1.0) return 0xFFFFFFFF;
+	else if(level <= 0.0) return 0xFF000000;
+	else if(level == 0.5) return color;
+	else if(level > 0.5) return blendColors(color, 0xFFFFFFFF, (level - 0.5) * 2.0);
+	else if(level < 0.5) return blendColors(color, 0xFF000000, (0.5 - level) * 2.0);
+	else return color;
+}
+
 double pixelDistance(unsigned p1, unsigned p2, unsigned imageWidth){
 	long int x1 = p1 % imageWidth;
 	long int y1 = p1 / imageWidth;
 	long int x2 = p2 % imageWidth;
 	long int y2 = p2 / imageWidth;
 
-	double w = abs(x2 - x1); // length in pixels
-	double l = abs(y2 - y1); // width in pixels
+	double w = fabs(x2 - x1); // length in pixels
+	double l = fabs(y2 - y1); // width in pixels
 
 	return (double)sqrt((l * l) + (w * w));
 }

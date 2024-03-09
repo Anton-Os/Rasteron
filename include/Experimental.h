@@ -41,14 +41,15 @@ Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop); /
 Rasteron_Image* nestboxesImgOp(double x, double y); // Looped nesting of ever-smaller squares
 Rasteron_Image* distillingImgOp(enum CHANNEL_Type channel); // Distilling image to color ranges and performing channel operations
 Rasteron_Image* overlayerImgOp(unsigned pArg, unsigned color1, unsigned color2); // Visual lense effects and enhancements to base image
-Rasteron_Image* wordsmithImgOp(const char* text); // Drawing text example
+Rasteron_Image* wordsmithImgOp(unsigned color1, unsigned color2); // Drawing text example
 Rasteron_Image* multiNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells); // Mixing and matching various noise functions while adding experimental arguments
 Rasteron_Image* organicGrowthImgOp(int seedOp); // Seeding and performing cellular logic operations between neighbors iteratively
 Rasteron_Image* proxPatternImgOp(unsigned short points); // Vornoi and other distance related functions
-Rasteron_Image* domainWarpingImgOp(); // TODO: Implement this
-Rasteron_Image* mosaicImgOp(); // TODO: Implement this
-Rasteron_Image* knittingImgOp(); // TODO: Implement this
-Rasteron_Image* sculptingImgOp(); // TODO: Implement this
+Rasteron_Image* mosaicImgOp(double z1, double z2); // Creates a regular repeating triangular pattern
+Rasteron_Image* knittingImgOp(unsigned short inc, unsigned short dec); // Combines grid tiles, feild operations and seeding to create the result
+Rasteron_Image* perturbImgOp(double xCenter, double yCenter); // Purturbs a cross image using red as x, green as y, and blue for lightness
+Rasteron_Image* reliefImgOp(double size); // Black and white blobs transformed into gradients effects
+Rasteron_Image* stratifyImgOp(unsigned short levels); // Stratifies colors into discrete intervals based on brightness
 Rasteron_Image* turingPatternImgOp(unsigned color1, unsigned color2); // TODO: Implement this
 
 #define RASTERON_EXPERIMENTAL_H

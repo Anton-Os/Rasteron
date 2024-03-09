@@ -3,26 +3,24 @@
 static char fullFilePath[1024];
 
 Rasteron_Image* experimentalImgOp(){
-    Rasteron_Image* experimentalImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
+    Rasteron_Image* paintImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
 
     int direction = 1; // positive
 
     unsigned color = 0xFF000000 | RAND_COLOR();
+
     for(unsigned p = 0; p < 1024 * 1024; p++){
-        *(experimentalImg->data + p) = 0xFF000000 | color;
+        *(paintImg->data + p) = 0xFF000000 | color;
 
         if(direction == 1 && color > 0xFFAAFFFF) direction = 0;
         else if(direction == 0 && color < 0xFF0000AA) direction = 1;
 
         if(direction) color += rand() % 256;
         else color -= rand() % 256;
-
-        /* switch(rand() % 3){
-            case 0: color += rand() % 256;
-            case 1: color += (rand() % 256) << 8;
-            case 2: color += (rand() % 256) << 16;
-        } */
     }
+
+    Rasteron_Image* mirrorImg = mirrorImgOp(paintImg);
+    Rasteron_Image* experimentalImg = blendImgOp(paintImg, mirrorImg);
 
     return experimentalImg;
 }
@@ -180,40 +178,47 @@ Rasteron_Image* multiNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells){
 }
 
 static unsigned rampantGrowth(unsigned color, unsigned neighbors[8]){
-    if(color == 0xFFFF0000 || color == 0xFF00FFFF) return 0xFF00FF00;
+    if(color == 0xFFFF0000 || color == 0xFF00FFFF) return 0xFFFFFF00;
     else if(0xFF00FFFF == neighbors[NEBR_Top_Left] || 0xFF00FFFF == neighbors[NEBR_Top_Right] || 0xFF00FFFF == neighbors[NEBR_Bot_Left] || 0xFF00FFFF == neighbors[NEBR_Bot_Right])
         return 0xFFFF0000;
-    else if(0xFFFF00FF == neighbors[NEBR_Top] || 0xFFFF00FF == neighbors[NEBR_Right] || 0xFFFF00FF == neighbors[NEBR_Left] || 0xFFFF00FF == neighbors[NEBR_Bot] || 0xFFFF0000 == neighbors[NEBR_Top] || 0xFFFF0000 == neighbors[NEBR_Right] || 0xFFFF0000 == neighbors[NEBR_Left] || 0xFFFF0000 == neighbors[NEBR_Bot])
+    else if(0xFFEEEEEE == neighbors[NEBR_Top] || 0xFFEEEEEE == neighbors[NEBR_Right] || 0xFFEEEEEE == neighbors[NEBR_Left] || 0xFFEEEEEE == neighbors[NEBR_Bot] || 0xFFFF0000 == neighbors[NEBR_Top] || 0xFFFF0000 == neighbors[NEBR_Right] || 0xFFFF0000 == neighbors[NEBR_Left] || 0xFFFF0000 == neighbors[NEBR_Bot])
         return 0xFF00FFFF;
-    else if(0xFFFF00FF == neighbors[NEBR_Top_Left] || 0xFFFF00FF == neighbors[NEBR_Top_Right] || 0xFFFF00FF == neighbors[NEBR_Bot_Left] || 0xFFFF00FF == neighbors[NEBR_Bot_Right])
-        return 0xFFFF00FF;
-    else if(color == 0xFFFF00FF) return 0xFFFF0000;
+    else if(0xFFEEEEEE == neighbors[NEBR_Top_Left] || 0xFFEEEEEE == neighbors[NEBR_Top_Right] || 0xFFEEEEEE == neighbors[NEBR_Bot_Left] || 0xFFEEEEEE == neighbors[NEBR_Bot_Right])
+        return 0xFFEEEEEE;
+    else if(color == 0xFFEEEEEE) return 0xFFFF0000;
     else return NO_COLOR;
 }
 
 static unsigned infectGrowth(unsigned color, unsigned neighbors[8]){
-    if((0xFFFF00FF == neighbors[NEBR_Top] && 0xFFFF00FF == neighbors[NEBR_Left]) || (0xFFFF00FF == neighbors[NEBR_Bot] && 0xFFFF00FF == neighbors[NEBR_Right]))
+    if((0xFFEEEEEE == neighbors[NEBR_Top] && 0xFFEEEEEE == neighbors[NEBR_Left]) || (0xFFEEEEEE == neighbors[NEBR_Bot] && 0xFFEEEEEE == neighbors[NEBR_Right]))
         return (rand() % 2 == 0)? 0xFF00FFFF : 0xFFFF0000;
-    if(0xFFFF00FF == neighbors[NEBR_Top] || 0xFFFF00FF == neighbors[NEBR_Right] || 0xFFFF00FF == neighbors[NEBR_Left] || 0xFFFF00FF == neighbors[NEBR_Bot])
-        return (rand() % 2 == 0)? 0xFFFF00FF : 0xFF00FF00;
+    if(0xFFEEEEEE == neighbors[NEBR_Top] || 0xFFEEEEEE == neighbors[NEBR_Right] || 0xFFEEEEEE == neighbors[NEBR_Left] || 0xFFEEEEEE == neighbors[NEBR_Bot])
+        return (rand() % 2 == 0)? 0xFFEEEEEE : 0xFFFFFF00;
     else return NO_COLOR;
 }
 
-/* static unsigned branchInfectGrowth(unsigned color, unsigned neighbors[8]){
-    unsigned randNbr = neighbors[rand() % 8];
+static unsigned conwayGameOfLife(unsigned color, unsigned neighbors[8]){
+    unsigned short liveCount = 0;
+    unsigned short deadCount = 0;
 
-    if(randNbr == 0xFF00FFFF) return 0xFFFF0000;
-    else if(randNbr == 0xFFFF0000) return 0xFF00FFFF;
-    else if(randNbr == 0xFFFF00FF) return 0xFF00FF00;
-    else if(randNbr == 0xFF00FF00) return 0xFFFF00FF;
+    for(unsigned n = 0; n < 8; n++){
+        if(neighbors[n] == 0xFFEEEEEE || neighbors[n] == 0xFFFFFF00) liveCount++;
+        else if(neighbors[n] == 0xFF00FFFF || neighbors[n] == 0xFFFF0000) deadCount++;
+    }
+
+    if((color == 0xFFEEEEEE || color == 0xFFFFFF00) && liveCount < 2) return 0xFF00FFFF; // Any live cell with fewer than two live neighbors dies, as if by underpopulation.
+    else if((color == 0xFFEEEEEE || color == 0xFFFFFF00) && (liveCount == 2 || liveCount == 3)) return 0xFFFFFF00; // Any live cell with two or three live neighbors lives on to the next generation.
+    else if((color == 0xFFEEEEEE || color == 0xFFFFFF00) && liveCount > 3) return 0xFFFF0000; // Any live cell with more than three live neighbors dies, as if by overpopulation.
+    else if((color == 0xFF00FFFF || color == 0xFFFF0000) && liveCount == 3) return 0xFFEEEEEE; // Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
     else return NO_COLOR;
-} */
+}
+
 
 Rasteron_Image* organicGrowthImgOp(int iterations){
     ColorPointTable table;
     table.pointCount = 0;
 
-    unsigned color = 0xFFFF00FF;
+    unsigned color = 0xFFEEEEEE;
     // if(iterations % 3 == 0) color = 0xFFFF0000;
     // else if(iterations % 3 == 1) color = 0xFF00FFFF;
 
@@ -232,13 +237,21 @@ Rasteron_Image* organicGrowthImgOp(int iterations){
         iterations--;
     }
 
-    Rasteron_Image* growthImg = cellwiseImgOp(seedImg, infectGrowth, iterations * 3);
-    Rasteron_Image* growthImg2 = cellwiseImgOp(seedImg, rampantGrowth, iterations);
+    Rasteron_Image* growthImg = cellwiseExtImgOp(seedImg, rampantGrowth, iterations);
+    Rasteron_Image* growthImg2 = cellwiseExtImgOp(growthImg, infectGrowth, iterations);
+    Rasteron_Image* conwayImg = cellwiseExtImgOp(growthImg2, conwayGameOfLife, iterations);
+    
+    // Rasteron_Image* downSizeImg = cropImgOp(conwayImg, CROP_Left, 0.75F);
+    // Rasteron_Image* upSizeImg = resizeImgOp((ImageSize){ 1024, 1024 }, downSizeImg);
  
     dealloc_image(solidImg);
     dealloc_image(seedImg);
     dealloc_image(growthImg);
-    return growthImg2; 
+    dealloc_image(growthImg2);
+    // dealloc_image(conwayImg);
+    // dealloc_image(downSizeImg);
+
+    return conwayImg; 
 }
 
 static unsigned proxPattern(unsigned color, double distance){ return color - (distance * 2048); }
@@ -258,14 +271,14 @@ Rasteron_Image* proxPatternImgOp(unsigned short points){
     return fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, proxPattern); 
 }
 
-Rasteron_Image* wordsmithImgOp(const char* text){ 
+Rasteron_Image* wordsmithImgOp(unsigned bgColor, unsigned textColor){ 
     genFullFilePath("Tw-Cen-MT.ttf", &fullFilePath);
 
-    Rasteron_Text textObj;
+    /* Rasteron_Text textObj;
     textObj.fontFile = fullFilePath;
     textObj.text = text;
     textObj.bkColor = 0xFF000000;
-    textObj.fgColor = 0xFFEEEEEE;
+    textObj.fgColor = 0xFFEEEEEE; */
 
     Rasteron_Message messageObj;
     messageObj.fontFile = fullFilePath;
@@ -275,46 +288,143 @@ Rasteron_Image* wordsmithImgOp(const char* text){
     messageObj.messages[1] = "Ive come to say";
     messageObj.messages[2] = "Have a lovely day";
     messageObj.messages[3] = "And a good night";
-    messageObj.bkColor = 0xFF000000;
-    messageObj.fgColor = 0xFFEEEEEE;
+    messageObj.bkColor = bgColor;
+    messageObj.fgColor = textColor;
 
-    Rasteron_Image* textImg = textImgOp(&textObj, FONT_SIZE_TINY);
+    // Rasteron_Image* textImg = textImgOp(&textObj, FONT_SIZE_TINY);
     Rasteron_Image* messageImg = messageImgOp(&messageObj, FONT_SIZE_LARGE);
     Rasteron_Image* finalImg = antialiasImgOp(messageImg);
 
-    dealloc_image(textImg);
+    // dealloc_image(textImg);
     dealloc_image(messageImg);
 
     return finalImg; 
 }
 
+static double zig = 10.0;
+static double zag = 10.0;
+
 static unsigned zigzag(double x, double y){
-    return 0xFF00FF00;
+    x *= zig; y *= zag; // split into 10 discrete sections
+    double xDiff = ((x / zig) > 0.5)? x - ((unsigned)x) : -x - ((unsigned)x);
+    double yDiff = ((y / zag) > 0.5)? y - ((unsigned)y) : -y - ((unsigned)y);
+
+    return (xDiff > yDiff)? 0xFFFF00FF : 0xFF111111;
 }
 
-Rasteron_Image* domainWarpingImgOp(){
+Rasteron_Image* mosaicImgOp(double z1, double z2){
+    zig = z1; zag = z2;
     Rasteron_Image* zigzagImg = mapImgOp((ImageSize){ 1024, 1024, }, zigzag);
 
+    return zigzagImg;
+}
+
+static unsigned knitHorz(unsigned color, unsigned neighbors[2]){
+    /* if((color & 0xFF > neighbors[0] & 0xFF) && (color & 0xFF > neighbors[1] & 0xFF)) return color - 10;
+    else return (neighbors[0] & 0xFF > neighbors[1] & 0xFF)? neighbors[0] - 32: neighbors[1] + 32; */
+    if(neighbors[0] & 0xFF > 0xAA || neighbors[1] & 0xFF > 0xAA) return color + 32;
+    else return color - 32;
+}
+
+Rasteron_Image* knittingImgOp(unsigned short inc, unsigned short dec){
+    Rasteron_Image* patternImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
+
+    unsigned color = 0xFF000000 | RAND_COLOR();
     for(unsigned p = 0; p < 1024 * 1024; p++){
-        // TODO: Warp zigzagImg
+        *(patternImg->data + p) = ((p % inc < inc / 2)? 0xFF00FF00 : 0xFFFF0000) | color;
+
+        color = blendColors(color, color % (256 * 256 * 256), 0.5);
+        color = blendColors(color % 256, color % (256 * 256), 0.5);
+
+        if(p % (inc / dec) == 0) color += inc;
+        else color -= dec;
     }
 
-    return experimentalImgOp();
+    Rasteron_Image* knittingImg = cellwiseRowImgOp(patternImg, knitHorz);
+
+    dealloc_image(patternImg);
+
+    return knittingImg;
 }
 
-Rasteron_Image* mosaicImgOp(){
-    // TODO: Create a regular tiling of different colors likely through pxiel points
-    return experimentalImgOp();
+static unsigned perturb(double x, double y){
+    unsigned perturbColor1 = 0xFF00FF00;
+    unsigned perturbColor2 = 0xFFFF0000;
+
+    return blendColors(0xFFFF0000, 0xFF00FF00, (x * 2) * (y * 2)) | 0x88;
+    // return blendColors(perturbColor1, perturbColor2, x * y) | 0x33;
 }
 
-Rasteron_Image* knittingImgOp(){
-    // TODO: Create an interconnected weave of different colors and patterns
-    return experimentalImgOp();
+Rasteron_Image* perturbImgOp(double xCenter, double yCenter){
+    Rasteron_Image* coordImg = mapImgOp((ImageSize){ 1024, 1024 }, perturb);
+    Rasteron_Image* crossImg = solidImgOp((ImageSize){ 1024, 1024 }, 0xFF888888);
+
+    for(unsigned p = 0; p < 1024 * 1024; p++){
+        double x = (1.0 / (double)1024) * (unsigned)(p % 1024);
+		double y = (1.0 / (double)1024) * (double)(p / 1024.0);
+
+        if((x > (xCenter - 0.05F) && x < (xCenter + 0.05F)) || (y > (yCenter - 0.05F) && y < (yCenter + 0.05F))) 
+            *(crossImg->data + p) = 0xFF00FF00;
+    }
+
+
+    Rasteron_Image* perturbImg = solidImgOp((ImageSize){ 1024, 1024 }, 0xFF888888);
+    for(unsigned p = 0; p < 1024 * 1024; p++){
+        unsigned refColor = *(coordImg->data + p);
+        double xOffset = (double)((refColor & RED_CHANNEL) >> 16) / 256.0;
+        double yOffset = (double)((refColor & GREEN_CHANNEL) >> 8) / 256.0;
+        double bLevel = (double)(refColor & BLUE_CHANNEL) / 256.0;
+
+        PixelPoint point = { xOffset, yOffset };
+
+        *(perturbImg->data + p) = pixelPointColor(point, crossImg); // adjust to x and y
+        if(bLevel > 0.0) // adjust to brighness
+            *(perturbImg->data + p) = levelColor(*(perturbImg->data + p), bLevel);
+    }
+
+    dealloc_image(coordImg);    
+    dealloc_image(crossImg);
+
+    return perturbImg;
 }
 
-Rasteron_Image* sculptingImgOp(){
-    // TODO: Create detials like bumps and shapes with gradients
-    return experimentalImgOp();
+Rasteron_Image* reliefImgOp(double size){
+    double torusX = (double)rand() / RAND_MAX; double torusY = (double)rand() / RAND_MAX;
+    double blobX1 = (double)rand() / RAND_MAX; double blobY1 = (double)rand() / RAND_MAX;
+    double blobX2 = (double)rand() / RAND_MAX; double blobY2 = (double)rand() / RAND_MAX;
+
+    Rasteron_Image* reliefImg = solidImgOp((ImageSize){ 1024, 1024 }, 0xFF333333);
+
+    for(unsigned p = 0; p < 1024 * 1024; p++){
+        double torusDist = pixelDistance(p, pixelPointOffset((PixelPoint){ torusX, torusY }, reliefImg), 1024);
+        double blobDist1 = pixelDistance(p, pixelPointOffset((PixelPoint){ blobX1, blobY1 }, reliefImg), 1024);
+        double blobDist2 = pixelDistance(p, pixelPointOffset((PixelPoint){ blobX2, blobY2 }, reliefImg), 1024);
+
+        if(torusDist < (300.0 * size)) *(reliefImg->data + p) = blendColors(0xFF333333, 0xFFEEEEEE, (torusDist - 100.0) / (300.00 * size));
+        else if(blobDist1 < (200.0 * size)) *(reliefImg->data + p) = blendColors(0xFFEEEEEE, 0xFF333333, (blobDist1 - 50.0) / (200.0 * size));
+        else if(blobDist2 < (200.0 * size)) *(reliefImg->data + p) = blendColors(0xFFEEEEEE, 0xFF333333, (blobDist2 - 50.0) / (200.0 * size));
+    }
+
+    return reliefImg;
+}
+
+Rasteron_Image* stratifyImgOp(unsigned short levels){
+    genFullFilePath("Starcase.bmp", &fullFilePath);
+
+    Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
+
+    for(unsigned p = 0; p < loadedImg->width * loadedImg->height; p++){
+        double colorLevel = grayify8(*(loadedImg->data + p)) / 256.0;
+        double adjustLevel = 1.0;
+        
+        for(unsigned l = 0; l < levels; l++)
+            if(fabs((l * (1.0 / levels)) - colorLevel) < fabs(adjustLevel - colorLevel))
+                adjustLevel = l * (1.0 / levels);
+
+        *(loadedImg->data + p) = levelColor(*(loadedImg->data + p), adjustLevel);
+    }
+
+    return loadedImg;
 }
 
 Rasteron_Image* turingPatternImgOp(unsigned color1, unsigned color2){

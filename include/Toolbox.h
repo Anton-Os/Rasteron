@@ -26,6 +26,7 @@ uint32_t fract32(uint32_t refColor, double frac); // produces an 32 bit color va
 uint32_t invertColor(uint32_t refColor); // inverts red, green, and blue values
 uint32_t blendColors(uint32_t color1, uint32_t color2, double bVal); // blends values between two colors
 uint32_t fuseColors(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
+uint32_t levelColor(uint32_t color, double level); // levels color given brightness level
 
 double pixelDistance(unsigned p1, unsigned p2, unsigned imageWidth); // get s pixel distance based on2 offsets
 unsigned pixelPointOffset(PixelPoint pixPos, ref_image_t refImage); // gets pixel offset from image coordinates

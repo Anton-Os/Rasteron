@@ -51,7 +51,7 @@ Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2); // creates 
 Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback); // callbacks from input color
 Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback); // callbacks from x and y coordinates
 Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback callback); // callbacks to nearest point w distance
-Rasteron_Image* fieldImgOp_ext(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback); // callbacks to 3 nearest points w distance
+Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback); // callbacks to 3 nearest points w distance
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
 Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable);
@@ -71,9 +71,9 @@ Rasteron_Image* noiseImgOp_warp(ImageSize size, ColorGrid grid, ColorGrid domain
 //
 //      For each pixel adjascent neighbors are determined and used to compute the final color
 
-Rasteron_Image* cellwiseHorzImgOp(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
-Rasteron_Image* cellwiseVertImgOp(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
-Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations); // 2D generated image from 8 neighbors
+Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
+Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
+Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations); // 2D generated image from 8 neighbors
 
 Rasteron_Image* antialiasImgOp(ref_image_t refImage); // performs antialiasing operation
 

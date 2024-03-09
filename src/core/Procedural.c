@@ -56,7 +56,7 @@ Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTabl
 	return fieldImage;
 }
 
-Rasteron_Image* fieldImgOp_ext(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback) {
+Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback) {
 	Rasteron_Image* fieldImage = alloc_image("field", size.height, size.width);
 
 	unsigned* colorPoints = malloc(colorPointTable->pointCount * sizeof(unsigned));

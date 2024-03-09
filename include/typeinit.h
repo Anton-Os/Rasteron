@@ -5,7 +5,10 @@
 // --------------------------------   Image    -------------------------------- //
 
 Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width);
+#define RASTERON_ALLOC(name, height, width) (Rasteron_Image*)(alloc_image(name, height, width))
+
 void dealloc_image(Rasteron_Image* image);
+#define RASTERON_DEALLOC(image) (dealloc_image(image))
 
 
 // --------------------------------   Swatch    -------------------------------- //

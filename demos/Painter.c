@@ -3,8 +3,8 @@
 #include "Experimental.h"
 
 unsigned checkerXY(double x, double y){
-    unsigned c = x * 10;
-	unsigned r = y * 10;
+    unsigned c = x * 2;
+	unsigned r = y * 2;
 
 	if(c % 2 == 0 && r % 2 == 0) return 0xFF111111;
 	else if(c % 2 == 0 && r % 2 == 1) return 0xFF111166; 
@@ -49,9 +49,10 @@ void inputCallback(){
 	puts("Enter a command: ");
 	scanf("%s", &inputStr);
 	
-	// TODO: Parse input and change canvas
 	if(inputStr[0] == '0' && inputStr[1] == 'x') puts("Solid color detected");
-	else puts("Unkown operation!");
+	// TODO: Detect if file path was set to png, tiff, or bmp
+	// TODO: Detect procedural operations
+	else puts("Unknown operation!");
 }
 
 int main(int argc, char** argv){
