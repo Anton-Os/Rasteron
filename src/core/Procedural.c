@@ -107,34 +107,45 @@ Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPo
 	return seedImage;
 }
 
-// Step operations
+Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid){
+	Rasteron_Image* checkerImg = RASTERON_ALLOC("checker", size.height, size.width);
 
-/* Rasteron_Image* stepImg(ref_image_t refImage, const PixelPointTable* pixelPointTable, stepCallback callback){
-	if(refImage == NULL){
-		perror("Cannot create step image! Null pointer provided as input");
-		return NULL;
-	}
+	for(unsigned p = 0; p < size.width * size.height; p++){
+        double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
 
-	NebrTable_List* nebrTables = loadNebrTables(refImage);
-	Rasteron_Image* stepImage = RASTERON_ALLOC("step", refImage->height, refImage->width);
-	
-	for(unsigned p = 0; p < stepImage->width * stepImage->height; p++)
-		*(stepImage->data + p) = *(refImage->data + p); // copy pixel by pixel
+        unsigned c = x * grid.xCells;
+        unsigned r = y * grid.yCells;
 
-	for(unsigned t = 0; t < pixelPointTable->pointCount; t++){
-		unsigned offset = getPixOffset(pixelPointTable->points[t], stepImage);
-		const NebrTable* currentTable = nebrTables->tables + offset;
-		ColorStep colorStep = { *(stepImage->data + offset), NEBR_None };
+        
+        if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1))
+			*(checkerImg->data + p) = grid.color1;
+        else *(checkerImg->data + p) = grid.color2; 
+    }
 
-		// for(unsigned s = 0; s < MAX_COLOR_STEPS && (colorStep.color != NO_COLOR && colorStep.direction != NEBR_None); s++){
-		for(unsigned s = 0; s < MAX_COLOR_STEPS; s++){
-			colorStep = callback(currentTable, colorStep, s);
-			offset = neighbor_getOffset(refImage->width, offset, checkCanMove(currentTable->flags, colorStep.direction));
-			currentTable = nebrTables->tables + offset;
-			*(stepImage->data + offset) = colorStep.color;
+
+	return checkerImg;
+}
+
+Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned color1, unsigned color2){
+	if(side == SIDE_None) return solidImgOp(size, color1);
+
+	Rasteron_Image* gradientImg = RASTERON_ALLOC("gradient", size.height, size.width);
+
+	for(unsigned p = 0; p < size.width * size.height; p++){
+		double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
+
+		if(side == SIDE_Left) *(gradientImg->data + p) = colors_fuse(color1, color2, x);
+		else if(side == SIDE_Right) *(gradientImg->data + p) = colors_fuse(color1, color2, 1.0 - x);
+		if(side == SIDE_Top) *(gradientImg->data + p) = colors_fuse(color1, color2, y);
+		else if(side == SIDE_Bottom) *(gradientImg->data + p) = colors_fuse(color1, color2, 1.0 - y);
+		else {
+			double centerDist = pix_dist(p, ((size.width * size.height) / 2) + (size.width / 2), size.width) * (1.0 / (double)size.width);
+			*(gradientImg->data + p) = colors_fuse(color1, color2, centerDist);
 		}
 	}
 
-	delNebrTables(nebrTables);
-	return stepImage;
-} */
+
+	return gradientImg;
+}

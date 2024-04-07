@@ -149,3 +149,34 @@ Rasteron_Image* antialiasImgOp(ref_image_t refImage){
 
 	return cellwiseExtImgOp(refImage, antialias, 1);
 }
+
+
+/* Rasteron_Image* stepImgOp(ref_image_t refImage, const PixelPointTable* pixelPointTable, stepCallback callback){
+	if(refImage == NULL){
+		perror("Cannot create step image! Null pointer provided as input");
+		return NULL;
+	}
+
+	NebrTable_List* nebrTables = loadNebrTables(refImage);
+	Rasteron_Image* stepImage = RASTERON_ALLOC("step", refImage->height, refImage->width);
+	
+	for(unsigned p = 0; p < stepImage->width * stepImage->height; p++)
+		*(stepImage->data + p) = *(refImage->data + p); // copy pixel by pixel
+
+	for(unsigned t = 0; t < pixelPointTable->pointCount; t++){
+		unsigned offset = getPixOffset(pixelPointTable->points[t], stepImage);
+		const NebrTable* currentTable = nebrTables->tables + offset;
+		ColorStep colorStep = { *(stepImage->data + offset), NEBR_None };
+
+		// for(unsigned s = 0; s < MAX_COLOR_STEPS && (colorStep.color != NO_COLOR && colorStep.direction != NEBR_None); s++){
+		for(unsigned s = 0; s < MAX_COLOR_STEPS; s++){
+			colorStep = callback(currentTable, colorStep, s);
+			offset = neighbor_getOffset(refImage->width, offset, checkCanMove(currentTable->flags, colorStep.direction));
+			currentTable = nebrTables->tables + offset;
+			*(stepImage->data + offset) = colorStep.color;
+		}
+	}
+
+	delNebrTables(nebrTables);
+	return stepImage;
+} */

@@ -1,6 +1,7 @@
-#include <time.h>
-
 #include "Rasteron.h"
+
+#define OCTAVE_MAX 8
+#define OCTAVE_BLEND 0.5
 
 // Noise Image Operations
 
@@ -17,7 +18,7 @@ Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color
     return noiseImg;
 }
 
-Rasteron_Image* noiseImgOp_grid(ImageSize size, ColorGrid grid){
+Rasteron_Image* noiseExtImgOp_value(ImageSize size, ColorGrid grid, float (*callback)(float)){
 	assert(grid.xCells > 0 && grid.yCells > 0);
 
     Rasteron_Image* noiseImg = RASTERON_ALLOC("gradient_noise", size.height, size.width);
@@ -55,8 +56,8 @@ Rasteron_Image* noiseImgOp_grid(ImageSize size, ColorGrid grid){
 		}
 
 		// color determination
-		double xFrac = (double)(xOffset % xSwitch) / (double)xSwitch; // relative X offset inside grid cell
-		double yFrac = (double)(yOffset % ySwitch) / (double)ySwitch; // relative Y offset inside grid cell
+		double xFrac = callback((double)(xOffset % xSwitch) / (double)xSwitch); // relative X offset inside grid cell
+		double yFrac = callback((double)(yOffset % ySwitch) / (double)ySwitch); // relative Y offset inside grid cell
 
 		unsigned newColor = colors_blend(
 			colors_blend(*topLeft, *topRight, xFrac),
@@ -71,10 +72,27 @@ Rasteron_Image* noiseImgOp_grid(ImageSize size, ColorGrid grid){
     return noiseImg;
 }
 
-Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves){
-	assert(grid.xCells > 0 && grid.yCells > 0);
+static float valueNoiseMod(float value){ return value; }
+static float tiledNoiseMod(float value){ return value / value; }
+static float scratchNoiseMod(float value){ return (value > 0.5)? value - 0.25 : value + 0.25; }
 
-	Rasteron_Image* noiseImg = noiseImgOp_grid(size, grid);
+Rasteron_Image* noiseImgOp_value(ImageSize size, ColorGrid grid){
+	return noiseExtImgOp_value(size, grid, valueNoiseMod);
+}
+
+Rasteron_Image* noiseImgOp_tiled(ImageSize size, ColorGrid grid){
+	return noiseExtImgOp_value(size, grid, tiledNoiseMod);
+}
+
+Rasteron_Image* noiseImgOp_scratch(ImageSize size, ColorGrid grid){
+	return noiseExtImgOp_value(size, grid, scratchNoiseMod);
+}
+
+Rasteron_Image* noiseExtImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves, mixCallback callback){
+	assert(grid.xCells > 0 && grid.yCells > 0);
+	if(octaves > OCTAVE_MAX) octaves = OCTAVE_MAX;
+
+	Rasteron_Image* noiseImg = noiseImgOp_value(size, grid);
 
 	if(octaves > 1)
 		for(unsigned o = 0; o < octaves; o++){
@@ -82,34 +100,29 @@ Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short
 			for(unsigned p = 0; p < noiseImg->width * noiseImg->width; p++){
 				unsigned xOffset = (p % noiseImg->width) % octaveImg->width;
 				unsigned yOffset = (p / noiseImg->width) % octaveImg->height;
-				*(noiseImg->data + p) = colors_blend(*(noiseImg->data + p), *(octaveImg->data + (yOffset * octaveImg->width) + xOffset), 0.5); // blend factor is important
+				*(noiseImg->data + p) = callback(
+					*(noiseImg->data + p), 
+					*(octaveImg->data + (yOffset * octaveImg->width) + xOffset)
+				);
 			}
 			RASTERON_DEALLOC(octaveImg);
 		}
 
-	return noiseImg; // TODO: Return fluxNoise image
+	return noiseImg;
 }
 
-/* Rasteron_Image* noiseImgOp_pink(ImageSize size, ColorGrid grid){
-	assert(grid.xCells > 0 && grid.yCells > 0);
+static unsigned blendOctaves(unsigned color1, unsigned color2){ colors_blend(color1, color2, 0.5); }
+static unsigned fuseOctaves_low(unsigned color1, unsigned color2){ colors_fuse(color1, color2, 0.0); }
+static unsigned fuseOctaves_hi(unsigned color1, unsigned color2){ colors_fuse(color1, color2, 1.0); }
 
-	Rasteron_Image* noiseImg = noiseImgOp_grid(size, grid);
+Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves){
+	return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_low);
+}
 
-	double* levelPoints = (double*)malloc(sizeof(double) * (grid.xCells + 1) * (grid.yCells + 1));
+Rasteron_Image* noiseImgOp_low(ImageSize size, ColorGrid grid, unsigned short octaves){
+	return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_low);
+}
 
-	for(unsigned l = 0; l < (grid.xCells + 1) * (grid.yCells + 1); l++)
-		*(levelPoints + l) = rand() / (double)RAND_MAX;
-
-	for(unsigned p = 0; p < size.height * size.width; p++){
-		// TODO: Use level points to interpolate colors
-
-		double colorLevel = grayify8(*(noiseImg->data + p)) / 256.0;
-		colorLevel += ((rand() / (double)RAND_MAX) / 5.0) - 0.1; // adjust small amount up or down
-
-		*(noiseImg->data + p) = color_level(*(noiseImg->data + p), colorLevel);
-	}
-
-	free(levelPoints);
-
-	return noiseImg; // TODO: Return fluxNoise image
-} */
+Rasteron_Image* noiseImgOp_hi(ImageSize size, ColorGrid grid, unsigned short octaves){
+	return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_hi);
+}

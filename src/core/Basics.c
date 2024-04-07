@@ -81,20 +81,20 @@ Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage){
 	return resizeImage;
 }
 
-Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double factor){
+Rasteron_Image* cropImgOp(ref_image_t refImage, enum SIDE_Type type, double factor){
 	assert(refImage != NULL);
-	if(type == CROP_None || factor <= 0.0) return copyImgOp(refImage);
+	if(type == SIDE_None || type == SIDE_Radial || factor <= 0.0) return copyImgOp(refImage);
 
 	if(factor > 1.0) factor = 1.0 / factor; // ensure that crop factor is less than 1
 
-	unsigned height = (type != CROP_Bottom && type != CROP_Top)? refImage->height : (unsigned)(refImage->height * factor);
-	unsigned width = (type != CROP_Left && type != CROP_Right)? refImage->width : (unsigned)(refImage->width * factor);
+	unsigned height = (type != SIDE_Bottom && type != SIDE_Top)? refImage->height : (unsigned)(refImage->height * factor);
+	unsigned width = (type != SIDE_Left && type != SIDE_Right)? refImage->width : (unsigned)(refImage->width * factor);
 
 	Rasteron_Image* cropImage = RASTERON_ALLOC("crop", height, width);
 
 	unsigned offset;
-	if(type == CROP_Left) offset = refImage->width - width;
-	else if(type == CROP_Top) offset = (refImage->height - height) * width;
+	if(type == SIDE_Left) offset = refImage->width - width;
+	else if(type == SIDE_Top) offset = (refImage->height - height) * width;
 	else offset = 0;
 
 	for(unsigned c = 0; c < height; c++){
@@ -102,7 +102,7 @@ Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double fact
 			*(cropImage->data + (r + (c * width))) = *(refImage->data + offset); //  copy from source to destination
 			offset++;
 		}
-		if(type == CROP_Left || type == CROP_Right) offset += refImage->width - width; // skip to next row position
+		if(type == SIDE_Left || type == SIDE_Right) offset += refImage->width - width; // skip to next row position
 	}
 
 	return cropImage;

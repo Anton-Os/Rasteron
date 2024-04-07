@@ -96,7 +96,7 @@ typedef struct {
 // --------------------------------   Other    -------------------------------- //
 
 enum FLIP_Type { FLIP_None = -1, FLIP_Clock = 0, FLIP_Counter = 1, FLIP_Upside = 2 };
-enum CROP_Type { CROP_None = -1, CROP_Top = 0, CROP_Bottom = 1, CROP_Left = 2, CROP_Right = 3 };
+enum SIDE_Type { SIDE_None = -1, SIDE_Top = 0, SIDE_Bottom = 1, SIDE_Left = 2, SIDE_Right = 3, SIDE_Radial = 4 };
 
 #define RASTERON_TYPE_H
 #endif

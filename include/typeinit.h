@@ -32,8 +32,8 @@ NebrTable_List* loadNebrTables(ref_image_t refImage);
 void delNebrTables(NebrTable_List* nebrTables);
 
 nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height);
-unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr);
 uint32_t* neighbor_get(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr);
+unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr);
 
 
 

@@ -19,7 +19,7 @@ Rasteron_Image* loadImgOp(const char* fileName); // creates an image from a file
 Rasteron_Image* solidImgOp(ImageSize size, uint32_t color); // creates a solid color image
 Rasteron_Image* copyImgOp(ref_image_t refImage); // creates copy of image
 Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage); // resize image to size
-Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double factor); // creates cropped image
+Rasteron_Image* cropImgOp(ref_image_t refImage, enum SIDE_Type type, double factor); // creates cropped image
 Rasteron_Image* mirrorImgOp(ref_image_t refImage); // creates horizontal mirror image
 Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates flipped image
 
@@ -31,7 +31,7 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates
 Rasteron_Image* greyImgOp(ref_image_t refImage); // creates greyscale image
 Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter image
 Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
-
+// Rasteron_Image* stratifyImgOp(ref_image_t refImage, unsigned short levels);
 
 // --------------------------------   Mixing Operations    -------------------------------- //
 //
@@ -49,23 +49,29 @@ Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage); // 
 //
 //      Generates images based on various callbacks with inputs as data and outputs as colors
 
-Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable);
-
 Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback); // callbacks from input color
 Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback); // callbacks from x and y coordinates
 Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback callback); // callbacks to nearest point w distance
 Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback); // callbacks to 3 nearest points w distance
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
+Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable);
+Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned color1, unsigned color2);
+Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid);
+
 // --------------------------------  Noise Operations  -------------------------------- //
 //
 //      Operations for creating various types of noises
 
 Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2); // white noise generated between two values
-Rasteron_Image* noiseImgOp_grid(ImageSize size, ColorGrid grid); // gradient noise over grid
-Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves); // repeated noise at multiple levels
-// Rasteron_Image* noiseImgOp_pink(ImageSize size, ColorGrid grid, unsigned short octaves);
-// Rasteron_Image* noiseImgOp_blue(ImageSize size, ColorGrid grid, unsigned short octaves);
+Rasteron_Image* noiseImgOp_value(ImageSize size, ColorGrid grid); // imitation of perlin noise
+Rasteron_Image* noiseImgOp_tiled(ImageSize size, ColorGrid grid); // variation of value noise with discrete tiles
+Rasteron_Image* noiseImgOp_scratch(ImageSize size, ColorGrid grid); // variation of value noise with scratch effects
+
+Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of brown noise
+Rasteron_Image* noiseImgOp_low(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of pink noise
+Rasteron_Image* noiseImgOp_hi(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of blue noise
+
 
 // --------------------------------   Cellwise Opertaions    -------------------------------- //
 //

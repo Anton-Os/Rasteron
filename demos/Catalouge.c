@@ -73,7 +73,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): { 
-		canvasImg = patchingImgOp(20);
+		canvasImg = grassNoiseImgOp(mode, 1024, 1024);
 		bmap = createWinBmap(canvasImg); 
 	}
 	case (WM_CHAR): { if(wParam != 0){

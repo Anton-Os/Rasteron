@@ -143,6 +143,11 @@ uint32_t color_invert(uint32_t refColor){
 	return result;
 }
 
+uint32_t colors_diff(uint32_t color1, uint32_t color2){
+	if(color1 & 0x00FFFFFF > color2 & 0x00FFFFFF) return (color1 - color2) & (0xFF000000 & color1);
+	else return (color2 - color1) & (0xFF000000 & color2);
+}
+
 uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal){
 	if(bVal <= 0.0) return color1;
 	else if(bVal >= 1.0) return color2;

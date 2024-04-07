@@ -25,6 +25,7 @@ uint32_t fract32(uint32_t refColor, double frac); // produces an 32 bit color va
 uint32_t color_unique(); // produces reusable color identifier
 uint32_t color_invert(uint32_t refColor); // inverts red, green, and blue values
 uint32_t color_level(uint32_t color, double level); // levels color given brightness level
+uint32_t colors_diff(uint32_t color1, uint32_t color2); // subtracts smaller color from larger
 uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal); // blends values between two colors
 uint32_t colors_fuse(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
 
