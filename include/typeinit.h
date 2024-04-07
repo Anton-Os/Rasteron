@@ -15,7 +15,6 @@ void internal_dealloc_img(Rasteron_Image* image);
 
 ColorSwatch createSwatch(unsigned color, uint8_t deviation);
 
-
 // --------------------------------   PixelPoint & ColorPoint    -------------------------------- //
 
 void pixelPointToTable(PixelPointTable* table, double xFrac, double yFrac);

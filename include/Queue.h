@@ -20,8 +20,11 @@ typedef struct {
     Rasteron_Image** frameData; // data contents of frames
 } Rasteron_Queue;
 
-Rasteron_Queue* alloc_queue(const char* prefix, ImageSize size, unsigned frameCount);
-void dealloc_queue(Rasteron_Queue* queue);
+Rasteron_Queue* internal_alloc_queue(const char* prefix, ImageSize size, unsigned frameCount);
+#define RASTERON_QUEUE_ALLOC(prefix, size, frameCount) (Rasteron_Queue*)(internal_alloc_queue(prefix, size, frameCount))
+
+void internal_dealloc_queue(Rasteron_Queue* queue);
+#define RASTERON_QUEUE_DEALLOC(queue) (internal_dealloc_queue(queue))
 
 void addFrameAt(Rasteron_Queue* queue, ref_image_t refImage, unsigned short frameIndex); // copies target image into index of queue struct
 Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); // gets frame from an index within queue

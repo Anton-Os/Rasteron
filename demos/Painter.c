@@ -2,20 +2,12 @@
 
 #include "Experimental.h"
 
-/* unsigned checkerXY(double x, double y){
-    unsigned c = x * 2;
-	unsigned r = y * 2;
-
-	if(c % 2 == 0 && r % 2 == 0) return 0xFF111111;
-	else if(c % 2 == 0 && r % 2 == 1) return 0xFF111166; 
-	else if(c % 1 == 0 && r % 2 == 0) return 0xFF116611; 
-	else return 0xFF661111; 
-} */
-
 unsigned startCanvas(double x, double y){
-	// return (pow((x - 0.5), 2) > pow((y - 0.5), 2))? 0xFFFFFF00 : 0xFFFF00FF;
 	return (x + y > 0.8 && x + y < 1.2)? 0xFFFFFF00 : 0xFFFF00FF;
 }
+
+PixelPoint cursorPixPoint;
+PixelPointTable cursorPixTable;
 
 Rasteron_Image* canvasImg;
 char inputStr[1024];

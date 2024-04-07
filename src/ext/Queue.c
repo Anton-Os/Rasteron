@@ -6,7 +6,7 @@ static char frameName[1024];
 
 // --------------------------------  Queue Operations  -------------------------------- //
 
-Rasteron_Queue* alloc_queue(const char* prefix, ImageSize size, unsigned frameCount){
+Rasteron_Queue* internal_alloc_queue(const char* prefix, ImageSize size, unsigned frameCount){
     Rasteron_Queue* queue = (Rasteron_Queue*)malloc(sizeof(Rasteron_Queue));
     queue->prefix = prefix;
     queue->index = QUEUE_STATE_DEFAULT;
@@ -49,7 +49,7 @@ Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex){
     return *(queue->frameData + frameIndex);
 }
 
-void dealloc_queue(Rasteron_Queue* queue){
+void internal_dealloc_queue(Rasteron_Queue* queue){
     if(queue != NULL){
         for(unsigned f = 0; f < queue->frameCount; f++)
             RASTERON_DEALLOC(*(queue->frameData + f));
@@ -97,7 +97,7 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
     Rasteron_Image* iconImg = loadImgOp(iconPath);
     Rasteron_Image* sizedIconImg = resizeImgOp((ImageSize){ (unsigned)(menuSize.height * 0.8), (unsigned)(menuSize.width * 0.8) }, iconImg);
 
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("icon-btn", menuSize, 3);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("icon-btn", menuSize, 3);
     Rasteron_Image* noneImg = *(menuQueue->frameData + MENU_Off);
     Rasteron_Image* onImg = *(menuQueue->frameData + MENU_On);
     Rasteron_Image* offImg = *(menuQueue->frameData + MENU_None);
@@ -134,7 +134,7 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
 Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
     ImageSize menuSize = getUI_ImageSize(size);
 
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("check-btn", menuSize, 3);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("check-btn", menuSize, 3);
     Rasteron_Image* checkNoImg = *(menuQueue->frameData + MENU_None);
     Rasteron_Image* checkOnImg = *(menuQueue->frameData + MENU_On);
     Rasteron_Image* checkOffImg = *(menuQueue->frameData + MENU_Off);
@@ -174,7 +174,7 @@ Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short turns){
     unsigned shortSide = (menuSize.height > menuSize.width)? menuSize.width : menuSize.height;
     ImageSize dialSize = (ImageSize){ (unsigned)(shortSide * 0.9), (unsigned)(shortSide * 0.9) };
 
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("dial", menuSize, turns);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("dial", menuSize, turns);
 
     for(unsigned t = 0; t < turns; t++){
         Rasteron_Image* dialImg = *(menuQueue->frameData + t);
@@ -208,7 +208,7 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
 
     ImageSize menuSize = getUI_ImageSize(size);
     menuSize.width += (menuSize.width / 2) * (levels - 2); // scaling slider
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)alloc_queue("slider", menuSize, levels);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)internal_alloc_queue("slider", menuSize, levels);
 
     for(unsigned l = 0; l < levels; l++){
         Rasteron_Image* sliderImg = *(menuQueue->frameData + l);
@@ -240,10 +240,10 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
 
 #ifdef RASTERON_ENABLE_ANIM
 
-Rasteron_Queue* loadAnim_frame30(ImageSize size){ return (Rasteron_Queue*)alloc_queue("frame30", size, 30); } 
+Rasteron_Queue* loadAnim_frame30(ImageSize size){ return (Rasteron_Queue*)internal_alloc_queue("frame30", size, 30); } 
 
-Rasteron_Queue* loadAnim_frame60(ImageSize size){ return (Rasteron_Queue*)alloc_queue("frame60", size, 60); } 
+Rasteron_Queue* loadAnim_frame60(ImageSize size){ return (Rasteron_Queue*)internal_alloc_queue("frame60", size, 60); } 
 
-Rasteron_Queue* loadAnim_frame120(ImageSize size){ return (Rasteron_Queue*)alloc_queue("frame120", size, 120); } 
+Rasteron_Queue* loadAnim_frame120(ImageSize size){ return (Rasteron_Queue*)internal_alloc_queue("frame120", size, 120); } 
 
 #endif

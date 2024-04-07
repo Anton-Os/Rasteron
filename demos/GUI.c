@@ -6,9 +6,6 @@
 
 #include "Experimental.h"
 
-#define MQUEUE_COUNT 16
-// #define MQUEUE_COUNT 14
-
 Rasteron_Queue* masterQueue;
 
 unsigned long elapseSecs = 0;
@@ -33,7 +30,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
             GetClientRect(hwnd, &rect);
             InvalidateRect(hwnd, &rect, FALSE);
 
-            masterQueue->index = elapseSecs % MQUEUE_COUNT;
+            masterQueue->index = elapseSecs % 16;
             // printf("Elapse secs: %d, GUI index: %d \n", elapseSecs, masterQueue->index);
             bmap = createWinBmap(getFrameAt(masterQueue, masterQueue->index));
         }
@@ -45,7 +42,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 #endif
 
 int main(int argc, char** argv) {
-    masterQueue = alloc_queue("master", (ImageSize){ 256, 256}, MQUEUE_COUNT);
+    masterQueue = internal_alloc_queue("master", (ImageSize){ 256, 256 }, 16);
     
     Rasteron_Queue* mQueue_icon = loadUI_iconBtn(MENU_Large, "zoom_out");
     Rasteron_Queue* mQueue_button = loadUI_checkBtn(MENU_Large);
@@ -75,8 +72,8 @@ int main(int argc, char** argv) {
     // RASTERON_DEALLOC(bgImg);
     // RASTERON_DEALLOC(menuImg1); RASTERON_DEALLOC(menuImg2);
 
-    dealloc_queue(masterQueue);
-    dealloc_queue(mQueue_button); dealloc_queue(mQueue_dial); dealloc_queue(mQueue_slider);
+    RASTERON_QUEUE_DEALLOC(masterQueue);
+    RASTERON_QUEUE_DEALLOC(mQueue_button); RASTERON_QUEUE_DEALLOC(mQueue_dial); RASTERON_QUEUE_DEALLOC(mQueue_slider);
 
     return 0;
 }
