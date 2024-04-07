@@ -70,3 +70,26 @@ static unsigned equalFusion(unsigned color1, unsigned color2){ return blendColor
 Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2){
 	return mixingImgOp(image1, image2, equalFusion);
 }
+
+Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage){
+	Rasteron_Image* sizedDomainImg = (domainImage->width * domainImage->height != refImage->width * refImage->height) 
+		? resizeImgOp((ImageSize){ refImage->height, refImage->width }, domainImage) : copyImgOp(domainImage);
+	Rasteron_Image* warpImage = copyImgOp(refImage);
+
+
+	for(unsigned p = 0; p < warpImage->width * warpImage->height; p++){
+        unsigned refColor = *(sizedDomainImg->data + p);
+        double xOffset = (double)((refColor & RED_CHANNEL) >> 16) / 256.0;
+        double yOffset = (double)((refColor & GREEN_CHANNEL) >> 8) / 256.0;
+        double bLevel = (double)(refColor & BLUE_CHANNEL) / 256.0;
+
+        PixelPoint point = { xOffset, yOffset };
+
+        *(warpImage->data + p) = pixelPointColor(point, refImage); // adjust to x and y
+        if(bLevel > 0.0) *(warpImage->data + p) = levelColor(*(warpImage->data + p), bLevel); // adjust to brighness
+    }
+
+	dealloc_image(sizedDomainImg);
+
+	return warpImage;
+}

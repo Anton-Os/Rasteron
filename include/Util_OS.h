@@ -9,6 +9,7 @@ typedef void (*eventLoopCallback)(void);
  
 	#define WIN32_LEAN_AND_MEAN
 	#include <Windows.h>
+	#include <windowsx.h>
 
 	void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height); // Window creation
 	void eventLoop(eventLoopCallback callback); // Event loop

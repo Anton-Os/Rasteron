@@ -71,20 +71,45 @@ Rasteron_Image* noiseImgOp_grid(ImageSize size, ColorGrid grid){
     return noiseImg;
 }
 
-Rasteron_Image* noiseImgOp_warp(ImageSize size, const ColorGridTable* gridTable){
-	assert(gridTable->gridCount > 0);
+Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves){
+	assert(grid.xCells > 0 && grid.yCells > 0);
 
-	Rasteron_Image** noiseImages = (Rasteron_Image**)malloc(sizeof(Rasteron_Image*) * gridTable->gridCount);
-	
-	for(unsigned l = 0; l < gridTable->gridCount; l++)
-		*(noiseImages + l) = noiseImgOp_grid(size, gridTable->grids[l]);
+	Rasteron_Image* noiseImg = noiseImgOp_grid(size, grid);
 
-	Rasteron_Image* fbmNoiseImg = copyImgOp(*noiseImages);
-	for(unsigned l = 1; l < gridTable->gridCount; l++)
-		for(unsigned p = 0; p < fbmNoiseImg->width * fbmNoiseImg->height; p++)
-			*(fbmNoiseImg->data + p) = blendColors(*(fbmNoiseImg->data + p), *((*(noiseImages + l))->data + p), 0.5);
+	if(octaves > 1)
+		for(unsigned o = 0; o < octaves; o++){
+			Rasteron_Image* octaveImg = resizeImgOp((ImageSize){ noiseImg->height / pow(2, o + 1), noiseImg->width / pow(2, o + 1)}, noiseImg);
+			for(unsigned p = 0; p < noiseImg->width * noiseImg->width; p++){
+				unsigned xOffset = (p % noiseImg->width) % octaveImg->width;
+				unsigned yOffset = (p / noiseImg->width) % octaveImg->height;
+				*(noiseImg->data + p) = blendColors(*(noiseImg->data + p), *(octaveImg->data + (yOffset * octaveImg->width) + xOffset), 0.5); // blend factor is important
+			}
+			dealloc_image(octaveImg);
+		}
 
-	for(unsigned l = 0; l < gridTable->gridCount; l++)
-		dealloc_image(*(noiseImages + l));
-	free(noiseImages);
+	return noiseImg; // TODO: Return fluxNoise image
 }
+
+/* Rasteron_Image* noiseImgOp_pink(ImageSize size, ColorGrid grid){
+	assert(grid.xCells > 0 && grid.yCells > 0);
+
+	Rasteron_Image* noiseImg = noiseImgOp_grid(size, grid);
+
+	double* levelPoints = (double*)malloc(sizeof(double) * (grid.xCells + 1) * (grid.yCells + 1));
+
+	for(unsigned l = 0; l < (grid.xCells + 1) * (grid.yCells + 1); l++)
+		*(levelPoints + l) = rand() / (double)RAND_MAX;
+
+	for(unsigned p = 0; p < size.height * size.width; p++){
+		// TODO: Use level points to interpolate colors
+
+		double colorLevel = grayify8(*(noiseImg->data + p)) / 256.0;
+		colorLevel += ((rand() / (double)RAND_MAX) / 5.0) - 0.1; // adjust small amount up or down
+
+		*(noiseImg->data + p) = levelColor(*(noiseImg->data + p), colorLevel);
+	}
+
+	free(levelPoints);
+
+	return noiseImg; // TODO: Return fluxNoise image
+} */

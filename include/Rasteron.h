@@ -42,11 +42,14 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback); // creates effect per pixel from 2 images 
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2); // creates blended image
 Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2); // creates fused image
+Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage); // creates domain warped image
 
 
 // --------------------------------  Procedural Operations   -------------------------------- //
 //
 //      Generates images based on various callbacks with inputs as data and outputs as colors
+
+Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable);
 
 Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback); // callbacks from input color
 Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback); // callbacks from x and y coordinates
@@ -54,28 +57,24 @@ Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTabl
 Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback); // callbacks to 3 nearest points w distance
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
-Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable);
-// Rasteron_Image* turingPatternImgOp();
-
-
 // --------------------------------  Noise Operations  -------------------------------- //
 //
 //      Operations for creating various types of noises
 
 Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2); // white noise generated between two values
 Rasteron_Image* noiseImgOp_grid(ImageSize size, ColorGrid grid); // gradient noise over grid
-Rasteron_Image* noiseImgOp_warp(ImageSize size, ColorGrid grid, ColorGrid domain); // warping grid over domain
-
+Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves); // repeated noise at multiple levels
+// Rasteron_Image* noiseImgOp_pink(ImageSize size, ColorGrid grid, unsigned short octaves);
+// Rasteron_Image* noiseImgOp_blue(ImageSize size, ColorGrid grid, unsigned short octaves);
 
 // --------------------------------   Cellwise Opertaions    -------------------------------- //
 //
 //      For each pixel adjascent neighbors are determined and used to compute the final color
 
+Rasteron_Image* antialiasImgOp(ref_image_t refImage); // performs antialiasing operation
 Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
 Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
-Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations); // 2D generated image from 8 neighbors
-
-Rasteron_Image* antialiasImgOp(ref_image_t refImage); // performs antialiasing operation
+Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback); // 2D generated image from 8 neighbors
 
 
 

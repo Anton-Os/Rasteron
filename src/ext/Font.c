@@ -100,8 +100,11 @@ Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
 
 	TextSize sizeParams = getImageTextParams(textCanvasImg, textObj->fgColor);
 
-	Rasteron_Image* textImg = solidImgOp((ImageSize){ sizeParams.yMax - sizeParams.yMin, sizeParams.xMax - sizeParams.xMin }, textObj->bkColor); // regular
-
+	Rasteron_Image* textImg = solidImgOp(
+		(ImageSize){ sizeParams.yMax - sizeParams.yMin, sizeParams.xMax - sizeParams.xMin }, 
+		textObj->bkColor
+	);
+	
 	cropTextImgToSize(textCanvasImg, textImg, sizeParams);
 	
 	dealloc_image(textCanvasImg); 

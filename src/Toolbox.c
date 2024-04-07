@@ -84,12 +84,10 @@ uint32_t colorID(){ // TODO: CHANGE START TO WHITE
 
 	for(unsigned i = 0; i < invoke; i++){
 		if(i % 0xFF == 0xFE){
-			puts("Increment green color at 0xFE");
 			color |= 0x000000FF; // &= 0xFFFFFF00; // reset blue bit
 			color -= 0x100; // += 0x100; // increment green bit
 		}
 		if(i % 0xFFFF == 0xFFFE){
-			puts("Increment blue color at 0xFFFE");
 			color |= 0x0000FF00; // &= 0xFFFF00FF; // reset green bit
 			color -= 0x10000; // += 0x10000; // increment red bit
 		}
