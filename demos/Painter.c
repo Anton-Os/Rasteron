@@ -78,6 +78,6 @@ int main(int argc, char** argv){
     eventLoop(platformContext.display, inputCallback);
 #endif
 
-    dealloc_image(canvasImg); // cleanup
+    RASTERON_DEALLOC(canvasImg); // cleanup
     return 0;
 }

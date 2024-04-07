@@ -107,7 +107,7 @@ Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
 	
 	cropTextImgToSize(textCanvasImg, textImg, sizeParams);
 	
-	dealloc_image(textCanvasImg); 
+	RASTERON_DEALLOC(textCanvasImg); 
     FT_Done_Face(face);
 	return textImg;
 }
@@ -127,17 +127,17 @@ Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size){
 	Rasteron_Image* messageImg = solidImgOp((ImageSize){ totalHeight, maxWidth }, messageObj->bkColor);
 	Rasteron_Image* stagingImgOp = NULL;
 	for(unsigned t = 0; t < messageObj->messageCount; t++){ // TODO: Test this logic
-		if(stagingImgOp != NULL) dealloc_image(stagingImgOp);
+		if(stagingImgOp != NULL) RASTERON_DEALLOC(stagingImgOp);
 		double yOffset = (((double)t / ((double)messageObj->messageCount - 1.0)) * 2.0) - 1.0;
 		stagingImgOp = insertImgOp(*(textImages + t), messageImg, messageObj->alignment, yOffset);
-		dealloc_image(messageImg);
+		RASTERON_DEALLOC(messageImg);
 		messageImg = copyImgOp(stagingImgOp);
 	}
 
 
-	for(unsigned t = 0; t < messageObj->messageCount; t++) dealloc_image(*(textImages + t));
+	for(unsigned t = 0; t < messageObj->messageCount; t++) RASTERON_DEALLOC(*(textImages + t));
 	free(textImages);
 
-	dealloc_image(stagingImgOp);
+	RASTERON_DEALLOC(stagingImgOp);
 	return messageImg;
 }

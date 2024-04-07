@@ -5,13 +5,13 @@
 // Noise Image Operations
 
 Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2){
-    Rasteron_Image* noiseImg = alloc_image("white_noise", size.height, size.width);
+    Rasteron_Image* noiseImg = RASTERON_ALLOC("white_noise", size.height, size.width);
 
     // Noise Generation Logic
     double noiseVal;
     for (unsigned p = 0; p < noiseImg->width * noiseImg->height; p++){
         noiseVal = (double)rand() / (double)RAND_MAX;
-		*(noiseImg->data + p) = fuseColors(color1, color2, noiseVal);
+		*(noiseImg->data + p) = colors_fuse(color1, color2, noiseVal);
     }
 
     return noiseImg;
@@ -20,16 +20,16 @@ Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color
 Rasteron_Image* noiseImgOp_grid(ImageSize size, ColorGrid grid){
 	assert(grid.xCells > 0 && grid.yCells > 0);
 
-    Rasteron_Image* noiseImg = alloc_image("gradient_noise", size.height, size.width);
+    Rasteron_Image* noiseImg = RASTERON_ALLOC("gradient_noise", size.height, size.width);
 
 	// generating grid cells
     const unsigned xCellPoints = grid.xCells + 1; // includes leftmost and rightmost vertices +1
     const unsigned yCellPoints = grid.yCells + 1; // includes topmost and bottommost vertices +1
 
-	Rasteron_Image* gridImg = alloc_image("grid", yCellPoints, xCellPoints);
+	Rasteron_Image* gridImg = RASTERON_ALLOC("grid", yCellPoints, xCellPoints);
 	for (unsigned p = 0; p < gridImg->width * gridImg->height; p++) {
 		double noiseVal = (double)rand() / (double)RAND_MAX; // random value between 0 and 1
-		*(gridImg->data + p) = blendColors(grid.color1, grid.color2, noiseVal); // blending value between grid colors
+		*(gridImg->data + p) = colors_blend(grid.color1, grid.color2, noiseVal); // blending value between grid colors
 	}
 
 	// grid cell values
@@ -58,16 +58,16 @@ Rasteron_Image* noiseImgOp_grid(ImageSize size, ColorGrid grid){
 		double xFrac = (double)(xOffset % xSwitch) / (double)xSwitch; // relative X offset inside grid cell
 		double yFrac = (double)(yOffset % ySwitch) / (double)ySwitch; // relative Y offset inside grid cell
 
-		unsigned newColor = blendColors(
-			blendColors(*topLeft, *topRight, xFrac),
-			blendColors(*botLeft, *botRight, xFrac),
+		unsigned newColor = colors_blend(
+			colors_blend(*topLeft, *topRight, xFrac),
+			colors_blend(*botLeft, *botRight, xFrac),
 			yFrac
 		);
         
         *(noiseImg->data + p) = newColor;
     }
 
-	dealloc_image(gridImg);
+	RASTERON_DEALLOC(gridImg);
     return noiseImg;
 }
 
@@ -82,9 +82,9 @@ Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short
 			for(unsigned p = 0; p < noiseImg->width * noiseImg->width; p++){
 				unsigned xOffset = (p % noiseImg->width) % octaveImg->width;
 				unsigned yOffset = (p / noiseImg->width) % octaveImg->height;
-				*(noiseImg->data + p) = blendColors(*(noiseImg->data + p), *(octaveImg->data + (yOffset * octaveImg->width) + xOffset), 0.5); // blend factor is important
+				*(noiseImg->data + p) = colors_blend(*(noiseImg->data + p), *(octaveImg->data + (yOffset * octaveImg->width) + xOffset), 0.5); // blend factor is important
 			}
-			dealloc_image(octaveImg);
+			RASTERON_DEALLOC(octaveImg);
 		}
 
 	return noiseImg; // TODO: Return fluxNoise image
@@ -106,7 +106,7 @@ Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short
 		double colorLevel = grayify8(*(noiseImg->data + p)) / 256.0;
 		colorLevel += ((rand() / (double)RAND_MAX) / 5.0) - 0.1; // adjust small amount up or down
 
-		*(noiseImg->data + p) = levelColor(*(noiseImg->data + p), colorLevel);
+		*(noiseImg->data + p) = color_level(*(noiseImg->data + p), colorLevel);
 	}
 
 	free(levelPoints);

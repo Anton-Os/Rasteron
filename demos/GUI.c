@@ -72,8 +72,8 @@ int main(int argc, char** argv) {
     eventLoop(platformContext.display, NULL);
 #endif
 
-    // dealloc_image(bgImg);
-    // dealloc_image(menuImg1); dealloc_image(menuImg2);
+    // RASTERON_DEALLOC(bgImg);
+    // RASTERON_DEALLOC(menuImg1); RASTERON_DEALLOC(menuImg2);
 
     dealloc_queue(masterQueue);
     dealloc_queue(mQueue_button); dealloc_queue(mQueue_dial); dealloc_queue(mQueue_slider);

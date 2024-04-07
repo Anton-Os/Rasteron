@@ -15,7 +15,7 @@ void replaceFwdSlash(char* str){
 } */
 
 
-void bitSwitchRB(uint32_t* data, unsigned pixels) {
+void bitSwitch_RB(uint32_t* data, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
 		unsigned val = *(data + i);
 		unsigned res = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
@@ -23,7 +23,7 @@ void bitSwitchRB(uint32_t* data, unsigned pixels) {
 	}
 }
 
-void bitSwitchGB(uint32_t* data, unsigned pixels) {
+void bitSwitch_GB(uint32_t* data, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
 		unsigned val = *(data + i);
 		unsigned res = (val & 0xFF0000) + ((val & 0xFF) << 8) + ((val >> 8) & 0xFF);
@@ -31,7 +31,7 @@ void bitSwitchGB(uint32_t* data, unsigned pixels) {
 	}
 }
 
-void bitSwitchRG(uint32_t* data, unsigned pixels) {
+void bitSwitch_RG(uint32_t* data, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
 		unsigned val = *(data + i);
 		unsigned res = ((val & 0xFF00) << 8) + ((val >> 8) & 0xFF00) + (val & 0xFF);
@@ -39,7 +39,7 @@ void bitSwitchRG(uint32_t* data, unsigned pixels) {
 	}
 }
 
-uint8_t getLoChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+uint8_t channel_low(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask, shift;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
@@ -51,7 +51,7 @@ uint8_t getLoChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	return ((color1 & mask) < (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
 }
 
-uint8_t getHiChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+uint8_t channel_hi(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask, shift;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
@@ -63,11 +63,11 @@ uint8_t getHiChanBit(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	return ((color1 & mask) > (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
 }
 
-int8_t getLightDiff(uint32_t color1, uint32_t color2){ 
+/* int8_t getLightDiff(uint32_t color1, uint32_t color2){ 
 	return (int8_t)((int)grayify8(color1) - (int)grayify8(color2)); 
-}
+} */
 
-int8_t getChanDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+int8_t channel_diff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; break;
@@ -78,7 +78,7 @@ int8_t getChanDiff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	return (int8_t)((int)(color1 & mask) - (int)(color2 & mask));
 }
 
-uint32_t colorID(){ // TODO: CHANGE START TO WHITE
+uint32_t color_unique(){ // TODO: CHANGE START TO WHITE
 	static unsigned invoke = 0; // increases each invocation
 	unsigned color = 0xFFFFFFFF;
 
@@ -133,7 +133,7 @@ uint32_t fract32(uint32_t refColor, double frac){
 	return result;
 }
 
-uint32_t invertColor(uint32_t refColor){
+uint32_t color_invert(uint32_t refColor){
 	uint8_t alpha = (refColor & ALPHA_CHANNEL) >> 24;
 	uint8_t red = 0xFF - ((refColor & RED_CHANNEL) >> 16);
 	uint8_t green = 0xFF - ((refColor & GREEN_CHANNEL) >> 8);
@@ -143,7 +143,7 @@ uint32_t invertColor(uint32_t refColor){
 	return result;
 }
 
-uint32_t blendColors(uint32_t color1, uint32_t color2, double bVal){
+uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal){
 	if(bVal <= 0.0) return color1;
 	else if(bVal >= 1.0) return color2;
 	
@@ -153,10 +153,10 @@ uint32_t blendColors(uint32_t color1, uint32_t color2, double bVal){
 	return bColor1 + bColor2; 
 }
 
-uint32_t fuseColors(uint32_t color1, uint32_t color2, double iVal){
-	uint8_t loRedBit = getLoChanBit(color1, color2, CHANNEL_Red); uint8_t hiRedBit = getHiChanBit(color1, color2, CHANNEL_Red);
-    uint8_t loGreenBit = getLoChanBit(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = getHiChanBit(color1, color2, CHANNEL_Green);
-    uint8_t loBlueBit = getLoChanBit(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = getHiChanBit(color1, color2, CHANNEL_Blue);
+uint32_t colors_fuse(uint32_t color1, uint32_t color2, double iVal){
+	uint8_t loRedBit = channel_low(color1, color2, CHANNEL_Red); uint8_t hiRedBit = channel_hi(color1, color2, CHANNEL_Red);
+    uint8_t loGreenBit = channel_low(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = channel_hi(color1, color2, CHANNEL_Green);
+    uint8_t loBlueBit = channel_low(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = channel_hi(color1, color2, CHANNEL_Blue);
 
 	uint32_t loColor = (0 << 24) + (loRedBit << 16) + (loGreenBit << 8) + loBlueBit;
 	if(iVal <= 0.0) return loColor;
@@ -172,16 +172,16 @@ uint32_t fuseColors(uint32_t color1, uint32_t color2, double iVal){
 	return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
 }
 
-uint32_t levelColor(uint32_t color, double level){
+uint32_t color_level(uint32_t color, double level){
 	if(level >= 1.0) return 0xFFFFFFFF;
 	else if(level <= 0.0) return 0xFF000000;
 	else if(level == 0.5) return color;
-	else if(level > 0.5) return blendColors(color, 0xFFFFFFFF, (level - 0.5) * 2.0);
-	else if(level < 0.5) return blendColors(color, 0xFF000000, (0.5 - level) * 2.0);
+	else if(level > 0.5) return colors_blend(color, 0xFFFFFFFF, (level - 0.5) * 2.0);
+	else if(level < 0.5) return colors_blend(color, 0xFF000000, (0.5 - level) * 2.0);
 	else return color;
 }
 
-double pixelDistance(unsigned p1, unsigned p2, unsigned imageWidth){
+double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth){
 	long int x1 = p1 % imageWidth;
 	long int y1 = p1 / imageWidth;
 	long int x2 = p2 % imageWidth;
@@ -193,7 +193,7 @@ double pixelDistance(unsigned p1, unsigned p2, unsigned imageWidth){
 	return (double)sqrt((l * l) + (w * w));
 }
 
-unsigned pixelPointOffset(PixelPoint pixPoint, ref_image_t refImage){
+unsigned pixPoint_offset(PixelPoint pixPoint, ref_image_t refImage){
 	unsigned xOffset; // clamping X
 	if(pixPoint.x <= 0.0) xOffset = 0;
 	else if(pixPoint.x >= 1.0) xOffset = refImage->width - 1;
@@ -208,11 +208,11 @@ unsigned pixelPointOffset(PixelPoint pixPoint, ref_image_t refImage){
 	return pixIndex;
 }
 
-unsigned pixelPointColor(PixelPoint pixPos, ref_image_t refImage){
-	return *(refImage->data + pixelPointOffset(pixPos, refImage));
+unsigned pixPoint_color(PixelPoint pixPos, ref_image_t refImage){
+	return *(refImage->data + pixPoint_offset(pixPos, refImage));
 }
 
-unsigned pixelPointOffset_cursor(PixelPoint pixPoint, ref_image_t refImage){
+unsigned pixPoint_cursorOffset(PixelPoint pixPoint, ref_image_t refImage){
 	double x; // clamping X
 	if(pixPoint.x <= -1.0) x = -1.0;
 	else if(pixPoint.x >= 1.0) x = 1.0;
@@ -225,9 +225,9 @@ unsigned pixelPointOffset_cursor(PixelPoint pixPoint, ref_image_t refImage){
 	y *= -1.0; // Y value needs to be flipped
 
 	PixelPoint adjPoint = (PixelPoint){ (x / 2) + 0.5, (y / 2) + 0.5 };
-	return pixelPointOffset(adjPoint, refImage);
+	return pixPoint_offset(adjPoint, refImage);
 }
 
-unsigned pixelPointColor_cursor(PixelPoint cursorPos, ref_image_t refImage){
-	return *(refImage->data + pixelPointOffset_cursor(cursorPos, refImage));
+unsigned pixPoint_cursorColor(PixelPoint cursorPos, ref_image_t refImage){
+	return *(refImage->data + pixPoint_cursorOffset(cursorPos, refImage));
 }

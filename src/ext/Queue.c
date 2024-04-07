@@ -36,7 +36,7 @@ Rasteron_Queue* alloc_queue(const char* prefix, ImageSize size, unsigned frameCo
 
 void addFrameAt(Rasteron_Queue* queue, const Rasteron_Image *const refImage, unsigned short frameIndex){
 	if(frameIndex > queue->frameCount) frameIndex = frameIndex % queue->frameCount; // prevent out-of-bounds
-    dealloc_image(*(queue->frameData + frameIndex)); // deleting old image if exists
+    RASTERON_DEALLOC(*(queue->frameData + frameIndex)); // deleting old image if exists
 
     queue->index = frameIndex;
     *(queue->frameData + frameIndex) = copyImgOp(refImage); // single line copy
@@ -52,7 +52,7 @@ Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex){
 void dealloc_queue(Rasteron_Queue* queue){
     if(queue != NULL){
         for(unsigned f = 0; f < queue->frameCount; f++)
-            dealloc_image(*(queue->frameData + f));
+            RASTERON_DEALLOC(*(queue->frameData + f));
         free(queue->frameData);
         free(queue);
         queue = NULL;
@@ -116,7 +116,7 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
         else {
             unsigned iconColor = *(sizedIconImg->data + iconPix);
             
-            *(offImg->data + p) = (iconColor != NO_COLOR)? _color_def : blendColors(_color_bk, _color_fg, 0.75);
+            *(offImg->data + p) = (iconColor != NO_COLOR)? _color_def : colors_blend(_color_bk, _color_fg, 0.75);
             *(onImg->data + p) = (iconColor != NO_COLOR)? _color_pos : _color_fg;
             *(noneImg->data + p) = (iconColor != NO_COLOR)? _color_neg : _color_fg;
 
@@ -124,8 +124,8 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
         }
     }
 
-    dealloc_image(iconImg);
-    dealloc_image(sizedIconImg);
+    RASTERON_DEALLOC(iconImg);
+    RASTERON_DEALLOC(sizedIconImg);
 
     // fclose(iconsFile);
     return menuQueue;
@@ -151,7 +151,7 @@ Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
             *(checkOffImg->data + p) = _color_bk;
         }
         else {
-            *(checkNoImg->data + p) = blendColors(_color_bk, _color_fg, 0.75);
+            *(checkNoImg->data + p) = colors_blend(_color_bk, _color_fg, 0.75);
             *(checkOnImg->data + p) = _color_fg;
             *(checkOffImg->data + p) = _color_fg;
 

@@ -34,7 +34,7 @@ Rasteron_Sprite* loadSprite(const Rasteron_Image* refImage){
 }
 
 void dealloc_sprite(Rasteron_Sprite* sprite){
-	if(sprite->image != NULL) dealloc_image(sprite->image);
+	if(sprite->image != NULL) RASTERON_DEALLOC(sprite->image);
 	if(sprite != NULL) free(sprite);
 	sprite = NULL;
 }

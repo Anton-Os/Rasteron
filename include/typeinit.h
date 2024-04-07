@@ -4,11 +4,11 @@
 
 // --------------------------------   Image    -------------------------------- //
 
-Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width);
-#define RASTERON_ALLOC(name, height, width) (Rasteron_Image*)(alloc_image(name, height, width))
+Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width);
+#define RASTERON_ALLOC(name, height, width) (Rasteron_Image*)(internal_alloc_img(name, height, width))
 
-void dealloc_image(Rasteron_Image* image);
-#define RASTERON_DEALLOC(image) (dealloc_image(image))
+void internal_dealloc_img(Rasteron_Image* image);
+#define RASTERON_DEALLOC(image) (internal_dealloc_img(image))
 
 
 // --------------------------------   Swatch    -------------------------------- //
@@ -32,9 +32,9 @@ typedef unsigned (*colorPointCallback)(double x, double y); // return NO_COLOR o
 NebrTable_List* loadNebrTables(ref_image_t refImage);
 void delNebrTables(NebrTable_List* nebrTables);
 
-nebrFlags checkExistNebrs(uint32_t index, uint32_t width, uint32_t height);
-unsigned findNeighborOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr);
-uint32_t* findNeighbor(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr);
+nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height);
+unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr);
+uint32_t* neighbor_get(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr);
 
 
 

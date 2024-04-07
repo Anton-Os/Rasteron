@@ -6,7 +6,7 @@ static Rasteron_Image* cellwiseImgOp_nebr8(ref_image_t refImage, nebrCallback8 c
 	assert(refImage != NULL);
 
 	NebrTable_List* nebrTables = loadNebrTables(refImage);
-	Rasteron_Image* patternImg = alloc_image("pattern-nebr", refImage->height, refImage->width);
+	Rasteron_Image* patternImg = RASTERON_ALLOC("pattern-nebr", refImage->height, refImage->width);
 
 	for (unsigned p = 0; p < refImage->height * refImage->width; p++) {
 		NebrTable* currentTable = nebrTables->tables + p;
@@ -53,18 +53,18 @@ static Rasteron_Image* cellwiseImgOp_nebr8(ref_image_t refImage, nebrCallback8 c
 Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback){
 	assert(refImage != NULL);
 
-	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
+	Rasteron_Image* stagingImg = RASTERON_ALLOC("staging", refImage->height, refImage->width);
 		for (unsigned r = 0; r < refImage->width; r++)
 			*(stagingImg->data + r) = *(refImage->data + r); // copy first row into staging image
-	Rasteron_Image* patternImg = alloc_image("pattern-horz", refImage->height, refImage->width);
+	Rasteron_Image* patternImg = RASTERON_ALLOC("pattern-horz", refImage->height, refImage->width);
 
 	for(unsigned r = 0; r < stagingImg->height; r++)
 		for(unsigned c = 0; c < stagingImg->width; c++){
 			unsigned p = (r * stagingImg->width) + c;
 
 			unsigned target = *(stagingImg->data + p);
-			unsigned right = (c < stagingImg->width - 1) ? *findNeighbor(stagingImg, p, NEBR_Right) : NO_COLOR;
-			unsigned left = (c > 0) ? *findNeighbor(stagingImg, p, NEBR_Left) : NO_COLOR;
+			unsigned right = (c < stagingImg->width - 1) ? *neighbor_get(stagingImg, p, NEBR_Right) : NO_COLOR;
+			unsigned left = (c > 0) ? *neighbor_get(stagingImg, p, NEBR_Left) : NO_COLOR;
 
 			unsigned nebrs[] = { right, left };
 
@@ -76,25 +76,25 @@ Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback){
 				*(stagingImg->data + p + stagingImg->width) = *(patternImg->data + p);
 		}
 
-	dealloc_image(stagingImg);
+	RASTERON_DEALLOC(stagingImg);
 	return patternImg;
 }
 
 Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback){
 	assert(refImage != NULL);
 
-	Rasteron_Image* stagingImg = alloc_image("staging", refImage->height, refImage->width);
+	Rasteron_Image* stagingImg = RASTERON_ALLOC("staging", refImage->height, refImage->width);
 	for (unsigned c = 0; c < refImage->height; c++)
 		*(stagingImg->data + (c * refImage->width)) = *(refImage->data + (c * refImage->width)); // copy first column
-	Rasteron_Image* patternImg = alloc_image("pattern-vert", refImage->height, refImage->width);
+	Rasteron_Image* patternImg = RASTERON_ALLOC("pattern-vert", refImage->height, refImage->width);
 
 	for (unsigned c = 0; c < stagingImg->width; c++) {
 		for (unsigned r = 0; r < stagingImg->height; r++) {
 			unsigned p = (r * stagingImg->width) + c;
 
 			unsigned target = *(stagingImg->data + p);
-			unsigned bot = (r < refImage->height - 1)? *findNeighbor(stagingImg, p, NEBR_Bot) : NO_COLOR;
-			unsigned top = (r > 0) ? *findNeighbor(stagingImg, p, NEBR_Top) : NO_COLOR;
+			unsigned bot = (r < refImage->height - 1)? *neighbor_get(stagingImg, p, NEBR_Bot) : NO_COLOR;
+			unsigned top = (r > 0) ? *neighbor_get(stagingImg, p, NEBR_Top) : NO_COLOR;
 
 			unsigned nebrs[] = { bot, top };
 
@@ -107,7 +107,7 @@ Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback){
 		}
 	}
 
-	dealloc_image(stagingImg);
+	RASTERON_DEALLOC(stagingImg);
 	return patternImg;
 }
 
@@ -115,7 +115,7 @@ Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback){
 Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
 	assert(refImage != NULL);
 	
-	Rasteron_Image* patternImage = alloc_image("staging", refImage->height, refImage->width);
+	Rasteron_Image* patternImage = RASTERON_ALLOC("staging", refImage->height, refImage->width);
 	for (unsigned p = 0; p < refImage->width * refImage->height; p++)
 		*(patternImage->data + p) = *(refImage->data + p); // copy pixels from original image
 
@@ -126,7 +126,7 @@ Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, u
 		stagingImg = cellwiseImgOp_nebr8(patternImage, callback);
 		for (unsigned p = 0; p < stagingImg->width * stagingImg->height; p++)
 			*(patternImage->data + p) = *(stagingImg->data + p); // copy pixels from pattern image
-		dealloc_image(stagingImg);
+		RASTERON_DEALLOC(stagingImg);
 		i++;
 	} while (i < iterations);
 
@@ -138,7 +138,7 @@ unsigned antialias(unsigned target, unsigned neighbors[8]){
 
 	for(unsigned n = 1; n < 8; n++)
 		if(neighbors[n] != NO_COLOR)
-			finalColor = blendColors(finalColor, neighbors[n], 0.5F);
+			finalColor = colors_blend(finalColor, neighbors[n], 0.5F);
 		else continue;
 	
 	return finalColor;

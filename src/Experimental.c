@@ -39,9 +39,9 @@ Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){
 
     Rasteron_Image* finalImg = resizeImgOp((ImageSize){ 512, 512 }, flipImg); // attempting to resize
 
-    dealloc_image(loadedImg);
-    dealloc_image(cropImgX, cropImgY);
-    dealloc_image(flipImg);
+    RASTERON_DEALLOC(loadedImg);
+    RASTERON_DEALLOC(cropImgX, cropImgY);
+    RASTERON_DEALLOC(flipImg);
 
     return finalImg;
 }
@@ -67,9 +67,9 @@ Rasteron_Image* nestboxesImgOp(double x, double y){
     Rasteron_Image* outerImg = solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00);
     Rasteron_Image* flipImg = insertImgOp(combineImgs[7], outerImg, x, y);
 
-    for(unsigned i = 0; i < 9; i++) dealloc_image(nestedImgs[i]);
-    for(unsigned i = 0; i < 8; i++) dealloc_image(combineImgs[i]);  
-    dealloc_image(outerImg);
+    for(unsigned i = 0; i < 9; i++) RASTERON_DEALLOC(nestedImgs[i]);
+    for(unsigned i = 0; i < 8; i++) RASTERON_DEALLOC(combineImgs[i]);  
+    RASTERON_DEALLOC(outerImg);
 
     return flipImg;
 }
@@ -94,7 +94,7 @@ Rasteron_Image* lensesImgOp(enum CHANNEL_Type channel){
         ? filterImgOp(loadedImg, channel) 
         : recolorImgOp(loadedImg, distill);
 
-    dealloc_image(loadedImg);
+    RASTERON_DEALLOC(loadedImg);
 
     return flipImg; 
 }
@@ -105,25 +105,25 @@ static unsigned gradientMix(unsigned color1, unsigned color2){
 
 Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2){ 
     Rasteron_Image* gradientImgs[5]= { 
-        alloc_image("gradient-left", 1024, 1024),
-        alloc_image("gradient-right", 1024, 1024),
-        alloc_image("gradient-top", 1024, 1024),
-        alloc_image("gradient-bottom", 1024, 1024),
-        alloc_image("gradient-center", 1024, 1024)
+        RASTERON_ALLOC("gradient-left", 1024, 1024),
+        RASTERON_ALLOC("gradient-right", 1024, 1024),
+        RASTERON_ALLOC("gradient-top", 1024, 1024),
+        RASTERON_ALLOC("gradient-bottom", 1024, 1024),
+        RASTERON_ALLOC("gradient-center", 1024, 1024)
     };
 
     for(unsigned p = 0; p < 1024 * 1024; p++){
 		double x = (1.0 / (double)1024) * (unsigned)(p % 1024);
 		double y = (1.0 / (double)1024) * (double)(p / 1024.0);
 
-        *(gradientImgs[0]->data + p) = fuseColors(0xFFFFFFFF, color1, x);
-        *(gradientImgs[1]->data + p) = fuseColors(0xFFFFFFFF, color2, 1.0 - x);
-        *(gradientImgs[2]->data + p) = fuseColors(0xFFFFFFFF, invertColor(color1), 1.0 - y);
-        *(gradientImgs[3]->data + p) = fuseColors(0xFFFFFFFF, invertColor(color2), y);
+        *(gradientImgs[0]->data + p) = colors_fuse(0xFFFFFFFF, color1, x);
+        *(gradientImgs[1]->data + p) = colors_fuse(0xFFFFFFFF, color2, 1.0 - x);
+        *(gradientImgs[2]->data + p) = colors_fuse(0xFFFFFFFF, color_invert(color1), 1.0 - y);
+        *(gradientImgs[3]->data + p) = colors_fuse(0xFFFFFFFF, color_invert(color2), y);
 
         // double centerDist = sqrt((fabs(0.5 - x) * fabs(0.5 - x)) + (fabs(0.5 - y) * fabs(0.5 - y)));
-        double centerDist = pixelDistance(p, ((1024 * 1024) / 2) + (1024 / 2), 1024) * (1.0 / (double)1024);
-        *(gradientImgs[4]->data + p) = fuseColors(0xFFFFFFFF, 0xFF000000, centerDist);
+        double centerDist = pix_dist(p, ((1024 * 1024) / 2) + (1024 / 2), 1024) * (1.0 / (double)1024);
+        *(gradientImgs[4]->data + p) = colors_fuse(0xFFFFFFFF, 0xFF000000, centerDist);
 	}
 
     Rasteron_Image* mixImg1 = mixingImgOp(gradientImgs[0], gradientImgs[1], gradientMix);
@@ -139,8 +139,8 @@ Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2){
         default: hypnosisImg = mixingImgOp(gradientImgs[4], gradientImgs[4], gradientMix); break;
     }
     
-    for(unsigned g = 0; g < 5; g++) dealloc_image(gradientImgs[g]);
-    dealloc_image(mixImg1); dealloc_image(mixImg2); dealloc_image(mixImg3);
+    for(unsigned g = 0; g < 5; g++) RASTERON_DEALLOC(gradientImgs[g]);
+    RASTERON_DEALLOC(mixImg1); RASTERON_DEALLOC(mixImg2); RASTERON_DEALLOC(mixImg3);
 
     return hypnosisImg; 
 } 
@@ -170,8 +170,8 @@ Rasteron_Image* grassNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells){
         default: finalImg = blendImgOp(blendImg, blendImg); break;
     }
 
-    dealloc_image(noiseImg1); dealloc_image(noiseImg2); dealloc_image(noiseImg3);
-    dealloc_image(blendImg);
+    RASTERON_DEALLOC(noiseImg1); RASTERON_DEALLOC(noiseImg2); RASTERON_DEALLOC(noiseImg3);
+    RASTERON_DEALLOC(blendImg);
 
     return finalImg;
 }
@@ -206,8 +206,8 @@ static unsigned gameOfLife(unsigned color, unsigned neighbors[8]){
 }
 
 static unsigned lifeEnhance(unsigned color){
-    if(color == 0xFFFF0000 || color == 0xFFFF00FF) return blendColors(color, 0xFF333333, rand() / (double)RAND_MAX);
-    else if(color == 0xFFEEEEEE || color == 0xFF00FFFF) return blendColors(color, 0xFF00FF00, rand() / (double)RAND_MAX);
+    if(color == 0xFFFF0000 || color == 0xFFFF00FF) return colors_blend(color, 0xFF333333, rand() / (double)RAND_MAX);
+    else if(color == 0xFFEEEEEE || color == 0xFF00FFFF) return colors_blend(color, 0xFF00FF00, rand() / (double)RAND_MAX);
     else return NO_COLOR;
 }
 
@@ -230,8 +230,8 @@ Rasteron_Image* gameOfLifeImgOp(int iterations){
     
     Rasteron_Image* gameOfLifeImg = recolorImgOp(resizeImg, lifeEnhance);
  
-    dealloc_image(solidImg); dealloc_image(seedImg);
-    dealloc_image(growthImg); dealloc_image(conwayImg); dealloc_image(resizeImg);
+    RASTERON_DEALLOC(solidImg); RASTERON_DEALLOC(seedImg);
+    RASTERON_DEALLOC(growthImg); RASTERON_DEALLOC(conwayImg); RASTERON_DEALLOC(resizeImg);
 
     return gameOfLifeImg; 
 }
@@ -279,8 +279,8 @@ Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){
     Rasteron_Image* messageImg = messageImgOp(&messageObj, FONT_SIZE_LARGE);
     Rasteron_Image* finalImg = antialiasImgOp(messageImg);
 
-    // dealloc_image(textImg);
-    dealloc_image(messageImg);
+    // RASTERON_DEALLOC(textImg);
+    RASTERON_DEALLOC(messageImg);
 
     return finalImg; 
 }
@@ -296,8 +296,8 @@ static unsigned zigzag(double x, double y){
     xDiff *= xDiff;
     yDiff *= yDiff;
 
-    if(xDiff > yDiff) return blendColors(0xFFFF00FF, 0xFFEEEEEE, xDiff - yDiff);
-    else return blendColors(0xFF00FF00, 0xFF111111, yDiff - xDiff);
+    if(xDiff > yDiff) return colors_blend(0xFFFF00FF, 0xFFEEEEEE, xDiff - yDiff);
+    else return colors_blend(0xFF00FF00, 0xFF111111, yDiff - xDiff);
 }
 
 Rasteron_Image* mosaicImgOp(double z1, double z2){
@@ -323,8 +323,8 @@ Rasteron_Image* interferenceImgOp(unsigned short inc, unsigned short dec){
     Rasteron_Image* interferenceImg1 = cellwiseRowImgOp(patternImg, interference);
     Rasteron_Image* interferenceImg2 = cellwiseColImgOp(interferenceImg1, interference);
 
-    dealloc_image(interferenceImg1);
-    dealloc_image(patternImg);
+    RASTERON_DEALLOC(interferenceImg1);
+    RASTERON_DEALLOC(patternImg);
 
     return interferenceImg2;
 }
@@ -333,8 +333,8 @@ static unsigned perturb(double x, double y){
     unsigned perturbColor1 = 0xFF00FF00;
     unsigned perturbColor2 = 0xFFFF0000;
 
-    return blendColors(0xFFFF0000, 0xFF00FF00, (x * 2) * (y * 2)) | 0x88;
-    // return blendColors(perturbColor1, perturbColor2, x * y) | 0x33;
+    return colors_blend(0xFFFF0000, 0xFF00FF00, (x * 2) * (y * 2)) | 0x88;
+    // return colors_blend(perturbColor1, perturbColor2, x * y) | 0x33;
 }
 
 Rasteron_Image* perturbImgOp(double xCenter, double yCenter){
@@ -357,8 +357,8 @@ Rasteron_Image* perturbImgOp(double xCenter, double yCenter){
 
     Rasteron_Image* perturbImg = warpingImgOp(crossImg, coordImg); // solidImgOp((ImageSize){ 1024, 1024 }, 0xFF888888);
 
-    dealloc_image(coordImg);    
-    dealloc_image(crossImg);
+    RASTERON_DEALLOC(coordImg);    
+    RASTERON_DEALLOC(crossImg);
 
     return perturbImg;
 }
@@ -371,16 +371,16 @@ Rasteron_Image* ballingImgOp(double size){
     Rasteron_Image* ballingImg = solidImgOp((ImageSize){ 1024, 1024 }, 0xFF333333);
 
     for(unsigned p = 0; p < 1024 * 1024; p++){
-        double torusDist = pixelDistance(p, pixelPointOffset((PixelPoint){ torusX, torusY }, ballingImg), 1024);
-        double blobDist1 = pixelDistance(p, pixelPointOffset((PixelPoint){ blobX1, blobY1 }, ballingImg), 1024);
-        double blobDist2 = pixelDistance(p, pixelPointOffset((PixelPoint){ blobX2, blobY2 }, ballingImg), 1024);
+        double torusDist = pix_dist(p, pixPoint_offset((PixelPoint){ torusX, torusY }, ballingImg), 1024);
+        double blobDist1 = pix_dist(p, pixPoint_offset((PixelPoint){ blobX1, blobY1 }, ballingImg), 1024);
+        double blobDist2 = pix_dist(p, pixPoint_offset((PixelPoint){ blobX2, blobY2 }, ballingImg), 1024);
 
         if(sin(torusDist) * size < (300.0 * size)) 
-            *(ballingImg->data + p) = blendColors(0xFF333333, 0xFFEEEEEE, (torusDist - 150.0) / (300.00 * size));
+            *(ballingImg->data + p) = colors_blend(0xFF333333, 0xFFEEEEEE, (torusDist - 150.0) / (300.00 * size));
         if(blobDist1 < (200.0 * size)) 
-            *(ballingImg->data + p) = blendColors(0xFF00EE00, 0xFF333333, (blobDist1 - 50.0) / (200.0 * size));
+            *(ballingImg->data + p) = colors_blend(0xFF00EE00, 0xFF333333, (blobDist1 - 50.0) / (200.0 * size));
         if(blobDist2 < (100.0 * size)) 
-            *(ballingImg->data + p) = blendColors(0xFF0000EE, 0xFF333333, (blobDist2 - 50.0) / (100.0 * size));
+            *(ballingImg->data + p) = colors_blend(0xFF0000EE, 0xFF333333, (blobDist2 - 50.0) / (100.0 * size));
     }
 
     return ballingImg;
@@ -401,10 +401,10 @@ Rasteron_Image* stratifyImgOp(unsigned short levels){
             if(fabs((l * (1.0 / levels)) - colorLevel) < fabs(adjustLevel - colorLevel))
                 adjustLevel = l * (1.0 / levels);
 
-        *(stratifyImg->data + p) = levelColor(*(stratifyImg->data + p), adjustLevel);
+        *(stratifyImg->data + p) = color_level(*(stratifyImg->data + p), adjustLevel);
     }
 
-    dealloc_image(loadedImg);
+    RASTERON_DEALLOC(loadedImg);
 
     return stratifyImg;
 }

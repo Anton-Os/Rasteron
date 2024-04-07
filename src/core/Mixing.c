@@ -26,7 +26,7 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 		}
 	}
 
-	Rasteron_Image* insertImg = alloc_image("insert", outerImg->height, outerImg->width);
+	Rasteron_Image* insertImg = RASTERON_ALLOC("insert", outerImg->height, outerImg->width);
 	unsigned ip = 0; // tracks inner image pixel position
 
 	for(unsigned op = 0; op < outerImg->width * outerImg->height; op++){
@@ -36,7 +36,7 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 			uint8_t iAlphaVal = (*(innerImg->data + ip) & ALPHA_CHANNEL) >> 24;
 			if(iAlphaVal == 0xFF) 
 				*(insertImg->data + op) = *(innerImg->data + ip);
-			// else *(insertImg->data + op) = blendColors(*(innerImg->data + ip), *(outerImg->data + op), (double)(0xFF / iAlphaVal) );
+			// else *(insertImg->data + op) = colors_blend(*(innerImg->data + ip), *(outerImg->data + op), (double)(0xFF / iAlphaVal) );
 			ip++;
 		} else *(insertImg->data + op) = *(outerImg->data + op);
 	}
@@ -52,20 +52,20 @@ Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback 
 	Rasteron_Image* sizedImg2 = (image2->width * image2->height > image1->width * image1->height)
 		? resizeImgOp((ImageSize){image1->height, image1->width}, image1) : copyImgOp(image2);
 
-	Rasteron_Image* mixImage = alloc_image("mixing", sizedImg1->height, sizedImg1->width);
+	Rasteron_Image* mixImage = RASTERON_ALLOC("mixing", sizedImg1->height, sizedImg1->width);
 	for(unsigned p = 0; p < sizedImg1->width * sizedImg1->height; p++)
 		*(mixImage->data + p) = callback(*(sizedImg1->data + p), *(sizedImg2->data + p));
 
 	return mixImage;
 }
 
-static unsigned equalBlend(unsigned color1, unsigned color2){ return blendColors(color1, color2, 0.5); }
+static unsigned equalBlend(unsigned color1, unsigned color2){ return colors_blend(color1, color2, 0.5); }
 
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2){
 	return mixingImgOp(image1, image2, equalBlend);
 }
 
-static unsigned equalFusion(unsigned color1, unsigned color2){ return blendColors(color1, color2, 0.5); }
+static unsigned equalFusion(unsigned color1, unsigned color2){ return colors_blend(color1, color2, 0.5); }
 
 Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2){
 	return mixingImgOp(image1, image2, equalFusion);
@@ -85,11 +85,11 @@ Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage){
 
         PixelPoint point = { xOffset, yOffset };
 
-        *(warpImage->data + p) = pixelPointColor(point, refImage); // adjust to x and y
-        if(bLevel > 0.0) *(warpImage->data + p) = levelColor(*(warpImage->data + p), bLevel); // adjust to brighness
+        *(warpImage->data + p) = pixPoint_color(point, refImage); // adjust to x and y
+        if(bLevel > 0.0) *(warpImage->data + p) = color_level(*(warpImage->data + p), bLevel); // adjust to brighness
     }
 
-	dealloc_image(sizedDomainImg);
+	RASTERON_DEALLOC(sizedDomainImg);
 
 	return warpImage;
 }

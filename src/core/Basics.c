@@ -15,8 +15,8 @@ Rasteron_Image* loadImgOp(const char* fileName){
     switch(fileImage.fileFormat){
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
-		refImage = alloc_image("tiff", fileImage.data.tiff.length, fileImage.data.tiff.width);
-		bitSwitchRB(fileImage.data.tiff.data, fileImage.data.tiff.width * fileImage.data.tiff.length);
+		refImage = RASTERON_ALLOC("tiff", fileImage.data.tiff.length, fileImage.data.tiff.width);
+		bitSwitch_RB(fileImage.data.tiff.data, fileImage.data.tiff.width * fileImage.data.tiff.length);
 		for(unsigned i = 0; i < refImage->width * refImage->height; i++)
 		   // *(refImage->data + (refImage->width * refImage->height) - 1 - i) = *(fileImage.data.tiff.data + i); // copying operation
 		   *(refImage->data + i) = *(fileImage.data.tiff.data + i); // copying operation
@@ -24,7 +24,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
 #endif
 #ifdef USE_IMG_BMP
 	case(IMG_Bmp):
-		refImage = alloc_image("bmp", abs(fileImage.data.bmp.height), abs(fileImage.data.bmp.width));
+		refImage = RASTERON_ALLOC("bmp", abs(fileImage.data.bmp.height), abs(fileImage.data.bmp.width));
 		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
 			// *(refImage->data + (refImage->width * refImage->height) - 1 - i) = *(fileImage.data.bmp.data + i); // copying operation
 			*(refImage->data + i) = *(fileImage.data.bmp.data + i); // copying operation
@@ -32,7 +32,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
 #endif
 #ifdef USE_IMG_PNG
 	case(IMG_Png):
-		refImage = alloc_image("png", fileImage.data.png.height, fileImage.data.png.width);
+		refImage = RASTERON_ALLOC("png", fileImage.data.png.height, fileImage.data.png.width);
 		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
 			// *(refImage->data + (refImage->width * refImage->height) - 1 - i) = *(fileImage.data.png.data + i); // copying operation
 			*(refImage->data + i) = *(fileImage.data.png.data + i); // copying operation
@@ -45,7 +45,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
 }
 
 Rasteron_Image* solidImgOp(ImageSize size, uint32_t color){
-	Rasteron_Image* solidImage = alloc_image("solid", size.height, size.width);
+	Rasteron_Image* solidImage = RASTERON_ALLOC("solid", size.height, size.width);
 
 	for (unsigned i = 0; i < solidImage->height * solidImage->width; i++)
 		*(solidImage->data + i) = color;
@@ -56,7 +56,7 @@ Rasteron_Image* solidImgOp(ImageSize size, uint32_t color){
 Rasteron_Image* copyImgOp(ref_image_t refImage){
 	assert(refImage != NULL);
 
-	Rasteron_Image* copyImage = alloc_image("copy", refImage->height, refImage->width);
+	Rasteron_Image* copyImage = RASTERON_ALLOC("copy", refImage->height, refImage->width);
 
 	for(unsigned p = 0; p < refImage->width * refImage->height; p++)
 		*(copyImage->data + p) = *(refImage->data + p); // copy each pixel
@@ -67,13 +67,13 @@ Rasteron_Image* copyImgOp(ref_image_t refImage){
 Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage){
 	assert(refImage != NULL);
 
-	Rasteron_Image* resizeImage = alloc_image("resize", size.height, size.width);
+	Rasteron_Image* resizeImage = RASTERON_ALLOC("resize", size.height, size.width);
 
 	for(unsigned c = 0; c < resizeImage->height; c++)
 		for(unsigned r = 0; r < resizeImage->width; r++){
 			PixelPoint pixelPoint = (PixelPoint){ (double)r / resizeImage->width, (double)c / resizeImage->height };
 			// PixelPoint pixelPoint = (PixelPoint){ 0, 0 };
-			*(resizeImage->data + (c * resizeImage->width) + r) = pixelPointColor(pixelPoint, refImage);
+			*(resizeImage->data + (c * resizeImage->width) + r) = pixPoint_color(pixelPoint, refImage);
 		}
 
 	/* for(unsigned p = 0; p < resizeImage->width * resizeImage->height; p++){} */
@@ -90,7 +90,7 @@ Rasteron_Image* cropImgOp(ref_image_t refImage, enum CROP_Type type, double fact
 	unsigned height = (type != CROP_Bottom && type != CROP_Top)? refImage->height : (unsigned)(refImage->height * factor);
 	unsigned width = (type != CROP_Left && type != CROP_Right)? refImage->width : (unsigned)(refImage->width * factor);
 
-	Rasteron_Image* cropImage = alloc_image("crop", height, width);
+	Rasteron_Image* cropImage = RASTERON_ALLOC("crop", height, width);
 
 	unsigned offset;
 	if(type == CROP_Left) offset = refImage->width - width;
@@ -129,11 +129,11 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type){
 	
 	Rasteron_Image* flipImg = NULL;
 	if(type == FLIP_Upside){
-		flipImg = alloc_image("flip", refImage->height, refImage->width); // parameters srcOffset source
+		flipImg = RASTERON_ALLOC("flip", refImage->height, refImage->width); // parameters srcOffset source
 		for(unsigned p = 0; p < refImage->height * refImage->width; p++)
 			*(flipImg->data + (refImage->height * refImage->width) - p - 1) = *(refImage->data + p); // copies pixels in reverse
 	} else if(type == FLIP_Clock) {
-		flipImg = alloc_image("flip", refImage->width, refImage->height); // parameters inverse of source
+		flipImg = RASTERON_ALLOC("flip", refImage->width, refImage->height); // parameters inverse of source
 		unsigned dstOffset = 0;
 
 		for(unsigned w = 0; w < ((!_invertImage)? refImage->width : refImage->height); w++){
@@ -147,7 +147,7 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type){
 	} else if(type == FLIP_Counter){
 		Rasteron_Image* flipUpsideImg = flipImgOp(refImage, FLIP_Upside);
 		flipImg = flipImgOp(flipUpsideImg, FLIP_Clock);
-		dealloc_image(flipUpsideImg);
+		RASTERON_DEALLOC(flipUpsideImg);
 	}
 
 	return flipImg;

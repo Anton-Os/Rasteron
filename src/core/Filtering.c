@@ -3,7 +3,7 @@
 Rasteron_Image* greyImgOp(ref_image_t refImage) {
 	assert(refImage != NULL);
     
-	Rasteron_Image* greyImage = alloc_image("grey", refImage->height, refImage->width);
+	Rasteron_Image* greyImage = RASTERON_ALLOC("grey", refImage->height, refImage->width);
 	
 	for (unsigned p = 0; p < greyImage->width * greyImage->height; p++)
 		*(greyImage->data + p) = grayify32(*(refImage->data + p));
@@ -18,15 +18,15 @@ Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel) {
 	uint32_t colorMask; // used for isolating a specific color value
 	switch(channel){
 		case CHANNEL_Red:
-			channelImage = alloc_image("filter-red", refImage->height, refImage->width);
+			channelImage = RASTERON_ALLOC("filter-red", refImage->height, refImage->width);
 			colorMask = RED_CHANNEL;
 			break;
 		case CHANNEL_Green:
-			channelImage = alloc_image("filter-green", refImage->height, refImage->width);
+			channelImage = RASTERON_ALLOC("filter-green", refImage->height, refImage->width);
 			colorMask = GREEN_CHANNEL;
 			break;
 		case CHANNEL_Blue:
-			channelImage = alloc_image("filter-blue", refImage->height, refImage->width);
+			channelImage = RASTERON_ALLOC("filter-blue", refImage->height, refImage->width);
 			colorMask = BLUE_CHANNEL;
 			break;
 	}
@@ -52,6 +52,6 @@ Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel) {
 		case CHANNEL_Blue: channelImage->name = "channel-blue"; break;
 	}
 
-	dealloc_image(greyImage);
+	RASTERON_DEALLOC(greyImage);
 	return channelImage;
 }

@@ -21,9 +21,9 @@ int main(int argc, char** argv) {
     
     // Cleanup Step
     
-    dealloc_image(sourceImage1);
-    dealloc_image(sourceImage2);
-    dealloc_image(sourceImage3);
+    RASTERON_DEALLOC(sourceImage1);
+    RASTERON_DEALLOC(sourceImage2);
+    RASTERON_DEALLOC(sourceImage3);
 
     return 0;
 }

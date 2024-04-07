@@ -4,7 +4,7 @@ extern int _invertImage = INVERT_IMG_FALSE; // false for within Rasteron
 
 // --------------------------------   Image    -------------------------------- //
 
-Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width){
+Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width){
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	
 	image->name = name;
@@ -15,7 +15,7 @@ Rasteron_Image* alloc_image(const char* name, uint32_t height, uint32_t width){
 	return image;
 }
 
-void dealloc_image(Rasteron_Image* image){
+void internal_dealloc_img(Rasteron_Image* image){
 	if(image->data != NULL) free(image->data);
     if(image != NULL) free(image);
 	image = NULL; // set address to null
@@ -78,7 +78,7 @@ static void setFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target =
 
 static void clearFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target & (~(1 << (flagBit)))); }
 
-nebrFlags checkExistNebrs(uint32_t index, uint32_t width, uint32_t height){
+nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height){
     nebrFlags flags = 0xFF;
 
     if(index < width){ // clear top flags
@@ -96,7 +96,7 @@ nebrFlags checkExistNebrs(uint32_t index, uint32_t width, uint32_t height){
     return flags;
 }
 
-unsigned findNeighborOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr){
+unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr){
 	switch (whichNebr) {
 		case NEBR_Bot_Right: return offset + width + 1;
 		case NEBR_Bot: return offset + width;
@@ -110,8 +110,8 @@ unsigned findNeighborOffset(unsigned width, unsigned offset, enum NEBR_CellFlag 
 	}
 }
 
-uint32_t* findNeighbor(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr){
-	const uint32_t* target = refImage->data + findNeighborOffset(refImage->width, index, whichNebr);
+uint32_t* neighbor_get(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr){
+	const uint32_t* target = refImage->data + neighbor_getOffset(refImage->width, index, whichNebr);
 	return target;
 }
 
@@ -141,7 +141,7 @@ NebrTable_List* loadNebrTables(ref_image_t refImage){
 		currentTable++) { // move to next table pointer
 
 		currentTable->target = refImage->data + pIndex;
-		currentTable->flags = checkExistNebrs(pIndex, refImage->width, refImage->height);
+		currentTable->flags = neighbor_exists(pIndex, refImage->width, refImage->height);
 
 		unsigned short nebrCount = 0;
 		for (unsigned short n = 0; n < 8; n++) // Determine number of neighbors based on flags
@@ -154,14 +154,14 @@ NebrTable_List* loadNebrTables(ref_image_t refImage){
 			if (currentTable->flags & (1 << n)) {
 				// unsigned* nebr = *(currentTable->nebrs + i);
 				switch (n) {
-				case NEBR_Bot_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Bot_Right); break;
-				case NEBR_Bot: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Bot); break;
-				case NEBR_Bot_Left: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Bot_Left); break;
-				case NEBR_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Right); break;
-				case NEBR_Left : *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Left); break;
-				case NEBR_Top_Right: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Top_Right); break;
-				case NEBR_Top: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Top); break;
-				case NEBR_Top_Left: *(currentTable->nebrs + i) = findNeighbor(refImage, pIndex, NEBR_Top_Left); break;
+				case NEBR_Bot_Right: *(currentTable->nebrs + i) = neighbor_get(refImage, pIndex, NEBR_Bot_Right); break;
+				case NEBR_Bot: *(currentTable->nebrs + i) = neighbor_get(refImage, pIndex, NEBR_Bot); break;
+				case NEBR_Bot_Left: *(currentTable->nebrs + i) = neighbor_get(refImage, pIndex, NEBR_Bot_Left); break;
+				case NEBR_Right: *(currentTable->nebrs + i) = neighbor_get(refImage, pIndex, NEBR_Right); break;
+				case NEBR_Left : *(currentTable->nebrs + i) = neighbor_get(refImage, pIndex, NEBR_Left); break;
+				case NEBR_Top_Right: *(currentTable->nebrs + i) = neighbor_get(refImage, pIndex, NEBR_Top_Right); break;
+				case NEBR_Top: *(currentTable->nebrs + i) = neighbor_get(refImage, pIndex, NEBR_Top); break;
+				case NEBR_Top_Left: *(currentTable->nebrs + i) = neighbor_get(refImage, pIndex, NEBR_Top_Left); break;
 				}
 				i++;
 			}

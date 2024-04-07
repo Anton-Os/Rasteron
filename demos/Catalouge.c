@@ -17,7 +17,7 @@ static char textBuffer[1024];
 
 void setupCanvas(char input){
 	if(isalnum(input)) {
-		if(canvasImg != NULL) dealloc_image(canvasImg);
+		if(canvasImg != NULL) RASTERON_DEALLOC(canvasImg);
 		if(isalpha(input)) keysave = (char)tolower(input);
 	}
 
@@ -122,6 +122,6 @@ int main(int argc, char** argv) {
 	if(canvasImg != NULL)
 		writeFileImageRaw("Output", IMG_Png, canvasImg->height, canvasImg->width, canvasImg->data);
 
-    dealloc_image(canvasImg); // cleanup
+    RASTERON_DEALLOC(canvasImg); // cleanup
     return 0;
 }

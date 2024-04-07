@@ -26,7 +26,7 @@ static void writeImageTest(const char* filePath, enum IMG_FileFormat format){
     }
 
     writeFileImageRaw(outputFileName, format, sampleImg->height, sampleImg->width, sampleImg->data);
-    dealloc_image(sampleImg);
+    RASTERON_DEALLOC(sampleImg);
 }
 
 int main(int argc, char** argv) {
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 
     // Cleanup Step
 
-    dealloc_image(sampleImg);
+    RASTERON_DEALLOC(sampleImg);
 
     return 0;
 }
