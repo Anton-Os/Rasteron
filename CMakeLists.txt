@@ -101,6 +101,10 @@ add_executable(GUI demos/GUI.c)
 target_include_directories(GUI PUBLIC include demos)
 target_link_libraries(GUI Rasteron)
 
+add_executable(NaturalSim demos/NaturalSim.c)
+target_include_directories(NaturalSim PUBLIC include demos)
+target_link_libraries(NaturalSim Rasteron)
+
 
 ### Installation
 

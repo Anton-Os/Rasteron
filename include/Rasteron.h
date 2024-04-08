@@ -71,17 +71,17 @@ Rasteron_Image* noiseImgOp_scratch(ImageSize size, ColorGrid grid); // variation
 Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of brown noise
 Rasteron_Image* noiseImgOp_low(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of pink noise
 Rasteron_Image* noiseImgOp_hi(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of blue noise
+Rasteron_Image* noiseImgOp_diff(ImageSize size, ColorGrid grid, unsigned short octaves); // noise substraction for cool effects
 
 
 // --------------------------------   Cellwise Opertaions    -------------------------------- //
 //
 //      For each pixel adjascent neighbors are determined and used to compute the final color
 
-Rasteron_Image* antialiasImgOp(ref_image_t refImage); // performs antialiasing operation
 Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
 Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
 Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback); // 2D generated image from 8 neighbors
-
+Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short times); // performs antialiasing operation
 
 
 // --------------------------------   Rasteron exts   -------------------------------- //

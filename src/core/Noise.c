@@ -75,6 +75,7 @@ Rasteron_Image* noiseExtImgOp_value(ImageSize size, ColorGrid grid, float (*call
 static float valueNoiseMod(float value){ return value; }
 static float tiledNoiseMod(float value){ return value / value; }
 static float scratchNoiseMod(float value){ return (value > 0.5)? value - 0.25 : value + 0.25; }
+// static float powertileNoiseMod(float value){ return pow(value - 0.5, 0.5); }
 
 Rasteron_Image* noiseImgOp_value(ImageSize size, ColorGrid grid){
 	return noiseExtImgOp_value(size, grid, valueNoiseMod);
@@ -111,12 +112,17 @@ Rasteron_Image* noiseExtImgOp_octave(ImageSize size, ColorGrid grid, unsigned sh
 	return noiseImg;
 }
 
-static unsigned blendOctaves(unsigned color1, unsigned color2){ colors_blend(color1, color2, 0.5); }
-static unsigned fuseOctaves_low(unsigned color1, unsigned color2){ colors_fuse(color1, color2, 0.0); }
-static unsigned fuseOctaves_hi(unsigned color1, unsigned color2){ colors_fuse(color1, color2, 1.0); }
+static unsigned blendOctaves(unsigned color1, unsigned color2){ return colors_blend(color1, color2, 0.5); } // 0.5); }
+static unsigned subOctaves(unsigned color1, unsigned color2){ return colors_diff(color1, color2); }
+static unsigned fuseOctaves_low(unsigned color1, unsigned color2){ return colors_fuse(color1, color2, 0.0); }
+static unsigned fuseOctaves_hi(unsigned color1, unsigned color2){ return colors_fuse(color1, color2, 1.0); }
 
 Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves){
-	return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_low);
+	return noiseExtImgOp_octave(size, grid, octaves, blendOctaves);
+}
+
+Rasteron_Image* noiseImgOp_diff(ImageSize size, ColorGrid grid, unsigned short octaves){
+	return noiseExtImgOp_octave(size, grid, octaves, subOctaves);
 }
 
 Rasteron_Image* noiseImgOp_low(ImageSize size, ColorGrid grid, unsigned short octaves){

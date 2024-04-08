@@ -146,9 +146,9 @@ Rasteron_Image* grassNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells){
     gridTable.grids[1] = grid2;
     gridTable.grids[2] = grid3;
 
-    Rasteron_Image* noiseImg1 = noiseImgOp_octave((ImageSize){ xCells, yCells}, grid1, 2); // noiseImgOp_value((ImageSize){ xCells, yCells}, grid1);
-    Rasteron_Image* noiseImg2 = noiseImgOp_octave((ImageSize){ xCells, yCells}, grid2, 2); // noiseImgOp_value((ImageSize){ xCells, yCells}, grid2);
-    Rasteron_Image* noiseImg3 = noiseImgOp_octave((ImageSize){ xCells, yCells}, grid3, 2); // noiseImgOp_value((ImageSize){ xCells, yCells}, grid3);
+    Rasteron_Image* noiseImg1 = noiseImgOp_value((ImageSize){ xCells, yCells}, grid1);
+    Rasteron_Image* noiseImg2 = noiseImgOp_value((ImageSize){ xCells, yCells}, grid2);
+    Rasteron_Image* noiseImg3 = noiseImgOp_value((ImageSize){ xCells, yCells}, grid3);
 
     Rasteron_Image* blendImg = (noiseOp % 2 == 0)? blendImgOp(noiseImg1, noiseImg2) : blendImgOp(noiseImg3, noiseImg2);
     Rasteron_Image* finalImg;
@@ -267,7 +267,7 @@ Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){
 
     // Rasteron_Image* textImg = textImgOp(&textObj, FONT_SIZE_TINY);
     Rasteron_Image* messageImg = messageImgOp(&messageObj, FONT_SIZE_LARGE);
-    Rasteron_Image* finalImg = antialiasImgOp(messageImg);
+    Rasteron_Image* finalImg = antialiasImgOp(messageImg, 1);
 
     // RASTERON_DEALLOC(textImg);
     RASTERON_DEALLOC(messageImg);

@@ -12,8 +12,6 @@ static double xArg = 0.0;
 static double yArg = 0.0;
 
 static char keysave = 'd';
-static char* keyseq = "Hello World";
-static char textBuffer[1024];
 
 void setupCanvas(char input){
 	if(isalnum(input)) {
@@ -64,60 +62,23 @@ void setupCanvas(char input){
 	}
 }
 
-#ifdef _WIN32
+Rasteron_Image* canvasImg;
+void keyEvent(char key){ if(key != 0) setupCanvas(key); }
+void mouseEvent(double x, double y){ }
+void timerEvent(unsigned secs){}
 
-BITMAP bmap;
-
-LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	RECT rect;
-
-	switch (message) {
-	case (WM_CREATE): { 
-		canvasImg = grassNoiseImgOp(mode, 1024, 1024);
-		bmap = createWinBmap(canvasImg); 
-	}
-	case (WM_CHAR): { if(wParam != 0){
-		setupCanvas((char)wParam);
-
-		if(wParam == '1' || wParam == '3') printf("Mode is: %d,\n", mode);
-		else if(wParam == '2' || wParam == '8') printf("Y Parameter is: %f,\n", yArg);
-		else if(wParam == '4' || wParam == '6') printf("X Parameter is: %f,\n", xArg);
-		else if(wParam == '7' || wParam == '9') printf("XY Parameters are: %f and %f,\n", xArg, yArg);
-		else if(isalpha(wParam)) puts("New Image From Catalouge!");
-	
-		GetClientRect(hwnd, &rect);
-		InvalidateRect(hwnd, &rect, FALSE);
-
-		bmap = createWinBmap(canvasImg);
-	}}
-	case (WM_PAINT): { 
-		InvalidateRect(hwnd, &rect, TRUE);
-		drawWinBmap(hwnd, &bmap); 
-	}
-	case (WM_CLOSE): {}
-	default: return DefWindowProc(hwnd, message, wParam, lParam);
-	}
-	return 0;
-}
-
-#endif
+#include "Util_Demo.h"
 
 int main(int argc, char** argv) {
 	srand(time(NULL));
+	if(canvasImg != NULL) RASTERON_DEALLOC(canvasImg);
+    canvasImg = grassNoiseImgOp(mode, 1024, 1024);
 
 	puts("Please refer to following commands to select images for canvas:");
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities");
 	puts("\nPress numbered keys 0-9 to tweak function parameters and modify the image outputs");
-#ifdef _WIN32
-    createWindow(wndProc, "Catalouge", 1024, 1024);
-	eventLoop(NULL);
-#elif defined __linux__
-    Platform_Context platformContext;
-    createWindow(&platformContext, "Catalouge", 1024, 1024);
 
-    XImage* bmap = createUnixBmap(&platformContext, canvasImg);
-    eventLoop(platformContext.display, NULL);
-#endif
+	inputLoop(NULL);
 
 	if(canvasImg != NULL)
 		writeFileImageRaw("Output", IMG_Png, canvasImg->height, canvasImg->width, canvasImg->data);

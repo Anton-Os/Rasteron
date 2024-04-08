@@ -134,20 +134,29 @@ Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, u
 }
 
 unsigned antialias(unsigned target, unsigned neighbors[8]){
-	unsigned finalColor = neighbors[0];
+	unsigned long long finalColor = neighbors[0];
+	unsigned short nCount = 1;
 
 	for(unsigned n = 1; n < 8; n++)
 		if(neighbors[n] != NO_COLOR)
 			finalColor = colors_blend(finalColor, neighbors[n], 0.5F);
 		else continue;
+
+	/* for(unsigned n = 1; n < 8; n++){
+		if(neighbors[n] != NO_COLOR){
+			finalColor += neighbors[n];
+			nCount++;
+		}
+	} */
 	
-	return finalColor;
+	return finalColor / nCount;
 }
 
-Rasteron_Image* antialiasImgOp(ref_image_t refImage){
+Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short times){
 	assert(refImage != NULL);
+	if(times < 1) return copyImgOp(refImage);
 
-	return cellwiseExtImgOp(refImage, antialias, 1);
+	return cellwiseExtImgOp(refImage, antialias, times);
 }
 
 

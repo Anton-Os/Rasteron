@@ -4,6 +4,8 @@ extern int _invertImage = INVERT_IMG_FALSE; // false for within Rasteron
 
 // --------------------------------   Image    -------------------------------- //
 
+ImageSize createImgSize(unsigned height, unsigned width){ return (ImageSize){ height, width }; }
+
 Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width){
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	

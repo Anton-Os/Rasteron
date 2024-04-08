@@ -1,79 +1,66 @@
 
-#define RASTERON_WIN_HEIGHT 256
+#define RASTERON_WIN_HEIGHT 200
+#define RASTERON_WIN_WIDTH 600
 #define RASTERON_ENABLE_ANIM
 
-#include "Util_OS.h"
+#define GUI_COUNT 5
 
-#include "Experimental.h"
+#include "Rasteron.h"
 
-Rasteron_Queue* masterQueue;
+Rasteron_Queue* guiElements;
 
-unsigned long elapseSecs = 0;
-
-#ifdef _WIN32
-
-BITMAP bmap;
-
-void CALLBACK timerCallback(HWND hwnd, UINT uMsg, UINT timerId, DWORD dwTime){ elapseSecs++; }
-
-LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-    RECT rect;
-
-    switch(message){
-        case (WM_CREATE): { 
-            SetTimer(hwnd, 0, 1000, &timerCallback);
-            bmap = createWinBmap(getFrameAt(masterQueue, 0));
-        }
-        case (WM_PAINT): { drawWinBmap(hwnd, &bmap); }
-	    case (WM_CLOSE): {}
-        case (WM_TIMER): {
-            GetClientRect(hwnd, &rect);
-            InvalidateRect(hwnd, &rect, FALSE);
-
-            masterQueue->index = elapseSecs % 16;
-            // printf("Elapse secs: %d, GUI index: %d \n", elapseSecs, masterQueue->index);
-            bmap = createWinBmap(getFrameAt(masterQueue, masterQueue->index));
-        }
-        default: return DefWindowProc(hwnd, message, wParam, lParam);
-    }
-    return 0;
+Rasteron_Image* canvasImg;
+void keyEvent(char key){}
+void mouseEvent(double x, double y){}
+void timerEvent(unsigned secs){
+    guiElements->index = secs % GUI_COUNT;
+    if(canvasImg != NULL) RASTERON_DEALLOC(canvasImg);
+    canvasImg = getFrameAt(guiElements, guiElements->index);
 }
 
-#endif
+#include "Util_Demo.h"
 
 int main(int argc, char** argv) {
-    masterQueue = internal_alloc_queue("master", (ImageSize){ 256, 256 }, 16);
-    
-    Rasteron_Queue* mQueue_icon = loadUI_iconBtn(MENU_Large, "zoom_out");
-    Rasteron_Queue* mQueue_button = loadUI_checkBtn(MENU_Large);
-    Rasteron_Queue* mQueue_dial = loadUI_dial(MENU_Large, 4);
-    Rasteron_Queue* mQueue_slider = loadUI_slider(MENU_Large, 6);
-    // Rasteron_Queue* mQueue_slider = loadUI_slider(MENU_Large, 7);
+    // if(canvasImg != NULL) RASTERON_DEALLOC(canvasImg);
+    canvasImg = noiseImgOp_white((ImageSize){ RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);
 
-    addFrameAt(masterQueue, getFrameAt(mQueue_icon, 0), 0);
-    addFrameAt(masterQueue, getFrameAt(mQueue_icon, 1), 1);
-    addFrameAt(masterQueue, getFrameAt(mQueue_icon, 2), 2);
-    addFrameAt(masterQueue, getFrameAt(mQueue_button, 0), 3);
-    addFrameAt(masterQueue, getFrameAt(mQueue_button, 1), 4);
-    addFrameAt(masterQueue, getFrameAt(mQueue_button, 2), 5);
-    for(unsigned t = 0; t < 4; t++) addFrameAt(masterQueue, getFrameAt(mQueue_dial, t), t + 6);
-    for(unsigned l = 0; l < 6; l++) addFrameAt(masterQueue, getFrameAt(mQueue_slider, l), l + 10);
-#ifdef _WIN32
-    createWindow(wndProc, "GUI", 210, 225);
-	eventLoop(NULL);
-#elif defined __linux__
-    Platform_Context platformContext;
-    createWindow(&platformContext, "GUI", 256, 256);
+    Rasteron_Queue* checkButtons[5] = { 
+        loadUI_checkBtn(MENU_Tiny), loadUI_checkBtn(MENU_Small), 
+        loadUI_checkBtn(MENU_Medium), 
+        loadUI_checkBtn(MENU_Large), loadUI_checkBtn(MENU_XL),
+    };
 
-    XImage* bmap = createUnixBmap(&platformContext, getFrameAt(masterQueue, 0));
-    eventLoop(platformContext.display, NULL);
-#endif
+    Rasteron_Queue* dials[5] = { 
+        loadUI_dial(MENU_Tiny, 2), loadUI_dial(MENU_Small, 4), 
+        loadUI_dial(MENU_Medium, 8), 
+        loadUI_dial(MENU_Medium, 16), loadUI_dial(MENU_Medium, 32), 
+    };
 
-    // RASTERON_DEALLOC(bgImg);
-    // RASTERON_DEALLOC(menuImg1); RASTERON_DEALLOC(menuImg2);
+    Rasteron_Queue* sliders[5] = { 
+        loadUI_slider(MENU_Tiny, 2), loadUI_slider(MENU_Small, 4), 
+        loadUI_slider(MENU_Medium, 8), 
+        loadUI_slider(MENU_Medium, 16), loadUI_slider(MENU_Medium, 32), 
+    };
 
-    RASTERON_QUEUE_DEALLOC(masterQueue);
-    RASTERON_QUEUE_DEALLOC(mQueue_button); RASTERON_QUEUE_DEALLOC(mQueue_dial); RASTERON_QUEUE_DEALLOC(mQueue_slider);
+    guiElements = RASTERON_QUEUE_ALLOC("gui", createImgSize(256, 256), GUI_COUNT);
+
+    Rasteron_Image* controlPanelImg = NULL;
+    for(unsigned g = 0; g < 5; g++){
+        Rasteron_Image* tempImg = (controlPanelImg == NULL)? copyImgOp(canvasImg) : copyImgOp(controlPanelImg);
+        if(controlPanelImg != NULL) RASTERON_DEALLOC(controlPanelImg);
+
+        controlPanelImg = copyImgOp(tempImg);
+        // TODO: Add control panel data here
+
+        addFrameAt(guiElements, controlPanelImg, g);
+        RASTERON_DEALLOC(tempImg);
+    }
+
+    inputLoop(NULL);
+
+    RASTERON_QUEUE_DEALLOC(guiElements);
+    RASTERON_DEALLOC(canvasImg);
+    for(unsigned b = 0; b < 5; b++) RASTERON_QUEUE_DEALLOC(checkButtons[b]);
 
     return 0;
 }

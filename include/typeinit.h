@@ -4,6 +4,8 @@
 
 // --------------------------------   Image    -------------------------------- //
 
+ImageSize createImgSize(unsigned height, unsigned width);
+
 Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width);
 #define RASTERON_ALLOC(name, height, width) (Rasteron_Image*)(internal_alloc_img(name, height, width))
 

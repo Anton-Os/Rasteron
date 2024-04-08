@@ -43,4 +43,4 @@ Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, do
 Rasteron_Heightmap* loadHeightmap(ref_image_t refImage); // create heightmap from an image file
 
 void internal_dealloc_heightmap(Rasteron_Heightmap* heightmap);
-#define RASTERON_HEIGHTMAP_DEALLOC(sprite) (internal_dealloc_sprite(queue))
+#define RASTERON_HEIGHTMAP_DEALLOC(heightmap) (internal_dealloc_heightmap(heightmap))
