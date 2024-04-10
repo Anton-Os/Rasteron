@@ -166,7 +166,7 @@ Rasteron_Image* grassNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells){
     return finalImg;
 }
 
-static unsigned rampantGrowth(unsigned color, unsigned neighbors[8]){
+/* static unsigned rampantGrowth(unsigned color, unsigned neighbors[8]){
     if(color == 0xFFFF0000 || color == 0xFF00FFFF) return 0xFFFFFF00;
     else if(0xFF00FFFF == neighbors[NEBR_Top_Left] || 0xFF00FFFF == neighbors[NEBR_Top_Right] || 0xFF00FFFF == neighbors[NEBR_Bot_Left] || 0xFF00FFFF == neighbors[NEBR_Bot_Right])
         return 0xFFFF0000;
@@ -224,7 +224,7 @@ Rasteron_Image* gameOfLifeImgOp(int iterations){
     RASTERON_DEALLOC(growthImg); RASTERON_DEALLOC(conwayImg); RASTERON_DEALLOC(resizeImg);
 
     return gameOfLifeImg; 
-}
+} */
 
 static unsigned patching(unsigned color, double distance){
     return (distance > 0.15)? color + (0x33 * distance) : color + (0xFF / distance);
@@ -333,7 +333,7 @@ Rasteron_Image* perturbImgOp(double xCenter, double yCenter){
     Rasteron_Image* coordImg = mapImgOp((ImageSize){ 1024, 1024 }, perturb);
     Rasteron_Image* checkerImg = checkerImgOp((ImageSize){ 1024, 1024 }, grid);
 
-    Rasteron_Image* perturbImg = copyImgOp(checkerImg); // warpingImgOp(checkerImg, coordImg);
+    Rasteron_Image* perturbImg = warpingImgOp(checkerImg, coordImg);
 
     RASTERON_DEALLOC(coordImg);    
     RASTERON_DEALLOC(checkerImg);
@@ -394,50 +394,19 @@ Rasteron_Image* chemicalsImgOp(unsigned color1, unsigned color2){
     return expImgOp();
 }
 
-Rasteron_Image* expImgOp1(){
-    return expImgOp();
-}
+// Placeholder Images
 
-Rasteron_Image* expImgOp2(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp3(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp4(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp5(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp6(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp7(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp8(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp9(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp10(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp11(){
-    return expImgOp();
-}
-
-Rasteron_Image* expImgOp12(){
-    return expImgOp();
-}
+Rasteron_Image* expImgOp1(){ return expImgOp(); }
+Rasteron_Image* expImgOp2(){ return expImgOp(); }
+Rasteron_Image* expImgOp3(){ return expImgOp(); }
+Rasteron_Image* expImgOp4(){ return expImgOp(); }
+Rasteron_Image* expImgOp5(){ return expImgOp(); }
+Rasteron_Image* expImgOp6(){ return expImgOp(); }
+Rasteron_Image* expImgOp7(){ return expImgOp(); }
+Rasteron_Image* expImgOp8(){ return expImgOp(); }
+Rasteron_Image* expImgOp9(){ return expImgOp(); }
+Rasteron_Image* expImgOp10(){ return expImgOp(); }
+Rasteron_Image* expImgOp11(){ return expImgOp(); }
+Rasteron_Image* expImgOp12(){ return expImgOp(); }
+Rasteron_Image* expImgOp13(){ return expImgOp(); }
+Rasteron_Image* expImgOp14(){ return expImgOp(); }

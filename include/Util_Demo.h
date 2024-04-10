@@ -1,5 +1,7 @@
 #include "Util_OS.h"
 
+// --------------------------------   Preprocessor Directives for Demo    -------------------------------- //
+
 #ifndef RASTERON_WIN_NAME
     #define RASTERON_WIN_NAME "Demo"
 #endif
@@ -12,12 +14,50 @@
     #define RASTERON_WIN_HEIGHT 1024
 #endif
 
-/* extern Rasteron_Image* canvasImg;
-extern void (*keyEvent)(char key);
-extern void (*mouseEvent)(double x, double y);
-extern void (*timerEvent)(unsigned secs); */
+#define PRIMITIVES_MAX 1024
+#define TABLES_MAX 512
+#define IMAGES_MAX 4096
 
-static unsigned elapseSecs = 0;
+// --------------------------------   Objects for Demo    -------------------------------- //
+
+Rasteron_Image* _outputImg; // final image used for drawing
+
+#ifdef RASTERON_ENABLE_ANIM
+Rasteron_Queue* _mainQueue; // main queue used for multiple images
+#endif
+
+typedef struct {
+    Rasteron_Image* images[IMAGES_MAX];
+
+    ColorSwatch swatches[PRIMITIVES_MAX];
+    PixelPoint pixelPoints[PRIMITIVES_MAX];
+    PixelPointTable pixelPointTables[TABLES_MAX];
+    ColorPoint colorPoints[PRIMITIVES_MAX];
+    ColorPointTable colorPointTables[TABLES_MAX];
+    ColorGrid grids[PRIMITIVES_MAX];
+    ColorGridTable gridTables[TABLES_MAX];
+    
+    Rasteron_Sprite* sprites[512]; // unsigned short spriteIndex; // for tracking active sprites
+    Rasteron_Heightmap* heightmaps[512]; // unsigned short heightmapIndex; // for tracking active heightmaps
+
+#ifdef RASTERON_ENABLE_ANIM
+    Rasteron_Queue* queues[256]; // unsigned short queueIndex; // for tracking active queues
+#endif
+#ifdef RASTERON_ENABLE_FONT
+    Rasteron_Text textObjs[1024];
+    Rasteron_Message messageObjs[256];
+#endif
+} _catalouge; 
+
+unsigned elapseSecs = 0;
+
+// --------------------------------   Unimplemented Functions for Demo    -------------------------------- //
+
+void keyEvent(char key);
+void mouseEvent(double x, double y);
+void timerEvent(unsigned secs);
+
+// --------------------------------   Porting layer for Demo    -------------------------------- //
 
 #ifdef _WIN32
 
@@ -33,9 +73,9 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	switch (message) {
 	case (WM_CREATE): { 
-		if(canvasImg == NULL) canvasImg = solidImgOp((ImageSize){ 1024, 1024}, 0xFFFFFF00);
+		if(_outputImg == NULL) _outputImg = solidImgOp((ImageSize){ 1024, 1024}, 0xFFFFFF00);
         if(timerEvent != NULL) SetTimer(hwnd, 0, 1000, &wndTimerCallback);
-		bmap = createWinBmap(canvasImg); 
+		bmap = createWinBmap(_outputImg); 
 	}
 	case (WM_CHAR): { if(wParam != 0){
 		GetClientRect(hwnd, &rect);
@@ -43,7 +83,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
         if(keyEvent != NULL){
             keyEvent(wParam);
-            bmap = createWinBmap(canvasImg);
+            bmap = createWinBmap(_outputImg);
 	    }
     }
 	case (WM_PAINT): { 
@@ -53,7 +93,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case (WM_TIMER): {
         GetClientRect(hwnd, &rect);
         InvalidateRect(hwnd, &rect, FALSE);
-        if(canvasImg != NULL && timerEvent != NULL) bmap = createWinBmap(canvasImg);
+        if(_outputImg != NULL && timerEvent != NULL) bmap = createWinBmap(_outputImg);
     }
     case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN && mouseEvent != NULL){
         // Translate Data from points to coordinates
@@ -68,7 +108,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 #endif
 
-// Passes into main function
+// --------------------------------   Callable Methods for Demo    -------------------------------- //
 
 void inputLoop(eventLoopCallback callback){
 #ifdef _WIN32
@@ -78,7 +118,7 @@ void inputLoop(eventLoopCallback callback){
     Platform_Context platformContext;
     createWindow(&platformContext, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
 
-    XImage* bmap = createUnixBmap(&platformContext, canvasImg);
+    XImage* bmap = createUnixBmap(&platformContext, _outputImg);
     eventLoop(platformContext.display, callback);
 #endif
 }

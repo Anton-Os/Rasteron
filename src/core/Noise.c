@@ -75,10 +75,20 @@ Rasteron_Image* noiseExtImgOp_value(ImageSize size, ColorGrid grid, float (*call
 static float valueNoiseMod(float value){ return value; }
 static float tiledNoiseMod(float value){ return value / value; }
 static float scratchNoiseMod(float value){ return (value > 0.5)? value - 0.25 : value + 0.25; }
-// static float powertileNoiseMod(float value){ return pow(value - 0.5, 0.5); }
+// static float tiledNoiseMod(float value){ return (value > 0.5)? pow(value, 1.0 + ((value - 0.5) * 2.0)) : pow(value, 1.0 - ((0.5 - value) * 2.0)); }
+// static float tiledNoiseMod(float value){ return pow(value - 0.5, 0.5); }
+// static float scratchNoiseMod(float value){ return (sin(value * 10) > 0.0)? sin(value * 10) : cos(value * 10); }
+// static float expNoiseMod(float value){ if(value < 0.15) return 0.15; else if(value > 0.85) return 0.85; else return 0.5; }
+static float quiltNoiseMod(float value){ 
+	static float m = 0.0;
+	float newMod = (value / m > 1.0)? value + (m * 0.5) : value - (m * 0.5);
+	m = value;
+	return newMod;
+}
+
 
 Rasteron_Image* noiseImgOp_value(ImageSize size, ColorGrid grid){
-	return noiseExtImgOp_value(size, grid, valueNoiseMod);
+	return noiseExtImgOp_value(size, grid, quiltNoiseMod);
 }
 
 Rasteron_Image* noiseImgOp_tiled(ImageSize size, ColorGrid grid){

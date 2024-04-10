@@ -2,15 +2,11 @@
 
 unsigned startPaint(double x, double y){ return (sin(x * 10.0) > tan(y * 10.0))? 0xFFFFFF00 : 0xFFFF00FF; } 
 
-PixelPoint cursorPixPoint;
-PixelPointTable cursorPixTable;
+#include "Util_Demo.h"
 
-Rasteron_Image* canvasImg;
 void keyEvent(char key){ printf("Key entered: %c", key); }
 void mouseEvent(double x, double y){ printf("Cursor data is (%f, %f)", x, y); }
 void timerEvent(unsigned secs){}
-
-#include "Util_Demo.h"
 
 /* void inputCallback(){
 	puts("Enter a command: ");
@@ -23,11 +19,11 @@ void timerEvent(unsigned secs){}
 } */
 
 int main(int argc, char** argv){
-	if(canvasImg != NULL) RASTERON_DEALLOC(canvasImg);
-    canvasImg = mapImgOp((ImageSize){1024, 1024}, startPaint); // global canvas for drawing
+	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
+    _outputImg = mapImgOp((ImageSize){1024, 1024}, startPaint); // global canvas for drawing
 
 	inputLoop(NULL);
 
-    RASTERON_DEALLOC(canvasImg); // cleanup
+    RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;
 }

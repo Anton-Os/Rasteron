@@ -89,17 +89,21 @@ target_link_libraries(Write Rasteron)
 
 # Demo Applications
 
-add_executable(Catalouge demos/Catalouge.c)
-target_include_directories(Catalouge PUBLIC include demos)
-target_link_libraries(Catalouge Rasteron)
+add_executable(Canvas demos/Canvas.c)
+target_include_directories(Canvas PUBLIC include demos)
+target_link_libraries(Canvas Rasteron)
 
-add_executable(Painter demos/Painter.c)
-target_include_directories(Painter PUBLIC include demos)
-target_link_libraries(Painter Rasteron)
+add_executable(EasyGUI demos/EasyGUI.c)
+target_include_directories(EasyGUI PUBLIC include demos)
+target_link_libraries(EasyGUI Rasteron)
 
-add_executable(GUI demos/GUI.c)
-target_include_directories(GUI PUBLIC include demos)
-target_link_libraries(GUI Rasteron)
+add_executable(DrawTool demos/DrawTool.c)
+target_include_directories(DrawTool PUBLIC include demos)
+target_link_libraries(DrawTool Rasteron)
+
+add_executable(TexTool demos/TexTool.c)
+target_include_directories(TexTool PUBLIC include demos)
+target_link_libraries(TexTool Rasteron)
 
 add_executable(NaturalSim demos/NaturalSim.c)
 target_include_directories(NaturalSim PUBLIC include demos)
