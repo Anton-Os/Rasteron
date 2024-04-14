@@ -79,16 +79,10 @@ static float scratchNoiseMod(float value){ return (value > 0.5)? value - 0.25 : 
 // static float tiledNoiseMod(float value){ return pow(value - 0.5, 0.5); }
 // static float scratchNoiseMod(float value){ return (sin(value * 10) > 0.0)? sin(value * 10) : cos(value * 10); }
 // static float expNoiseMod(float value){ if(value < 0.15) return 0.15; else if(value > 0.85) return 0.85; else return 0.5; }
-static float quiltNoiseMod(float value){ 
-	static float m = 0.0;
-	float newMod = (value / m > 1.0)? value + (m * 0.5) : value - (m * 0.5);
-	m = value;
-	return newMod;
-}
 
 
 Rasteron_Image* noiseImgOp_value(ImageSize size, ColorGrid grid){
-	return noiseExtImgOp_value(size, grid, quiltNoiseMod);
+	return noiseExtImgOp_value(size, grid, valueNoiseMod);
 }
 
 Rasteron_Image* noiseImgOp_tiled(ImageSize size, ColorGrid grid){

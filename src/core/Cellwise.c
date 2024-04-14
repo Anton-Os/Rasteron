@@ -114,18 +114,15 @@ Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback){
 
 Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
 	assert(refImage != NULL);
+	if(iterations == 0) return copyImgOp(refImage);
 	
-	Rasteron_Image* patternImage = RASTERON_ALLOC("staging", refImage->height, refImage->width);
-	for (unsigned p = 0; p < refImage->width * refImage->height; p++)
-		*(patternImage->data + p) = *(refImage->data + p); // copy pixels from original image
-
-	Rasteron_Image* stagingImg = { 0 };
+	Rasteron_Image* patternImage = copyImgOp(refImage);
 
 	unsigned short i = 0;
 	do {
-		stagingImg = cellwiseImgOp_nebr8(patternImage, callback);
-		for (unsigned p = 0; p < stagingImg->width * stagingImg->height; p++)
-			*(patternImage->data + p) = *(stagingImg->data + p); // copy pixels from pattern image
+		Rasteron_Image* stagingImg = cellwiseImgOp_nebr8(patternImage, callback);
+		if(patternImage != NULL) RASTERON_DEALLOC(patternImage);
+		patternImage = copyImgOp(stagingImg);
 		RASTERON_DEALLOC(stagingImg);
 		i++;
 	} while (i < iterations);

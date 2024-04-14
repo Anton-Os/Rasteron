@@ -1,28 +1,40 @@
 #include "Experimental.h"
 
-unsigned startPaint(double x, double y){ return (sin(x * 10.0) > tan(y * 10.0))? 0xFFFFFF00 : 0xFFFF00FF; } 
+#define OSCILATION 30.0
+
+static double xFactor = 10.0; 
+static double yFactor = 10.0;
+static unsigned color1 = 0xFFFFFF00; 
+static unsigned color2 = 0xFFFF00FF;
+
+unsigned startPaint(double x, double y){ return (sin(x * xFactor) > tan(y * yFactor))? color1 : color2; } 
 
 #include "Util_Demo.h"
 
-void keyEvent(char key){ printf("Key entered: %c", key); }
-void mouseEvent(double x, double y){ printf("Cursor data is (%f, %f)", x, y); }
-void timerEvent(unsigned secs){}
+PixelPointTable pixelPointTable;
 
-/* void inputCallback(){
-	puts("Enter a command: ");
-	scanf("%s", &inputStr);
-	
-	if(inputStr[0] == '0' && inputStr[1] == 'x') puts("Solid color detected");
-	// TODO: Detect if file path was set to png, tiff, or bmp
-	// TODO: Detect procedural operations
-	else puts("Unknown operation!");
-} */
+void _onKeyEvent(char key){ printf("Key entered: %c", key); }
+void _onPressEvent(double x, double y){ 
+	pixelPointToTable(&pixelPointTable, x, y);
+	printf("Cursor data is (%f, %f)", x, y);
+
+	xFactor = x * OSCILATION; 
+	yFactor = y * OSCILATION;
+	color1 = 0xFF006600 | ((unsigned)(x * 256) * 0x10001); 
+	color2 = 0xFF660000 | ((unsigned)(y * 256) * 0x101); 
+
+	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
+	_outputImg = mapImgOp((ImageSize){1024, 1024}, startPaint);
+
+	// TODO: Perform advanced drawing oparations
+}
+void _onTickEvent(unsigned secs){}
 
 int main(int argc, char** argv){
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = mapImgOp((ImageSize){1024, 1024}, startPaint); // global canvas for drawing
 
-	inputLoop(NULL);
+	_run();
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

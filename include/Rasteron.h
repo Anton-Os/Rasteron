@@ -64,6 +64,7 @@ Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid);
 //      Operations for creating various types of noises
 
 Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2); // white noise generated between two values
+Rasteron_Image* noiseExtImgOp_value(ImageSize size, ColorGrid grid, float (*callback)(float)); // extended version that can be reused
 Rasteron_Image* noiseImgOp_value(ImageSize size, ColorGrid grid); // imitation of perlin noise
 Rasteron_Image* noiseImgOp_tiled(ImageSize size, ColorGrid grid); // variation of value noise with discrete tiles
 Rasteron_Image* noiseImgOp_scratch(ImageSize size, ColorGrid grid); // variation of value noise with scratch effects

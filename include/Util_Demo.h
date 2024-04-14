@@ -53,9 +53,9 @@ unsigned elapseSecs = 0;
 
 // --------------------------------   Unimplemented Functions for Demo    -------------------------------- //
 
-void keyEvent(char key);
-void mouseEvent(double x, double y);
-void timerEvent(unsigned secs);
+void _onKeyEvent(char key);
+void _onPressEvent(double x, double y);
+void _onTickEvent(unsigned secs);
 
 // --------------------------------   Porting layer for Demo    -------------------------------- //
 
@@ -65,7 +65,7 @@ BITMAP bmap;
 
 void CALLBACK wndTimerCallback(HWND hwnd, UINT uMsg, UINT timerId, DWORD dwTime){ 
     elapseSecs++;
-    if(timerEvent != NULL) timerEvent(elapseSecs);
+    if(_onTickEvent != NULL) _onTickEvent(elapseSecs);
 }
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -74,15 +74,15 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	switch (message) {
 	case (WM_CREATE): { 
 		if(_outputImg == NULL) _outputImg = solidImgOp((ImageSize){ 1024, 1024}, 0xFFFFFF00);
-        if(timerEvent != NULL) SetTimer(hwnd, 0, 1000, &wndTimerCallback);
+        if(_onTickEvent != NULL) SetTimer(hwnd, 0, 1000, &wndTimerCallback);
 		bmap = createWinBmap(_outputImg); 
 	}
 	case (WM_CHAR): { if(wParam != 0){
 		GetClientRect(hwnd, &rect);
 		InvalidateRect(hwnd, &rect, FALSE);
 
-        if(keyEvent != NULL){
-            keyEvent(wParam);
+        if(_onKeyEvent != NULL){
+            _onKeyEvent(wParam);
             bmap = createWinBmap(_outputImg);
 	    }
     }
@@ -93,11 +93,13 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case (WM_TIMER): {
         GetClientRect(hwnd, &rect);
         InvalidateRect(hwnd, &rect, FALSE);
-        if(_outputImg != NULL && timerEvent != NULL) bmap = createWinBmap(_outputImg);
+        if(_outputImg != NULL && _onTickEvent != NULL) bmap = createWinBmap(_outputImg);
     }
-    case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN && mouseEvent != NULL){
-        // Translate Data from points to coordinates
-        mouseEvent(0.0, 0.0);
+    case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN && _onPressEvent != NULL){
+        _onPressEvent((double)GET_X_LPARAM(lParam) / RASTERON_WIN_WIDTH, (double)GET_Y_LPARAM(lParam) / RASTERON_WIN_HEIGHT);
+    }}
+    case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN && _onPressEvent != NULL){
+        _onPressEvent((double)GET_X_LPARAM(lParam) / RASTERON_WIN_WIDTH, (double)GET_Y_LPARAM(lParam) / RASTERON_WIN_HEIGHT);
     }}
 	case (WM_CLOSE): {}
 	default: return DefWindowProc(hwnd, message, wParam, lParam);
@@ -110,15 +112,15 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 // --------------------------------   Callable Methods for Demo    -------------------------------- //
 
-void inputLoop(eventLoopCallback callback){
+void _run(){
 #ifdef _WIN32
     createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
-	eventLoop(callback);
+	eventLoop(NULL);
 #elif defined __linux__
     Platform_Context platformContext;
     createWindow(&platformContext, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
 
     XImage* bmap = createUnixBmap(&platformContext, _outputImg);
-    eventLoop(platformContext.display, callback);
+    eventLoop(platformContext.display, NULL);
 #endif
 }

@@ -26,8 +26,8 @@ Rasteron_Queue* internal_alloc_queue(const char* prefix, ImageSize size, unsigne
 void internal_dealloc_queue(Rasteron_Queue* queue);
 #define RASTERON_QUEUE_DEALLOC(queue) (internal_dealloc_queue(queue))
 
-void addFrameAt(Rasteron_Queue* queue, ref_image_t refImage, unsigned short frameIndex); // copies target image into index of queue struct
-Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); // gets frame from an index within queue
+void queue_addImg(Rasteron_Queue* queue, ref_image_t refImage, unsigned short frameIndex); // copies target image into index of queue struct
+Rasteron_Image* queue_getImg(Rasteron_Queue* queue, unsigned short frameIndex); // gets frame from an index within queue
 
 
 // --------------------------------  UI  -------------------------------- //
@@ -36,7 +36,7 @@ Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex); //
 
 enum MENU_Size { MENU_Tiny, MENU_Small, MENU_Medium, MENU_Large, MENU_XL };
 
-enum MENU_ItemState { MENU_None = 0, MENU_On = 1, MENU_Off = 2 };
+enum MENU_ItemState { MENU_None = 0, MENU_On = 1, MENU_Off = 2, MENU_Pre = 3};
 
 #define UI_COLOR_BACKGROUND 0xFF111111
 #define UI_COLOR_FOREGROUND 0xFF333333

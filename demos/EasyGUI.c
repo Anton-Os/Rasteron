@@ -11,13 +11,13 @@
 
 #include "Util_Demo.h"
 
-void keyEvent(char key){}
-void mouseEvent(double x, double y){}
-void timerEvent(unsigned secs){ // WHY THIS DOESNT WORK?
+void _onKeyEvent(char key){}
+void _onPressEvent(double x, double y){}
+void _onTickEvent(unsigned secs){ // WHY THIS DOESNT WORK?
     int index = secs % 5;
 
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    _outputImg = getFrameAt(_mainQueue, index);
+    _outputImg = queue_getImg(_mainQueue, index);
 }
 
 // Rasteron_Image* controlPanelImgOp(enum MENU_Size size){}
@@ -59,11 +59,11 @@ int main(int argc, char** argv) {
     for(unsigned g = 0; g < GUI_COUNT; g++){
         Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH }, UI_COLOR_BACKGROUND);
 
-        Rasteron_Image* insertImg1 = insertImgOp(getFrameAt(sliders[2], g), backgroundImg, 0.0, -0.5); // (-1.0 / GUI_COUNT) * g);
-        Rasteron_Image* insertImg2 = insertImgOp(getFrameAt(dials[2], g), insertImg1, 0.9, -0.5);
-        Rasteron_Image* insertImg3 = insertImgOp(getFrameAt(checks[2], (g % 2) + 1), insertImg2, -0.9, -0.5);
+        Rasteron_Image* insertImg1 = insertImgOp(queue_getImg(sliders[2], g), backgroundImg, 0.0, -0.5); // (-1.0 / GUI_COUNT) * g);
+        Rasteron_Image* insertImg2 = insertImgOp(queue_getImg(dials[2], g), insertImg1, 0.9, -0.5);
+        Rasteron_Image* insertImg3 = insertImgOp(queue_getImg(checks[2], (g % 2) + 1), insertImg2, -0.9, -0.5);
 
-        addFrameAt(_mainQueue, insertImg3, g); // adding background
+        queue_addImg(_mainQueue, insertImg3, g); // adding background
 
         RASTERON_DEALLOC(backgroundImg);
         RASTERON_DEALLOC(insertImg1); RASTERON_DEALLOC(insertImg2); RASTERON_DEALLOC(insertImg3);
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
 
     // Event Loop
 
-    inputLoop(NULL);
+    _run();
 
     // Deallocation
 

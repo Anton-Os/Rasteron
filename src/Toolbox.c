@@ -149,20 +149,21 @@ uint32_t colors_diff(uint32_t color1, uint32_t color2){
 }
 
 uint32_t colors_entwine(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
-	unsigned productColor = (0xFFFFFF & color1) * (0xFFFFFF & color2);
-	unsigned spliceColor = ((unsigned)(pow((double)productColor, 0.5)) * 1) | 0xFF000000;
-	// bitSwitch_RG(&spliceColor, 1);
+	unsigned product = (0xFFFFFF & color1) * (0xFFFFFF & color2);
+	unsigned color = ((unsigned)(pow((double)product, 0.5)) * 1) | 0xFF000000;
+	// bitSwitch_RG(&color, 1);
 
-	return spliceColor;
+	return color;
 }
 
-uint32_t colors_scramble(uint32_t color1, uint32_t color2, double pVal){
+/* uint32_t colors_scramble(uint32_t color1, uint32_t color2, double pVal){
+	// return (rand() / (double)RAND_MAX > pVal)? color1 : color2;
 	uint8_t blueColor = (rand() / (double)RAND_MAX > pVal)? (color1 & 0xFF) : (color2 & 0xFF);
 	uint8_t greenColor = (rand() / (double)RAND_MAX > pVal)? ((color1 & 0xFF00) >> 8) : ((color2 & 0xFF00) >> 8);
 	uint8_t redColor = (rand() / (double)RAND_MAX > pVal)? ((color1 & 0xFF0000) >> 16) : ((color2 & 0xFF0000) >> 16);
 
 	return (uint32_t)((0xFF << 24) + (redColor << 16) + (greenColor << 8) + blueColor);
-}
+} */
 
 uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal){
 	if(bVal <= 0.0) return color1;

@@ -34,7 +34,7 @@ Rasteron_Queue* internal_alloc_queue(const char* prefix, ImageSize size, unsigne
     return queue;
 }
 
-void addFrameAt(Rasteron_Queue* queue, const Rasteron_Image *const refImage, unsigned short frameIndex){
+void queue_addImg(Rasteron_Queue* queue, const Rasteron_Image *const refImage, unsigned short frameIndex){
 	if(frameIndex > queue->frameCount) frameIndex = frameIndex % queue->frameCount; // prevent out-of-bounds
     RASTERON_DEALLOC(*(queue->frameData + frameIndex)); // deleting old image if exists
 
@@ -42,7 +42,7 @@ void addFrameAt(Rasteron_Queue* queue, const Rasteron_Image *const refImage, uns
     *(queue->frameData + frameIndex) = copyImgOp(refImage); // single line copy
 }
 
-Rasteron_Image* getFrameAt(Rasteron_Queue* queue, unsigned short frameIndex){
+Rasteron_Image* queue_getImg(Rasteron_Queue* queue, unsigned short frameIndex){
     if(frameIndex > queue->frameCount) frameIndex = frameIndex % queue->frameCount; // prevent out-of-bounds
 
     queue->index = frameIndex;
@@ -101,10 +101,11 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
     Rasteron_Image* bkImg = noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, internal_ui_bk, internal_ui_bk + 0xFF111111);
     Rasteron_Image* fgImg = gradientImgOp((ImageSize){ menuSize.height, menuSize.width }, SIDE_Bottom, internal_ui_fg, internal_ui_fg + 0x333333);
 
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("icon-btn", menuSize, 3);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("icon-btn", menuSize, 4);
     Rasteron_Image* noneImg = *(menuQueue->frameData + MENU_Off);
     Rasteron_Image* onImg = *(menuQueue->frameData + MENU_On);
     Rasteron_Image* offImg = *(menuQueue->frameData + MENU_None);
+    Rasteron_Image* preImg = *(menuQueue->frameData + MENU_Pre);
 
     unsigned iconPix = 0;
     for(unsigned p = 0; p < menuSize.width * menuSize.height; p++){
@@ -116,13 +117,15 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
             *(offImg->data + p) = *(bkImg->data + p);
             *(onImg->data + p) = *(bkImg->data + p);
             *(noneImg->data + p) = *(bkImg->data + p);
+            *(preImg->data + p) = *(bkImg->data + p);
         }
         else {
             unsigned iconColor = *(finalIconImg->data + iconPix);
             
             *(offImg->data + p) = (iconColor != NO_COLOR)? internal_ui_def : *(fgImg->data + p);
             *(onImg->data + p) = (iconColor != NO_COLOR)? internal_ui_pos : *(fgImg->data + p);
-            *(noneImg->data + p) = (iconColor != NO_COLOR)?  internal_ui_neg : *(fgImg->data + p);
+            *(noneImg->data + p) = (iconColor != NO_COLOR)? internal_ui_neg : *(fgImg->data + p);
+            *(preImg->data + p) = (iconColor != NO_COLOR)? *(fgImg->data + p) : internal_ui_def;
 
             iconPix++;
         }
@@ -145,10 +148,11 @@ Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
     Rasteron_Image* bkImg = noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, internal_ui_bk, internal_ui_bk + 0xFF111111);
     Rasteron_Image* fgImg = gradientImgOp((ImageSize){ menuSize.height, menuSize.width }, SIDE_Bottom, internal_ui_fg, internal_ui_fg + 0x333333);
 
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("check-btn", menuSize, 3);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("check-btn", menuSize, 4);
     Rasteron_Image* checkNoImg = *(menuQueue->frameData + MENU_None);
     Rasteron_Image* checkOnImg = *(menuQueue->frameData + MENU_On);
     Rasteron_Image* checkOffImg = *(menuQueue->frameData + MENU_Off);
+    Rasteron_Image* checkPreImg = *(menuQueue->frameData + MENU_Pre);
 
     for(unsigned p = 0; p < menuSize.width * menuSize.height; p++){
         double x = (1.0 / (double)menuSize.width) * (p % menuSize.width);
@@ -160,11 +164,13 @@ Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
             *(checkNoImg->data + p) = *(bkImg->data + p);
             *(checkOnImg->data + p) = *(bkImg->data + p);
             *(checkOffImg->data + p) = *(bkImg->data + p);
+            *(checkPreImg->data + p) = *(bkImg->data + p);
         }
         else {
             *(checkNoImg->data + p) = *(fgImg->data + p);
             *(checkOnImg->data + p) = *(fgImg->data + p);
             *(checkOffImg->data + p) = *(fgImg->data + p);
+            *(checkPreImg->data + p) = internal_ui_def;
 
             if(((x < y + 0.1F && x > y - 0.1F) || ((1.0 - x) < y + 0.1F && (1.0 - x) > y - 0.1F)) && centerDist < 0.4) 
                 *(checkOffImg->data + p) = internal_ui_neg;

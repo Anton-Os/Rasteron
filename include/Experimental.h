@@ -12,7 +12,7 @@ Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2); 
 Rasteron_Image* typographyImgOp(unsigned color1, unsigned color2); // Drawing text example
 Rasteron_Image* grassNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells); // Mixing and matching various noise functions while adding experimental arguments
 Rasteron_Image* gameOfLifeImgOp(int seedOp); // Seeding and performing cellular logic operations between neighbors iteratively
-Rasteron_Image* patchingImgOp(unsigned short points); // Vornoi and other distance related functions
+Rasteron_Image* geckoImgOp(unsigned short points); // Vornoi and other distance related functions
 Rasteron_Image* mosaicImgOp(double z1, double z2); // Creates a regular repeating triangular pattern
 Rasteron_Image* interferenceImgOp(unsigned short inc, unsigned short dec); // Combines grid tiles, feild operations and seeding to create the result
 Rasteron_Image* perturbImgOp(double xCenter, double yCenter); // Purturbs a cross image using red as x, green as y, and blue for lightness

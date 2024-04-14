@@ -135,102 +135,11 @@ Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2){
     return hypnosisImg; 
 } 
 
-Rasteron_Image* grassNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells){ 
-    ColorGrid grid1 = (ColorGrid){ 8, 8, 0xFFFFFF00, 0xFFFFFFFF };
-    ColorGrid grid2 = (ColorGrid){ 32, 32, 0xFFFF00FF, 0xFF888888 };
-    ColorGrid grid3 = (ColorGrid){ 128, 128, 0xFF00FFFF, 0xFF000000 };
-
-    ColorGridTable gridTable;
-    gridTable.gridCount = 3;
-    gridTable.grids[0] = grid1;
-    gridTable.grids[1] = grid2;
-    gridTable.grids[2] = grid3;
-
-    Rasteron_Image* noiseImg1 = noiseImgOp_value((ImageSize){ xCells, yCells}, grid1);
-    Rasteron_Image* noiseImg2 = noiseImgOp_value((ImageSize){ xCells, yCells}, grid2);
-    Rasteron_Image* noiseImg3 = noiseImgOp_value((ImageSize){ xCells, yCells}, grid3);
-
-    Rasteron_Image* blendImg = (noiseOp % 2 == 0)? blendImgOp(noiseImg1, noiseImg2) : blendImgOp(noiseImg3, noiseImg2);
-    Rasteron_Image* finalImg;
-
-    switch(noiseOp){
-        case 0: finalImg = fusionImgOp(blendImg, noiseImg3); break;
-        case 1: finalImg = fusionImgOp(blendImg, noiseImg1); break;
-        case 2: finalImg = blendImgOp(noiseImg1, noiseImg3); break;
-        default: finalImg = blendImgOp(blendImg, blendImg); break;
-    }
-
-    RASTERON_DEALLOC(noiseImg1); RASTERON_DEALLOC(noiseImg2); RASTERON_DEALLOC(noiseImg3);
-    RASTERON_DEALLOC(blendImg);
-
-    return finalImg;
+static unsigned gecko(unsigned color, double distance){
+    return (distance < 0.15)? color_level(color, 0.15) : (distance < 0.3)? color : color_level(color, 0.85);
 }
 
-/* static unsigned rampantGrowth(unsigned color, unsigned neighbors[8]){
-    if(color == 0xFFFF0000 || color == 0xFF00FFFF) return 0xFFFFFF00;
-    else if(0xFF00FFFF == neighbors[NEBR_Top_Left] || 0xFF00FFFF == neighbors[NEBR_Top_Right] || 0xFF00FFFF == neighbors[NEBR_Bot_Left] || 0xFF00FFFF == neighbors[NEBR_Bot_Right])
-        return 0xFFFF0000;
-    else if(0xFFEEEEEE == neighbors[NEBR_Top] || 0xFFEEEEEE == neighbors[NEBR_Right] || 0xFFEEEEEE == neighbors[NEBR_Left] || 0xFFEEEEEE == neighbors[NEBR_Bot] 
-            || 0xFFFF0000 == neighbors[NEBR_Top] || 0xFFFF0000 == neighbors[NEBR_Right] || 0xFFFF0000 == neighbors[NEBR_Left] || 0xFFFF0000 == neighbors[NEBR_Bot])
-        return 0xFF00FFFF;
-    else if(0xFFEEEEEE == neighbors[NEBR_Top_Left] || 0xFFEEEEEE == neighbors[NEBR_Top_Right] || 0xFFEEEEEE == neighbors[NEBR_Bot_Left] || 0xFFEEEEEE == neighbors[NEBR_Bot_Right])
-        return 0xFFEEEEEE;
-    else if(color == 0xFFEEEEEE) return 0xFFFF0000;
-    else return NO_COLOR;
-}
-
-static unsigned gameOfLife(unsigned color, unsigned neighbors[8]){
-    unsigned short liveCount = 0;
-    unsigned short deadCount = 0;
-
-    for(unsigned n = 0; n < 8; n++){
-        if(neighbors[n] == 0xFFEEEEEE || neighbors[n] == 0xFFFF00FF) liveCount++;
-        else if(neighbors[n] == 0xFF00FFFF || neighbors[n] == 0xFFFF0000) deadCount++;
-    }
-
-    if((color == 0xFFEEEEEE || color == 0xFFFF00FF) && liveCount < 2) return 0xFFFF00FF; // Any live cell with fewer than two live neighbors dies, as if by underpopulation.
-    else if((color == 0xFFEEEEEE || color == 0xFFFF00FF) && (liveCount == 2 || liveCount == 3)) return 0xFF00FFFF; // Any live cell with two or three live neighbors lives on to the next generation.
-    else if((color == 0xFFEEEEEE || color == 0xFFFF00FF) && liveCount > 3) return 0xFFFF0000; // Any live cell with more than three live neighbors dies, as if by overpopulation.
-    else if((color == 0xFF00FFFF || color == 0xFFFF0000) && liveCount == 3) return 0xFFEEEEEE; // Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
-    else return NO_COLOR;
-}
-
-static unsigned lifeEnhance(unsigned color){
-    if(color == 0xFFFF0000 || color == 0xFFFF00FF) return colors_blend(color, 0xFF333333, rand() / (double)RAND_MAX);
-    else if(color == 0xFFEEEEEE || color == 0xFF00FFFF) return colors_blend(color, 0xFF00FF00, rand() / (double)RAND_MAX);
-    else return NO_COLOR;
-}
-
-
-Rasteron_Image* gameOfLifeImgOp(int iterations){
-    ColorPointTable table;
-    table.pointCount = 0;
-
-    unsigned color = 0xFFEEEEEE;
-
-    for(unsigned p = 0; p < MAX_PIXELPOINTS; p++)
-        colorPointToTable(&table, color, rand() / (double)RAND_MAX, rand() / (double)RAND_MAX);
-
-    Rasteron_Image* solidImg = solidImgOp((ImageSize){256, 256}, 0xFF333333);
-    Rasteron_Image* seedImg = seededImgOp(solidImg, &table);
-
-    Rasteron_Image* growthImg = cellwiseExtImgOp(seedImg, rampantGrowth, iterations);
-    Rasteron_Image* conwayImg = cellwiseExtImgOp(growthImg, gameOfLife, iterations);
-    Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ 1024, 1024 }, conwayImg);
-    
-    Rasteron_Image* gameOfLifeImg = recolorImgOp(resizeImg, lifeEnhance);
- 
-    RASTERON_DEALLOC(solidImg); RASTERON_DEALLOC(seedImg);
-    RASTERON_DEALLOC(growthImg); RASTERON_DEALLOC(conwayImg); RASTERON_DEALLOC(resizeImg);
-
-    return gameOfLifeImg; 
-} */
-
-static unsigned patching(unsigned color, double distance){
-    return (distance > 0.15)? color + (0x33 * distance) : color + (0xFF / distance);
-}
-
-Rasteron_Image* patchingImgOp(unsigned short points){ 
+Rasteron_Image* geckoImgOp(unsigned short points){ 
     ColorPointTable colorPointTable;
     colorPointTable.pointCount = points;
 
@@ -242,7 +151,7 @@ Rasteron_Image* patchingImgOp(unsigned short points){
         };
     }
 
-    return fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, patching); 
+    return fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, gecko); 
 }
 
 Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){ 

@@ -40,7 +40,7 @@ void setupCanvas(char input){
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
 		// case 'f': _outputImg = grassNoiseImgOp(mode, 1024, 1024); break; // see TexTool demo
 		// case 'g': _outputImg = gameOfLifeImgOp(mode + 2); break; // see NaturalSim demo
-		case 'f': _outputImg = patchingImgOp((mode + 2) * 5); break;
+		case 'f': _outputImg = geckoImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mosaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
 		case 'h': _outputImg = interferenceImgOp(32, mode + 2); break;
 		case 'i': _outputImg = perturbImgOp(xArg + 0.5F, yArg + 0.5); break;
@@ -65,20 +65,20 @@ void setupCanvas(char input){
 	}
 }
 
-void keyEvent(char key){ if(key != 0) setupCanvas(key); }
-void mouseEvent(double x, double y){ }
-void timerEvent(unsigned secs){}
+void _onKeyEvent(char key){ if(key != 0) setupCanvas(key); }
+void _onPressEvent(double x, double y){ }
+void _onTickEvent(unsigned secs){}
 
 int main(int argc, char** argv) {
 	srand(time(NULL));
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    _outputImg = grassNoiseImgOp(mode, 1024, 1024);
+    _outputImg = geckoImgOp((mode + 2) * 5);
 
 	puts("Please refer to following commands to select images for canvas:");
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities");
 	puts("\nPress numbered keys 0-9 to tweak function parameters and modify the image outputs");
 
-	inputLoop(NULL);
+	_run();
 
 	if(_outputImg != NULL)
 		writeFileImageRaw("Output", IMG_Png, _outputImg->height, _outputImg->width, _outputImg->data);

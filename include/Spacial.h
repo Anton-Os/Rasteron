@@ -1,3 +1,5 @@
+#ifndef RASTERON_SPACE_H
+
 #include "typedef.h"
 
 // --------------------------------   Space    -------------------------------- //
@@ -25,7 +27,7 @@ typedef struct {
 Rasteron_Sprite* loadSprite(const Rasteron_Image* refImage);
 
 void internal_dealloc_sprite(Rasteron_Sprite* sprite);
-#define RASTERON_SPRITE_DEALLOC(sprite) (internal_dealloc_sprite(queue))
+#define RASTERON_SPRITE_DEALLOC(sprite) (internal_dealloc_sprite(sprite))
 
 
 // --------------------------------   Heightmap    -------------------------------- //
@@ -44,3 +46,6 @@ Rasteron_Heightmap* loadHeightmap(ref_image_t refImage); // create heightmap fro
 
 void internal_dealloc_heightmap(Rasteron_Heightmap* heightmap);
 #define RASTERON_HEIGHTMAP_DEALLOC(heightmap) (internal_dealloc_heightmap(heightmap))
+
+#define RASTERON_SPACE_H
+#endif
