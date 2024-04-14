@@ -34,7 +34,7 @@ int main(int argc, char** argv){
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = mapImgOp((ImageSize){1024, 1024}, startPaint); // global canvas for drawing
 
-	_run();
+	_run(); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

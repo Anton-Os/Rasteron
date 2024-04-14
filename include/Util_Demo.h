@@ -20,10 +20,10 @@
 
 // --------------------------------   Objects for Demo    -------------------------------- //
 
-Rasteron_Image* _outputImg; // final image used for drawing
+Rasteron_Image* _outputImg; // final image used for drawing // IMPORTANT!!!
 
 #ifdef RASTERON_ENABLE_ANIM
-Rasteron_Queue* _mainQueue; // main queue used for multiple images
+Rasteron_Queue* _mainQueue; // main queue used for multiple images // IMPORTANT!!!
 #endif
 
 typedef struct {

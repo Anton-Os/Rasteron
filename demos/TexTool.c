@@ -12,37 +12,6 @@ Rasteron_Image* texImages[TEXTOOL_COUNT];
 
 static char texMode = 'a';
 
-/* Rasteron_Image* grassNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells){ 
-    ColorGrid grid1 = (ColorGrid){ 8, 8, 0xFFFFFF00, 0xFFFFFFFF };
-    ColorGrid grid2 = (ColorGrid){ 32, 32, 0xFFFF00FF, 0xFF888888 };
-    ColorGrid grid3 = (ColorGrid){ 128, 128, 0xFF00FFFF, 0xFF000000 };
-
-    ColorGridTable gridTable;
-    gridTable.gridCount = 3;
-    gridTable.grids[0] = grid1;
-    gridTable.grids[1] = grid2;
-    gridTable.grids[2] = grid3;
-
-    Rasteron_Image* noiseImg1 = noiseImgOp_value((ImageSize){ xCells, yCells}, grid1);
-    Rasteron_Image* noiseImg2 = noiseImgOp_value((ImageSize){ xCells, yCells}, grid2);
-    Rasteron_Image* noiseImg3 = noiseImgOp_value((ImageSize){ xCells, yCells}, grid3);
-
-    Rasteron_Image* blendImg = (noiseOp % 2 == 0)? blendImgOp(noiseImg1, noiseImg2) : blendImgOp(noiseImg3, noiseImg2);
-    Rasteron_Image* finalImg;
-
-    switch(noiseOp){
-        case 0: finalImg = fusionImgOp(blendImg, noiseImg3); break;
-        case 1: finalImg = fusionImgOp(blendImg, noiseImg1); break;
-        case 2: finalImg = blendImgOp(noiseImg1, noiseImg3); break;
-        default: finalImg = blendImgOp(blendImg, blendImg); break;
-    }
-
-    RASTERON_DEALLOC(noiseImg1); RASTERON_DEALLOC(noiseImg2); RASTERON_DEALLOC(noiseImg3);
-    RASTERON_DEALLOC(blendImg);
-
-    return finalImg;
-} */
-
 static float noiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
 /* static float noiseMod(float value){ 
     for(float n = 0; n < 5; n++) if(value < (1.0 / 5) * n) return (1.0 / 5) * n;
@@ -58,9 +27,7 @@ static float quiltNoiseMod(float value){
 
 unsigned entwineMix(unsigned color1, unsigned color2){ return colors_entwine(color1, color2); }
 
-// unsigned invertMix(unsigned color1, unsigned color2){ return ((0xFFFFFFFF - (color1 / 2)) + (0xFFFFFFFF - (color2 / 2))) | 0xFF000000; }
 unsigned invertMix(unsigned color1, unsigned color2){ return (0xFFFFFFFF - ((color1 > color2)? color_invert(color1 - color2) : color_invert(color2 - color1))) | 0xFF000000; }
-
 
 unsigned bitwiseMix_AND(unsigned color1, unsigned color2){ return (color1 & color2) | 0xFF000000; }
 
@@ -141,21 +108,21 @@ int main(int argc, char** argv) {
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF333333, 0xFFEEEEEE);
 
-    grids[1] = (ColorGrid){ 2, 2, 0xFF333333, 0xFFEEEEEE }; // texImages[1] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[1]);
-    grids[2] = (ColorGrid){ 4, 8, 0xFF333333, 0xFFEEEEEE }; // texImages[2] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[2]);
-    grids[3] = (ColorGrid){ 8, 4, 0xFF333333, 0xFFEEEEEE }; // texImages[3] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[3]);
-    grids[4] = (ColorGrid){ 16, 16, 0xFF333333, 0xFFEEEEEE }; // texImages[4] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[4]);
-    grids[5] = (ColorGrid){ 16, 32, 0xFF333333, 0xFFEEEEEE }; // texImages[5] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[5]);
-    grids[6] = (ColorGrid){ 32, 16, 0xFF333333, 0xFFEEEEEE }; // texImages[6] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[6]);
-    grids[7] = (ColorGrid){ 64, 64, 0xFF333333, 0xFFEEEEEE }; // texImages[7] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[7]);
-    grids[8] = (ColorGrid){ 128, 128, 0xFF333333, 0xFFEEEEEE }; // texImages[8] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[8]);
-    grids[9] = (ColorGrid){ 256, 256, 0xFF333333, 0xFFEEEEEE }; // texImages[9] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[9]);
-    grids[0] = (ColorGrid){ 512, 512, 0xFF333333, 0xFFEEEEEE }; // texImages[0] = noiseImgOp_value((ImageSize){ 1024, 1024 }, grids[0]);
+    grids[1] = (ColorGrid){ 2, 2, 0xFF333333, 0xFFEEEEEE };
+    grids[2] = (ColorGrid){ 4, 8, 0xFF333333, 0xFFEEEEEE };
+    grids[3] = (ColorGrid){ 8, 4, 0xFF333333, 0xFFEEEEEE };
+    grids[4] = (ColorGrid){ 16, 16, 0xFF333333, 0xFFEEEEEE }; 
+    grids[5] = (ColorGrid){ 16, 32, 0xFF333333, 0xFFEEEEEE };
+    grids[6] = (ColorGrid){ 32, 16, 0xFF333333, 0xFFEEEEEE };
+    grids[7] = (ColorGrid){ 64, 64, 0xFF333333, 0xFFEEEEEE };
+    grids[8] = (ColorGrid){ 128, 128, 0xFF333333, 0xFFEEEEEE };
+    grids[9] = (ColorGrid){ 256, 256, 0xFF333333, 0xFFEEEEEE };
+    grids[0] = (ColorGrid){ 512, 512, 0xFF333333, 0xFFEEEEEE };
 
 
     _mainQueue = RASTERON_QUEUE_ALLOC("tex", createImgSize(1024, 1024), TEXTOOL_COUNT);
 
-    _run();
+    _run(); // system specific initialization and continuous loop
 
     RASTERON_QUEUE_DEALLOC(_mainQueue);
     RASTERON_DEALLOC(_outputImg);

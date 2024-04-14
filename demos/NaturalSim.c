@@ -109,21 +109,17 @@ int main(int argc, char** argv) {
     Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ 1024 / 5, 1024 / 5 }, EMPTY_COLOR); // TODO: Create noise refImg
     Rasteron_Image* growthLifeImg = growLifeImgOp(1, backgroundImg);
     Rasteron_Image* simLifeImg = simulateLifeImgOp(growthLifeImg);
-    // Rasteron_Image* enhanceImg = enhanceImgOp(1, _outputImg);
-
+    
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = resizeImgOp((ImageSize){ 1024, 1024}, simLifeImg);
 
-    // _mainQueue = RASTERON_QUEUE_ALLOC("tex", createImgSize(1024, 1024), NSIM_COUNT);
+    _run(); // system specific initialization and continuous loop
 
-    _run();
-
-    // RASTERON_QUEUE_DEALLOC(_mainQueue);
+    RASTERON_QUEUE_DEALLOC(_mainQueue);
     RASTERON_DEALLOC(_outputImg);
     RASTERON_DEALLOC(backgroundImg);
     RASTERON_DEALLOC(growthLifeImg);
     RASTERON_DEALLOC(simLifeImg);
-    // RASTERON_DEALLOC(enhanceImg);
 
     return 0;
 }
