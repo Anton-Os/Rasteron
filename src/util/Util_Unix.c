@@ -26,24 +26,44 @@ void createWindow(Platform_Context* context, const char* name, unsigned width, u
 	context->visual = DefaultVisual(context->display, screenNum);
 	context->gc = DefaultGC(context->display, screenNum);
 	context->depth = DefaultDepth(context->display, screenNum);
-
-	XSelectInput(context->display, context->window, ExposureMask);
+	
+	XSelectInput(context->display, context->window, KeyPressMask | KeyReleaseMask | ExposureMask |ButtonPressMask);
+	
 	XMapWindow(context->display, context->window);
 	XFlush(context->display);
 	XFlushGC(context->display, context->gc);
 }
 
-void eventLoop(Display* display, eventLoopCallback callback){
+#include <stdio.h>
+
+void eventLoop(Display* display, Window window, eventLoopCallback callback){
+	static char lastKey = ' ';
+	static double cursorPos[2] = { 0.0, 0.0 };
+	static long time = 0;
+
 	XEvent event;
     while(1){
         XNextEvent(display, &event);
-
+        
         switch(event.type){
-		case (KeyPress): return;
-		}
+		case KeyRelease: 
+			KeySym keysym = XLookupKeysym(&event.xkey, 0);
+			lastKey = keysym;
+			break;
+		// case ButtonPress: puts("Mouse button pressed"); break;
+		case ButtonPress: 
+			Window root = RootWindow(display, DefaultScreen(display));
+			int rootX, rootY, childX, childY;
+			unsigned mask;
+			XQueryPointer(display, root, &window, &root, &rootX, &rootY, &childX, &childY, &mask);
+			cursorPos[0] = (double)childX;
+			cursorPos[1] = (double)childY;
+			break;
+		default: break;
+	}
+	
+	if(callback != NULL) callback(lastKey, cursorPos); // process any user interaction here
     }
-
-	if(callback != NULL) callback();
 }
 
 XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data){

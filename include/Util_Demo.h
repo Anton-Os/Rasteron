@@ -108,6 +108,22 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
     }
 }
 
+#elif defined __linux__
+
+Platform_Context unixContext;
+
+void unixProc(char lastKey, double cursorPos[2]){
+	if(_onKeyEvent != NULL) _onKeyEvent(lastKey);
+	if(_onPressEvent != NULL) _onPressEvent(cursorPos[0] / RASTERON_WIN_WIDTH, cursorPos[1] / RASTERON_WIN_HEIGHT);
+	// if(_onTickEvent != NULL) // TODO: Track timer and perform updates
+
+	if(_outputImg != NULL){
+		XImage* bmap = createUnixBmap(&unixContext, _outputImg);
+		drawUnixBmap(&unixContext, bmap);
+		// XDestroyImage(bmap); // destroy after creation
+	}
+}
+
 #endif
 
 // --------------------------------   Callable Methods for Demo    -------------------------------- //
@@ -115,12 +131,9 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 void _run(){
 #ifdef _WIN32
     createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
-	eventLoop(NULL);
+    eventLoop(NULL);
 #elif defined __linux__
-    Platform_Context platformContext;
-    createWindow(&platformContext, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
-
-    XImage* bmap = createUnixBmap(&platformContext, _outputImg);
-    eventLoop(platformContext.display, NULL);
+    createWindow(&unixContext, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
+    eventLoop(unixContext.display, unixContext.window, unixProc);
 #endif
 }
