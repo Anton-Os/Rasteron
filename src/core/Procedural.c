@@ -94,7 +94,7 @@ Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTab
 	return fieldImgOp(size, colorPointTable, callback_vornoi);
 }
 
-Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable){
+/* Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable){
 	assert(refImage != NULL);
 
 	Rasteron_Image* seedImage = copyImgOp(refImage);
@@ -105,9 +105,10 @@ Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPo
 	}
 
 	return seedImage;
-}
+} */
 
 Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid){
+// Rasteron_Image* checkerImgOp(ImageSize size, Rasteron_Image* tileImages[2]){ // TODO: Replace with this
 	Rasteron_Image* checkerImg = RASTERON_ALLOC("checker", size.height, size.width);
 
 	for(unsigned p = 0; p < size.width * size.height; p++){
@@ -117,12 +118,12 @@ Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid){
         unsigned c = x * grid.xCells;
         unsigned r = y * grid.yCells;
 
-        
         if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1))
 			*(checkerImg->data + p) = grid.color1;
         else *(checkerImg->data + p) = grid.color2; 
     }
 
+	// TODO: Change this to enable Truchet tiling
 
 	return checkerImg;
 }

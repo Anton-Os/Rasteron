@@ -2,29 +2,6 @@
 
 static char fullFilePath[1024];
 
-Rasteron_Image* expImgOp(){
-    Rasteron_Image* paintImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
-
-    int direction = 1; // positive
-
-    unsigned color = 0xFF000000 | RAND_COLOR();
-
-    for(unsigned p = 0; p < 1024 * 1024; p++){
-        *(paintImg->data + p) = 0xFF000000 | color;
-
-        if(direction == 1 && color > 0xFFAAFFFF) direction = 0;
-        else if(direction == 0 && color < 0xFF0000AA) direction = 1;
-
-        if(direction) color += rand() % 256;
-        else color -= rand() % 256;
-    }
-
-    Rasteron_Image* mirrorImg = mirrorImgOp(paintImg);
-    Rasteron_Image* experimentalImg = blendImgOp(paintImg, mirrorImg);
-
-    return experimentalImg;
-}
-
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){ 
     genFullFilePath("Logroller.bmp", &fullFilePath);
 
@@ -300,22 +277,59 @@ Rasteron_Image* chemicalsImgOp(unsigned color1, unsigned color2){
     double feed = 0.025;
     double kill = 0.061;
     
-    return expImgOp();
+    // TODO: Generate reaction-diffusion pattern using parameters
+
+    return expImgOp1();
+}
+
+Rasteron_Image* truchetImgOp(unsigned short rows, unsigned short cols){
+    Rasteron_Image* img1 = solidImgOp((ImageSize){ 1024 / 4, 1024 / 4 }, 0xFFFF0000);
+    Rasteron_Image* img2 = solidImgOp((ImageSize){ 1024 / 4, 1024 / 4 }, 0xFF0000FF);
+
+    // TODO: Generate truchet tiling using inputs
+
+    RASTERON_DEALLOC(img1);
+    RASTERON_DEALLOC(img2);
+
+    return expImgOp1(); 
 }
 
 // Placeholder Images
 
-Rasteron_Image* expImgOp1(){ return expImgOp(); }
-Rasteron_Image* expImgOp2(){ return expImgOp(); }
-Rasteron_Image* expImgOp3(){ return expImgOp(); }
-Rasteron_Image* expImgOp4(){ return expImgOp(); }
-Rasteron_Image* expImgOp5(){ return expImgOp(); }
-Rasteron_Image* expImgOp6(){ return expImgOp(); }
-Rasteron_Image* expImgOp7(){ return expImgOp(); }
-Rasteron_Image* expImgOp8(){ return expImgOp(); }
-Rasteron_Image* expImgOp9(){ return expImgOp(); }
-Rasteron_Image* expImgOp10(){ return expImgOp(); }
-Rasteron_Image* expImgOp11(){ return expImgOp(); }
-Rasteron_Image* expImgOp12(){ return expImgOp(); }
-Rasteron_Image* expImgOp13(){ return expImgOp(); }
-Rasteron_Image* expImgOp14(){ return expImgOp(); }
+Rasteron_Image* expImgOp1(){
+    Rasteron_Image* paintImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
+
+    int direction = 1; // positive
+
+    unsigned color = 0xFF000000 | RAND_COLOR();
+
+    for(unsigned p = 0; p < 1024 * 1024; p++){
+        *(paintImg->data + p) = 0xFF000000 | color;
+
+        if(direction == 1 && color > 0xFFAAFFFF) direction = 0;
+        else if(direction == 0 && color < 0xFF0000AA) direction = 1;
+
+        if(direction) color += rand() % 256;
+        else color -= rand() % 256;
+    }
+
+    Rasteron_Image* mirrorImg = mirrorImgOp(paintImg);
+    Rasteron_Image* experimentalImg = blendImgOp(paintImg, mirrorImg);
+
+    return experimentalImg;
+}
+
+
+Rasteron_Image* expImgOp2(){ return expImgOp1(); }
+Rasteron_Image* expImgOp3(){ return expImgOp1(); }
+Rasteron_Image* expImgOp4(){ return expImgOp1(); }
+Rasteron_Image* expImgOp5(){ return expImgOp1(); }
+Rasteron_Image* expImgOp6(){ return expImgOp1(); }
+Rasteron_Image* expImgOp7(){ return expImgOp1(); }
+Rasteron_Image* expImgOp8(){ return expImgOp1(); }
+Rasteron_Image* expImgOp9(){ return expImgOp1(); }
+Rasteron_Image* expImgOp10(){ return expImgOp1(); }
+Rasteron_Image* expImgOp11(){ return expImgOp1(); }
+Rasteron_Image* expImgOp12(){ return expImgOp1(); }
+Rasteron_Image* expImgOp13(){ return expImgOp1(); }
+Rasteron_Image* expImgOp14(){ return expImgOp1(); }

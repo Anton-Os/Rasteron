@@ -47,7 +47,7 @@ void setupCanvas(char input){
 		case 'j': _outputImg = ballingImgOp((double)(mode + 2)); break;
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
 		case 'l': _outputImg = chemicalsImgOp(RAND_COLOR(), RAND_COLOR()); break;
-		case 'm': _outputImg = expImgOp1(); break;
+		case 'm': _outputImg = truchetImgOp(2, 2); break;
 		case 'n': _outputImg = expImgOp2(); break;
 		case 'o': _outputImg = expImgOp3(); break;
 		case 'p': _outputImg = expImgOp4(); break;
@@ -65,7 +65,19 @@ void setupCanvas(char input){
 	}
 }
 
-void _onKeyEvent(char key){ if(key != 0) setupCanvas(key); }
+void _onKeyEvent(char key){
+	static char k = 0;
+
+	// Parsing Step
+	if(key == 0x0D && k != 0){
+		printf("\nEntering your command\n");
+		setupCanvas(k); 
+	}
+	else {
+		putchar(key);
+		k = key;
+	}
+}
 void _onPressEvent(double x, double y){ }
 void _onTickEvent(unsigned secs){}
 

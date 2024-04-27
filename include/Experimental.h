@@ -10,8 +10,6 @@ Rasteron_Image* nestboxesImgOp(double x, double y); // Looped nesting of ever-sm
 Rasteron_Image* lensesImgOp(enum CHANNEL_Type channel); // lenses image to color ranges and performing channel operations
 Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2); // Visual lense effects and enhancements to base image
 Rasteron_Image* typographyImgOp(unsigned color1, unsigned color2); // Drawing text example
-Rasteron_Image* grassNoiseImgOp(int noiseOp, unsigned xCells, unsigned yCells); // Mixing and matching various noise functions while adding experimental arguments
-Rasteron_Image* gameOfLifeImgOp(int seedOp); // Seeding and performing cellular logic operations between neighbors iteratively
 Rasteron_Image* geckoImgOp(unsigned short points); // Vornoi and other distance related functions
 Rasteron_Image* mosaicImgOp(double z1, double z2); // Creates a regular repeating triangular pattern
 Rasteron_Image* interferenceImgOp(unsigned short inc, unsigned short dec); // Combines grid tiles, feild operations and seeding to create the result
@@ -19,8 +17,8 @@ Rasteron_Image* perturbImgOp(double xCenter, double yCenter); // Purturbs a cros
 Rasteron_Image* ballingImgOp(double size); // Black and white blobs transformed into gradients effects
 Rasteron_Image* stratifyImgOp(unsigned short levels); // Stratifies colors into discrete intervals based on brightness
 Rasteron_Image* chemicalsImgOp(unsigned color1, unsigned color2); // TODO: Implement this
+Rasteron_Image* truchetImgOp(unsigned short rows, unsigned short cols); // placeholder for new images
 
-Rasteron_Image* expImgOp(); // placeholder for new images
 Rasteron_Image* expImgOp1(); // placeholder for new images
 Rasteron_Image* expImgOp2(); // placeholder for new images
 Rasteron_Image* expImgOp3(); // placeholder for new images

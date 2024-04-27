@@ -1,4 +1,4 @@
-#include "typeinit.h"
+#include "types.h"
 
 extern int _invertImage = INVERT_IMG_FALSE; // false for within Rasteron
 

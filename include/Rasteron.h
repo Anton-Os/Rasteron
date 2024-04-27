@@ -6,8 +6,7 @@ extern "C"{
 
 #include "Loader.h"
 
-#include "typedef.h"
-#include "typeinit.h"
+#include "types.h"
 
 
 // --------------------------------   Basic Operations    -------------------------------- //
@@ -55,9 +54,9 @@ Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTabl
 Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback); // callbacks to 3 nearest points w distance
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
-Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable);
 Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned color1, unsigned color2);
-Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid);
+Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid); 
+// Rasteron_Image* tiledImgOp(ImageSize size, Rasteron_Image* refImgs[2]);
 
 // --------------------------------  Noise Operations  -------------------------------- //
 //

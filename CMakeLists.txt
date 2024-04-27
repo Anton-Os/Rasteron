@@ -9,7 +9,7 @@ endif()
 # Core Sources
 
 set(core_src
-    src/typeinit.c
+    src/types.c
 
     src/Toolbox.c
     src/Loader.c
@@ -39,6 +39,7 @@ if(WIN32) # Windows Specific
 elseif(UNIX AND NOT APPLE) # Unix Specific
     include(FindX11)
     list(APPEND util_src src/util/Util_Unix.c)
+    SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -lm")
 endif()
 
 

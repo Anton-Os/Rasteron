@@ -23,6 +23,14 @@ typedef struct {
 
 typedef const Rasteron_Image *const ref_image_t;
 
+ImageSize createImgSize(unsigned height, unsigned width);
+
+Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width);
+#define RASTERON_ALLOC(name, height, width) (Rasteron_Image*)(internal_alloc_img(name, height, width))
+
+void internal_dealloc_img(Rasteron_Image* image);
+#define RASTERON_DEALLOC(image) (internal_dealloc_img(image))
+
 // --------------------------------   Swatch    -------------------------------- //
 
 enum SWATCH_Colors {
@@ -37,6 +45,7 @@ typedef struct {
     uint8_t deviation;
 } ColorSwatch;
 
+ColorSwatch createSwatch(unsigned color, uint8_t deviation);
 
 // --------------------------------   PixelPoint & ColorPoint    -------------------------------- //
 
@@ -55,6 +64,11 @@ typedef struct {
 	ColorPoint points[MAX_PIXELPOINTS];
 	unsigned pointCount;
 } ColorPointTable;
+
+void pixelPointToTable(PixelPointTable* table, double xFrac, double yFrac);
+void colorPointToTable(ColorPointTable* table, unsigned color, double xFrac, double yFrac);
+
+typedef unsigned (*colorPointCallback)(double x, double y); // return NO_COLOR or color for color point
 
 // --------------------------------  Noise    -------------------------------- //
 
@@ -93,10 +107,30 @@ typedef struct {
 	NebrTable* tables;
 } NebrTable_List;
 
+NebrTable_List* loadNebrTables(ref_image_t refImage);
+void delNebrTables(NebrTable_List* nebrTables);
+
+nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height);
+uint32_t* neighbor_get(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr);
+unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr);
+
 // --------------------------------   Other    -------------------------------- //
 
 enum FLIP_Type { FLIP_None = -1, FLIP_Clock = 0, FLIP_Counter = 1, FLIP_Upside = 2 };
 enum SIDE_Type { SIDE_None = -1, SIDE_Top = 0, SIDE_Bottom = 1, SIDE_Left = 2, SIDE_Right = 3, SIDE_Radial = 4 };
+
+// --------------------------------   Callbacks    -------------------------------- //
+
+typedef unsigned (*recolorCallback)(unsigned color);
+typedef unsigned (*mixCallback)(unsigned color1, unsigned color2);
+typedef unsigned (*coordCallback)(double x, double y);
+typedef unsigned (*fieldCallback)(unsigned color, double distance);
+typedef unsigned (*fieldCallback3)(unsigned colors[3], double distances[3]);
+
+typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // target and 2 neighbors
+typedef unsigned (*nebrCallback4)(unsigned, unsigned[4]); // target and 4 neighbors
+typedef unsigned (*nebrCallback8)(unsigned, unsigned[8]); // target and all 8 neighbors
+
 
 #define RASTERON_TYPE_H
 #endif
