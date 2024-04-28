@@ -38,8 +38,6 @@ void setupCanvas(char input){
 		case 'c': _outputImg = lensesImgOp(mode); break;
 		case 'd': _outputImg = hypnosisImgOp(mode, 0xFFFFFF00, 0xFF00FFFF); break;
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
-		// case 'f': _outputImg = grassNoiseImgOp(mode, 1024, 1024); break; // see TexTool demo
-		// case 'g': _outputImg = gameOfLifeImgOp(mode + 2); break; // see NaturalSim demo
 		case 'f': _outputImg = geckoImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mosaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
 		case 'h': _outputImg = interferenceImgOp(32, mode + 2); break;
@@ -47,7 +45,7 @@ void setupCanvas(char input){
 		case 'j': _outputImg = ballingImgOp((double)(mode + 2)); break;
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
 		case 'l': _outputImg = chemicalsImgOp(RAND_COLOR(), RAND_COLOR()); break;
-		case 'm': _outputImg = truchetImgOp(2, 2); break;
+		case 'm': _outputImg = truchetImgOp(8, 2); break;
 		case 'n': _outputImg = expImgOp2(); break;
 		case 'o': _outputImg = expImgOp3(); break;
 		case 'p': _outputImg = expImgOp4(); break;

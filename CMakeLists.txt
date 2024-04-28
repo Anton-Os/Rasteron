@@ -11,7 +11,7 @@ endif()
 set(core_src
     src/types.c
 
-    src/Toolbox.c
+    src/tools.c
     src/Loader.c
 
     src/core/Basics.c
@@ -106,9 +106,9 @@ add_executable(TexTool demos/TexTool.c)
 target_include_directories(TexTool PUBLIC include demos)
 target_link_libraries(TexTool Rasteron)
 
-add_executable(NaturalSim demos/NaturalSim.c)
-target_include_directories(NaturalSim PUBLIC include demos)
-target_link_libraries(NaturalSim Rasteron)
+add_executable(SimTool demos/SimTool.c)
+target_include_directories(SimTool PUBLIC include demos)
+target_link_libraries(SimTool Rasteron)
 
 
 ### Installation

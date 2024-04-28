@@ -118,8 +118,7 @@ Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid){
         unsigned c = x * grid.xCells;
         unsigned r = y * grid.yCells;
 
-        if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1))
-			*(checkerImg->data + p) = grid.color1;
+        if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1)) *(checkerImg->data + p) = grid.color1;
         else *(checkerImg->data + p) = grid.color2; 
     }
 

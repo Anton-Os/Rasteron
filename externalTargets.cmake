@@ -83,7 +83,6 @@ if(libtiff_FOUND)
     list(APPEND core_src src/ImgTIFF.c)
 else(NOT libtiff_FOUND)
     set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
-
     message(STATUS "TIFF Support Disabled, build tiff")
 endif(libtiff_FOUND)
 
@@ -99,6 +98,15 @@ ExternalProject_Add(libjpeg
     PREFIX ${LIBJPEG_DIR}
     BINARY_DIR ${LIBJPEG_DIR}/Build
 )
+
+find_package(libjpeg PATHS ${EXTERNAL_INSTALL_DIR}/lib/cmake/libjpeg)
+if(libjpeg_FOUND)
+set(JPEG_SUPPORT_STR "#define USE_IMG_JPEG")
+    message(STATUS "Jpeg Support enabled")
+else()
+    set(JPEG_SUPPORT_STR "// #define USE_IMG_JPEG")
+    message(STATUS "Jpeg Support disabled")
+endif()
 
 # Support for FreeType
 

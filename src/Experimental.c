@@ -273,25 +273,68 @@ Rasteron_Image* stratifyImgOp(unsigned short levels){
     return stratifyImg;
 }
 
-Rasteron_Image* chemicalsImgOp(unsigned color1, unsigned color2){
-    double feed = 0.025;
-    double kill = 0.061;
-    
-    // TODO: Generate reaction-diffusion pattern using parameters
+#define REACTDIFF_ITERS 5
 
-    return expImgOp1();
+static double killRate = 0.1; // 0.061;
+static unsigned chemical1 = 0xFFFF0000;
+static double feedRate = 0.1; // 0.025;
+static unsigned chemical2 = 0xFF0000FF;
+
+unsigned feedOrKill(unsigned color){ 
+    if(color == chemical1) return ((double)rand() / (double)RAND_MAX < killRate)? 0xFF333333 : chemical1; 
+    else return ((double)rand() / (double)RAND_MAX < feedRate)? chemical2 : color;
+}
+
+unsigned reactDiffuse(unsigned color, unsigned neighbors[8]){ return color; } // updates based on diffusion properties and existing color
+
+Rasteron_Image* chemicalsImgOp(unsigned color1, unsigned color2){
+    chemical1 = color1; chemical2 = color2;
+
+    Rasteron_Image* seedImg = solidImgOp((ImageSize){ 1024, 1024 }, color1);
+    for(unsigned i = 0; i < REACTDIFF_ITERS; i++){
+        Rasteron_Image* tempImg = copyImgOp(seedImg);
+        RASTERON_DEALLOC(seedImg);
+        seedImg = recolorImgOp(tempImg, feedOrKill);
+        RASTERON_DEALLOC(tempImg);
+    }
+    Rasteron_Image* chemicalsImg = cellwiseExtImgOp(seedImg, reactDiffuse, 1);
+
+    RASTERON_DEALLOC(seedImg);
+
+    return chemicalsImg;
 }
 
 Rasteron_Image* truchetImgOp(unsigned short rows, unsigned short cols){
-    Rasteron_Image* img1 = solidImgOp((ImageSize){ 1024 / 4, 1024 / 4 }, 0xFFFF0000);
-    Rasteron_Image* img2 = solidImgOp((ImageSize){ 1024 / 4, 1024 / 4 }, 0xFF0000FF);
+    Rasteron_Image* img1 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Bottom, 0xFFFF0000, 0xFF0000FF);
+    Rasteron_Image* img2 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Right, 0xFF00FF00, 0xFFFF00FF);
 
-    // TODO: Generate truchet tiling using inputs
+    Rasteron_Image* comboImgs1[4] = {
+        flipImgOp(img1, FLIP_None), flipImgOp(img1, FLIP_Clock), flipImgOp(img1, FLIP_Upside), flipImgOp(img1, FLIP_Counter)
+    };
 
+    Rasteron_Image* comboImgs2[4] = {
+        flipImgOp(img2, FLIP_None), flipImgOp(img2, FLIP_Clock), flipImgOp(img2, FLIP_Upside), flipImgOp(img2, FLIP_Counter)
+    };
+
+    Rasteron_Image* truchetImg = RASTERON_ALLOC("truchet", 1024, 1024);
+
+    for(unsigned p = 0; p < truchetImg->width * truchetImg->height; p++){
+        double x = (1.0 / (double)1024) * (p % 1024);
+		double y = (1.0 / (double)1024) * (p / 1024);
+
+        unsigned c = x * rows;
+        unsigned r = y * cols;
+
+        if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1)) *(truchetImg->data + p) = *(comboImgs1[c % 4]->data + (p % (1024 / rows)));
+        else *(truchetImg->data + p) = *(comboImgs2[r % 4]->data + (p % (1024 / rows)));
+    }
+
+    for(unsigned i = 0; i < 4; i++) RASTERON_DEALLOC(comboImgs1[i]);
+    for(unsigned i = 0; i < 4; i++) RASTERON_DEALLOC(comboImgs2[i]);
     RASTERON_DEALLOC(img1);
     RASTERON_DEALLOC(img2);
 
-    return expImgOp1(); 
+    return truchetImg; 
 }
 
 // Placeholder Images
@@ -318,7 +361,6 @@ Rasteron_Image* expImgOp1(){
 
     return experimentalImg;
 }
-
 
 Rasteron_Image* expImgOp2(){ return expImgOp1(); }
 Rasteron_Image* expImgOp3(){ return expImgOp1(); }

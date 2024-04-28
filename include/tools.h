@@ -1,4 +1,4 @@
-#ifndef RASTERON_TOOLBOX_H
+#ifndef RASTERON_TOOLS_H
 
 #include "support_def.h"
 #include "types.h"
@@ -38,5 +38,5 @@ unsigned pixPoint_cursorOffset(PixelPoint cursorPos, ref_image_t refImage); // g
 unsigned pixPoint_cursorColor(PixelPoint cursorPos, ref_image_t refImage); // gets pixel color from cursor coordinates
 // TODO: Add a function to calculate direction
 
-#define RASTERON_TOOLBOX_H
+#define RASTERON_TOOLS_H
 #endif

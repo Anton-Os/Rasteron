@@ -10,29 +10,9 @@
 #define KILL_COLOR 0xFFFF0000
 #define OLDKILL_COLOR 0xFFAA0000
 
-ColorPointTable colorPointTable;
+// ColorPointTable colorPointTable;
 
 #include "Util_Demo.h"
-
-Rasteron_Image* growLifeImgOp(unsigned short intensity, Rasteron_Image* refImg){ 
-    for(unsigned p = 0; p < MAX_PIXELPOINTS; p++){
-        double prob = rand() / (double)RAND_MAX;
-
-        unsigned color = NEWLIFE_COLOR;
-        if(prob > 0.9) color = NEWLIFE_COLOR;
-        else if(prob < 0.1) color = OLDKILL_COLOR;
-        else if(prob > 0.5) color = LIFE_COLOR;
-        else if(prob <= 0.5) color = KILL_COLOR;
-
-        double xPos = rand() / (double)RAND_MAX;
-        double yPos = rand() / (double)RAND_MAX;
-
-        // colorPointToTable(&colorPointTable, color, pow(xPos, 5.0), pow(yPos, 5.0));
-        // colorPointToTable(&colorPointTable, color, pow(xPos, (yPos > xPos)? 0.33 : 3.0), pow(yPos, (yPos > xPos < 1.0)? 0.33 : 3.0));
-        colorPointToTable(&colorPointTable, color, pow(xPos, (yPos > xPos)? 0.33 : 3.0), pow(yPos, (yPos > xPos < 1.0)? 0.33 : 3.0));
-    }
-    return seededImgOp(refImg, &colorPointTable);
-}
 
 static unsigned short countLives(unsigned neighbors[8]){
     unsigned short lives = 0;
@@ -76,8 +56,27 @@ static unsigned enhance(unsigned color, unsigned neighbors[8]){
     // else return EMPTY_COLOR; 
 }
 
+Rasteron_Image* growImgOp(unsigned short intensity, Rasteron_Image* refImg){ 
+    Rasteron_Image* growthImg = copyImgOp(refImg);
+    
+    for(unsigned p = 0; p < growthImg->width * growthImg->height; p++){
+        double prob = rand() / (double)RAND_MAX;
 
-Rasteron_Image* simulateLifeImgOp(Rasteron_Image* refImg){ 
+        unsigned color = NEWLIFE_COLOR;
+        if(prob > 0.9) color = NEWLIFE_COLOR;
+        else if(prob < 0.1) color = OLDKILL_COLOR;
+        else if(prob > 0.3) color = LIFE_COLOR;
+        else if(prob <= 0.3) color = KILL_COLOR;
+        else color = EMPTY_COLOR;
+
+        *(growthImg->data + p) = color;
+    }
+    
+    return growthImg;
+}
+
+
+Rasteron_Image* simImgOp(Rasteron_Image* refImg){ 
     for(unsigned i = 0; i < NSIM_COUNT; i++){
         Rasteron_Image* simImg = (i != 0)? cellwiseExtImgOp(refImg, rules, i) : copyImgOp(refImg);
         Rasteron_Image* largeImg = resizeImgOp((ImageSize){ 1024, 1024}, simImg);
@@ -95,20 +94,21 @@ Rasteron_Image* simulateLifeImgOp(Rasteron_Image* refImg){
 void _onKeyEvent(char key){}
 void _onPressEvent(double x, double y){}
 void _onTickEvent(unsigned secs){ 
-    int index = secs % NSIM_COUNT;
+    int index = secs % (NSIM_COUNT - 1);
+    printf("Index is %d", index);
 
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     Rasteron_Image* queueImg = queue_getImg(_mainQueue, index);
     _outputImg = copyImgOp(queueImg);
-    RASTERON_DEALLOC(queueImg);
+    // RASTERON_DEALLOC(queueImg);
 }
 
 int main(int argc, char** argv) {
     _mainQueue = RASTERON_QUEUE_ALLOC("sim", createImgSize(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
 
     Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ 1024 / 5, 1024 / 5 }, EMPTY_COLOR); // TODO: Create noise refImg
-    Rasteron_Image* growthLifeImg = growLifeImgOp(1, backgroundImg);
-    Rasteron_Image* simLifeImg = simulateLifeImgOp(growthLifeImg);
+    Rasteron_Image* growthLifeImg = growImgOp(1, backgroundImg);
+    Rasteron_Image* simLifeImg = simImgOp(growthLifeImg);
     
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = resizeImgOp((ImageSize){ 1024, 1024}, simLifeImg);
