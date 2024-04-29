@@ -16,8 +16,8 @@ Rasteron_Image* interferenceImgOp(unsigned short inc, unsigned short dec); // Co
 Rasteron_Image* perturbImgOp(double xCenter, double yCenter); // Purturbs a cross image using red as x, green as y, and blue for lightness
 Rasteron_Image* ballingImgOp(double size); // Black and white blobs transformed into gradients effects
 Rasteron_Image* stratifyImgOp(unsigned short levels); // Stratifies colors into discrete intervals based on brightness
-Rasteron_Image* chemicalsImgOp(unsigned color1, unsigned color2); // TODO: Implement this
-Rasteron_Image* truchetImgOp(unsigned short rows, unsigned short cols); // placeholder for new images
+Rasteron_Image* foldsImgOp(unsigned color1, unsigned color2); // TODO: Implement this
+Rasteron_Image* edgesImgOp(unsigned short rows, unsigned short cols); // placeholder for new images
 
 Rasteron_Image* expImgOp1(); // placeholder for new images
 Rasteron_Image* expImgOp2(); // placeholder for new images

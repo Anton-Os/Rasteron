@@ -30,7 +30,7 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates
 Rasteron_Image* greyImgOp(ref_image_t refImage); // creates greyscale image
 Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter image
 Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
-// Rasteron_Image* stratifyImgOp(ref_image_t refImage, unsigned short levels);
+Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels); // splits image into levels
 
 // --------------------------------   Mixing Operations    -------------------------------- //
 //

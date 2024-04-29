@@ -95,8 +95,7 @@ void _onKeyEvent(char key){}
 void _onPressEvent(double x, double y){}
 void _onTickEvent(unsigned secs){ 
     int index = secs % (NSIM_COUNT - 1);
-    printf("Index is %d", index);
-
+    
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     Rasteron_Image* queueImg = queue_getImg(_mainQueue, index);
     _outputImg = copyImgOp(queueImg);

@@ -44,8 +44,8 @@ void setupCanvas(char input){
 		case 'i': _outputImg = perturbImgOp(xArg + 0.5F, yArg + 0.5); break;
 		case 'j': _outputImg = ballingImgOp((double)(mode + 2)); break;
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
-		case 'l': _outputImg = chemicalsImgOp(RAND_COLOR(), RAND_COLOR()); break;
-		case 'm': _outputImg = truchetImgOp(8, 2); break;
+		case 'l': _outputImg = foldsImgOp(RAND_COLOR(), RAND_COLOR()); break;
+		case 'm': _outputImg = edgesImgOp(mode + 6, mode + 5); break;
 		case 'n': _outputImg = expImgOp2(); break;
 		case 'o': _outputImg = expImgOp3(); break;
 		case 'p': _outputImg = expImgOp4(); break;

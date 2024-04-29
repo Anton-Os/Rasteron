@@ -37,9 +37,10 @@ Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTabl
 		*(colorPoints + t) = pixPoint_offset((PixelPoint){colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
 		// *(colorPoints + t) = pixPoint_offset({colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
 
+	double pixelSize = 1.0 / (double)(fieldImage->width); // fractional size of a pixel
+
 	for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
-		unsigned color = BLACK_COLOR;
-		double pixelSize = 1.0 / (double)(fieldImage->width); // fractional size of a pixel
+		unsigned color = NO_COLOR;
 		double minDist = 1.0;
 
 		for (unsigned t = 0; t < colorPointTable->pointCount; t++) {
@@ -65,10 +66,12 @@ Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointT
 		// *(colorPoints + t) = pixPoint_offset({colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
 
 	double pixelSize = 1.0 / (double)(fieldImage->width); // fractional size of a pixel
-	double pixColors[3] = { NO_COLOR, NO_COLOR, NO_COLOR };
+	unsigned pixColors[3] = { NO_COLOR, NO_COLOR, NO_COLOR };
 	double pixDistances[3] = { 1.0, 1.0, 1.0 };
 
 	for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
+		pixDistances[0] = 1.0; pixDistances[1] = 1.0; pixDistances[2] = 1.0; // reset
+		// pixColors[0] = NO_COLOR; pixColors[1] = NO_COLOR; pixColors[2] = NO_COLOR; // reset
 		for(unsigned t = 0; t < colorPointTable->pointCount; t++){
 			double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * pixelSize;
 			if(dist < pixDistances[0]){
@@ -122,7 +125,7 @@ Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid){
         else *(checkerImg->data + p) = grid.color2; 
     }
 
-	// TODO: Change this to enable Truchet tiling
+	// TODO: Change this to enable edges tiling
 
 	return checkerImg;
 }
@@ -136,13 +139,13 @@ Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned colo
 		double x = (1.0 / (double)size.width) * (p % size.width);
 		double y = (1.0 / (double)size.height) * (p / size.width);
 
-		if(side == SIDE_Left) *(gradientImg->data + p) = colors_fuse(color1, color2, x);
-		else if(side == SIDE_Right) *(gradientImg->data + p) = colors_fuse(color1, color2, 1.0 - x);
-		if(side == SIDE_Top) *(gradientImg->data + p) = colors_fuse(color1, color2, y);
-		else if(side == SIDE_Bottom) *(gradientImg->data + p) = colors_fuse(color1, color2, 1.0 - y);
+		if(side == SIDE_Left) *(gradientImg->data + p) = colors_blend(color1, color2, x);
+		else if(side == SIDE_Right) *(gradientImg->data + p) = colors_blend(color1, color2, 1.0 - x);
+		if(side == SIDE_Top) *(gradientImg->data + p) = colors_blend(color1, color2, y);
+		else if(side == SIDE_Bottom) *(gradientImg->data + p) = colors_blend(color1, color2, 1.0 - y);
 		else {
 			double centerDist = pix_dist(p, ((size.width * size.height) / 2) + (size.width / 2), size.width) * (1.0 / (double)size.width);
-			*(gradientImg->data + p) = colors_fuse(color1, color2, centerDist);
+			*(gradientImg->data + p) = colors_blend(color1, color2, centerDist);
 		}
 	}
 

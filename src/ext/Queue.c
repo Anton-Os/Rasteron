@@ -101,7 +101,7 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
     Rasteron_Image* bkImg = noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, internal_ui_bk, internal_ui_bk + 0xFF111111);
     Rasteron_Image* fgImg = gradientImgOp((ImageSize){ menuSize.height, menuSize.width }, SIDE_Bottom, internal_ui_fg, internal_ui_fg + 0x333333);
 
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("icon-btn", menuSize, 4);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("button", menuSize, 4);
     Rasteron_Image* noneImg = *(menuQueue->frameData + MENU_Off);
     Rasteron_Image* onImg = *(menuQueue->frameData + MENU_On);
     Rasteron_Image* offImg = *(menuQueue->frameData + MENU_None);
@@ -148,7 +148,7 @@ Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
     Rasteron_Image* bkImg = noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, internal_ui_bk, internal_ui_bk + 0xFF111111);
     Rasteron_Image* fgImg = gradientImgOp((ImageSize){ menuSize.height, menuSize.width }, SIDE_Bottom, internal_ui_fg, internal_ui_fg + 0x333333);
 
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("check-btn", menuSize, 4);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("checkbox", menuSize, 4);
     Rasteron_Image* checkNoImg = *(menuQueue->frameData + MENU_None);
     Rasteron_Image* checkOnImg = *(menuQueue->frameData + MENU_On);
     Rasteron_Image* checkOffImg = *(menuQueue->frameData + MENU_Off);

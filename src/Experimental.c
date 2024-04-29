@@ -254,21 +254,11 @@ Rasteron_Image* stratifyImgOp(unsigned short levels){
     genFullFilePath("Zero+.bmp", &fullFilePath);
 
     Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
-
-    Rasteron_Image* stratifyImg = resizeImgOp((ImageSize){ loadedImg->height / 2, loadedImg->width / 2 }, loadedImg);
-
-    for(unsigned p = 0; p < stratifyImg->width * stratifyImg->height; p++){
-        double colorLevel = grayify8(*(stratifyImg->data + p)) / 256.0;
-        double adjustLevel = 1.0;
-        
-        for(unsigned l = 0; l < levels; l++)
-            if(fabs((l * (1.0 / levels)) - colorLevel) < fabs(adjustLevel - colorLevel))
-                adjustLevel = l * (1.0 / levels);
-
-        *(stratifyImg->data + p) = color_level(*(stratifyImg->data + p), adjustLevel);
-    }
+    Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ loadedImg->height / 2, loadedImg->width / 2 }, loadedImg);
+    Rasteron_Image* stratifyImg = splitImgOp(resizeImg, levels);
 
     RASTERON_DEALLOC(loadedImg);
+    RASTERON_DEALLOC(resizeImg);
 
     return stratifyImg;
 }
@@ -280,61 +270,68 @@ static unsigned chemical1 = 0xFFFF0000;
 static double feedRate = 0.1; // 0.025;
 static unsigned chemical2 = 0xFF0000FF;
 
-unsigned feedOrKill(unsigned color){ 
-    if(color == chemical1) return ((double)rand() / (double)RAND_MAX < killRate)? 0xFF333333 : chemical1; 
-    else return ((double)rand() / (double)RAND_MAX < feedRate)? chemical2 : color;
+/* unsigned reactDiffuse(unsigned color, unsigned neighbors[8]){ 
+    if(neighbors[0] == chemical2 || neighbors[1] == chemical2 || neighbors[2] == chemical2 || neighbors[3] == chemical2 || neighbors[4] == chemical2 || neighbors[5] == chemical2 || neighbors[6] == chemical2 || neighbors[7] == chemical2)
+        return ((double)rand() / (double)RAND_MAX < feedRate)? chemical2 : color;
+    if(neighbors[0] == chemical1 || neighbors[1] == chemical1 || neighbors[2] == chemical1 || neighbors[3] == chemical1 || neighbors[4] == chemical1 || neighbors[5] == chemical1 || neighbors[6] == chemical1 || neighbors[7] == chemical1)
+        return ((double)rand() / (double)RAND_MAX < killRate)? 0xFF333333 : chemical1;
+    return color; 
+} */
+
+unsigned grainPattern(unsigned color){ 
+    if(color == chemical1) return ((double)rand() / (double)RAND_MAX < 0.1)? 0xFF333333 : chemical1; 
+    else return ((double)rand() / (double)RAND_MAX < 0.1)? chemical2 : color;
 }
 
-unsigned reactDiffuse(unsigned color, unsigned neighbors[8]){ return color; } // updates based on diffusion properties and existing color
+unsigned napkin(unsigned color, unsigned neighbors[2]){ return colors_blend(neighbors[0], neighbors[1], 0.5); }
 
-Rasteron_Image* chemicalsImgOp(unsigned color1, unsigned color2){
+Rasteron_Image* foldsImgOp(unsigned color1, unsigned color2){
     chemical1 = color1; chemical2 = color2;
 
     Rasteron_Image* seedImg = solidImgOp((ImageSize){ 1024, 1024 }, color1);
     for(unsigned i = 0; i < REACTDIFF_ITERS; i++){
         Rasteron_Image* tempImg = copyImgOp(seedImg);
         RASTERON_DEALLOC(seedImg);
-        seedImg = recolorImgOp(tempImg, feedOrKill);
+        seedImg = recolorImgOp(tempImg, grainPattern);
         RASTERON_DEALLOC(tempImg);
     }
-    Rasteron_Image* chemicalsImg = cellwiseExtImgOp(seedImg, reactDiffuse, 1);
+    Rasteron_Image* napkinImg = cellwiseRowImgOp(seedImg, napkin);// cellwiseExtImgOp(seedImg, reactDiffuse, 1);
+    Rasteron_Image* gradientImg = gradientImgOp((ImageSize){ 1024, 1024}, SIDE_Bottom, color1, color2);
+    Rasteron_Image* finalImg = copyImgOp(napkinImg); // fusionImgOp(gradientImg, napkinImg, 0.75);
 
     RASTERON_DEALLOC(seedImg);
+    RASTERON_DEALLOC(gradientImg);
+    RASTERON_DEALLOC(napkinImg);
 
-    return chemicalsImg;
+    return finalImg;
 }
 
-Rasteron_Image* truchetImgOp(unsigned short rows, unsigned short cols){
+Rasteron_Image* edgesImgOp(unsigned short rows, unsigned short cols){
     Rasteron_Image* img1 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Bottom, 0xFFFF0000, 0xFF0000FF);
-    Rasteron_Image* img2 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Right, 0xFF00FF00, 0xFFFF00FF);
 
     Rasteron_Image* comboImgs1[4] = {
-        flipImgOp(img1, FLIP_None), flipImgOp(img1, FLIP_Clock), flipImgOp(img1, FLIP_Upside), flipImgOp(img1, FLIP_Counter)
+        flipImgOp(img1, FLIP_Counter), flipImgOp(img1, FLIP_Upside), flipImgOp(img1, FLIP_None), flipImgOp(img1, FLIP_Clock)
     };
 
-    Rasteron_Image* comboImgs2[4] = {
-        flipImgOp(img2, FLIP_None), flipImgOp(img2, FLIP_Clock), flipImgOp(img2, FLIP_Upside), flipImgOp(img2, FLIP_Counter)
-    };
+    Rasteron_Image* edgesImg = RASTERON_ALLOC("edges", 1024, 1024);
 
-    Rasteron_Image* truchetImg = RASTERON_ALLOC("truchet", 1024, 1024);
-
-    for(unsigned p = 0; p < truchetImg->width * truchetImg->height; p++){
+    for(unsigned p = 0; p < edgesImg->width * edgesImg->height; p++){
         double x = (1.0 / (double)1024) * (p % 1024);
 		double y = (1.0 / (double)1024) * (p / 1024);
 
         unsigned c = x * rows;
         unsigned r = y * cols;
 
-        if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1)) *(truchetImg->data + p) = *(comboImgs1[c % 4]->data + (p % (1024 / rows)));
-        else *(truchetImg->data + p) = *(comboImgs2[r % 4]->data + (p % (1024 / rows)));
+        /* if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1)) *(edgesImg->data + p) = *(comboImgs1[c % 4]->data + (p % (1024 / rows)));
+        else *(edgesImg->data + p) = *(comboImgs2[r % 4]->data + (p % (1024 / rows))); */
+
+        *(edgesImg->data + p) = *(comboImgs1[c % 3]->data + (p % (1024 / rows)));
     }
 
     for(unsigned i = 0; i < 4; i++) RASTERON_DEALLOC(comboImgs1[i]);
-    for(unsigned i = 0; i < 4; i++) RASTERON_DEALLOC(comboImgs2[i]);
     RASTERON_DEALLOC(img1);
-    RASTERON_DEALLOC(img2);
 
-    return truchetImg; 
+    return edgesImg; 
 }
 
 // Placeholder Images

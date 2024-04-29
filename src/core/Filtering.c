@@ -55,3 +55,20 @@ Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel) {
 	RASTERON_DEALLOC(greyImage);
 	return channelImage;
 }
+
+Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels){
+	Rasteron_Image* splitImg = copyImgOp(refImage);
+
+	for(unsigned p = 0; p < splitImg->width * splitImg->height; p++){
+        double colorLevel = grayify8(*(splitImg->data + p)) / 256.0;
+        double adjustLevel = 1.0;
+        
+        for(unsigned l = 0; l < levels; l++)
+            if(fabs((l * (1.0 / levels)) - colorLevel) < fabs(adjustLevel - colorLevel))
+                adjustLevel = l * (1.0 / levels);
+
+        *(splitImg->data + p) = color_level(*(splitImg->data + p), adjustLevel);
+    }
+
+	return splitImg;
+}
