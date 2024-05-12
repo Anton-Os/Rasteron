@@ -22,19 +22,13 @@
 #define GREEN_CHANNEL 0x0000FF00 // green channel mask from third two bytes
 #define BLUE_CHANNEL 0x000000FF // blue channel mask from last two bytes
 
-typedef enum {
-    CHANNEL_Alpha = -1,
-    CHANNEL_Red = 0,
-    CHANNEL_Green = 1,
-    CHANNEL_Blue = 2
-} CHANNEL_Type;
-
 #define TWOPOWER(x) (1 << (x))
 
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <malloc.h>
 #include <time.h>
 #include <math.h>
 

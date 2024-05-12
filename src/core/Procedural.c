@@ -2,21 +2,6 @@
 
 static unsigned callback_vornoi(unsigned color, double distance){ return color; }
 
-Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback){
-	assert(refImage != NULL);
-    
-    Rasteron_Image* recolorImage = RASTERON_ALLOC("recolor", refImage->height, refImage->width);
-
-	for(unsigned p = 0; p < recolorImage->width * recolorImage->height; p++){
-		unsigned newColor = callback(*(refImage->data + p));
-		if(newColor != NO_COLOR) *(recolorImage->data + p) = newColor; // override color
-		else *(recolorImage->data + p) = *(refImage->data + p); // preserve
-	}
-
-	return recolorImage;
-}
-
-
 Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback){
 	Rasteron_Image* mappedImage = RASTERON_ALLOC("map", size.height, size.width);
 

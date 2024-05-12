@@ -2,14 +2,13 @@
 
 #include "Rasteron.h"
 
+#define OCTAVES 3
 #define TEXTOOL_COUNT 10
 
 #include "Util_Demo.h"
 
-ColorGrid grids[TEXTOOL_COUNT];
-
-Rasteron_Image* texImages[TEXTOOL_COUNT];
-
+Rasteron_Image* savedImg = NULL; // always keep a record of last image
+ColorGrid grids[TEXTOOL_COUNT]; // grids used for noise calculations
 static char texMode = 'a';
 
 static float noiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
@@ -25,17 +24,13 @@ static float quiltNoiseMod(float value){
 	return newMod;
 }
 
-unsigned entwineMix(unsigned color1, unsigned color2){ return colors_entwine(color1, color2); }
+unsigned bluerayMix(unsigned color1, unsigned color2){ return colors_blueray(color1, color2); }
 
 unsigned invertMix(unsigned color1, unsigned color2){ return (0xFFFFFFFF - ((color1 > color2)? color_invert(color1 - color2) : color_invert(color2 - color1))) | 0xFF000000; }
 
 unsigned bitwiseMix_AND(unsigned color1, unsigned color2){ return (color1 & color2) | 0xFF000000; }
 
 unsigned bitwiseMix_OR(unsigned color1, unsigned color2){ return (color1 | color2) | 0xFF000000; }
-
-
-#define OCTAVES 3
-
 
 Rasteron_Image* createTex(char t, unsigned m){
     switch(tolower(t)){
@@ -56,7 +51,8 @@ Rasteron_Image* createTex(char t, unsigned m){
 void _onKeyEvent(char key){ 
     static unsigned mode = 0;
 
-    if(key - '0' >= 0 && key - '0' < TEXTOOL_COUNT) mode = key - '0';
+    if(key - '0' >= 0 && key - '0' < 10) mode = key - '0';
+    else if(isspace(key) && _outputImg != NULL) saveToFile(_outputImg);
     else if(tolower(key) == 'q' || tolower(key) == 'w' || tolower(key) == 'e' || tolower(key) == 'r' || tolower(key) == 't' || tolower(key) == 'y' || tolower(key) == 'u' || tolower(key) == 'i' || tolower(key) == 'o' || tolower(key) == 'p'){
         switch(tolower(key)){
             case 'w': grids[mode].color1 = 0xFF0000FF; grids[mode].color2 = 0xFFFF0000; break;
@@ -79,23 +75,26 @@ void _onKeyEvent(char key){
     _outputImg = createTex(texMode, mode);
 
     if(_outputImg != NULL){
-        Rasteron_Image* savedImg = copyImgOp(_outputImg);
-        Rasteron_Image* mixinImg = createTex(texMode, mode);
+        Rasteron_Image* currentImg = copyImgOp(_outputImg);
+        Rasteron_Image* mixerImg = createTex(texMode, mode);
 
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
-            case 'z': _outputImg = blendImgOp(savedImg, mixinImg); break;
-            case 'x': _outputImg = fusionImgOp(savedImg, mixinImg); break;
-            case 'c': _outputImg = warpingImgOp(savedImg, mixinImg); break;
-            case 'v': _outputImg = mixingImgOp(savedImg, mixinImg, entwineMix); break;
-            case 'b': _outputImg = mixingImgOp(savedImg, mixinImg, invertMix); break;
-            case 'n': _outputImg = mixingImgOp(savedImg, mixinImg, bitwiseMix_AND); break;
-            case 'm': _outputImg = mixingImgOp(savedImg, mixinImg, bitwiseMix_OR); break;
-            default: _outputImg = copyImgOp(savedImg); break;
+            case 'z': _outputImg = blendImgOp(currentImg, mixerImg); break;
+            case 'x': _outputImg = fusionImgOp(currentImg, mixerImg); break;
+            case 'c': _outputImg = warpingImgOp(currentImg, mixerImg); break;
+            case 'v': _outputImg = mixingImgOp(currentImg, mixerImg, bluerayMix); break;
+            case 'b': _outputImg = mixingImgOp(currentImg, mixerImg, invertMix); break;
+            case 'n': _outputImg = mixingImgOp(currentImg, mixerImg, bitwiseMix_AND); break;
+            case 'm': _outputImg = mixingImgOp(currentImg, mixerImg, bitwiseMix_OR); break;
+            default: _outputImg = copyImgOp(currentImg); break;
         }
-        RASTERON_DEALLOC(savedImg);
-        RASTERON_DEALLOC(mixinImg);
+        RASTERON_DEALLOC(currentImg);
+        RASTERON_DEALLOC(mixerImg);
     }
+
+    if(savedImg != NULL) RASTERON_DEALLOC(savedImg);
+    savedImg = copyImgOp(_outputImg); 
 }
 void _onPressEvent(double x, double y){}
 void _onTickEvent(unsigned secs){
@@ -122,11 +121,10 @@ int main(int argc, char** argv) {
 
     _mainQueue = RASTERON_QUEUE_ALLOC("tex", createImgSize(1024, 1024), TEXTOOL_COUNT);
 
-    _run(); // system specific initialization and continuous loop
+    _run(argc, argv, NULL); // system specific initialization and continuous loop
 
     RASTERON_QUEUE_DEALLOC(_mainQueue);
     RASTERON_DEALLOC(_outputImg);
-    for(unsigned n = 0; n < TEXTOOL_COUNT; n++) RASTERON_DEALLOC(texImages[n]);
 
     return 0;
 }

@@ -40,13 +40,12 @@ typedef struct {
 } Rasteron_Message;
 
 extern FT_Library _freetypeLib; // internal freetype library
-// static unsigned _textSize = FONT_SIZE_MED; // text size type
 
 void initFreeType();
 void cleanupFreeType();
 
-Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size); // regular
-Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size);
+Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size); // TODO: Needs to be optimized!
+Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size); // TODO: Needs to be optimized!
 
 #define RASTERON_FONT_H
 #endif

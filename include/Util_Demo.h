@@ -56,6 +56,7 @@ unsigned elapseSecs = 0;
 void _onKeyEvent(char key);
 void _onPressEvent(double x, double y);
 void _onTickEvent(unsigned secs);
+typedef void (*argCallback)(int argc, char** argv);
 
 // --------------------------------   Porting layer for Demo    -------------------------------- //
 
@@ -81,6 +82,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		GetClientRect(hwnd, &rect);
 		InvalidateRect(hwnd, &rect, FALSE);
 
+        // TODO: Save image on special sequence
         if(_onKeyEvent != NULL){
             _onKeyEvent(wParam);
             bmap = createWinBmap(_outputImg);
@@ -128,7 +130,32 @@ void unixProc(char lastKey, double cursorPos[2]){
 
 // --------------------------------   Callable Methods for Demo    -------------------------------- //
 
-void _run(){
+static void saveToFile(const Rasteron_Image* image){ // TODO: Support more image types
+    assert(image != NULL);
+
+    char fileName[1024];
+
+    strcpy(fileName, image->name);
+    strcat(fileName, ".png");
+
+    unsigned short iters = 0;
+    while(access(fileName, F_OK) == 0){
+        iters++;
+
+        char* tempFileName = "";
+        strncpy(tempFileName, fileName, strlen(fileName) - ((iters > 1)? 6 : 4));
+
+        char newFileName[1024];
+        sprintf(newFileName, "%s-%d", tempFileName, iters);
+        strcat(newFileName, ".png");
+
+        strcpy(fileName, newFileName);
+    }
+    writeFileImageRaw(fileName, IMG_Png, image->height, image->width, image->data);
+}
+
+void _run(int argc, char** argv, argCallback callback){
+    if(callback != NULL) callback(argc, argv);
 #ifdef _WIN32
     createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
     eventLoop(NULL);

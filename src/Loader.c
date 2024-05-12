@@ -11,7 +11,7 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
 		'\0'
     }; // gets the last 3 letters of a file extension
 
-    if(! strcmp(extension, "bmp")) // bmp file check
+    if(!strcmp(extension, "bmp")) // bmp file check
         return IMG_Bmp;
     else if(! strcmp(extension, "png")) // png file check
         return IMG_Png;
@@ -43,13 +43,22 @@ void loadFromFile(const char* fileName, FileImage* image){
 void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data){
     switch(format){
 #ifdef USE_IMG_PNG
-	case IMG_Png: writeFileImageRaw_PNG(fileName, height, width, data); break;
+	case IMG_Png: 
+        // if(!strcmp(fileName, "png")) strcat(fileName, ".png");
+        writeFileImageRaw_PNG(fileName, height, width, data); 
+        break;
 #endif
 #ifdef USE_IMG_TIFF
-	case IMG_Tiff: writeFileImageRaw_TIFF(fileName, height, width, data); break;
+	case IMG_Tiff: 
+        // if(!strcmp(fileName, "iff") || !strcmp(fileName, "tif")) strcat(fileName, ".tiff");
+        writeFileImageRaw_TIFF(fileName, height, width, data); 
+        break;
 #endif
 #ifdef USE_IMG_BMP
-	case IMG_Bmp: writeFileImageRaw_BMP(fileName, height, width, data); break;
+	case IMG_Bmp: 
+        // if(!strcmp(fileName, "bmp")) strcat(fileName, ".bmp");
+        writeFileImageRaw_BMP(fileName, height, width, data); 
+        break;
 #endif
 	default: perror("Image Format not supported!"); break;
     }

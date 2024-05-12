@@ -110,18 +110,17 @@ typedef struct {
 NebrTable_List* loadNebrTables(ref_image_t refImage);
 void delNebrTables(NebrTable_List* nebrTables);
 
-nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height);
-uint32_t* neighbor_get(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr);
-unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr);
+// --------------------------------   Enums    -------------------------------- //
 
-// --------------------------------   Other    -------------------------------- //
-
+typedef enum { CHANNEL_Alpha = -1, CHANNEL_Red = 0, CHANNEL_Green = 1, CHANNEL_Blue = 2 } CHANNEL_Type;
 enum FLIP_Type { FLIP_None = -1, FLIP_Clock = 0, FLIP_Counter = 1, FLIP_Upside = 2 };
+enum TILE_Type { TILE_Square = 0, TILE_Triangle = 1, TILE_Hexagon = 2 };
 enum SIDE_Type { SIDE_None = -1, SIDE_Top = 0, SIDE_Bottom = 1, SIDE_Left = 2, SIDE_Right = 3, SIDE_Radial = 4 };
 
 // --------------------------------   Callbacks    -------------------------------- //
 
 typedef unsigned (*recolorCallback)(unsigned color);
+
 typedef unsigned (*mixCallback)(unsigned color1, unsigned color2);
 typedef unsigned (*coordCallback)(double x, double y);
 typedef unsigned (*fieldCallback)(unsigned color, double distance);

@@ -14,7 +14,7 @@ static char keysave = 'd';
 
 #include "Util_Demo.h"
 
-void setupCanvas(char input){
+void setup(char input){
 	if(isalnum(input)) {
 		if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
 		if(isalpha(input)) keysave = (char)tolower(input);
@@ -39,26 +39,26 @@ void setupCanvas(char input){
 		case 'd': _outputImg = hypnosisImgOp(mode, 0xFFFFFF00, 0xFF00FFFF); break;
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
 		case 'f': _outputImg = geckoImgOp((mode + 2) * 5); break;
-		case 'g': _outputImg = mosaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
+		case 'g': _outputImg = mozaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
 		case 'h': _outputImg = interferenceImgOp(32, mode + 2); break;
 		case 'i': _outputImg = perturbImgOp(xArg + 0.5F, yArg + 0.5); break;
 		case 'j': _outputImg = ballingImgOp((double)(mode + 2)); break;
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
-		case 'l': _outputImg = foldsImgOp(RAND_COLOR(), RAND_COLOR()); break;
-		case 'm': _outputImg = edgesImgOp(mode + 6, mode + 5); break;
-		case 'n': _outputImg = expImgOp2(); break;
-		case 'o': _outputImg = expImgOp3(); break;
-		case 'p': _outputImg = expImgOp4(); break;
-		case 'q': _outputImg = expImgOp5(); break;
-		case 'r': _outputImg = expImgOp6(); break;
-		case 's': _outputImg = expImgOp7(); break;
-		case 't': _outputImg = expImgOp8(); break;
-		case 'u': _outputImg = expImgOp9(); break;
-		case 'v': _outputImg = expImgOp10(); break;
-		case 'w': _outputImg = expImgOp11(); break;
-		case 'x': _outputImg = expImgOp12(); break;
-		case 'y': _outputImg = expImgOp13(); break;
-		case 'z': _outputImg = expImgOp14(); break;
+		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
+		case 'm': _outputImg = combImgOp(mode + 6, mode + 5); break;
+		case 'n': _outputImg = truschetImgOp(2, 2); break;
+		case 'o': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
+		case 'p': _outputImg = expImgOp2(); break;
+		case 'q': _outputImg = expImgOp3(); break;
+		case 'r': _outputImg = expImgOp4(); break;
+		case 's': _outputImg = expImgOp5(); break;
+		case 't': _outputImg = expImgOp6(); break;
+		case 'u': _outputImg = expImgOp7(); break;
+		case 'v': _outputImg = expImgOp8(); break;
+		case 'w': _outputImg = expImgOp9(); break;
+		case 'x': _outputImg = expImgOp10(); break;
+		case 'y': _outputImg = expImgOp11(); break;
+		case 'z': _outputImg = expImgOp12(); break;
 		default: _outputImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR()); break;
 	}
 }
@@ -69,7 +69,7 @@ void _onKeyEvent(char key){
 	// Parsing Step
 	if(key == 0x0D && k != 0){
 		printf("\nEntering your command\n");
-		setupCanvas(k); 
+		setup(k); 
 	}
 	else {
 		putchar(key);
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities");
 	puts("\nPress numbered keys 0-9 to tweak function parameters and modify the image outputs");
 
-	_run(); // system specific initialization and continuous loop
+	_run(argc, argv, NULL); // system specific initialization and continuous loop
 
 	if(_outputImg != NULL)
 		writeFileImageRaw("Output", IMG_Png, _outputImg->height, _outputImg->width, _outputImg->data);

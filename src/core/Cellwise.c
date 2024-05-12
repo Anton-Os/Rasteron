@@ -14,30 +14,15 @@ static Rasteron_Image* cellwiseImgOp_nebr8(ref_image_t refImage, nebrCallback8 c
 		unsigned br, b, bl, r, l, tr, t, tl;
 
 		unsigned short i = 0; // index to keep track of neighbor
-		if (currentTable->flags & (1 << NEBR_Bot_Right)) {
-			br = *(*(currentTable->nebrs + i)); i++;
-		} else br = NO_COLOR;
-		if (currentTable->flags & (1 << NEBR_Bot)) {
-			b = *(*(currentTable->nebrs + i)); i++;
-		} else b = NO_COLOR;
-		if (currentTable->flags & (1 << NEBR_Bot_Left)) {
-			bl = *(*(currentTable->nebrs + i)); i++;
-		} else bl = NO_COLOR;
-		if (currentTable->flags & (1 << NEBR_Right)) {
-			r = *(*(currentTable->nebrs + i)); i++;
-		} else r = NO_COLOR;
-		if (currentTable->flags & (1 << NEBR_Left)) {
-			l = *(*(currentTable->nebrs + i)); i++;
-		} else l = NO_COLOR;
-		if (currentTable->flags & (1 << NEBR_Top_Right)) {
-			tr = *(*(currentTable->nebrs + i)); i++;
-		} else tr = NO_COLOR;
-		if (currentTable->flags & (1 << NEBR_Top)) {
-			t = *(*(currentTable->nebrs + i)); i++;
-		} else t = NO_COLOR;
-		if (currentTable->flags & (1 << NEBR_Top_Left)) {
-			tl = *(*(currentTable->nebrs + i)); i++;
-		} else tl = NO_COLOR;
+
+		br = (currentTable->flags & (1 << NEBR_Bot_Right))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
+		b = (currentTable->flags & (1 << NEBR_Bot))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
+		bl = (currentTable->flags & (1 << NEBR_Bot_Left))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
+		r = (currentTable->flags & (1 << NEBR_Right))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
+		l = (currentTable->flags & (1 << NEBR_Left))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
+		tr = (currentTable->flags & (1 << NEBR_Top_Right))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
+		t = (currentTable->flags & (1 << NEBR_Top))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
+		tl = (currentTable->flags & (1 << NEBR_Top_Left))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
 
 		unsigned nebrs[] = { br, b, bl, r, l, tr, t, tl };
 
@@ -114,7 +99,7 @@ Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback){
 
 Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
 	assert(refImage != NULL);
-	if(iterations == 0) return copyImgOp(refImage);
+	if(iterations <= 0) return copyImgOp(refImage);
 	
 	Rasteron_Image* patternImage = copyImgOp(refImage);
 

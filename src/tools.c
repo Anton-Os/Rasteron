@@ -148,7 +148,7 @@ uint32_t colors_diff(uint32_t color1, uint32_t color2){
 	else return (color2 - color1) | (0xFF000000 & color2);
 }
 
-uint32_t colors_entwine(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
+uint32_t colors_blueray(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
 	unsigned product = (0xFFFFFF & color1) * (0xFFFFFF & color2);
 	unsigned color = ((unsigned)(pow((double)product, 0.5)) * 1) | 0xFF000000;
 	// bitSwitch_RG(&color, 1);
@@ -253,3 +253,64 @@ unsigned pixPoint_cursorOffset(PixelPoint pixPoint, ref_image_t refImage){
 unsigned pixPoint_cursorColor(PixelPoint cursorPos, ref_image_t refImage){
 	return *(refImage->data + pixPoint_cursorOffset(cursorPos, refImage));
 }
+
+static void setFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target | (1 << (flagBit))); }
+
+static void clearFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target & (~(1 << (flagBit)))); }
+
+nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height){
+    nebrFlags flags = 0xFF;
+
+    if(index < width){ // clear top flags
+        clearFlagBit(&flags, NEBR_Top_Left); clearFlagBit(&flags, NEBR_Top); clearFlagBit(&flags, NEBR_Top_Right);
+    } else if((width * height) - index - 1 < width){ // clear bottom flags
+        clearFlagBit(&flags, NEBR_Bot_Left); clearFlagBit(&flags, NEBR_Bot); clearFlagBit(&flags, NEBR_Bot_Right);
+    }
+
+	if(index % width == 0){ // clear left flags
+        clearFlagBit(&flags, NEBR_Top_Left); clearFlagBit(&flags, NEBR_Left); clearFlagBit(&flags, NEBR_Bot_Left);
+    } else if(index % width == width - 1){ // clear right flags
+        clearFlagBit(&flags, NEBR_Top_Right); clearFlagBit(&flags, NEBR_Right); clearFlagBit(&flags, NEBR_Bot_Right);
+    }
+
+    return flags;
+}
+
+unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr){
+	switch (whichNebr) {
+		case NEBR_Bot_Right: return offset + width + 1;
+		case NEBR_Bot: return offset + width;
+		case NEBR_Bot_Left: return offset + width - 1;
+		case NEBR_Right: return offset + 1;
+		case NEBR_Left: return offset - 1;
+		case NEBR_Top_Right: offset - width + 1;
+		case NEBR_Top: return offset - width;
+		case NEBR_Top_Left: return offset - width - 1;
+		default: return offset;
+	}
+}
+
+uint32_t* neighbor_get(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr){
+	const uint32_t* target = refImage->data + neighbor_getOffset(refImage->width, index, whichNebr);
+	return target;
+}
+
+unsigned short neighbor_count(unsigned color, unsigned neighbors[8]){
+	unsigned short count = 0;
+    for(unsigned n = 0; n < 8; n++) if(neighbors[n] == color) count++;
+    return count;
+}
+
+/* static unsigned getAvgNebrColor(const NebrTable_List* nebrTables, unsigned offset){
+	unsigned nebrCount = 0;
+	for(unsigned n = 0; n < NEBR_COUNT; n++) 
+		if((nebrTables->tables + offset)->flags | (1 << n)) nebrCount++;
+
+	unsigned long avgColor = 0;
+	for(unsigned n = 0; n < nebrCount; n++)
+		avgColor += *(*((nebrTables->tables + offset)->nebrs + n));
+
+	printf("Neighbor count is %d", nebrCount); // testing
+
+	return (unsigned)(avgColor / nebrCount);
+} */

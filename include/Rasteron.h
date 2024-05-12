@@ -7,6 +7,7 @@ extern "C"{
 #include "Loader.h"
 
 #include "types.h"
+#include "tools.h"
 
 
 // --------------------------------   Basic Operations    -------------------------------- //
@@ -27,10 +28,13 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates
 //
 //      Distills an image by modifying data by channels
 
+Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback); // callbacks from input color
 Rasteron_Image* greyImgOp(ref_image_t refImage); // creates greyscale image
 Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter image
 Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
 Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels); // splits image into levels
+
+// TODO: Add operations to map colors to different values including switching color bits
 
 // --------------------------------   Mixing Operations    -------------------------------- //
 //
@@ -48,15 +52,13 @@ Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage); // 
 //
 //      Generates images based on various callbacks with inputs as data and outputs as colors
 
-Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback); // callbacks from input color
 Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback); // callbacks from x and y coordinates
 Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback callback); // callbacks to nearest point w distance
 Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback); // callbacks to 3 nearest points w distance
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
 Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned color1, unsigned color2);
-Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid); 
-// Rasteron_Image* tiledImgOp(ImageSize size, Rasteron_Image* refImgs[2]);
+Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid); // Rasteron_Image* tiledImgOp(ImageSize size, ColorGrid grid, TILE_Type)
 
 // --------------------------------  Noise Operations  -------------------------------- //
 //

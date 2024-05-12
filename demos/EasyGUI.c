@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
 
     // Event Loop
 
-    _run(); // system specific initialization and continuous loop
+    _run(argc, argv, NULL); // system specific initialization and continuous loop
 
     // Deallocation
 
