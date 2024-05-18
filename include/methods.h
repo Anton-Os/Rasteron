@@ -28,7 +28,7 @@ uint32_t color_level(uint32_t color, double level); // levels color given bright
 uint32_t colors_diff(uint32_t color1, uint32_t color2); // subtracts smaller color from larger
 uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal); // blends values between two colors
 uint32_t colors_fuse(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
-uint32_t colors_blueray(uint32_t color1, uint32_t color2); // enum CHANNEL_Type type); // multiplies colors and then takes the root
+uint32_t colors_powroot(uint32_t color1, uint32_t color2); // enum CHANNEL_Type type); // multiplies colors and then takes the root
 uint32_t colors_scramble(uint32_t color1, uint32_t color2, double pVal); // scrambles per channel based on probability
 
 double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth); // get s pixel distance based on2 offsets

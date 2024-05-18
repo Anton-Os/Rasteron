@@ -47,19 +47,19 @@ void setup(char input){
 		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
 		case 'm': _outputImg = combImgOp(mode + 6, mode + 5); break;
 		case 'n': _outputImg = truschetImgOp(2, 2); break;
-		case 'o': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
-		case 'p': _outputImg = expImgOp2(); break;
-		case 'q': _outputImg = expImgOp3(); break;
-		case 'r': _outputImg = expImgOp4(); break;
-		case 's': _outputImg = expImgOp5(); break;
-		case 't': _outputImg = expImgOp6(); break;
-		case 'u': _outputImg = expImgOp7(); break;
-		case 'v': _outputImg = expImgOp8(); break;
-		case 'w': _outputImg = expImgOp9(); break;
-		case 'x': _outputImg = expImgOp10(); break;
-		case 'y': _outputImg = expImgOp11(); break;
-		case 'z': _outputImg = expImgOp12(); break;
-		default: _outputImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR()); break;
+		case 'o': _outputImg = euclidTileImgOp(mode, 10); break;
+		case 'p': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
+		/* case 'q': _outputImg = expImgOp2(); break;
+		case 'r': _outputImg = expImgOp3(); break;
+		case 's': _outputImg = expImgOp4(); break;
+		case 't': _outputImg = expImgOp5(); break;
+		case 'u': _outputImg = expImgOp6(); break;
+		case 'v': _outputImg = expImgOp7(); break;
+		case 'w': _outputImg = expImgOp8(); break;
+		case 'x': _outputImg = expImgOp9(); break;
+		case 'y': _outputImg = expImgOp10(); break;
+		case 'z': _outputImg = expImgOp11(); break; */
+		default: _outputImg = expImgOp1(); break;
 	}
 }
 

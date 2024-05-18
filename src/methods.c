@@ -1,4 +1,4 @@
-#include "tools.h"
+#include "methods.h"
 
 void seedRandGen(){ srand (time(NULL)); }
 
@@ -148,9 +148,9 @@ uint32_t colors_diff(uint32_t color1, uint32_t color2){
 	else return (color2 - color1) | (0xFF000000 & color2);
 }
 
-uint32_t colors_blueray(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
-	unsigned product = (0xFFFFFF & color1) * (0xFFFFFF & color2);
-	unsigned color = ((unsigned)(pow((double)product, 0.5)) * 1) | 0xFF000000;
+uint32_t colors_powroot(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
+	unsigned product = (0xFFFFFF & color1) * (0xFFFFFF & color2); // power
+	unsigned color = ((unsigned)(pow((double)product, 0.5)) * 1) | 0xFF000000; // root
 	// bitSwitch_RG(&color, 1);
 
 	return color;

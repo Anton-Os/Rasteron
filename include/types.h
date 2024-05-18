@@ -23,7 +23,8 @@ typedef struct {
 
 typedef const Rasteron_Image *const ref_image_t;
 
-ImageSize createImgSize(unsigned height, unsigned width);
+ImageSize internal_create_size(unsigned height, unsigned width);
+#define RASTERON_SIZE(height, width) (ImageSize)(internal_create_size(height, width))
 
 Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width);
 #define RASTERON_ALLOC(name, height, width) (Rasteron_Image*)(internal_alloc_img(name, height, width))
@@ -124,7 +125,7 @@ typedef unsigned (*recolorCallback)(unsigned color);
 typedef unsigned (*mixCallback)(unsigned color1, unsigned color2);
 typedef unsigned (*coordCallback)(double x, double y);
 typedef unsigned (*fieldCallback)(unsigned color, double distance);
-typedef unsigned (*fieldCallback3)(unsigned colors[3], double distances[3]);
+typedef unsigned (*fieldCallback3)(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]);
 
 typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // target and 2 neighbors
 typedef unsigned (*nebrCallback4)(unsigned, unsigned[4]); // target and 4 neighbors

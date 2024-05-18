@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
 
     // Queue Creation // TODO: Add necessary components to queue
 
-    _mainQueue = RASTERON_QUEUE_ALLOC("gui", createImgSize(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), GUI_COUNT);
+    _mainQueue = RASTERON_QUEUE_ALLOC("gui", internal_create_size(1024, 1024), GUI_COUNT);
 
     for(unsigned g = 0; g < GUI_COUNT; g++){
         Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH }, UI_COLOR_BACKGROUND);

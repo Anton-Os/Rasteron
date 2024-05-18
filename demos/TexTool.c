@@ -24,13 +24,22 @@ static float quiltNoiseMod(float value){
 	return newMod;
 }
 
-unsigned bluerayMix(unsigned color1, unsigned color2){ return colors_blueray(color1, color2); }
+unsigned powrootMix(unsigned color1, unsigned color2){ return colors_powroot(color1, color2); }
+
+unsigned eqMix(unsigned color1, unsigned color2){
+    while(color1 & 0xFFFFFF > 0xFFFFFF - (color2 & 0xFFFFFF)) color1 /= 2;
+    return color1;
+}
 
 unsigned invertMix(unsigned color1, unsigned color2){ return (0xFFFFFFFF - ((color1 > color2)? color_invert(color1 - color2) : color_invert(color2 - color1))) | 0xFF000000; }
 
 unsigned bitwiseMix_AND(unsigned color1, unsigned color2){ return (color1 & color2) | 0xFF000000; }
 
 unsigned bitwiseMix_OR(unsigned color1, unsigned color2){ return (color1 | color2) | 0xFF000000; }
+
+unsigned wavyMix(unsigned color1, unsigned color2){
+    return colors_fuse(color1 + color2, color1 - color2, 0.5);
+}
 
 Rasteron_Image* createTex(char t, unsigned m){
     switch(tolower(t)){
@@ -80,10 +89,12 @@ void _onKeyEvent(char key){
 
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
-            case 'z': _outputImg = blendImgOp(currentImg, mixerImg); break;
-            case 'x': _outputImg = fusionImgOp(currentImg, mixerImg); break;
-            case 'c': _outputImg = warpingImgOp(currentImg, mixerImg); break;
-            case 'v': _outputImg = mixingImgOp(currentImg, mixerImg, bluerayMix); break;
+            case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, eqMix); break;
+            case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, wavyMix); break;
+            case 'c': Rasteron_Image* powrootImg = mixingImgOp(currentImg, mixerImg, powrootMix);
+                _outputImg = colorSwitchImgOp(powrootImg, CHANNEL_Red, CHANNEL_Green); break;
+                RASTERON_DEALLOC(powrootImg);
+            case 'v': _outputImg = warpingImgOp(currentImg, mixerImg); break;
             case 'b': _outputImg = mixingImgOp(currentImg, mixerImg, invertMix); break;
             case 'n': _outputImg = mixingImgOp(currentImg, mixerImg, bitwiseMix_AND); break;
             case 'm': _outputImg = mixingImgOp(currentImg, mixerImg, bitwiseMix_OR); break;
@@ -119,7 +130,7 @@ int main(int argc, char** argv) {
     grids[0] = (ColorGrid){ 512, 512, 0xFF333333, 0xFFEEEEEE };
 
 
-    _mainQueue = RASTERON_QUEUE_ALLOC("tex", createImgSize(1024, 1024), TEXTOOL_COUNT);
+    _mainQueue = RASTERON_QUEUE_ALLOC("tex", internal_create_size(1024, 1024), TEXTOOL_COUNT);
 
     _run(argc, argv, NULL); // system specific initialization and continuous loop
 

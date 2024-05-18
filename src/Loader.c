@@ -22,6 +22,15 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
 
 void loadFromFile(const char* fileName, FileImage* image){
     enum IMG_FileFormat format = getFormat(fileName);
+#ifdef _WIN32
+    replaceFwdSlash(fileName);
+    if(_access(fileName, 0)){
+#elif defined(__linux__)
+    if(access(fileName, F_OK) == 0){
+#endif
+        image->fileFormat = IMG_NonValid;
+        return;
+    }
     
     switch(format){
 #ifdef USE_IMG_PNG

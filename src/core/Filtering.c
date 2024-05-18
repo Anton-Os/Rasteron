@@ -86,3 +86,37 @@ Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels){
 
 	return splitImg;
 }
+
+Rasteron_Image* colorSwitchImgOp(ref_image_t refImage, CHANNEL_Type channel1, CHANNEL_Type channel2){
+	assert(refImage != NULL);
+	if(channel1 == channel2 || channel1 == CHANNEL_Alpha || channel2 == CHANNEL_Alpha) return copyImgOp(refImage);
+    
+    Rasteron_Image* colorSwitchImg = copyImgOp(refImage);
+
+	if((channel1 == CHANNEL_Red && channel2 == CHANNEL_Blue) || (channel2 == CHANNEL_Red && channel1 == CHANNEL_Blue))
+		bitSwitch_RB(colorSwitchImg->data, colorSwitchImg->width * colorSwitchImg->height);
+	if((channel1 == CHANNEL_Red && channel2 == CHANNEL_Green) || (channel2 == CHANNEL_Red && channel1 == CHANNEL_Green))
+		bitSwitch_RG(colorSwitchImg->data, colorSwitchImg->width * colorSwitchImg->height);
+	if((channel1 == CHANNEL_Green && channel2 == CHANNEL_Blue) || (channel2 == CHANNEL_Green && channel1 == CHANNEL_Blue))
+		bitSwitch_GB(colorSwitchImg->data, colorSwitchImg->width * colorSwitchImg->height);
+
+	return colorSwitchImg;
+}
+
+Rasteron_Image* colorShiftImgOp(ref_image_t refImage, short redShift, short greenShift, short blueShift){
+	assert(refImage != NULL);
+	if(redShift == 0 && greenShift == 0 && blueShift == 0) return copyImgOp(refImage);
+    
+    Rasteron_Image* colorShiftImg = copyImgOp(refImage);
+
+	for(unsigned p = 0; p < colorShiftImg->width * colorShiftImg->height; p++){
+		unsigned refColor = *(colorShiftImg->data + p);
+		unsigned newColor = refColor & 0xFF000000;
+		// TODO: Determine red from redShift
+		// TODO: Determine green fron greenShift
+		// TODO: Determine blue from blueShift
+		*(colorShiftImg->data + p) = newColor;
+	}
+
+	return colorShiftImg;
+}

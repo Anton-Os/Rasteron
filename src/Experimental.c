@@ -381,6 +381,31 @@ Rasteron_Image* truschetImgOp(unsigned short wDiv, unsigned short hDiv){
     return finalImg; 
 }
 
+ColorPointTable euclidTable;
+
+static unsigned euclidTile(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
+    if((pixPoints[0].x < 0.05 && pixPoints[0].x > -0.05) || (pixPoints[0].y < 0.05 && pixPoints[0].y > -0.05))
+        return colors[0];
+    else return color_invert(colors[0]);
+}
+
+Rasteron_Image* euclidTileImgOp(int mode, unsigned short density){
+    euclidTable.pointCount = 0;
+
+    for(unsigned r = 0; r < density; r++){
+        for(unsigned c = 0; c < density; c++){
+            switch(mode){
+                case 0: colorPointToTable(&euclidTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r); break;
+                case 1: colorPointToTable(&euclidTable, 0xFFFFFF00, 0.0, 0.0); break; // TODO: Include real values for triangular tiling
+                case 2: colorPointToTable(&euclidTable, 0xFFFFFF00, 0.0, 0.0); break; // TODO: Include real values for hexagonal tiling
+                default: colorPointToTable(&euclidTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX); // random
+            }
+        }
+    }
+
+    return fieldExtImgOp((ImageSize){ 1024, 1024 }, &euclidTable, euclidTile);
+}
+
 unsigned graterColor1 = 0xFF333333;
 unsigned graterColor2 = 0xFFEEEEEE;
 
@@ -409,4 +434,3 @@ Rasteron_Image* expImgOp8(){ return expImgOp1(); }
 Rasteron_Image* expImgOp9(){ return expImgOp1(); }
 Rasteron_Image* expImgOp10(){ return expImgOp1(); }
 Rasteron_Image* expImgOp11(){ return expImgOp1(); }
-Rasteron_Image* expImgOp12(){ return expImgOp1(); }

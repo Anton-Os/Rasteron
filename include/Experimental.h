@@ -19,6 +19,7 @@ Rasteron_Image* stratifyImgOp(unsigned short levels); // Stratifies colors into 
 Rasteron_Image* barkodeImgOp(unsigned short iters, unsigned color1, unsigned color2);
 Rasteron_Image* combImgOp(unsigned short rows, unsigned short cols);
 Rasteron_Image* truschetImgOp(unsigned short wDiv, unsigned short hDiv);
+Rasteron_Image* euclidTileImgOp(int mode, unsigned short density);
 Rasteron_Image* graterImgOp(unsigned color1, unsigned color2);
 Rasteron_Image* expImgOp1(); // placeholder for new images
 Rasteron_Image* expImgOp2(); // placeholder for new images
@@ -31,7 +32,6 @@ Rasteron_Image* expImgOp8(); // placeholder for new images
 Rasteron_Image* expImgOp9(); // placeholder for new images
 Rasteron_Image* expImgOp10(); // placeholder for new images
 Rasteron_Image* expImgOp11(); // placeholder for new images
-Rasteron_Image* expImgOp12(); // placeholder for new images
 
 #define RASTERON_EXPERIMENTAL_H
 #endif

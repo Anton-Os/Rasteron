@@ -1,15 +1,12 @@
-#include "tools.h"
+#include "methods.h"
 
 #include "Rasteron.h"
 
-
 Rasteron_Image* loadImgOp(const char* fileName){
 	FileImage fileImage;
-#ifdef _WIN32
-	replaceFwdSlash(fileName);
-#endif
+
 	loadFromFile(fileName, &fileImage);
-	if(&fileImage == NULL) return NULL; // Image not loaded
+	if(fileImage.fileFormat == IMG_NonValid) return errorImgOp("Inavlid image file");
 
     Rasteron_Image* refImage = NULL;
     switch(fileImage.fileFormat){
@@ -54,7 +51,7 @@ Rasteron_Image* solidImgOp(ImageSize size, uint32_t color){
 }
 
 Rasteron_Image* copyImgOp(ref_image_t refImage){
-	assert(refImage != NULL);
+	if(refImage == NULL) return errorImgOp("Invalid ref for copyImgOp()");
 
 	Rasteron_Image* copyImage = RASTERON_ALLOC("copy", refImage->height, refImage->width);
 
@@ -65,7 +62,7 @@ Rasteron_Image* copyImgOp(ref_image_t refImage){
 }
 
 Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage){
-	assert(refImage != NULL);
+	if(refImage == NULL) return errorImgOp("Invalid ref for resizeImgOp()");
 
 	Rasteron_Image* resizeImage = RASTERON_ALLOC("resize", size.height, size.width);
 
@@ -82,7 +79,7 @@ Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage){
 }
 
 Rasteron_Image* cropImgOp(ref_image_t refImage, enum SIDE_Type type, double factor){
-	assert(refImage != NULL);
+	if(refImage == NULL) return errorImgOp("Invalid ref for copyImgOp()");
 	if(type == SIDE_None || type == SIDE_Radial || factor <= 0.0) return copyImgOp(refImage);
 
 	if(factor > 1.0) factor = 1.0 / factor; // ensure that crop factor is less than 1
@@ -109,7 +106,7 @@ Rasteron_Image* cropImgOp(ref_image_t refImage, enum SIDE_Type type, double fact
 }
 
 Rasteron_Image* mirrorImgOp(ref_image_t refImage){
-	assert(refImage != NULL);
+	if(refImage == NULL) return errorImgOp("Invalid ref for mirrorImgOp()");
 
 	Rasteron_Image* mirrorImage = copyImgOp(refImage);
 	mirrorImage->name = "mirror";
@@ -124,7 +121,7 @@ Rasteron_Image* mirrorImgOp(ref_image_t refImage){
 }
 
 Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type){
-	assert(refImage != NULL);
+	if(refImage == NULL) return errorImgOp("Invalid ref for flipImgOp()");
 	if(type == FLIP_None) return copyImgOp(refImage);
 	
 	Rasteron_Image* flipImg = NULL;
@@ -151,4 +148,10 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type){
 	}
 
 	return flipImg;
+}
+
+Rasteron_Image* errorImgOp(const char* errorMsg){
+	fprintf(stderr, "ERROR! message: %s", errorMsg);
+
+ 	return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFF0000); // error image
 }

@@ -7,7 +7,7 @@ extern "C"{
 #include "Loader.h"
 
 #include "types.h"
-#include "tools.h"
+#include "methods.h"
 
 
 // --------------------------------   Basic Operations    -------------------------------- //
@@ -23,6 +23,8 @@ Rasteron_Image* cropImgOp(ref_image_t refImage, enum SIDE_Type type, double fact
 Rasteron_Image* mirrorImgOp(ref_image_t refImage); // creates horizontal mirror image
 Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates flipped image
 
+Rasteron_Image* errorImgOp(const char* error); // shows up on error
+
 
 // --------------------------------   Filtering Operations    -------------------------------- //
 //
@@ -34,6 +36,9 @@ Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel); // crea
 Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
 Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels); // splits image into levels
 
+Rasteron_Image* colorSwitchImgOp(ref_image_t refImage, CHANNEL_Type channel1, CHANNEL_Type channel2); // switches data between two channels
+Rasteron_Image* colorShiftImgOp(ref_image_t refImage, short redShift, short greenShift, short blueShift); // shifts data between all channels
+
 // TODO: Add operations to map colors to different values including switching color bits
 
 // --------------------------------   Mixing Operations    -------------------------------- //
@@ -42,7 +47,8 @@ Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels); // spli
 //     in most cases require matching width and height for both target images
 
 Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coordX, double coordY); // insert image at a given offset
-Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback); // creates effect per pixel from 2 images 
+Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback); // creates effect per pixel from 2 images
+
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2); // creates blended image
 Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2); // creates fused image
 Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage); // creates domain warped image
@@ -83,6 +89,7 @@ Rasteron_Image* noiseImgOp_diff(ImageSize size, ColorGrid grid, unsigned short o
 Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
 Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
 Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback); // 2D generated image from 8 neighbors
+
 Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short times); // performs antialiasing operation
 
 

@@ -62,7 +62,7 @@ static unsigned dotSplash(unsigned color, double distance){
     return (distance > dotSize * DOT_RADIUS * pow((double)rand() / (double)RAND_MAX, 0.25))? canvasColor : color;
 }
 
-static unsigned fieldCompute(unsigned colors[3], double distances[3]){
+static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
 	switch(mode){
 		case 9: return colors_blend(xColor, yColor, distances[0] * FIELD_PRODUCT);
 		case 10: return colors_blend(xColor, yColor, distances[1] * FIELD_PRODUCT);

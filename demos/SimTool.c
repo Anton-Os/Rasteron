@@ -100,7 +100,7 @@ void _onTickEvent(unsigned secs){
 
 int main(int argc, char** argv) {
     _outputImg = solidImgOp((ImageSize){ 1024, 1024 }, EMPTY_COLOR);
-    _mainQueue = RASTERON_QUEUE_ALLOC("sim", createImgSize(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
+    _mainQueue = RASTERON_QUEUE_ALLOC("sim", internal_create_size(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
 
     Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ 1024 / 5, 1024 / 5}, EMPTY_COLOR); // TODO: Create noise refImg
     Rasteron_Image* growthLifeImg = growImgOp(1, backgroundImg);

@@ -53,25 +53,32 @@ Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointT
 	double pixelSize = 1.0 / (double)(fieldImage->width); // fractional size of a pixel
 	unsigned pixColors[3] = { NO_COLOR, NO_COLOR, NO_COLOR };
 	double pixDistances[3] = { 1.0, 1.0, 1.0 };
+	PixelPoint pixPoints[3] = {{ 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }};
 
 	for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
+		double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
+
 		pixDistances[0] = 1.0; pixDistances[1] = 1.0; pixDistances[2] = 1.0; // reset
 		// pixColors[0] = NO_COLOR; pixColors[1] = NO_COLOR; pixColors[2] = NO_COLOR; // reset
 		for(unsigned t = 0; t < colorPointTable->pointCount; t++){
 			double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * pixelSize;
 			if(dist < pixDistances[0]){
 				pixDistances[0] = dist;
+				pixPoints[0] = (PixelPoint){ colorPointTable->points[t].x - x, colorPointTable->points[t].y - y };
 				pixColors[0] = colorPointTable->points[t].color;
 			} else if(dist < pixDistances[1]){
 				pixDistances[1] = dist;
+				pixPoints[1] = (PixelPoint){ colorPointTable->points[t].x - x, colorPointTable->points[t].y - y };
 				pixColors[1] = colorPointTable->points[t].color;
 			} else if(dist < pixDistances[2]){
 				pixDistances[2] = dist;
+				pixPoints[2] = (PixelPoint){ colorPointTable->points[t].x - x, colorPointTable->points[t].y - y };
 				pixColors[2] = colorPointTable->points[t].color;
 			}
 		}
 
-		*(fieldImage->data + p) = callback(pixColors, pixDistances);
+		*(fieldImage->data + p) = callback(pixColors, pixDistances, pixPoints);
 	}
 
 	free(colorPoints);
@@ -95,26 +102,6 @@ Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTab
 	return seedImage;
 } */
 
-Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid){
-// Rasteron_Image* checkerImgOp(ImageSize size, Rasteron_Image* tileImages[2]){ // TODO: Replace with this
-	Rasteron_Image* checkerImg = RASTERON_ALLOC("checker", size.height, size.width);
-
-	for(unsigned p = 0; p < size.width * size.height; p++){
-        double x = (1.0 / (double)size.width) * (p % size.width);
-		double y = (1.0 / (double)size.height) * (p / size.width);
-
-        unsigned c = x * grid.xCells;
-        unsigned r = y * grid.yCells;
-
-        if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1)) *(checkerImg->data + p) = grid.color1;
-        else *(checkerImg->data + p) = grid.color2; 
-    }
-
-	// TODO: Change this to enable edges tiling
-
-	return checkerImg;
-}
-
 Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned color1, unsigned color2){
 	if(side == SIDE_None) return solidImgOp(size, color1);
 
@@ -136,4 +123,24 @@ Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned colo
 
 
 	return gradientImg;
+}
+
+Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid){
+// Rasteron_Image* checkerImgOp(ImageSize size, Rasteron_Image* tileImages[2]){ // TODO: Replace with this
+	Rasteron_Image* checkerImg = RASTERON_ALLOC("checker", size.height, size.width);
+
+	for(unsigned p = 0; p < size.width * size.height; p++){
+        double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
+
+        unsigned c = x * grid.xCells;
+        unsigned r = y * grid.yCells;
+
+        if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1)) *(checkerImg->data + p) = grid.color1;
+        else *(checkerImg->data + p) = grid.color2; 
+    }
+
+	// TODO: Change this to enable edges tiling
+
+	return checkerImg;
 }

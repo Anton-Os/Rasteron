@@ -4,6 +4,11 @@
 
 extern FT_Library _freetypeLib = NULL;
 
+static unsigned short _topPadding = 0;
+static unsigned short _botPadding = 0;
+static unsigned short _leftPadding = 0;
+static unsigned short _rightPadding = 0;
+
 // Internal Functions
 
 static void drawGlyphToImg(Rasteron_Image* image, FT_Bitmap* ftBmap, uint32_t color, int x, int y){
@@ -56,11 +61,16 @@ void initFreeType(){
 
 void cleanupFreeType(){ FT_Done_FreeType(_freetypeLib); }
 
-Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
+static Rasteron_Image* _textImgOp(const Rasteron_Text* textObj, unsigned size){
 	if(_freetypeLib == NULL){ initFreeType(); }
 #ifdef _WIN32
 	replaceFwdSlash(textObj->fontFile);
+    if(_access(textObj->fontFile, 0)){
+#elif defined(__linux__)
+    if(access(textObj->fontFile, F_OK) == 0){
 #endif
+        return errorImgOp("Invalid font file");
+    }
 
 	FT_Face face;
     int error = FT_New_Face(_freetypeLib, textObj->fontFile, 0, &face);
@@ -105,11 +115,42 @@ Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
 		textObj->bkColor
 	);
 	
-	cropTextImgToSize(textCanvasImg, textImg, sizeParams);
+	cropTextImgToSize(textCanvasImg, textImg, sizeParams); // TODO: Test for appropriate size
 	
 	RASTERON_DEALLOC(textCanvasImg); 
     FT_Done_Face(face);
-	return textImg;
+
+	if(_topPadding == 0 && _leftPadding == 0 && _botPadding == 0 && _rightPadding == 0) return textImg; // padding not required
+	else {
+		Rasteron_Image* backgroundImg = solidImgOp(
+			(ImageSize){ textImg->height + _botPadding + _topPadding, textImg->width + _rightPadding + _leftPadding },
+			textObj->bkColor
+		);
+
+		Rasteron_Image* textPaddedImg = insertImgOp(textImg, backgroundImg, 0.0, 0.0);
+
+		RASTERON_DEALLOC(textImg);
+
+		return textPaddedImg;
+	}
+}
+
+Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
+	_leftPadding = 0;
+	_rightPadding = 0;
+	_topPadding = 0;
+	_botPadding = 0;
+
+	return _textImgOp(textObj, size);
+}
+
+Rasteron_Image* textPadImgOp(const Rasteron_Text* textObj, unsigned size, unsigned short padding[4]){
+	_leftPadding = padding[0];
+	_rightPadding = padding[1];
+	_topPadding = padding[2];
+	_botPadding = padding[3];
+
+	return _textImgOp(textObj, size);
 }
 
 Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size){
