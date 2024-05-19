@@ -19,8 +19,8 @@ Bounds createBounds(unsigned height, unsigned width){
 	return bounds;
 }
 
-float bounds_getHeight(Bounds bounds){ return !(_invertImage)? bounds.topRight[1] - bounds.botRight[1] : bounds.topRight[0] - bounds.botLeft[0]; }
-float bounds_getWidth(Bounds bounds){ return !(_invertImage)? bounds.topRight[0] - bounds.botLeft[0] : bounds.topRight[1] - bounds.botRight[1]; }
+float bounds_getHeight(Bounds bounds){ return bounds.topRight[1] - bounds.botRight[1]; }
+float bounds_getWidth(Bounds bounds){ return bounds.topRight[0] - bounds.botLeft[0]; }
 
 // --------------------------------   Sprite    -------------------------------- //
 

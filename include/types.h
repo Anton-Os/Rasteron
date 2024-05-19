@@ -10,9 +10,13 @@
 #define INVERT_IMG_FALSE 0
 #define INVERT_IMG_TRUE 1
 
-extern int _invertImage; // invertImage needed in allocation
+#define INVERT_IMG
 
+#ifndef INVERT_IMG
 typedef struct { uint32_t height; uint32_t width; } ImageSize;
+#else // Nake this available
+typedef struct { uint32_t width; uint32_t height; } ImageSize;
+#endif
 
 typedef struct {
     char* name;

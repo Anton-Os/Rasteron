@@ -60,6 +60,7 @@ Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointT
 		double y = (1.0 / (double)size.height) * (p / size.width);
 
 		pixDistances[0] = 1.0; pixDistances[1] = 1.0; pixDistances[2] = 1.0; // reset
+		pixPoints[0] = (PixelPoint){ 0.0, 0.0 }; pixPoints[0] = (PixelPoint){ 0.0, 0.0 }; pixPoints[0] = (PixelPoint){ 0.0, 0.0 };
 		// pixColors[0] = NO_COLOR; pixColors[1] = NO_COLOR; pixColors[2] = NO_COLOR; // reset
 		for(unsigned t = 0; t < colorPointTable->pointCount; t++){
 			double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * pixelSize;

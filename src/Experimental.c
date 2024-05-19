@@ -384,8 +384,9 @@ Rasteron_Image* truschetImgOp(unsigned short wDiv, unsigned short hDiv){
 ColorPointTable euclidTable;
 
 static unsigned euclidTile(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
-    if((pixPoints[0].x < 0.05 && pixPoints[0].x > -0.05) || (pixPoints[0].y < 0.05 && pixPoints[0].y > -0.05))
-        return colors[0];
+    // if((pixPoints[0].x < 0.05 && pixPoints[0].x > -0.05) || (pixPoints[0].y < 0.05 && pixPoints[0].y > -0.05)) return colors[0];
+    // if(pixPoints[0].x < 0.05 && pixPoints[0].x > -0.05) return colors[0]; // testing
+    if(pixPoints[0].y < 0.05 && pixPoints[0].y > -0.05) return colors[0]; // testing
     else return color_invert(colors[0]);
 }
 
