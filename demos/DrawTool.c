@@ -58,7 +58,7 @@ unsigned strokePaint(double x, double y){
 	}
 }
 
-static unsigned dotSplash(unsigned color, double distance){
+static unsigned dotSplash(unsigned color, double distance, PixelPoint pixPoint){
     return (distance > dotSize * DOT_RADIUS * pow((double)rand() / (double)RAND_MAX, 0.25))? canvasColor : color;
 }
 

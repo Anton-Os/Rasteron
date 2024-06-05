@@ -4,10 +4,10 @@
 
 extern FT_Library _freetypeLib = NULL;
 
-static unsigned short _topPadding = 0;
-static unsigned short _botPadding = 0;
-static unsigned short _leftPadding = 0;
-static unsigned short _rightPadding = 0;
+static unsigned short _topPad = 0;
+static unsigned short _botPad = 0;
+static unsigned short _leftPad = 0;
+static unsigned short _rightPad = 0;
 
 // Internal Functions
 
@@ -120,14 +120,19 @@ static Rasteron_Image* _textImgOp(const Rasteron_Text* textObj, unsigned size){
 	RASTERON_DEALLOC(textCanvasImg); 
     FT_Done_Face(face);
 
-	if(_topPadding == 0 && _leftPadding == 0 && _botPadding == 0 && _rightPadding == 0) return textImg; // padding not required
+	if(_topPad == 0 && _leftPad == 0 && _botPad == 0 && _rightPad == 0) return textImg; // padding not required
 	else {
 		Rasteron_Image* backgroundImg = solidImgOp(
-			(ImageSize){ textImg->height + _botPadding + _topPadding, textImg->width + _rightPadding + _leftPadding },
+			(ImageSize){ textImg->height + _botPad + _topPad, textImg->width + _rightPad + _leftPad },
 			textObj->bkColor
 		);
 
-		Rasteron_Image* textPaddedImg = insertImgOp(textImg, backgroundImg, 0.0, 0.0);
+		double widthExtent = (_rightPad > _leftPad)? _rightPad : _leftPad;
+		double heightExtent = (_topPad > _botPad)? _topPad : _botPad;
+		Rasteron_Image* textPaddedImg = insertImgOp(textImg, backgroundImg, 
+			(_rightPad != _leftPad)? (_leftPad - _rightPad) / widthExtent : 0.0, 
+			(_topPad != _botPad)? (_topPad - _botPad) / heightExtent : 0.0
+		);
 
 		RASTERON_DEALLOC(textImg);
 
@@ -136,19 +141,19 @@ static Rasteron_Image* _textImgOp(const Rasteron_Text* textObj, unsigned size){
 }
 
 Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
-	_leftPadding = 0;
-	_rightPadding = 0;
-	_topPadding = 0;
-	_botPadding = 0;
+	_leftPad = 0;
+	_rightPad = 0;
+	_topPad = 0;
+	_botPad = 0;
 
 	return _textImgOp(textObj, size);
 }
 
 Rasteron_Image* textPadImgOp(const Rasteron_Text* textObj, unsigned size, unsigned short padding[4]){
-	_leftPadding = padding[0];
-	_rightPadding = padding[1];
-	_topPadding = padding[2];
-	_botPadding = padding[3];
+	_leftPad = padding[0];
+	_rightPad = padding[1];
+	_topPad = padding[2];
+	_botPad = padding[3];
 
 	return _textImgOp(textObj, size);
 }
@@ -160,7 +165,8 @@ Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size){
 	Rasteron_Image** textImages = (Rasteron_Image**)malloc(messageObj->messageCount * sizeof(Rasteron_Image*));
 	for(unsigned t = 0; t < messageObj->messageCount; t++){
 		Rasteron_Text textObj = { messageObj->fontFile, messageObj->messages[t], messageObj->bkColor, messageObj->fgColor };
-		*(textImages + t) = textImgOp(&textObj, size);
+		unsigned short padding[4] = { _leftPad, _rightPad, _topPad, _botPad };
+		*(textImages + t) = textPadImgOp(&textObj, size, padding); // textImgOp(&textObj, size);
 		totalHeight += (*(textImages + t))->height;
 		if((*(textImages + t))->width > maxWidth) maxWidth = (*(textImages + t))->width;
 	}

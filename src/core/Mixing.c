@@ -34,9 +34,8 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
         unsigned coordY = op / insertImg->width; // absolute Y pixel offset
 		if(coordX >= xBounds[0] && coordX < xBounds[1] && coordY >= yBounds[0] && coordY < yBounds[1]){
 			uint8_t iAlphaVal = (*(innerImg->data + ip) & ALPHA_CHANNEL) >> 24;
-			if(iAlphaVal == 0xFF) 
-				*(insertImg->data + op) = *(innerImg->data + ip);
-			// else *(insertImg->data + op) = colors_blend(*(innerImg->data + ip), *(outerImg->data + op), (double)(0xFF / iAlphaVal) );
+			if(iAlphaVal == 0xFF) *(insertImg->data + op) = *(innerImg->data + ip);
+			else *(insertImg->data + op) = colors_blend(*(innerImg->data + ip), *(outerImg->data + op), (double)(0xFF / iAlphaVal) );
 			ip++;
 		} else *(insertImg->data + op) = *(outerImg->data + op);
 	}
@@ -57,6 +56,14 @@ Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback 
 		*(mixImage->data + p) = callback(*(sizedImg1->data + p), *(sizedImg2->data + p));
 
 	return mixImage;
+}
+
+Rasteron_Image* mixingExtImgOp(ref_image_t image1, ref_image_t image2, ref_image_t image3, ref_image_t image4, mixCallback4 callback){
+	assert(image1 != NULL && image2 != NULL && image3 != NULL && image4 != NULL);
+
+	// TODO: Perform mixing of 4 target images
+
+	return errorImgOp("Not supported yet");
 }
 
 static unsigned equalBlend(unsigned color1, unsigned color2){ return colors_blend(color1, color2, 0.5); }

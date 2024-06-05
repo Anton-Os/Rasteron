@@ -1,4 +1,4 @@
-#include "methods.h"
+#include "helpers.h"
 
 void seedRandGen(){ srand (time(NULL)); }
 

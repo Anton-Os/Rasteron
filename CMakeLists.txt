@@ -9,9 +9,9 @@ endif()
 # Core Sources
 
 set(core_src
-    src/types.c
-
-    src/tools.c
+    src/typedef.c
+    src/helpers.c
+    
     src/Loader.c
 
     src/core/Basics.c
@@ -90,9 +90,9 @@ target_link_libraries(Write Rasteron)
 
 # Demo Applications
 
-add_executable(Canvas demos/Canvas.c)
-target_include_directories(Canvas PUBLIC include demos)
-target_link_libraries(Canvas Rasteron)
+add_executable(Playground demos/Playground.c)
+target_include_directories(Playground PUBLIC include demos)
+target_link_libraries(Playground Rasteron)
 
 add_executable(EasyGUI demos/EasyGUI.c)
 target_include_directories(EasyGUI PUBLIC include demos)

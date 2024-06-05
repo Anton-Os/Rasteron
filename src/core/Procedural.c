@@ -20,21 +20,25 @@ Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTabl
 	unsigned* colorPoints = malloc(colorPointTable->pointCount * sizeof(unsigned));
 	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
 		*(colorPoints + t) = pixPoint_offset((PixelPoint){colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
-		// *(colorPoints + t) = pixPoint_offset({colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
-
-	double pixelSize = 1.0 / (double)(fieldImage->width); // fractional size of a pixel
 
 	for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
 		unsigned color = NO_COLOR;
 		double minDist = 1.0;
+		PixelPoint pixPoint = (PixelPoint){ 0.0, 0.0 };
+
+		double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
 
 		for (unsigned t = 0; t < colorPointTable->pointCount; t++) {
-			double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * pixelSize;
+			double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * (1.0 / (double)(fieldImage->width)); // distance multiplied by pixel size
 			if (dist < minDist) {
 				minDist = dist;
+				// pixPoint =  (PixelPoint){ colorPointTable->points[t].x, colorPointTable->points[t].y };
+				// pixPoint =  (PixelPoint){ colorPointTable->points[t].x - x, colorPointTable->points[t].y - y };
+				pixPoint =  (PixelPoint){ x - colorPointTable->points[t].x, y - colorPointTable->points[t].y };
 				color = colorPointTable->points[t].color;
 			}
-			*(fieldImage->data + p) = callback(color, minDist);
+			*(fieldImage->data + p) = callback(color, minDist, pixPoint);
 		}
 	}
 
@@ -48,9 +52,7 @@ Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointT
 	unsigned* colorPoints = malloc(colorPointTable->pointCount * sizeof(unsigned));
 	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
 		*(colorPoints + t) = pixPoint_offset((PixelPoint){colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
-		// *(colorPoints + t) = pixPoint_offset({colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
 
-	double pixelSize = 1.0 / (double)(fieldImage->width); // fractional size of a pixel
 	unsigned pixColors[3] = { NO_COLOR, NO_COLOR, NO_COLOR };
 	double pixDistances[3] = { 1.0, 1.0, 1.0 };
 	PixelPoint pixPoints[3] = {{ 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }};
@@ -62,18 +64,18 @@ Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointT
 		pixDistances[0] = 1.0; pixDistances[1] = 1.0; pixDistances[2] = 1.0; // reset
 		// pixColors[0] = NO_COLOR; pixColors[1] = NO_COLOR; pixColors[2] = NO_COLOR; // reset
 		for(unsigned t = 0; t < colorPointTable->pointCount; t++){
-			double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * pixelSize;
+			double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * (1.0 / (double)(fieldImage->width)); // distance multiplied by pixel size
 			if(dist < pixDistances[0]){
 				pixDistances[0] = dist;
-				pixPoints[0] = (PixelPoint){ colorPointTable->points[t].x - x, colorPointTable->points[t].y - y };
+				pixPoints[0] = (PixelPoint){ x - colorPointTable->points[t].x, y - colorPointTable->points[t].y };
 				pixColors[0] = colorPointTable->points[t].color;
 			} else if(dist < pixDistances[1]){
 				pixDistances[1] = dist;
-				pixPoints[1] = (PixelPoint){ colorPointTable->points[t].x - x, colorPointTable->points[t].y - y };
+				pixPoints[1] = (PixelPoint){ x - colorPointTable->points[t].x, y - colorPointTable->points[t].y };
 				pixColors[1] = colorPointTable->points[t].color;
 			} else if(dist < pixDistances[2]){
 				pixDistances[2] = dist;
-				pixPoints[2] = (PixelPoint){ colorPointTable->points[t].x - x, colorPointTable->points[t].y - y };
+				pixPoints[2] = (PixelPoint){ x - colorPointTable->points[t].x, y - colorPointTable->points[t].y };
 				pixColors[2] = colorPointTable->points[t].color;
 			}
 		}

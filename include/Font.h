@@ -3,7 +3,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "types.h"
+#include "typedef.h"
 
 #define FONT_SIZE_TINY 50
 #define FONT_SIZE_SMALL 150

@@ -38,7 +38,7 @@ void setup(char input){
 		case 'c': _outputImg = lensesImgOp(mode); break;
 		case 'd': _outputImg = hypnosisImgOp(mode, 0xFFFFFF00, 0xFF00FFFF); break;
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
-		case 'f': _outputImg = geckoImgOp((mode + 2) * 5); break;
+		case 'f': _outputImg = fisheyeImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mozaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
 		case 'h': _outputImg = interferenceImgOp(32, mode + 2); break;
 		case 'i': _outputImg = perturbImgOp(xArg + 0.5F, yArg + 0.5); break;
@@ -47,12 +47,12 @@ void setup(char input){
 		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
 		case 'm': _outputImg = combImgOp(mode + 6, mode + 5); break;
 		case 'n': _outputImg = truschetImgOp(2, 2); break;
-		case 'o': _outputImg = euclidTileImgOp(mode, 10); break;
-		case 'p': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
-		/* case 'q': _outputImg = expImgOp2(); break;
-		case 'r': _outputImg = expImgOp3(); break;
-		case 's': _outputImg = expImgOp4(); break;
-		case 't': _outputImg = expImgOp5(); break;
+		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
+		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
+		case 'q': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
+		case 'r': _outputImg = mildewImgOp((mode + 2) * 4); break;
+		case 's': _outputImg = oozelikeImgOp(mode); break;
+		/* case 't': _outputImg = expImgOp5(); break;
 		case 'u': _outputImg = expImgOp6(); break;
 		case 'v': _outputImg = expImgOp7(); break;
 		case 'w': _outputImg = expImgOp8(); break;
@@ -82,7 +82,7 @@ void _onTickEvent(unsigned secs){}
 int main(int argc, char** argv) {
 	srand(time(NULL));
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    _outputImg = geckoImgOp((mode + 2) * 5);
+    _outputImg = fisheyeImgOp((mode + 2) * 5);
 
 	puts("Please refer to following commands to select images for canvas:");
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities");

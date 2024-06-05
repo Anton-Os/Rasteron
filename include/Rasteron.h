@@ -6,8 +6,8 @@ extern "C"{
 
 #include "Loader.h"
 
-#include "types.h"
-#include "methods.h"
+#include "typedef.h"
+#include "helpers.h"
 
 
 // --------------------------------   Basic Operations    -------------------------------- //
@@ -47,7 +47,8 @@ Rasteron_Image* colorShiftImgOp(ref_image_t refImage, short redShift, short gree
 //     in most cases require matching width and height for both target images
 
 Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coordX, double coordY); // insert image at a given offset
-Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback); // creates effect per pixel from 2 images
+Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback); // creates mix per pixel from 2 images
+Rasteron_Image* mixingExtImgOp(ref_image_t image1, ref_image_t image2, ref_image_t image3, ref_image_t image4, mixCallback4 callback); // creates mix per pixel from 4 images
 
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2); // creates blended image
 Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2); // creates fused image

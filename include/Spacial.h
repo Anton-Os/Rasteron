@@ -1,6 +1,6 @@
 #ifndef RASTERON_SPACE_H
 
-#include "types.h"
+#include "typedef.h"
 
 // --------------------------------   Space    -------------------------------- //
 

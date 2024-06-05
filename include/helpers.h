@@ -1,7 +1,7 @@
 #ifndef RASTERON_TOOLS_H
 
 #include "support_def.h"
-#include "types.h"
+#include "typedef.h"
 
 #define RAND_COLOR() (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255))
 

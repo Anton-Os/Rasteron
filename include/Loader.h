@@ -3,7 +3,7 @@
 #include "support_def.h"
 #include "string.h"
 
-#include "methods.h"
+#include "helpers.h"
 
 #ifdef USE_IMG_TIFF
 

@@ -112,11 +112,11 @@ Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2){
     return hypnosisImg; 
 } 
 
-static unsigned gecko(unsigned color, double distance){
+static unsigned fisheye(unsigned color, double distance, PixelPoint pixPoint){
     return (distance < 0.15)? color_level(color, 0.15) : (distance < 0.3)? color : color_level(color, 0.85);
 }
 
-Rasteron_Image* geckoImgOp(unsigned short points){ 
+Rasteron_Image* fisheyeImgOp(unsigned short points){ 
     ColorPointTable colorPointTable;
     colorPointTable.pointCount = points;
 
@@ -128,7 +128,7 @@ Rasteron_Image* geckoImgOp(unsigned short points){
         };
     }
 
-    return fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, gecko); 
+    return fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fisheye); 
 }
 
 Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){ 
@@ -136,9 +136,13 @@ Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){
 
     /* Rasteron_Text textObj;
     textObj.fontFile = fullFilePath;
-    textObj.text = text;
+    textObj.text = "Howdy";
     textObj.bkColor = 0xFF000000;
-    textObj.fgColor = 0xFFEEEEEE; */
+    textObj.fgColor = 0xFFEEEEEE;
+
+    unsigned short padding[4] = { 100, 0, 0, 100 };
+    Rasteron_Image* textPadImg = textPadImgOp(&textObj, FONT_SIZE_LARGE, padding);
+    RASTERON_DEALLOC(textPadImg); */
 
     Rasteron_Message messageObj;
     messageObj.fontFile = fullFilePath;
@@ -381,29 +385,87 @@ Rasteron_Image* truschetImgOp(unsigned short wDiv, unsigned short hDiv){
     return finalImg; 
 }
 
-ColorPointTable euclidTable;
+ColorPointTable tilingTable;
 
-static unsigned euclidTile(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
-    if((pixPoints[0].x < 0.05 && pixPoints[0].x > -0.05) || (pixPoints[0].y < 0.05 && pixPoints[0].y > -0.05))
-        return colors[0];
-    else return color_invert(colors[0]);
+static double euclidX = 0.01;
+static double euclidY = 0.01;
+
+static unsigned euclidTile(unsigned color, double distance, PixelPoint pixPoint){
+    if((pixPoint.x < euclidX && pixPoint.x > -euclidX) || (pixPoint.y < euclidY && pixPoint.y > -euclidY))
+        return color;
+    else return color_invert(color);
 }
 
-Rasteron_Image* euclidTileImgOp(int mode, unsigned short density){
-    euclidTable.pointCount = 0;
+Rasteron_Image* euclidTileImgOp(int mode, unsigned short density, double xFactor, double yFactor){
+    euclidX = xFactor;
+    euclidY = yFactor;
 
-    for(unsigned r = 0; r < density; r++){
-        for(unsigned c = 0; c < density; c++){
+    tilingTable.pointCount = 0;
+
+    for(unsigned r = 0; r < density + 1; r++){
+        for(unsigned c = 0; c < density + 1; c++){
             switch(mode){
-                case 0: colorPointToTable(&euclidTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r); break;
-                case 1: colorPointToTable(&euclidTable, 0xFFFFFF00, 0.0, 0.0); break; // TODO: Include real values for triangular tiling
-                case 2: colorPointToTable(&euclidTable, 0xFFFFFF00, 0.0, 0.0); break; // TODO: Include real values for hexagonal tiling
-                default: colorPointToTable(&euclidTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX); // random
+                case 0: // regular grid tiling
+                    colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r); 
+                    break;
+                case 1: // triangular tiling attempt
+                    if((r % 2 == 0 && c % 2 == 0) || (r % 2 == 1 && c % 2 == 1))
+                        colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r); 
+                    break;
+                case 2: // hexagonal tiling attempt
+                    if((r % 2 == 0 && c % 3 != 0) || (r % 2 == 1 && c % 3 == 0))
+                        colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r);
+                    break;
+                default: colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX); // random
             }
         }
     }
 
-    return fieldExtImgOp((ImageSize){ 1024, 1024 }, &euclidTable, euclidTile);
+    return fieldImgOp((ImageSize){ 1024, 1024 }, &tilingTable, euclidTile);
+}
+
+static unsigned nuTile(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
+    // if((pixPoints[0].x < euclidX && pixPoints[1].x > -euclidX) || (pixPoints[0].y < euclidY && pixPoints[1].y > -euclidY))
+    if((pixPoints[0].x < euclidX && pixPoints[2].x > -euclidX) || (pixPoints[0].y < euclidY && pixPoints[2].y > -euclidY))
+    // if((pixPoints[1].x < euclidX && pixPoints[2].x > -euclidX) || (pixPoints[1].y < euclidY && pixPoints[2].y > -euclidY))
+        return colors[0];
+    else return color_invert(colors[0]);
+}
+
+Rasteron_Image* nuTileImgOp(int mode, unsigned short density, double xFactor, double yFactor){
+    euclidX = xFactor;
+    euclidY = yFactor;
+
+    tilingTable.pointCount = 0;
+
+    for(unsigned r = 0; r < density + 1; r++){
+        for(unsigned c = 0; c < density + 1; c++){
+            switch(mode){
+                case TILE_Square: // regular grid tiling
+                    colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r); 
+                    break;
+                case TILE_Triangle: // triangular tiling attempt
+                    if((r % 2 == 0 && c % 2 == 0) || (r % 2 == 1 && c % 2 == 1))
+                        colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r); 
+                    break;
+                case TILE_Hexagon: // hexagonal tiling attempt
+                    if((r % 2 == 0 && c % 3 != 0) || (r % 2 == 1 && c % 3 == 0))
+                        colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r);
+                    break;
+                case TILE_Diagonal: // diagonal tiling attempt
+                    if(c == r || c == density + 1 - r || r == density + 1 - c)
+                        colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r);
+                    break;
+                case TILE_Perimiter: // perimiter tiling attempt
+                    if(c == 0 || c == density + 1 || r == 0 || r == density + 1)
+                        colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / density) * c, (1.0 / density) * r);
+                    break;
+                default: colorPointToTable(&tilingTable, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX); // random
+            }
+        }
+    }
+
+    return fieldExtImgOp((ImageSize){ 1024, 1024 }, &tilingTable, nuTile);
 }
 
 unsigned graterColor1 = 0xFF333333;
@@ -413,7 +475,8 @@ static unsigned grater(double x, double y){
     double largeX = x * 10.0; double smallX = largeX - floor(largeX);
     double largeY = y * 10.0; double smallY = largeY - floor(largeY);
 
-    if(largeX / largeY > largeY / largeX) return (pow(smallX, smallY) > 0.5)? colors_blend(graterColor1, graterColor2, fabs(smallX - smallY)) : graterColor2;
+    if(largeX / largeY > largeY / largeX) 
+        return (pow(smallX, smallY) > 0.5)? colors_blend(graterColor1, graterColor2, fabs(smallX - smallY)) : graterColor2;
     else return (pow(smallX, smallY) < 0.5)? colors_blend(graterColor1, graterColor2, fabs(smallX - smallY)) : graterColor2;
 }
 
@@ -424,6 +487,60 @@ Rasteron_Image* graterImgOp(unsigned color1, unsigned color2){
     return mapImgOp((ImageSize){ 1024, 1024 }, grater);
 }
 
+static unsigned mildew(unsigned color, unsigned neighbors[8]){
+    /* if(neighbors[NEBR_Bot] & 0xFF00 > color & 0xFF00) return neighbors[NEBR_Bot];
+    else if(neighbors[NEBR_Right] & 0xFF > color & 0xFF) return neighbors[NEBR_Right];
+    else if(neighbors[NEBR_Top] & 0xFF00 > color & 0xFF00) return neighbors[NEBR_Top];
+    else if(neighbors[NEBR_Left] & 0xFF > color & 0xFF) return neighbors[NEBR_Left];
+    else return color; */
+    return neighbors[rand() % 8];
+}
+
+Rasteron_Image* mildewImgOp(unsigned short iters){
+    // Rasteron_Image* seedImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFFFF0000, 0xFF0000FF);
+    Rasteron_Image* gradientImg = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, 0xFF111111, 0xFF00FFFF);
+    Rasteron_Image* mildewImg = cellwiseExtImgOp(gradientImg, mildew, iters);
+
+    RASTERON_DEALLOC(gradientImg);
+
+    return mildewImg;
+}
+
+Rasteron_Image* oozelikeImgOp(unsigned short colorMode){
+    Rasteron_Image* noiseImg = noiseImgOp_scratch((ImageSize){ 1024, 1024 }, (ColorGrid){ 16, 16, 0xFF330088, 0xFF003388});
+
+    Rasteron_Image* redNoiseImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF110088, 0xFFEE0088);
+    Rasteron_Image* greenNoiseImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF001188, 0xFF00EE88);
+    Rasteron_Image* blueNoiseImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF000011, 0xFF0000EE);
+
+    Rasteron_Image* perturbImg1 = warpingImgOp(redNoiseImg, greenNoiseImg);
+    Rasteron_Image* perturbImg2 = warpingImgOp(greenNoiseImg, redNoiseImg);
+    Rasteron_Image* fuseImg = fusionImgOp(perturbImg1, perturbImg2);
+
+    Rasteron_Image* oozelikeImg = warpingImgOp(fuseImg, noiseImg); // cellwiseExtImgOp(noiseImg, hatch, 6);
+
+    RASTERON_DEALLOC(noiseImg);
+    RASTERON_DEALLOC(redNoiseImg); RASTERON_DEALLOC(greenNoiseImg); RASTERON_DEALLOC(blueNoiseImg);
+    RASTERON_DEALLOC(perturbImg1); RASTERON_DEALLOC(perturbImg2); RASTERON_DEALLOC(fuseImg);
+
+    Rasteron_Image* swapImg;
+    switch(colorMode){
+        case 0: 
+            swapImg = colorSwitchImgOp(oozelikeImg, CHANNEL_Blue, CHANNEL_Green);
+            RASTERON_DEALLOC(oozelikeImg);
+            return swapImg;
+        case 1: 
+            swapImg = colorSwitchImgOp(oozelikeImg, CHANNEL_Blue, CHANNEL_Red);
+            RASTERON_DEALLOC(oozelikeImg);
+            return swapImg;
+        case 2: 
+            swapImg = colorSwitchImgOp(oozelikeImg, CHANNEL_Red, CHANNEL_Green);
+            RASTERON_DEALLOC(oozelikeImg);
+            return swapImg;
+        default: return oozelikeImg;
+    }
+}
+
 Rasteron_Image* expImgOp2(){ return expImgOp1(); }
 Rasteron_Image* expImgOp3(){ return expImgOp1(); }
 Rasteron_Image* expImgOp4(){ return expImgOp1(); }
@@ -431,6 +548,3 @@ Rasteron_Image* expImgOp5(){ return expImgOp1(); }
 Rasteron_Image* expImgOp6(){ return expImgOp1(); }
 Rasteron_Image* expImgOp7(){ return expImgOp1(); }
 Rasteron_Image* expImgOp8(){ return expImgOp1(); }
-Rasteron_Image* expImgOp9(){ return expImgOp1(); }
-Rasteron_Image* expImgOp10(){ return expImgOp1(); }
-Rasteron_Image* expImgOp11(){ return expImgOp1(); }

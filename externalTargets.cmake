@@ -113,7 +113,7 @@ endif()
 set(SUPPORT_FONT_BAKING true CACHE BOOL "Include font baking module" FORCE)
 if(SUPPORT_FONT_BAKING)
 ExternalProject_Add(FreeType
-    GIT_REPOSITORY "https://gitlab.freedesktop.org/freetype/freetype.git"
+    GIT_REPOSITORY "https://gitlab.freedesktop.org/freetype/freetypedef.git"
     GIT_TAG "801cd842e27c85cb1d5000f6397f382ffe295daa"
 
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
