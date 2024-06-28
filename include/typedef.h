@@ -121,6 +121,7 @@ enum SIDE_Type { SIDE_None = -1, SIDE_Top = 0, SIDE_Bottom = 1, SIDE_Left = 2, S
 // --------------------------------   Callbacks    -------------------------------- //
 
 typedef unsigned (*recolorCallback)(unsigned color);
+typedef uint8_t (*remaskCallback)(CHANNEL_Type channel, uint8_t value);
 
 typedef unsigned (*mixCallback)(unsigned color1, unsigned color2);
 typedef unsigned (*mixCallback4)(unsigned color1, unsigned color2, unsigned color3, unsigned color4);

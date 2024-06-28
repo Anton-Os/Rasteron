@@ -14,6 +14,25 @@ Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback){
 	return recolorImage;
 }
 
+Rasteron_Image* remaskImgOp(ref_image_t refImage, remaskCallback callback){
+	assert(refImage != NULL);
+    
+    Rasteron_Image* remaskImage = RASTERON_ALLOC("remask", refImage->height, refImage->width);
+
+	for(unsigned p = 0; p < remaskImage->width * remaskImage->height; p++){
+		unsigned refColor = *(refImage->data + p);
+
+		uint8_t alpha = callback(CHANNEL_Alpha, (refColor & ALPHA_CHANNEL) >> 24);
+		uint8_t red = callback(CHANNEL_Red, (refColor & RED_CHANNEL) >> 16);
+		uint8_t green = callback(CHANNEL_Green, (refColor & GREEN_CHANNEL) >> 8);
+		uint8_t blue = callback(CHANNEL_Blue, refColor & BLUE_CHANNEL);
+
+		*(remaskImage->data + p) = ((alpha << 24) | (red << 16) | (green << 8) | blue);
+	}
+
+	return remaskImage;
+}
+
 Rasteron_Image* greyImgOp(ref_image_t refImage) {
 	assert(refImage != NULL);
     

@@ -34,7 +34,7 @@ Rasteron_Image* queue_getImg(Rasteron_Queue* queue, unsigned short frameIndex); 
 
 #define NO_QUEUE NULL
 
-enum MENU_Size { MENU_Tiny, MENU_Small, MENU_Medium, MENU_Large, MENU_XL };
+enum MENU_Size { MENU_Tiny = 64, MENU_Small = 82, MENU_Medium = 104, MENU_Large = 124, MENU_XL = 152 };
 
 enum MENU_ItemState { MENU_None = 0, MENU_On = 1, MENU_Off = 2, MENU_Pre = 3};
 

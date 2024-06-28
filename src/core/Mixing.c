@@ -46,14 +46,15 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback){
 	assert(image1 != NULL && image2 != NULL);
 
-	Rasteron_Image* sizedImg1 = (image1->width * image1->height > image2->width * image2->height)
-		? resizeImgOp((ImageSize){image2->height, image2->width}, image1) : copyImgOp(image1);
-	Rasteron_Image* sizedImg2 = (image2->width * image2->height > image1->width * image1->height)
-		? resizeImgOp((ImageSize){image1->height, image1->width}, image1) : copyImgOp(image2);
+	Rasteron_Image* sizedImg1 = (image1->width * image1->height > image2->width * image2->height)? resizeImgOp((ImageSize){image2->height, image2->width}, image1) : copyImgOp(image1);
+	Rasteron_Image* sizedImg2 = (image2->width * image2->height > image1->width * image1->height)? resizeImgOp((ImageSize){image1->height, image1->width}, image2) : copyImgOp(image2);
 
 	Rasteron_Image* mixImage = RASTERON_ALLOC("mixing", sizedImg1->height, sizedImg1->width);
 	for(unsigned p = 0; p < sizedImg1->width * sizedImg1->height; p++)
 		*(mixImage->data + p) = callback(*(sizedImg1->data + p), *(sizedImg2->data + p));
+
+	RASTERON_DEALLOC(sizedImg1);
+	RASTERON_DEALLOC(sizedImg2);
 
 	return mixImage;
 }
@@ -61,7 +62,26 @@ Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback 
 Rasteron_Image* mixingExtImgOp(ref_image_t image1, ref_image_t image2, ref_image_t image3, ref_image_t image4, mixCallback4 callback){
 	assert(image1 != NULL && image2 != NULL && image3 != NULL && image4 != NULL);
 
-	// TODO: Perform mixing of 4 target images
+	unsigned minWidth = -1;
+	unsigned minHeight = -1;
+	if(image1->width < minWidth) minWidth = image1->width; if(image1->height < minHeight) minHeight = image1->height;
+	if(image2->width < minWidth) minWidth = image2->width; if(image2->height < minHeight) minHeight = image2->height;
+	if(image3->width < minWidth) minWidth = image3->width; if(image3->height < minHeight) minHeight = image3->height;
+	if(image4->width < minWidth) minWidth = image4->width; if(image4->height < minHeight) minHeight = image4->height;
+	
+	Rasteron_Image* sizedImg1 = (image1->width == minWidth && image1->height == minHeight)? copyImgOp(image1) : resizeImgOp((ImageSize){ minHeight, minWidth }, image1);
+	Rasteron_Image* sizedImg2 = (image2->width == minWidth && image2->height == minHeight)? copyImgOp(image2) : resizeImgOp((ImageSize){ minHeight, minWidth }, image2);
+	Rasteron_Image* sizedImg3 = (image3->width == minWidth && image3->height == minHeight)? copyImgOp(image3) : resizeImgOp((ImageSize){ minHeight, minWidth }, image3);
+	Rasteron_Image* sizedImg4 = (image4->width == minWidth && image4->height == minHeight)? copyImgOp(image4) : resizeImgOp((ImageSize){ minHeight, minWidth }, image4);
+
+	Rasteron_Image* mixImage = RASTERON_ALLOC("mixing", sizedImg1->height, sizedImg1->width);
+	for(unsigned p = 0; p < sizedImg1->width * sizedImg1->height; p++)
+		*(mixImage->data + p) = callback(*(sizedImg1->data + p), *(sizedImg2->data + p), *(sizedImg3->data + p), *(sizedImg4->data + p));
+
+	RASTERON_DEALLOC(sizedImg1);
+	RASTERON_DEALLOC(sizedImg2);
+	RASTERON_DEALLOC(sizedImg3);
+	RASTERON_DEALLOC(sizedImg4);
 
 	return errorImgOp("Not supported yet");
 }

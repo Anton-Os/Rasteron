@@ -121,7 +121,7 @@ static Rasteron_Image* _textImgOp(const Rasteron_Text* textObj, unsigned size){
     FT_Done_Face(face);
 
 	if(_topPad == 0 && _leftPad == 0 && _botPad == 0 && _rightPad == 0) return textImg; // padding not required
-	else {
+	else { // padding required
 		Rasteron_Image* backgroundImg = solidImgOp(
 			(ImageSize){ textImg->height + _botPad + _topPad, textImg->width + _rightPad + _leftPad },
 			textObj->bkColor

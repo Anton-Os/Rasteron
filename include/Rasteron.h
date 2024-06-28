@@ -31,6 +31,7 @@ Rasteron_Image* errorImgOp(const char* error); // shows up on error
 //      Distills an image by modifying data by channels
 
 Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback); // callbacks from input color
+Rasteron_Image* remaskImgOp(ref_image_t refImage, remaskCallback callback); // callbacks from channel input
 Rasteron_Image* greyImgOp(ref_image_t refImage); // creates greyscale image
 Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter image
 Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
