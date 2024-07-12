@@ -54,7 +54,7 @@ unsigned strokePaint(double x, double y){
 			else return canvasColor;
 		case 7: return (xDiff / x1 / x2 / x3 / x4 > yDiff / y1 / y2 / y3 / y4)? colorPoints[0].color : colorPoints[1].color;
 		case 8: return (pow(x1 * x2 * x3 * x4, 1.0) > pow(y1 * y2 * y3 * y4, 1.0))? colorPoints[0].color : colorPoints[1].color;
-		default: return colors_blend(colorPoints[0].color, colorPoints[1].color, 0.5);
+		default: return wavePaint(x, y);
 	}
 }
 
@@ -64,24 +64,63 @@ static unsigned dotSplash(unsigned color, double distance, PixelPoint pixPoint){
 
 static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
 	switch(mode){
-		case 9: return colors_blend(xColor, yColor, distances[0] * FIELD_PRODUCT);
-		case 10: return colors_blend(xColor, yColor, distances[1] * FIELD_PRODUCT);
-		case 11: return colors_blend(xColor, yColor, distances[2] * FIELD_PRODUCT);
-		case 12: return colors_blend(xColor, yColor, sin(distances[0] * FIELD_PRODUCT * 10.0));
-		case 13: return colors_blend(xColor, yColor, cos(distances[0] * FIELD_PRODUCT * 10.0));
-		case 14: return colors_blend(xColor, yColor, tan(distances[0] * FIELD_PRODUCT * 10.0));
-		case 15: return (distances[2] > distances[0] + distances[1])? xColor : yColor;
-		case 16: return (((distances[2] + distances[1] + distances[0]) / 3) > distances[1])? xColor : yColor;
-		default: return colors[0];
+		case 10: return colors_blend(xColor, yColor, distances[0] * FIELD_PRODUCT);
+		case 11: return colors_blend(xColor, yColor, distances[1] * FIELD_PRODUCT);
+		case 12: return colors_blend(xColor, yColor, distances[2] * FIELD_PRODUCT);
+		case 13: return colors_blend(xColor, yColor, sin(distances[0] * FIELD_PRODUCT * 10.0));
+		case 14: return colors_blend(xColor, yColor, cos(distances[0] * FIELD_PRODUCT * 10.0));
+		case 15: return colors_blend(xColor, yColor, tan(distances[0] * FIELD_PRODUCT * 10.0));
+		case 16: return (distances[2] > distances[0] + distances[1])? xColor : yColor;
+		default: return (((distances[2] + distances[1] + distances[0]) / 3) > distances[1])? xColor : yColor;
 	}
+}
+
+Rasteron_Image* drawImgOp(/* TODO: Add parameters */){
+	unsigned color1 = RAND_COLOR();
+	unsigned color2 = RAND_COLOR();
+
+	Rasteron_Image* drawImg = checkerImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ coordSpace, coordSpace, color1, color2 });
+
+	for(unsigned p = 0; p < 1024 * 1024; p++){
+		double x = (1.0 / (double)1024) * (p % 1024);
+		double y = (1.0 / (double)1024) * (p / 1024);
+
+		double xOffLo = 0.0; double yOffLo = 0.0;
+		double xOffHi = 0.0; double yOffHi = 0.0;
+
+		for(unsigned o = 0; o < pixelPointTable.pointCount; o++){
+			double xOff = x - pixelPointTable.points[o].x;
+			double yOff = y - pixelPointTable.points[o].y;
+
+			if(o == 0 || fabs(xOff) < xOffLo) xOffLo = xOff; // minimum x value
+			if(o == 0 || fabs(xOff) > xOffHi) xOffHi = xOff; // maximum x value
+			if(o == 0 || fabs(yOff) < yOffLo) yOffLo = yOff; // minimum y value
+			if(o == 0 || fabs(yOff) > yOffHi) yOffHi = yOff; // maximum y value
+
+			switch(mode){
+			case 17: if(sin(xOff * 10.0) > cos(yOff * 10.0)) *(drawImg->data + p) += 0xF; break;
+			case 18: if(xOff < 0.1) *(drawImg->data + p) += 0xF; else if(yOff < 0.1) *(drawImg->data + p) -= 0xF; break;
+			case 19: if(fabs(xOffLo) < fabs(yOffLo)) *(drawImg->data + p) = color1; else if(fabs(xOffHi) > fabs(yOffHi)) *(drawImg->data + p) = color2; break;
+			case 20: *(drawImg->data + p) = colors_blend(color1, color2, xOff / yOff); break;
+			case 21: *(drawImg->data + p) = colors_blend(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
+			case 22: *(drawImg->data + p) = colors_fuse(color1, color2, (x / y) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
+			case 23: *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi);
+			default: *(drawImg->data + p) = *(drawImg->data + p);
+			}
+		}
+	}
+
+	return drawImg;
 }
 
 static void update(){
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-	if(colorPointTable.pointCount <= COLOR_POINTS || mode == 0) _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, dotSplash);
-	else if(mode > 0 && mode < 9) _outputImg = mapImgOp((ImageSize){1024, 1024}, strokePaint);
-	else if(mode > 8 && mode < 17) _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
-	else _outputImg = mapImgOp((ImageSize){1024, 1024}, wavePaint);
+	if(colorPointTable.pointCount > COLOR_POINTS && mode != 0){
+		if(mode > 0 && mode < 10) _outputImg = mapImgOp((ImageSize){1024, 1024}, strokePaint);
+		else if(mode >= 10 && mode < 17) _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
+		else if(mode < 24) _outputImg = drawImgOp();
+	}
+	else _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, dotSplash);
 }
 
 void _onKeyEvent(char key){
@@ -90,10 +129,13 @@ void _onKeyEvent(char key){
 		case 'q': mode = 0; break; case 'w': mode = 1; break; case 'e': mode = 2; break;
 		case 'r': mode = 3; break; case 't': mode = 4; break; case 'y': mode = 5; break;
 		case 'u': mode = 6; break; case 'i': mode = 7; break; case 'o': mode = 8; break;
-		case 'p': mode = 9; break; case 'a': mode = 10; break; case 's': mode = 11; break;
-		case 'd': mode = 12; break; case 'f': mode = 13; break; case 'g': mode = 14; break;
-		case 'h': mode = 13; break; case 'j': mode = 14; break; case 'k': mode = 15; break;
-		case 'l': mode = 16; break; case 'm': mode = 17; break;
+		case 'p': mode = 9; break; 
+		case 'a': mode = 10; break; case 's': mode = 11; break; case 'd': mode = 12; break; 
+		case 'f': mode = 13; break; case 'g': mode = 14; break; case 'h': mode = 13; break; 
+		case 'j': mode = 14; break; case 'k': mode = 15; break; case 'l': mode = 16; break; 
+		case 'z': mode = 17; break; case 'x': mode = 18; break; case 'c': mode = 19; break;
+		case 'v': mode = 20; break; case 'b': mode = 21; break; case 'n': mode = 22; break;
+		case 'm': mode = 23;
 		// default: mode = -1;
 	}
 	if(isspace(key)) mode = (mode + 1) % 18;

@@ -29,7 +29,7 @@ Rasteron_Image* intersectImgOp(double angle1, double angle2);
 Rasteron_Image* swirlyImgOp(double swirlFactor);
 Rasteron_Image* displacerImgOp(unsigned short cells, unsigned color1, unsigned color2);
 Rasteron_Image* bilineImgOp(unsigned color, unsigned short variant);
-Rasteron_Image* arcaneImgOp(double radius);
+Rasteron_Image* arcaneImgOp(double radius, unsigned short count);
 Rasteron_Image* ultImgOp(short seed, unsigned short factor, double x1, double x2, double y1, double y2);
 
 Rasteron_Image* expImgOp1(); // placeholder for new images

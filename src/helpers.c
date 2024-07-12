@@ -133,38 +133,6 @@ uint32_t fract32(uint32_t refColor, double frac){
 	return result;
 }
 
-uint32_t color_invert(uint32_t refColor){
-	uint8_t alpha = (refColor & ALPHA_CHANNEL) >> 24;
-	uint8_t red = 0xFF - ((refColor & RED_CHANNEL) >> 16);
-	uint8_t green = 0xFF - ((refColor & GREEN_CHANNEL) >> 8);
-	uint8_t blue = 0xFF - (refColor & BLUE_CHANNEL);
-
-	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
-	return result;
-}
-
-uint32_t colors_diff(uint32_t color1, uint32_t color2){
-	if(color1 & 0x00FFFFFF > color2 & 0x00FFFFFF) return (color1 - color2) | (0xFF000000 & color1);
-	else return (color2 - color1) | (0xFF000000 & color2);
-}
-
-uint32_t colors_powroot(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
-	unsigned product = (0xFFFFFF & color1) * (0xFFFFFF & color2); // power
-	unsigned color = ((unsigned)(pow((double)product, 0.5)) * 1) | 0xFF000000; // root
-	// bitSwitch_RG(&color, 1);
-
-	return color;
-}
-
-/* uint32_t colors_scramble(uint32_t color1, uint32_t color2, double pVal){
-	// return (rand() / (double)RAND_MAX > pVal)? color1 : color2;
-	uint8_t blueColor = (rand() / (double)RAND_MAX > pVal)? (color1 & 0xFF) : (color2 & 0xFF);
-	uint8_t greenColor = (rand() / (double)RAND_MAX > pVal)? ((color1 & 0xFF00) >> 8) : ((color2 & 0xFF00) >> 8);
-	uint8_t redColor = (rand() / (double)RAND_MAX > pVal)? ((color1 & 0xFF0000) >> 16) : ((color2 & 0xFF0000) >> 16);
-
-	return (uint32_t)((0xFF << 24) + (redColor << 16) + (greenColor << 8) + blueColor);
-} */
-
 uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal){
 	if(bVal <= 0.0) return color1;
 	else if(bVal >= 1.0) return color2;
@@ -202,6 +170,38 @@ uint32_t color_level(uint32_t color, double level){
 	else if(level < 0.5) return colors_blend(color, 0xFF000000, (0.5 - level) * 2.0);
 	else return color;
 }
+
+uint32_t color_invert(uint32_t refColor){
+	uint8_t alpha = (refColor & ALPHA_CHANNEL) >> 24;
+	uint8_t red = 0xFF - ((refColor & RED_CHANNEL) >> 16);
+	uint8_t green = 0xFF - ((refColor & GREEN_CHANNEL) >> 8);
+	uint8_t blue = 0xFF - (refColor & BLUE_CHANNEL);
+
+	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
+	return result;
+}
+
+uint32_t colors_diff(uint32_t color1, uint32_t color2){
+	if(color1 & 0x00FFFFFF > color2 & 0x00FFFFFF) return (color1 - color2) | (0xFF000000 & color1);
+	else return (color2 - color1) | (0xFF000000 & color2);
+}
+
+uint32_t colors_powroot(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
+	unsigned product = (0xFFFFFF & color1) * (0xFFFFFF & color2); // power
+	unsigned color = ((unsigned)(pow((double)product, 0.5)) * 1) | 0xFF000000; // root
+	// bitSwitch_RG(&color, 1);
+
+	return color;
+}
+
+/* uint32_t colors_scramble(uint32_t color1, uint32_t color2, double pVal){
+	// return (rand() / (double)RAND_MAX > pVal)? color1 : color2;
+	uint8_t blueColor = (rand() / (double)RAND_MAX > pVal)? (color1 & 0xFF) : (color2 & 0xFF);
+	uint8_t greenColor = (rand() / (double)RAND_MAX > pVal)? ((color1 & 0xFF00) >> 8) : ((color2 & 0xFF00) >> 8);
+	uint8_t redColor = (rand() / (double)RAND_MAX > pVal)? ((color1 & 0xFF0000) >> 16) : ((color2 & 0xFF0000) >> 16);
+
+	return (uint32_t)((0xFF << 24) + (redColor << 16) + (greenColor << 8) + blueColor);
+} */
 
 double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth){
 	long int x1 = p1 % imageWidth;

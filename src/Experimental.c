@@ -699,12 +699,21 @@ double ultY1 = 1.0; double ultY2 = 1.0;
 unsigned ultM = 64;
 
 unsigned ultCoord(double x, double y){
-    for(unsigned c = 0; c < 3; c++){
-        if(pow(sin(x * ultM), sin(y * ultM)) > pow(cos(y * ultM), cos(x * ultM))) x += y / ultY1;
-        else y += x / ultX1;
+    unsigned color = 0xFF333333;
+
+    unsigned short xDivs = 2;
+    unsigned short yDivs = 2;
+
+    for(unsigned u = 0; u < 5; u++){
+        double xInc = (pow(xDivs, u + 1) * x) - floor(pow(xDivs, u + 1) * x);
+        double yInc = (pow(yDivs, u + 1) * y) - floor(pow(yDivs, y + 1) * x);
+
+        if(color == 0xFF333333)
+            if(fabs(xInc / yInc) > 0.9 * ultX1 && fabs(xInc / yInc) < 1.1 * ultY1) color = colors_blend(0xFFFF0000, 0xFF0000FF, (xInc * ultX2) * (yInc * ultY2));
+        else break;
     }
-    
-    return (sin(x) > cos(y))? colors_blend(0xFF00FF00, 0xFFFF0000, x * ultX2) : colors_fuse(0xFF00FF00, 0xFF0000FF, y * ultY2);
+
+    return color;
 }
 
 /* unsigned ultMix(unsigned color1, unsigned color2, unsigned color3, unsigned color4){ 
@@ -738,12 +747,12 @@ Rasteron_Image* ultImgOp(short seed, unsigned short factor, double x1, double x2
     ultY1 = y1; ultY2 = y2;
     ultM = factor;
     
-    Rasteron_Image* coordImg = mapImgOp((ImageSize){ 1024, 1024 }, ultCoord);
+    Rasteron_Image* coordImg = mapImgOp((ImageSize){ 256, 256 }, ultCoord);
     Rasteron_Image* coordVarImgs[3] = {
         copyImgOp(coordImg), copyImgOp(coordImg), copyImgOp(coordImg)
     };
 
-    for(unsigned p = 0; p < 1024; p++){
+    for(unsigned p = 0; p < 256 * 256; p++){
         *(coordVarImgs[0]->data + p) = color_invert(*(coordImg->data + p));
         *(coordVarImgs[1]->data + p) = color_level(*(coordImg->data + p), 0.5);
         *(coordVarImgs[2]->data + p) = colors_diff(*(coordImg->data + p), color_unique());
