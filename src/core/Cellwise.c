@@ -1,3 +1,5 @@
+#ifndef RASTERON_CELLWISE_H
+
 #include "Rasteron.h"
 
 // Cellular operations
@@ -171,3 +173,6 @@ Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short times){
 	delNebrTables(nebrTables);
 	return stepImage;
 } */
+
+#define RASTERON_CELLWISE_H
+#endif

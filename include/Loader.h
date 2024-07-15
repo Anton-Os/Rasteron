@@ -1,9 +1,12 @@
 #ifndef IMAGE_LOADER_H
 
 #include "support_def.h"
-#include "string.h"
 
 #include "helpers.h"
+
+#ifdef __linux__
+#include <unistd.h>
+#endif
 
 #ifdef USE_IMG_TIFF
 

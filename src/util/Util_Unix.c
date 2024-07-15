@@ -1,13 +1,5 @@
 #include "Util_OS.h"
 
-// Path Generation
-
-void genFullFilePath(const char* name, char* fullFilePath){
-	strcpy(fullFilePath, ASSETS_DIR);
-	strcat(fullFilePath, "/");
-	strcat(fullFilePath, name);
-}
-
 // Unix Specific
 
 void createWindow(Platform_Context* context, const char* name, unsigned width, unsigned height){
@@ -24,14 +16,14 @@ void createWindow(Platform_Context* context, const char* name, unsigned width, u
 		// 1, blackPix, whitePix
 	);
 	context->visual = DefaultVisual(context->display, screenNum);
-	context->gc = DefaultGC(context->display, screenNum);
+    context->gc = &DefaultGC(context->display, screenNum);
 	context->depth = DefaultDepth(context->display, screenNum);
 	
 	XSelectInput(context->display, context->window, KeyPressMask | KeyReleaseMask | ExposureMask |ButtonPressMask);
 	
 	XMapWindow(context->display, context->window);
 	XFlush(context->display);
-	XFlushGC(context->display, context->gc);
+    XFlushGC(context->display, *context->gc);
 }
 
 #include <stdio.h>
@@ -69,7 +61,7 @@ void eventLoop(Display* display, Window window, eventLoopCallback callback){
 XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data){
 	XImage* image = XCreateImage(
 		context->display, context->visual, context->depth,
-		ZPixmap, 0, data, width, height, 32, 0
+        ZPixmap, 0, (char*)data, width, height, 32, 0
 	);
 	
 	for(unsigned h = 0; h < height; h++)
@@ -85,7 +77,7 @@ XImage* createUnixBmap(Platform_Context* context, Rasteron_Image* image){
 
 void drawUnixBmap(Platform_Context* context, XImage* image){
 	XPutImage(
-		context->display, context->window, context->gc, 
+        context->display, context->window, *context->gc,
 		image,
 		0, 0, 0, 0,
 		image->width, image->height

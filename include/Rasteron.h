@@ -89,7 +89,7 @@ Rasteron_Image* noiseImgOp_diff(ImageSize size, ColorGrid grid, unsigned short o
 
 Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
 Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
-Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback); // 2D generated image from 8 neighbors
+Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iters); // 2D generated image from 8 neighbors
 
 Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short times); // performs antialiasing operation
 

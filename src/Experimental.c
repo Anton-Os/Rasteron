@@ -1,9 +1,15 @@
+#include "typedef.h"
+
+#include "Util_OS.h"
+
 #include "Experimental.h"
+
+#include "Font.h"
 
 static char fullFilePath[1024];
 
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){ 
-    genFullFilePath("Logroller.bmp", &fullFilePath);
+    genFullFilePath("Logroller.bmp", fullFilePath);
 
     Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
 
@@ -17,7 +23,7 @@ Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){
     Rasteron_Image* finalImg = resizeImgOp((ImageSize){ 512, 512 }, flipImg); // attempting to resize
 
     RASTERON_DEALLOC(loadedImg);
-    RASTERON_DEALLOC(cropImgX, cropImgY);
+    RASTERON_DEALLOC(cropImgX); RASTERON_DEALLOC(cropImgY);
     RASTERON_DEALLOC(flipImg);
 
     return finalImg;
@@ -63,8 +69,8 @@ static unsigned distill(unsigned color){
     return color; // 0x00; // return black by default
 }
 
-Rasteron_Image* lensesImgOp(enum CHANNEL_Type channel){ 
-    genFullFilePath("Gumdrops.bmp", &fullFilePath);
+Rasteron_Image* lensesImgOp(CHANNEL_Type channel){
+    genFullFilePath("Gumdrops.bmp", fullFilePath);
 
     Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
     Rasteron_Image* flipImg = (channel >= 0 && channel <= 2) 
@@ -132,7 +138,7 @@ Rasteron_Image* fisheyeImgOp(unsigned short points){
 }
 
 Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){ 
-    genFullFilePath("Tw-Cen-MT.ttf", &fullFilePath);
+    genFullFilePath("Tw-Cen-MT.ttf", fullFilePath);
 
     /* Rasteron_Text textObj;
     textObj.fontFile = fullFilePath;
@@ -255,7 +261,7 @@ Rasteron_Image* ballingImgOp(double size){
 }
 
 Rasteron_Image* stratifyImgOp(unsigned short levels){
-    genFullFilePath("Zero+.bmp", &fullFilePath);
+    genFullFilePath("Zero+.bmp", fullFilePath);
 
     Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
     Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ loadedImg->height / 2, loadedImg->width / 2 }, loadedImg);

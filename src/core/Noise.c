@@ -1,3 +1,5 @@
+#ifndef RASTERON_NOISE_H
+
 #include "Rasteron.h"
 
 #define OCTAVE_MAX 8
@@ -136,3 +138,6 @@ Rasteron_Image* noiseImgOp_low(ImageSize size, ColorGrid grid, unsigned short oc
 Rasteron_Image* noiseImgOp_hi(ImageSize size, ColorGrid grid, unsigned short octaves){
 	return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_hi);
 }
+
+#define RASTERON_NOISE_H
+#endif

@@ -40,7 +40,7 @@ typedef struct {
     float* data;
 } Rasteron_Heightmap;
 
-Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, double minDepth, double maxDepth);
+Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth);
 #define RASTERON_HEIGHTMAP_ALLOC(height, width, minDepth, maxDepth) (internal_alloc_heightmap(height, width, minDepth, maxDepth))
 Rasteron_Heightmap* loadHeightmap(ref_image_t refImage); // create heightmap from an image file
 

@@ -1,5 +1,7 @@
 #ifndef RASTERON_TOOLS_H
 
+#include <string.h>
+
 #include "support_def.h"
 #include "typedef.h"
 

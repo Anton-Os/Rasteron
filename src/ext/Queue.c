@@ -2,6 +2,8 @@
 
 #include "Queue.h"
 
+#include "Util_OS.h"
+
 static char frameName[1024];
 
 // --------------------------------  Queue Operations  -------------------------------- //
@@ -19,8 +21,8 @@ Rasteron_Queue* internal_alloc_queue(const char* prefix, ImageSize size, unsigne
 
         sprintf(frameName, "frame%d", f + 1);
         frame->name = frameName;
-        frame->width = (!_invertImage)? size.width : size.height; 
-        frame->height = (!_invertImage)? size.height : size.width;
+        frame->width = size.width;
+        frame->height = size.height;
         frame->data = (uint32_t*)malloc(size.width * size.height * sizeof(uint32_t));
         
         for (unsigned i = 0; i < size.height * size.width; i++){
@@ -91,7 +93,7 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
     ImageSize menuSize = getUI_ImageSize(size);
 
     char iconPath[1024];
-    genFullFilePath("material-icons-png\\", &iconPath);
+    genFullFilePath("material-icons-png\\", iconPath);
     strcat(iconPath, name);
     strcat(iconPath, ".png");
     Rasteron_Image* iconImg = loadImgOp(iconPath);
@@ -266,8 +268,8 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
     for(unsigned l = 0; l < levels; l++){
         Rasteron_Image* sliderImg = *(menuQueue->frameData + l);
         for(unsigned p = 0; p < menuSize.width * menuSize.height; p++){
-            double x = (!_invertImage)? ((1.0 / (double)menuSize.width) * (p % menuSize.width)) : ((1.0 / (double)menuSize.height) * (p % menuSize.height));
-            double y = (!_invertImage)? ((1.0 / (double)menuSize.height) * (p / menuSize.width)) : ((1.0 / (double)menuSize.width) * (p / menuSize.height));
+            double x = (1.0 / (double)menuSize.width) * (p % menuSize.width);
+            double y = (1.0 / (double)menuSize.height) * (p / menuSize.width);
 
             double sliderX = 0.15 + (((double)0.7 / ((double)levels - 1)) * l); // position along slider
  

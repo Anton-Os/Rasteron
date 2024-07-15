@@ -86,9 +86,7 @@ static Rasteron_Image* _textImgOp(const Rasteron_Text* textObj, unsigned size){
 		if(face->glyph->bitmap.rows + FONT_PEN_OFFSET > totalHeight) totalHeight = face->glyph->bitmap.rows + FONT_PEN_OFFSET;
     }
 
-	Rasteron_Image* textCanvasImg = (!_invertImage)
-		? (Rasteron_Image*)solidImgOp((ImageSize){ totalHeight, totalWidth }, textObj->bkColor)
-		: (Rasteron_Image*)solidImgOp((ImageSize){ totalWidth, totalHeight }, textObj->bkColor);
+    Rasteron_Image* textCanvasImg = (Rasteron_Image*)solidImgOp((ImageSize){ totalHeight, totalWidth }, textObj->bkColor);
 	int pen_x = FONT_PEN_OFFSET; int pen_y = FONT_PEN_OFFSET;
 
 	// TODO: Include error handling

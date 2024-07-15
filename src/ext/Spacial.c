@@ -19,8 +19,8 @@ Bounds createBounds(unsigned height, unsigned width){
 	return bounds;
 }
 
-float bounds_getHeight(Bounds bounds){ return !(_invertImage)? bounds.topRight[1] - bounds.botRight[1] : bounds.topRight[0] - bounds.botLeft[0]; }
-float bounds_getWidth(Bounds bounds){ return !(_invertImage)? bounds.topRight[0] - bounds.botLeft[0] : bounds.topRight[1] - bounds.botRight[1]; }
+float bounds_getHeight(Bounds bounds){ return bounds.topRight[1] - bounds.botRight[1]; }
+float bounds_getWidth(Bounds bounds){ return bounds.topRight[0] - bounds.botLeft[0]; }
 
 // --------------------------------   Sprite    -------------------------------- //
 
@@ -45,19 +45,19 @@ void internal_dealloc_sprite(Rasteron_Sprite* sprite){
 
 static float calcHeight(unsigned inputColor, float minDepth, float maxDepth){;
 	uint8_t greyColorRef = grayify8(inputColor);
-	float heightVal = (float)greyColorRef; // conversion to double
+	float heightVal = (float)greyColorRef; // conversion to float
 	heightVal /= (255.0 / maxDepth);
 
 	return heightVal + minDepth;
 }
 
-Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, double minDepth, double maxDepth){
+Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth){
 	Rasteron_Heightmap* heightmap = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
     
 	heightmap->bounds = createBounds(height, width);
 	heightmap->minDepth = minDepth; // default min is zero
 	heightmap->maxDepth = maxDepth; // default max is one
-    heightmap->data = (double*)malloc(height * width * sizeof(double));
+    heightmap->data = (float*)malloc(height * width * sizeof(float));
 
 	return heightmap;
 }

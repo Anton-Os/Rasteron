@@ -1,6 +1,8 @@
+#ifndef RASTERON_PROCEDURAL_H
+
 #include "Rasteron.h"
 
-static unsigned callback_vornoi(unsigned color, double distance){ return color; }
+static unsigned callback_vornoi(unsigned color, double distance, PixelPoint pixPoint){ return color; }
 
 Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback){
 	Rasteron_Image* mappedImage = RASTERON_ALLOC("map", size.height, size.width);
@@ -146,3 +148,6 @@ Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid){
 
 	return checkerImg;
 }
+
+#define RASTERON_PROCEDURAL_H
+#endif

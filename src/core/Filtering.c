@@ -1,3 +1,5 @@
+#ifndef RASTERON_FILTERING_H
+
 #include "Rasteron.h"
 
 Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback){
@@ -120,3 +122,6 @@ Rasteron_Image* colorShiftImgOp(ref_image_t refImage, short redShift, short gree
 
 	return colorShiftImg;
 }
+
+#define RASTERON_FILTERING_H
+#endif

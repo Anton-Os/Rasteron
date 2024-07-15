@@ -1,4 +1,4 @@
-#include "helpers.h"
+#ifndef RASTERON_BASICS_H
 
 #include "Rasteron.h"
 
@@ -133,10 +133,10 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type){
 		flipImg = RASTERON_ALLOC("flip", refImage->width, refImage->height); // parameters inverse of source
 		unsigned dstOffset = 0;
 
-		for(unsigned w = 0; w < ((!_invertImage)? refImage->width : refImage->height); w++){
+        for(unsigned w = 0; w < refImage->width; w++){
 			unsigned srcOffset = (refImage->width * refImage->height) + w;
-			for(unsigned h = 0; h < ((!_invertImage)? refImage->height : refImage->width); h++){
-				srcOffset -= ((!_invertImage)? refImage->width : refImage->height);
+            for(unsigned h = 0; h < refImage->height; h++){
+                srcOffset -= refImage->width;
 				*(flipImg->data + dstOffset) = *(refImage->data + srcOffset);
 				dstOffset++;
 			}
@@ -155,3 +155,6 @@ Rasteron_Image* errorImgOp(const char* errorMsg){
 
  	return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFF0000); // error image
 }
+
+#define RASTERON_BASICS_H
+#endif

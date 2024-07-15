@@ -7,7 +7,7 @@
 
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop); // Flipping, mirroring, and cropping
 Rasteron_Image* nestboxesImgOp(double x, double y); // Looped nesting of ever-smaller squares
-Rasteron_Image* lensesImgOp(enum CHANNEL_Type channel); // lenses image to color ranges and performing channel operations
+Rasteron_Image* lensesImgOp(CHANNEL_Type channel); // lenses image to color ranges and performing channel operations
 Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2); // Visual lense effects and enhancements to base image
 Rasteron_Image* typographyImgOp(unsigned color1, unsigned color2); // Drawing text example
 Rasteron_Image* fisheyeImgOp(unsigned short points); // Vornoi and other distance related functions

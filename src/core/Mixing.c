@@ -1,3 +1,5 @@
+#ifndef RASTERON_MIXING_H
+
 #include "Rasteron.h"
 
 Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coordX, double coordY){
@@ -100,3 +102,6 @@ Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage){
 
 	return warpImage;
 }
+
+#define RASTERON_MIXING_H
+#endif
