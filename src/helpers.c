@@ -254,6 +254,28 @@ unsigned pixPoint_cursorColor(PixelPoint cursorPos, ref_image_t refImage){
 	return *(refImage->data + pixPoint_cursorOffset(cursorPos, refImage));
 }
 
+void pixPoionts_expand(PixelPointTable* table, unsigned short divs){
+	if(table->pointCount < 2 || divs == 0) return; // no points
+
+	PixelPointTable newTable;
+	newTable.pointCount = 0;// table->pointCount + ((table->pointCount - 1) * divs);
+
+	for(unsigned p = 0; p < table->pointCount - 1; p++){
+		newTable.points[newTable.pointCount] = table->points[p];
+		newTable.pointCount++;
+
+		PixelPoint pixDiff = { table->points[p - 1].x - table->points[p].x, table->points[p - 1].y - table->points[p].y }; // difference between next and current point
+		PixelPoint pixInc = { pixDiff.x / (double)(divs + 1), pixDiff.y / (double)(divs + 1) }; // increment step between points
+		for(unsigned short d = 0; d < divs; d++){
+			newTable.points[newTable.pointCount] = (PixelPoint){ table->points[p].x + ((d + 1) * pixInc.x), table->points[p].y + ((d + 1) * pixInc.y) };
+			newTable.pointCount++;
+		}
+	}
+
+	table->pointCount = newTable.pointCount;
+	for(unsigned p = 0; p < newTable.pointCount; p++) table->points[p] = newTable.points[p]; // copyiing new data over
+}
+
 void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned short height, unsigned short width){
 	table->pointCount = 0;
 
@@ -330,6 +352,19 @@ unsigned short neighbor_count(unsigned color, unsigned neighbors[8]){
 	unsigned short count = 0;
     for(unsigned n = 0; n < 8; n++) if(neighbors[n] == color) count++;
     return count;
+}
+
+void neighbors_load(const NebrTable* nebrTable, unsigned* br, unsigned* b, unsigned* bl, unsigned* r, unsigned* l, unsigned* tr, unsigned* t, unsigned* tl){
+	unsigned short i = 0; // index to keep track of neighbor
+
+	br = (nebrTable->flags & (1 << NEBR_Bot_Right))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	b = (nebrTable->flags & (1 << NEBR_Bot))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	bl = (nebrTable->flags & (1 << NEBR_Bot_Left))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	r = (nebrTable->flags & (1 << NEBR_Right))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	l = (nebrTable->flags & (1 << NEBR_Left))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	tr = (nebrTable->flags & (1 << NEBR_Top_Right))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	t = (nebrTable->flags & (1 << NEBR_Top))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	tl = (nebrTable->flags & (1 << NEBR_Top_Left))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
 }
 
 /* static unsigned getAvgNebrColor(const NebrTable_List* nebrTables, unsigned offset){

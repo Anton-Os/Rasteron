@@ -37,12 +37,14 @@ unsigned pixPoint_color(PixelPoint pixPos, ref_image_t refImage); // gets pixel 
 unsigned pixPoint_cursorOffset(PixelPoint cursorPos, ref_image_t refImage); // gets pixel offset from cursor coordinates
 unsigned pixPoint_cursorColor(PixelPoint cursorPos, ref_image_t refImage); // gets pixel color from cursor coordinates
 // TODO: Add a function to calculate direction
+void pixPoionts_expand(PixelPointTable* table, unsigned short divs);
 void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned short height, unsigned short width);
 
 nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height);
 uint32_t* neighbor_get(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr);
 unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr);
 unsigned short neighbor_count(unsigned color, unsigned neighbors[8]);
+void neighbors_load(const NebrTable* nebrTable, unsigned* br, unsigned* b, unsigned* bl, unsigned* r, unsigned* l, unsigned* tr, unsigned* t, unsigned* tl);
 
 #define RASTERON_TOOLS_H
 #endif

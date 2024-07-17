@@ -66,7 +66,8 @@ Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointT
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
 Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned color1, unsigned color2);
-Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid); // Rasteron_Image* tiledImgOp(ImageSize size, ColorGrid grid, TILE_Type)
+Rasteron_Image* linedImgOp(ImageSize size, unsigned color1, unsigned color2, unsigned short divs, double rotation);
+Rasteron_Image* checkeredImgOp(ImageSize size, ColorGrid grid); // Rasteron_Image* tiledImgOp(ImageSize size, ColorGrid grid, TILE_Type)
 
 // --------------------------------  Noise Operations  -------------------------------- //
 //
@@ -88,9 +89,11 @@ Rasteron_Image* noiseImgOp_diff(ImageSize size, ColorGrid grid, unsigned short o
 //
 //      For each pixel adjascent neighbors are determined and used to compute the final color
 
+Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback); // 2D generated image from 8 neighbors
+Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned iters); // 2D iterated image from recursive 8 neighbors
 Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback); // horizontal generated image from left & right neighbors
 Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback); // vertically generated image from top & down neighbors
-Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback); // 2D generated image from 8 neighbors
+Rasteron_Image* cellwiseOutImgOp(ImageSize size, unsigned color1, unsigned color2, nebrCallback5 callback); // expanding outwards sees neighbors from periphery
 
 Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short times); // performs antialiasing operation
 

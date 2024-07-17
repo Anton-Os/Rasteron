@@ -221,7 +221,7 @@ Rasteron_Image* perturbImgOp(double xCenter, double yCenter){
     ColorGrid grid = { 9, 9, 0xFFFF0000, 0xFF00FF00 };
 
     Rasteron_Image* coordImg = mapImgOp((ImageSize){ 1024, 1024 }, perturb);
-    Rasteron_Image* checkerImg = checkerImgOp((ImageSize){ 1024, 1024 }, grid);
+    Rasteron_Image* checkerImg = checkeredImgOp((ImageSize){ 1024, 1024 }, grid);
 
     Rasteron_Image* perturbImg = warpingImgOp(checkerImg, coordImg);
 

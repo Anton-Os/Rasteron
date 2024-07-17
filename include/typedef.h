@@ -35,9 +35,9 @@ void internal_dealloc_img(Rasteron_Image* image);
 // --------------------------------   Swatch    -------------------------------- //
 
 enum SWATCH_Colors {
-    SWATCH_Yellow_Add = 0, SWATCH_Cyan_Add = 1, SWATCH_Magenta_Add = 2, 
-	SWATCH_Light = 3, SWATCH_Dark = 4,
-	SWATCH_Yellow_Sub = 5, SWATCH_Cyan_Sub = 6, SWATCH_Magenta_Sub = 7,
+    SWATCH_Red_Add = 0, SWATCH_Green_Add = 1, SWATCH_Blue_Add = 2, 
+	SWATCH_Dark = 3, SWATCH_Light = 4,
+	SWATCH_Red_Sub = 5, SWATCH_Green_Sub = 6, SWATCH_Blue_Sub = 7,
 };
 
 typedef struct {
@@ -73,7 +73,7 @@ typedef unsigned (*colorPointCallback)(double x, double y); // return NO_COLOR o
 
 // --------------------------------  Noise    -------------------------------- //
 
-#define MAX_grid 256
+#define MAX_GRIDS 256
 
 typedef struct {
 	unsigned xCells; unsigned yCells;
@@ -81,12 +81,19 @@ typedef struct {
 } ColorGrid;
 
 typedef struct {
-    ColorGrid grids[MAX_grid];
+    ColorGrid grids[MAX_GRIDS];
 	unsigned gridCount;
 } ColorGridTable;
 
 
 // --------------------------------   Cellwise    -------------------------------- //
+
+#define MAX_LINELEN 1024 * 32
+
+typedef struct { // Can be used in cellwise generation
+	unsigned length;
+	unsigned data[MAX_LINELEN];
+} ColorLine;
 
 enum NEBR_CellFlag {
 	NEBR_Bot_Right = 0, NEBR_Bot = 1, NEBR_Bot_Left = 2,
@@ -130,7 +137,7 @@ typedef unsigned (*fieldCallback)(unsigned color, double distance, PixelPoint pi
 typedef unsigned (*fieldCallback3)(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]);
 
 typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // target and 2 neighbors
-typedef unsigned (*nebrCallback4)(unsigned, unsigned[4]); // target and 4 neighbors
+typedef unsigned (*nebrCallback5)(unsigned, unsigned[5]); // target and 5 neighbors
 typedef unsigned (*nebrCallback8)(unsigned, unsigned[8]); // target and all 8 neighbors
 
 

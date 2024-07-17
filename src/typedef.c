@@ -7,13 +7,16 @@ extern int _invertImage = INVERT_IMG_FALSE; // false for within Rasteron
 ImageSize internal_create_size(unsigned height, unsigned width){ return (ImageSize){ height, width }; }
 
 Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width){
+	static unsigned id = 0;
+
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	
-	image->name = name;
+	image->name = name; // TODO: Append id hash next to name
 	image->width = (!_invertImage)? width: height;
 	image->height = (!_invertImage)? height : width;
 	image->data = (uint32_t*)malloc(width * height * sizeof(uint32_t));
 
+	id++;
 	return image;
 }
 
@@ -43,14 +46,14 @@ ColorSwatch createSwatch(unsigned color, uint8_t deviation){
 	uint8_t greenSub = (deviation < greenBit)? deviation : greenBit;
 	uint8_t blueSub = (deviation < greenBit)? deviation : blueBit;
 
-	swatch.colors[SWATCH_Yellow_Add] = color + (redAdd << 16) | (greenAdd << 8);
-	swatch.colors[SWATCH_Cyan_Add] = color + (greenAdd << 8) | blueAdd;
-	swatch.colors[SWATCH_Magenta_Add] = color + (redAdd << 16) | (blueBit + blueAdd);
+	swatch.colors[SWATCH_Red_Add] = color + (redAdd << 16) | (greenAdd << 8);
+	swatch.colors[SWATCH_Green_Add] = color + (greenAdd << 8) | blueAdd;
+	swatch.colors[SWATCH_Blue_Add] = color + (redAdd << 16) | (blueBit + blueAdd);
 	swatch.colors[SWATCH_Light] = color + (redAdd << 16) | (greenAdd << 8) | blueAdd;
 	swatch.colors[SWATCH_Dark] = color - ((redSub << 16) | (greenSub << 8) | (blueSub));
-	swatch.colors[SWATCH_Yellow_Sub] = color - ((redSub << 16) | (greenSub << 8));
-	swatch.colors[SWATCH_Cyan_Sub] = color - ((greenSub << 8) | blueSub);
-	swatch.colors[SWATCH_Magenta_Sub] = color - ((redSub << 16) | blueSub);
+	swatch.colors[SWATCH_Red_Sub] = color - ((redSub << 16) | (greenSub << 8));
+	swatch.colors[SWATCH_Green_Sub] = color - ((greenSub << 8) | blueSub);
+	swatch.colors[SWATCH_Blue_Sub] = color - ((redSub << 16) | blueSub);
 
 	return swatch;
 }

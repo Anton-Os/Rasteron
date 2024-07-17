@@ -2,11 +2,11 @@
 
 // Cellular operations
 
-static Rasteron_Image* cellwiseImgOp_nebr8(ref_image_t refImage, nebrCallback8 callback){
+Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback){
 	assert(refImage != NULL);
 
 	NebrTable_List* nebrTables = loadNebrTables(refImage);
-	Rasteron_Image* patternImg = RASTERON_ALLOC("pattern-nebr", refImage->height, refImage->width);
+	Rasteron_Image* cellwiseImg = RASTERON_ALLOC("cellwise-nebr", refImage->height, refImage->width);
 
 	for (unsigned p = 0; p < refImage->height * refImage->width; p++) {
 		NebrTable* currentTable = nebrTables->tables + p;
@@ -27,12 +27,31 @@ static Rasteron_Image* cellwiseImgOp_nebr8(ref_image_t refImage, nebrCallback8 c
 		unsigned nebrs[] = { br, b, bl, r, l, tr, t, tl };
 
 		unsigned newColor = callback(target, nebrs);
-		if (newColor != NO_COLOR) *(patternImg->data + p) = newColor; // override color
-		else *(patternImg->data + p) = *(refImage->data + p); // preserve color
+		if (newColor != NO_COLOR) *(cellwiseImg->data + p) = newColor; // override color
+		else *(cellwiseImg->data + p) = *(refImage->data + p); // preserve color
 	}
 
 	delNebrTables(nebrTables);
-	return patternImg;
+	return cellwiseImg;
+}
+
+
+Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
+	assert(refImage != NULL);
+	if(iterations <= 0) return copyImgOp(refImage);
+	
+	Rasteron_Image* cellwiseImg = copyImgOp(refImage);
+
+	unsigned short i = 0;
+	do {
+		Rasteron_Image* stagingImg = cellwiseImgOp(cellwiseImg, callback);
+		if(cellwiseImg != NULL) RASTERON_DEALLOC(cellwiseImg);
+		cellwiseImg = copyImgOp(stagingImg);
+		RASTERON_DEALLOC(stagingImg);
+		i++;
+	} while (i < iterations);
+
+	return cellwiseImg;
 }
 
 Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback){
@@ -41,7 +60,7 @@ Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback){
 	Rasteron_Image* stagingImg = RASTERON_ALLOC("staging", refImage->height, refImage->width);
 		for (unsigned r = 0; r < refImage->width; r++)
 			*(stagingImg->data + r) = *(refImage->data + r); // copy first row into staging image
-	Rasteron_Image* patternImg = RASTERON_ALLOC("pattern-horz", refImage->height, refImage->width);
+	Rasteron_Image* cellwiseImg = RASTERON_ALLOC("cellwise-horz", refImage->height, refImage->width);
 
 	for(unsigned r = 0; r < stagingImg->height; r++)
 		for(unsigned c = 0; c < stagingImg->width; c++){
@@ -54,15 +73,15 @@ Rasteron_Image* cellwiseRowImgOp(ref_image_t refImage, nebrCallback2 callback){
 			unsigned nebrs[] = { right, left };
 
 			unsigned newColor = callback(target, nebrs);
-			if(newColor != NO_COLOR) *(patternImg->data + p) = newColor; // override color
-			else *(patternImg->data + p) = *(stagingImg->data + p); // preserve color
+			if(newColor != NO_COLOR) *(cellwiseImg->data + p) = newColor; // override color
+			else *(cellwiseImg->data + p) = *(stagingImg->data + p); // preserve color
 
 			if(r < refImage->height - 1) // copy pixel to next row of staging image
-				*(stagingImg->data + p + stagingImg->width) = *(patternImg->data + p);
+				*(stagingImg->data + p + stagingImg->width) = *(cellwiseImg->data + p);
 		}
 
 	RASTERON_DEALLOC(stagingImg);
-	return patternImg;
+	return cellwiseImg;
 }
 
 Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback){
@@ -71,7 +90,7 @@ Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback){
 	Rasteron_Image* stagingImg = RASTERON_ALLOC("staging", refImage->height, refImage->width);
 	for (unsigned c = 0; c < refImage->height; c++)
 		*(stagingImg->data + (c * refImage->width)) = *(refImage->data + (c * refImage->width)); // copy first column
-	Rasteron_Image* patternImg = RASTERON_ALLOC("pattern-vert", refImage->height, refImage->width);
+	Rasteron_Image* cellwiseImg = RASTERON_ALLOC("cellwise-vert", refImage->height, refImage->width);
 
 	for (unsigned c = 0; c < stagingImg->width; c++) {
 		for (unsigned r = 0; r < stagingImg->height; r++) {
@@ -84,44 +103,35 @@ Rasteron_Image* cellwiseColImgOp(ref_image_t refImage, nebrCallback2 callback){
 			unsigned nebrs[] = { bot, top };
 
 			unsigned newColor = callback(target, nebrs);
-			if (newColor != NO_COLOR) *(patternImg->data + p) = newColor; // override color
-			else *(patternImg->data + p) = *(stagingImg->data + p); // preserve color
+			if (newColor != NO_COLOR) *(cellwiseImg->data + p) = newColor; // override color
+			else *(cellwiseImg->data + p) = *(stagingImg->data + p); // preserve color
 
 			if (c < refImage->width - 1) // copy pixel to next row of staging image
-				*(stagingImg->data + p + 1) = *(patternImg->data + p);
+				*(stagingImg->data + p + 1) = *(cellwiseImg->data + p);
 		}
 	}
 
 	RASTERON_DEALLOC(stagingImg);
-	return patternImg;
+	return cellwiseImg;
 }
 
+Rasteron_Image* cellwiseOutImgOp(ImageSize size, unsigned color1, unsigned color2, nebrCallback5 callback){
+	Rasteron_Image* seedImg = RASTERON_ALLOC("seed", 3, 3);
 
-Rasteron_Image* cellwiseExtImgOp(ref_image_t refImage, nebrCallback8 callback, unsigned short iterations) {
-	assert(refImage != NULL);
-	if(iterations <= 0) return copyImgOp(refImage);
-	
-	Rasteron_Image* patternImage = copyImgOp(refImage);
+	for(unsigned s = 0; s < 9; s++) *(seedImg->data + s) = (s == 4)? color1 : color2; // inner and outer colors
 
-	unsigned short i = 0;
-	do {
-		Rasteron_Image* stagingImg = cellwiseImgOp_nebr8(patternImage, callback);
-		if(patternImage != NULL) RASTERON_DEALLOC(patternImage);
-		patternImage = copyImgOp(stagingImg);
-		RASTERON_DEALLOC(stagingImg);
-		i++;
-	} while (i < iterations);
+	// TODO: Do algorithm
 
-	return patternImage;
+	return errorImgOp("Not ready yet");
 }
+
 
 unsigned antialias(unsigned target, unsigned neighbors[8]){
-	unsigned long long finalColor = neighbors[0];
+	unsigned long long finalColor = target;
 	unsigned short nCount = 1;
 
-	for(unsigned n = 1; n < 8; n++)
-		if(neighbors[n] != NO_COLOR)
-			finalColor = colors_blend(finalColor, neighbors[n], 0.5F);
+	for(unsigned n = 0; n < 8; n++)
+		if(neighbors[n] != NO_COLOR) finalColor = colors_blend(finalColor, neighbors[n], 0.5F - (n * (1.0 / 8.0)));
 		else continue;
 
 	/* for(unsigned n = 1; n < 8; n++){

@@ -123,7 +123,7 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
         if(x < 0.1 || x > 0.9 || y < 0.1 || y > 0.9){
             for(unsigned q = 0; q < 4; q++) *(queueImages[q]->data + p) = *(refImages[0]->data + p);
 
-            if(x < 0.02 || x > 0.98 || y < 0.02 || y > 0.98){
+            if(x < 0.035 || x > 0.965 || y < 0.035 || y > 0.965){
                 *(queueImages[1]->data + p) = *(refImages[2]->data + p);
                 *(queueImages[2]->data + p) = *(refImages[3]->data + p);
             }
@@ -177,7 +177,7 @@ Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
         if(x < 0.1 || x > 0.9 || y < 0.1 || y > 0.9){
             for(unsigned q = 0; q < 4; q++) *(queueImages[q]->data + p) = *(refImages[0]->data + p);
 
-            if(x < 0.02 || x > 0.98 || y < 0.02 || y > 0.98){
+            if(x < 0.035 || x > 0.965 || y < 0.035 || y > 0.965){
                 *(queueImages[2]->data + p) = *(refImages[3]->data + p);
                 *(queueImages[1]->data + p) = *(refImages[2]->data + p);
             }
@@ -271,17 +271,15 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
 
             double sliderX = 0.15 + (((double)0.7 / ((double)levels - 1)) * l); // position along slider
  
-            if(x < 0.1 || x > 0.9 || y < 0.4 || y > 0.6){
-                *(sliderImg->data + p) = *(refImages[0]->data + p);
-
+            if(x < 0.1 || x > 0.9 || y < 0.4 || y > 0.6) *(sliderImg->data + p) = *(refImages[0]->data + p); // populate background
+            else {
+                *(sliderImg->data + p) = *(refImages[1]->data + p); // populate slider bar
                 for(unsigned s = 0; s < levels; s++){
                     double sliderX = 0.15 + (((double)0.7 / ((double)levels - 1)) * s);
-                    if(sliderX > x - 0.0035 && sliderX < x + 0.0035 && ((y > 0.3 && y < 0.375) || (y > 0.625 && y < 0.7)))
-                        *(sliderImg->data + p) = (l == s)? *(refImages[2]->data + p) : *(refImages[4]->data + p);
+                    if(sliderX > x - 0.01 && sliderX < x + 0.01) *(sliderImg->data + p) = *(refImages[(s == 0)? 3 : (s == levels - 1)? 2 : 4]->data + p); // indicator status based on offset
                 }
             }
-            else if(sliderX > x - 0.05 && sliderX < x + 0.05) *(sliderImg->data + p) = *(refImages[4]->data + p);
-            else *(sliderImg->data + p) = *(refImages[1]->data + p); 
+            if(sliderX > x - 0.015 && sliderX < x + 0.015 && y < 0.8 && y > 0.2) *(sliderImg->data + p) = *(refImages[4]->data + p); // populate slider thumb
         }
     }
 

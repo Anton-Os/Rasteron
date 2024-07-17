@@ -153,5 +153,8 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type){
 Rasteron_Image* errorImgOp(const char* errorMsg){
 	fprintf(stderr, "ERROR! message: %s", errorMsg);
 
- 	return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFF0000); // error image
+	char errorFilePath[1024];
+	genFullFilePath("Error.bmp", &errorFilePath);
+
+ 	return loadImgOp(errorFilePath);
 }

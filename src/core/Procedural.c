@@ -127,8 +127,25 @@ Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned colo
 	return gradientImg;
 }
 
-Rasteron_Image* checkerImgOp(ImageSize size, ColorGrid grid){
-// Rasteron_Image* checkerImgOp(ImageSize size, Rasteron_Image* tileImages[2]){ // TODO: Replace with this
+Rasteron_Image* linedImgOp(ImageSize size, unsigned color1, unsigned color2, unsigned short divs, double rotation){
+	Rasteron_Image* linedImg = RASTERON_ALLOC("lined", size.height, size.width);
+	 
+	for(unsigned p = 0; p < size.width * size.height; p++){
+        double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
+
+		float line;
+		if(rotation == 0.0) line = (x * divs) - floor(x * divs);
+		else if(fabs(rotation == 1.0)) line = (y * divs) - floor(y * divs);
+
+		*(linedImg->data + p) = (line > 0.5)? color1 : color2;
+    }
+
+	return linedImg;
+}
+
+Rasteron_Image* checkeredImgOp(ImageSize size, ColorGrid grid){
+// Rasteron_Image* checkeredImgOp(ImageSize size, Rasteron_Image* tileImages[2]){ // TODO: Replace with this
 	Rasteron_Image* checkerImg = RASTERON_ALLOC("checker", size.height, size.width);
 
 	for(unsigned p = 0; p < size.width * size.height; p++){
