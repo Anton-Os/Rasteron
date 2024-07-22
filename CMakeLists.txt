@@ -9,8 +9,7 @@ endif()
 # Core Sources
 
 set(core_src
-    src/typedef.c
-    src/helpers.c
+    src/type_def.c
     
     src/Loader.c
 

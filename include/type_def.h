@@ -1,6 +1,7 @@
 #ifndef RASTERON_TYPE_H
 
-#include "support_def.h"
+#include <stdlib.h>
+#include <stdint.h>
 
 // --------------------------------   Image    -------------------------------- //
 //

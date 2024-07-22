@@ -1,3 +1,5 @@
+// --------------------------------  Noise Operations  -------------------------------- //
+
 #include "Rasteron.h"
 
 #define OCTAVE_MAX 8

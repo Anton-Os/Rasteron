@@ -6,9 +6,7 @@ extern "C"{
 
 #include "Loader.h"
 
-#include "typedef.h"
-#include "helpers.h"
-
+#include "type_def.h"
 
 // --------------------------------   Basic Operations    -------------------------------- //
 //
@@ -42,6 +40,7 @@ Rasteron_Image* colorShiftImgOp(ref_image_t refImage, short redShift, short gree
 
 // TODO: Add operations to map colors to different values including switching color bits
 
+
 // --------------------------------   Mixing Operations    -------------------------------- //
 //
 //     Operations requiring two or more images to calculate or combine into a final color,
@@ -68,6 +67,9 @@ Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTab
 Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned color1, unsigned color2);
 Rasteron_Image* linedImgOp(ImageSize size, unsigned color1, unsigned color2, unsigned short divs, double rotation);
 Rasteron_Image* checkeredImgOp(ImageSize size, ColorGrid grid); // Rasteron_Image* tiledImgOp(ImageSize size, ColorGrid grid, TILE_Type)
+
+// Add tiling section???
+
 
 // --------------------------------  Noise Operations  -------------------------------- //
 //
@@ -98,7 +100,7 @@ Rasteron_Image* cellwiseOutImgOp(ImageSize size, unsigned color1, unsigned color
 Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short times); // performs antialiasing operation
 
 
-// --------------------------------   Rasteron exts   -------------------------------- //
+// --------------------------------   Extensible Types   -------------------------------- //
 
 #include "Spacial.h" // enables spatial types, including sprite and heightmap
 

@@ -44,7 +44,7 @@ void internal_dealloc_sprite(Rasteron_Sprite* sprite){
 // --------------------------------   Heightmap    -------------------------------- //
 
 static float calcHeight(unsigned inputColor, float minDepth, float maxDepth){;
-	uint8_t greyColorRef = grayify8(inputColor);
+	uint8_t greyColorRef = channel_grayscale(inputColor);
 	float heightVal = (float)greyColorRef; // conversion to double
 	heightVal /= (255.0 / maxDepth);
 

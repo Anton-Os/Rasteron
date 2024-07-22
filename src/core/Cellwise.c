@@ -1,3 +1,70 @@
+// --------------------------------   Support Functions   -------------------------------- //
+
+#include "support_def.h"
+
+static void setFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target | (1 << (flagBit))); }
+
+static void clearFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target & (~(1 << (flagBit)))); }
+
+nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height){
+    nebrFlags flags = 0xFF;
+
+    if(index < width){ // clear top flags
+        clearFlagBit(&flags, NEBR_Top_Left); clearFlagBit(&flags, NEBR_Top); clearFlagBit(&flags, NEBR_Top_Right);
+    } else if((width * height) - index - 1 < width){ // clear bottom flags
+        clearFlagBit(&flags, NEBR_Bot_Left); clearFlagBit(&flags, NEBR_Bot); clearFlagBit(&flags, NEBR_Bot_Right);
+    }
+
+	if(index % width == 0){ // clear left flags
+        clearFlagBit(&flags, NEBR_Top_Left); clearFlagBit(&flags, NEBR_Left); clearFlagBit(&flags, NEBR_Bot_Left);
+    } else if(index % width == width - 1){ // clear right flags
+        clearFlagBit(&flags, NEBR_Top_Right); clearFlagBit(&flags, NEBR_Right); clearFlagBit(&flags, NEBR_Bot_Right);
+    }
+
+    return flags;
+}
+
+unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr){
+	switch (whichNebr) {
+		case NEBR_Bot_Right: return offset + width + 1;
+		case NEBR_Bot: return offset + width;
+		case NEBR_Bot_Left: return offset + width - 1;
+		case NEBR_Right: return offset + 1;
+		case NEBR_Left: return offset - 1;
+		case NEBR_Top_Right: offset - width + 1;
+		case NEBR_Top: return offset - width;
+		case NEBR_Top_Left: return offset - width - 1;
+		default: return offset;
+	}
+}
+
+uint32_t* neighbor_get(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr){
+	const uint32_t* target = refImage->data + neighbor_getOffset(refImage->width, index, whichNebr);
+	return target;
+}
+
+unsigned short neighbor_count(unsigned color, unsigned neighbors[8]){
+	unsigned short count = 0;
+    for(unsigned n = 0; n < 8; n++) if(neighbors[n] == color) count++;
+    return count;
+}
+
+void neighbors_load(const NebrTable* nebrTable, unsigned* br, unsigned* b, unsigned* bl, unsigned* r, unsigned* l, unsigned* tr, unsigned* t, unsigned* tl){
+	unsigned short i = 0; // index to keep track of neighbor
+
+	br = (nebrTable->flags & (1 << NEBR_Bot_Right))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	b = (nebrTable->flags & (1 << NEBR_Bot))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	bl = (nebrTable->flags & (1 << NEBR_Bot_Left))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	r = (nebrTable->flags & (1 << NEBR_Right))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	l = (nebrTable->flags & (1 << NEBR_Left))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	tr = (nebrTable->flags & (1 << NEBR_Top_Right))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	t = (nebrTable->flags & (1 << NEBR_Top))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+	tl = (nebrTable->flags & (1 << NEBR_Top_Left))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
+}
+
+
+// --------------------------------   Cellwise Opertaions    -------------------------------- //
+
 #include "Rasteron.h"
 
 // Cellular Images

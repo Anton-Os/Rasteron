@@ -1,4 +1,92 @@
-#include "helpers.h"
+// --------------------------------   Support Functions   -------------------------------- //
+
+#include "support_def.h"
+
+void seedRandGen(){ srand (time(NULL)); }
+
+/*uint32_t color_random(){
+	uint8_t redBit = rand() % 255;
+	uint8_t greenBit = rand() % 255;
+	uint8_t blueBit = rand() % 255;
+	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
+} */
+
+uint32_t color_unique(){
+	static unsigned invoke = 0; // increases each invocation
+	unsigned color = 0xFFFFFFFF;
+
+	for(unsigned i = 0; i < invoke; i++){
+		if(i % 0xFF == 0xFE){
+			color |= 0x000000FF; // &= 0xFFFFFF00; // reset blue bit
+			color -= 0x100; // += 0x100; // increment green bit
+		}
+		if(i % 0xFFFF == 0xFFFE){
+			color |= 0x0000FF00; // &= 0xFFFF00FF; // reset green bit
+			color -= 0x10000; // += 0x10000; // increment red bit
+		}
+		color -= 0x1; // += 0x1; // increment blue bit
+	}
+
+	invoke++;
+	return color;
+}
+
+uint32_t color_grayscale(uint32_t refColor) {
+	if (refColor == WHITE_COLOR) return WHITE_COLOR;
+	if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
+	
+	uint8_t alpha = 0xFF; // Complete opacity desired for alpha
+	uint8_t avgColor = (((refColor & RED_CHANNEL) >> 16) + ((refColor & 0xFF00) >> 8) + (refColor & 0xFF)) / 3;
+
+	uint32_t result = ((alpha << 24) | (avgColor << 16) | (avgColor << 8) | avgColor);
+	return result;
+}
+
+uint8_t channel_grayscale(uint32_t refColor){
+	if (refColor == WHITE_COLOR) return WHITE_COLOR;
+	if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
+
+	uint8_t avgColor = (((refColor & RED_CHANNEL) >> 16) + ((refColor & 0xFF00) >> 8) + (refColor & 0xFF)) / 3;
+	return avgColor;
+}
+
+uint8_t channel_fractional(uint8_t refColor, double frac){
+	if(frac >= 1.0) return refColor;
+	else if(frac <= 0.0) return 0x00;
+	else return ((double)refColor / 255.0) * frac * 255.0;
+}
+
+uint32_t color_fractional(uint32_t refColor, double frac){
+	uint8_t alpha = channel_fractional((refColor & ALPHA_CHANNEL) >> 24, frac);
+	uint8_t red = channel_fractional((refColor & RED_CHANNEL) >> 16, frac);
+	uint8_t green = channel_fractional((refColor & GREEN_CHANNEL) >> 8, frac);
+	uint8_t blue = channel_fractional(refColor & BLUE_CHANNEL, frac);
+
+	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
+	return result;
+}
+
+uint32_t color_level(uint32_t color, double level){
+	if(level >= 1.0) return 0xFFFFFFFF;
+	else if(level <= 0.0) return 0xFF000000;
+	else if(level == 0.5) return color;
+	else if(level > 0.5) return colors_blend(color, 0xFFFFFFFF, (level - 0.5) * 2.0);
+	else if(level < 0.5) return colors_blend(color, 0xFF000000, (0.5 - level) * 2.0);
+	else return color;
+}
+
+uint32_t color_invert(uint32_t refColor){
+	uint8_t alpha = (refColor & ALPHA_CHANNEL) >> 24;
+	uint8_t red = 0xFF - ((refColor & RED_CHANNEL) >> 16);
+	uint8_t green = 0xFF - ((refColor & GREEN_CHANNEL) >> 8);
+	uint8_t blue = 0xFF - (refColor & BLUE_CHANNEL);
+
+	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
+	return result;
+}
+
+
+// --------------------------------   Basic Operations   -------------------------------- //
 
 #include "Rasteron.h"
 

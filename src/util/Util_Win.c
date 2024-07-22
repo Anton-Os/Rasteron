@@ -2,6 +2,11 @@
 
 // Path Generation
 
+void replaceFwdSlash(char* str){
+	unsigned len = strlen(str);
+	for(unsigned l = 0; l < len; l++) if(*(str + l) == '/') *(str + l) = '\\'; // switch the dash type
+}
+
 void genFullFilePath(const char* name, char* fullFilePath){
 	strcpy(fullFilePath, ASSETS_DIR);
 	strcat(fullFilePath, "\\");

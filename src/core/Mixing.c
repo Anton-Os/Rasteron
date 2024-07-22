@@ -1,3 +1,52 @@
+// --------------------------------   Support Functions   -------------------------------- //
+
+#include "support_def.h"
+
+uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal){
+	if(bVal <= 0.0) return color1;
+	else if(bVal >= 1.0) return color2;
+	
+	uint32_t bColor1 = color_fractional(color1, 1.0 -bVal);
+	uint32_t bColor2 = color_fractional(color2, bVal);
+
+	return bColor1 + bColor2; 
+}
+
+uint32_t colors_fuse(uint32_t color1, uint32_t color2, double iVal){
+	uint8_t loRedBit = channel_low(color1, color2, CHANNEL_Red); uint8_t hiRedBit = channel_hi(color1, color2, CHANNEL_Red);
+    uint8_t loGreenBit = channel_low(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = channel_hi(color1, color2, CHANNEL_Green);
+    uint8_t loBlueBit = channel_low(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = channel_hi(color1, color2, CHANNEL_Blue);
+
+	uint32_t loColor = (0 << 24) + (loRedBit << 16) + (loGreenBit << 8) + loBlueBit;
+	if(iVal <= 0.0) return loColor;
+
+	uint32_t hiColor = (0 << 24) + (hiRedBit << 16) + (hiGreenBit << 8) + hiBlueBit;
+	if(iVal >= 1.0) return hiColor;
+
+	uint32_t diffColor = (hiColor - loColor);
+	uint8_t finalRedBit = channel_fractional((diffColor & RED_CHANNEL) >> 16, iVal);
+	uint8_t finalGreenBit = channel_fractional((diffColor & GREEN_CHANNEL) >> 8, iVal);
+	uint8_t finalBlueBit = channel_fractional(diffColor & BLUE_CHANNEL, iVal);
+
+	return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
+}
+
+uint32_t colors_diff(uint32_t color1, uint32_t color2){
+	if(color1 & 0x00FFFFFF > color2 & 0x00FFFFFF) return (color1 - color2) | (0xFF000000 & color1);
+	else return (color2 - color1) | (0xFF000000 & color2);
+}
+
+uint32_t colors_powroot(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
+	unsigned product = (0xFFFFFF & color1) * (0xFFFFFF & color2); // power
+	unsigned color = ((unsigned)(pow((double)product, 0.5)) * 1) | 0xFF000000; // root
+	// bitSwitch_RG(&color, 1);
+
+	return color;
+}
+
+
+// --------------------------------   Mixing Operations    -------------------------------- //
+
 #include "Rasteron.h"
 
 // Mixing Images

@@ -1,11 +1,11 @@
 #include "helpers.h"
 
-void seedRandGen(){ srand (time(NULL)); }
+/* void seedRandGen(){ srand (time(NULL)); }
 
 void replaceFwdSlash(char* str){
 	unsigned len = strlen(str);
 	for(unsigned l = 0; l < len; l++) if(*(str + l) == '/') *(str + l) = '\\'; // switch the dash type
-}
+} */
 
 /* uint32_t RAND_COLOR(){
 	uint8_t redBit = rand() % 255;
@@ -16,7 +16,7 @@ void replaceFwdSlash(char* str){
 
 // Move to Basics/Filtering/Mixing?
 
-void bitSwitch_RB(uint32_t* data, unsigned pixels) {
+/* void bitSwitch_RB(uint32_t* data, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
 		unsigned val = *(data + i);
 		unsigned res = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
@@ -65,10 +65,10 @@ uint8_t channel_hi(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 }
 
 /* int8_t getLightDiff(uint32_t color1, uint32_t color2){ 
-	return (int8_t)((int)grayify8(color1) - (int)grayify8(color2)); 
+	return (int8_t)((int)channel_grayscale(color1) - (int)channel_grayscale(color2)); 
 } */
 
-int8_t channel_diff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+/* int8_t channel_diff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; break;
@@ -77,9 +77,9 @@ int8_t channel_diff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 		case CHANNEL_Blue: mask = BLUE_CHANNEL; break;
 	}
 	return (int8_t)((int)(color1 & mask) - (int)(color2 & mask));
-}
+} */
 
-uint32_t color_unique(){ // TODO: CHANGE START TO WHITE
+/*uint32_t color_unique(){ // TODO: CHANGE START TO WHITE
 	static unsigned invoke = 0; // increases each invocation
 	unsigned color = 0xFFFFFFFF;
 
@@ -99,7 +99,7 @@ uint32_t color_unique(){ // TODO: CHANGE START TO WHITE
 	return color;
 }
 
-uint32_t grayify32(uint32_t refColor) {
+uint32_t color_grayscale(uint32_t refColor) {
 	if (refColor == WHITE_COLOR) return WHITE_COLOR;
 	if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
 	
@@ -110,7 +110,7 @@ uint32_t grayify32(uint32_t refColor) {
 	return result;
 }
 
-uint8_t grayify8(uint32_t refColor){
+uint8_t channel_grayscale(uint32_t refColor){
 	if (refColor == WHITE_COLOR) return WHITE_COLOR;
 	if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
 
@@ -118,28 +118,28 @@ uint8_t grayify8(uint32_t refColor){
 	return avgColor;
 }
 
-uint8_t fract8(uint8_t refColor, double frac){
+uint8_t channel_fractional(uint8_t refColor, double frac){
 	if(frac >= 1.0) return refColor;
 	else if(frac <= 0.0) return 0x00;
 	else return ((double)refColor / 255.0) * frac * 255.0;
 }
 
-uint32_t fract32(uint32_t refColor, double frac){
-	uint8_t alpha = fract8((refColor & ALPHA_CHANNEL) >> 24, frac);
-	uint8_t red = fract8((refColor & RED_CHANNEL) >> 16, frac);
-	uint8_t green = fract8((refColor & GREEN_CHANNEL) >> 8, frac);
-	uint8_t blue = fract8(refColor & BLUE_CHANNEL, frac);
+uint32_t color_fractional(uint32_t refColor, double frac){
+	uint8_t alpha = channel_fractional((refColor & ALPHA_CHANNEL) >> 24, frac);
+	uint8_t red = channel_fractional((refColor & RED_CHANNEL) >> 16, frac);
+	uint8_t green = channel_fractional((refColor & GREEN_CHANNEL) >> 8, frac);
+	uint8_t blue = channel_fractional(refColor & BLUE_CHANNEL, frac);
 
 	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
 	return result;
-}
+} */
 
-uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal){
+/* uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal){
 	if(bVal <= 0.0) return color1;
 	else if(bVal >= 1.0) return color2;
 	
-	uint32_t bColor1 = fract32(color1, 1.0 -bVal);
-	uint32_t bColor2 = fract32(color2, bVal);
+	uint32_t bColor1 = color_fractional(color1, 1.0 -bVal);
+	uint32_t bColor2 = color_fractional(color2, bVal);
 
 	return bColor1 + bColor2; 
 }
@@ -156,14 +156,14 @@ uint32_t colors_fuse(uint32_t color1, uint32_t color2, double iVal){
 	if(iVal >= 1.0) return hiColor;
 
 	uint32_t diffColor = (hiColor - loColor);
-	uint8_t finalRedBit = fract8((diffColor & RED_CHANNEL) >> 16, iVal);
-	uint8_t finalGreenBit = fract8((diffColor & GREEN_CHANNEL) >> 8, iVal);
-	uint8_t finalBlueBit = fract8(diffColor & BLUE_CHANNEL, iVal);
+	uint8_t finalRedBit = channel_fractional((diffColor & RED_CHANNEL) >> 16, iVal);
+	uint8_t finalGreenBit = channel_fractional((diffColor & GREEN_CHANNEL) >> 8, iVal);
+	uint8_t finalBlueBit = channel_fractional(diffColor & BLUE_CHANNEL, iVal);
 
 	return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
-}
+} */
 
-uint32_t color_level(uint32_t color, double level){
+/* uint32_t color_level(uint32_t color, double level){
 	if(level >= 1.0) return 0xFFFFFFFF;
 	else if(level <= 0.0) return 0xFF000000;
 	else if(level == 0.5) return color;
@@ -180,9 +180,9 @@ uint32_t color_invert(uint32_t refColor){
 
 	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
 	return result;
-}
+} */
 
-uint32_t colors_diff(uint32_t color1, uint32_t color2){
+/* uint32_t colors_diff(uint32_t color1, uint32_t color2){
 	if(color1 & 0x00FFFFFF > color2 & 0x00FFFFFF) return (color1 - color2) | (0xFF000000 & color1);
 	else return (color2 - color1) | (0xFF000000 & color2);
 }
@@ -193,7 +193,7 @@ uint32_t colors_powroot(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type 
 	// bitSwitch_RG(&color, 1);
 
 	return color;
-}
+} */
 
 /* uint32_t colors_scramble(uint32_t color1, uint32_t color2, double pVal){
 	// return (rand() / (double)RAND_MAX > pVal)? color1 : color2;
@@ -206,7 +206,7 @@ uint32_t colors_powroot(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type 
 
 // Move to Procedural?
 
-double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth){
+/* double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth){
 	long int x1 = p1 % imageWidth;
 	long int y1 = p1 / imageWidth;
 	long int x2 = p2 % imageWidth;
@@ -308,11 +308,11 @@ void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned shor
             }
         }
     }
-}
+} */
 
 // Move to Cellwise?
 
-static void setFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target | (1 << (flagBit))); }
+/* static void setFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target | (1 << (flagBit))); }
 
 static void clearFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target & (~(1 << (flagBit)))); }
 
@@ -370,7 +370,7 @@ void neighbors_load(const NebrTable* nebrTable, unsigned* br, unsigned* b, unsig
 	tr = (nebrTable->flags & (1 << NEBR_Top_Right))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
 	t = (nebrTable->flags & (1 << NEBR_Top))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
 	tl = (nebrTable->flags & (1 << NEBR_Top_Left))? *(nebrTable->nebrs + (++i - 1)) : NO_COLOR;
-}
+} */
 
 /* static unsigned getAvgNebrColor(const NebrTable_List* nebrTables, unsigned offset){
 	unsigned nebrCount = 0;

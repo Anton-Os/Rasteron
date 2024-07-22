@@ -15,6 +15,7 @@ void genFullFilePath(const char* name, char* fullFilePath);
 
 	typedef void (*eventLoopCallback)(void);
 
+	void replaceFwdSlash(char* str); // utility for replacing forward-slashes with back-slashes
 	void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height); // Window creation
 	void eventLoop(eventLoopCallback callback); // Event loop
 	BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data); // raw data call

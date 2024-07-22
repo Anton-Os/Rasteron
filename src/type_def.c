@@ -1,4 +1,4 @@
-#include "typedef.h"
+#include "type_def.h"
 
 extern int _invertImage = INVERT_IMG_FALSE; // false for within Rasteron
 
@@ -37,9 +37,9 @@ ColorSwatch createSwatch(unsigned color, uint8_t deviation){
 	swatch.base = color;
 	swatch.deviation = deviation;
 
-	uint8_t redBit = (color & RED_CHANNEL) >> 16;
-	uint8_t greenBit = (color & GREEN_CHANNEL) >> 8;
-	uint8_t blueBit = color & BLUE_CHANNEL;
+	uint8_t redBit = (color & 0x00FF0000) >> 16; // red channel
+	uint8_t greenBit = (color & 0x0000FF00) >> 8; // green channel
+	uint8_t blueBit = color & 0x000000FF; // blue channel
 
 	uint8_t redAdd = (deviation < 0xFF - redBit)? deviation : 0xFF - redBit;
 	uint8_t greenAdd = (deviation < 0xFF - greenBit)? deviation : 0xFF - greenBit;

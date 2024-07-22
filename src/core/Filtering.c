@@ -1,3 +1,72 @@
+// --------------------------------   Support Functions   -------------------------------- //
+
+#include "support_def.h"
+
+void bitSwitch_RB(uint32_t* data, unsigned pixels) {
+	for (unsigned i = 0; i < pixels; i++) {
+		unsigned val = *(data + i);
+		unsigned res = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
+		*(data + i) = res;
+	}
+}
+
+void bitSwitch_GB(uint32_t* data, unsigned pixels) {
+	for (unsigned i = 0; i < pixels; i++) {
+		unsigned val = *(data + i);
+		unsigned res = (val & 0xFF0000) + ((val & 0xFF) << 8) + ((val >> 8) & 0xFF);
+		*(data + i) = res;
+	}
+}
+
+void bitSwitch_RG(uint32_t* data, unsigned pixels) {
+	for (unsigned i = 0; i < pixels; i++) {
+		unsigned val = *(data + i);
+		unsigned res = ((val & 0xFF00) << 8) + ((val >> 8) & 0xFF00) + (val & 0xFF);
+		*(data + i) = res;
+	}
+}
+
+uint8_t channel_low(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+	uint32_t mask, shift;
+	switch(channel){
+		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
+		case CHANNEL_Red: mask = RED_CHANNEL; shift = 16; break;
+		case CHANNEL_Green: mask = GREEN_CHANNEL; shift = 8; break;
+		case CHANNEL_Blue: mask = BLUE_CHANNEL; shift = 0; break;
+	}
+
+	return ((color1 & mask) < (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
+}
+
+uint8_t channel_hi(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+	uint32_t mask, shift;
+	switch(channel){
+		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
+		case CHANNEL_Red: mask = RED_CHANNEL; shift = 16; break;
+		case CHANNEL_Green: mask = GREEN_CHANNEL; shift = 8; break;
+		case CHANNEL_Blue: mask = BLUE_CHANNEL; shift = 0; break;
+	}
+
+	return ((color1 & mask) > (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
+}
+
+/* int8_t getLightDiff(uint32_t color1, uint32_t color2){ 
+	return (int8_t)((int)channel_grayscale(color1) - (int)channel_grayscale(color2)); 
+} */
+
+int8_t channel_diff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+	uint32_t mask;
+	switch(channel){
+		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; break;
+		case CHANNEL_Red: mask = RED_CHANNEL; break;
+		case CHANNEL_Green: mask = GREEN_CHANNEL; break;
+		case CHANNEL_Blue: mask = BLUE_CHANNEL; break;
+	}
+	return (int8_t)((int)(color1 & mask) - (int)(color2 & mask));
+}
+
+// --------------------------------   Filtering Operations    -------------------------------- //
+
 #include "Rasteron.h"
 
 Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback){
@@ -39,7 +108,7 @@ Rasteron_Image* greyImgOp(ref_image_t refImage) {
 	Rasteron_Image* greyImage = RASTERON_ALLOC("grey", refImage->height, refImage->width);
 	
 	for (unsigned p = 0; p < greyImage->width * greyImage->height; p++)
-		*(greyImage->data + p) = grayify32(*(refImage->data + p));
+		*(greyImage->data + p) = color_grayscale(*(refImage->data + p));
 
 	return greyImage;
 }
@@ -93,7 +162,7 @@ Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels){
 	Rasteron_Image* splitImg = copyImgOp(refImage);
 
 	for(unsigned p = 0; p < splitImg->width * splitImg->height; p++){
-        double colorLevel = grayify8(*(splitImg->data + p)) / 256.0;
+        double colorLevel = channel_grayscale(*(splitImg->data + p)) / 256.0;
         double adjustLevel = 1.0;
         
         for(unsigned l = 0; l < levels; l++)
