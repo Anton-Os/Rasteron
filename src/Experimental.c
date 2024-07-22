@@ -612,7 +612,7 @@ double swirl = 10.0;
 
 unsigned swirly(double x, double y){
     double centerAngle = atan((y - 0.5) / (x - 0.5));
-    double centerDist = sqrt(pow(x - 0.5, 2), pow(y - 0.5, 2));
+    double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 
     if((centerDist * swirl) - (floor(centerDist * swirl)) > (centerAngle * swirl) - (floor(centerAngle * swirl))) return 0xFF333333;
     else return 0xFFEEEEEE;

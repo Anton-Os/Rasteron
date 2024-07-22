@@ -41,16 +41,17 @@ unsigned strokePaint(double x, double y){
 	double yDiff = (y - y2) / (y1 - y2);
 
 	switch(mode){
-		case 1: return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
+		// case 0: return (fabs(xDiff) - fabs(yDiff) > -0.05 && fabs(xDiff) - fabs(yDiff) < 0.05)? colorPoints[0].color : colorPoints[1].color;
+		case 0: if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return colors_blend(0xFF00FF00, canvasColor, (pow(fabs(xDiff - yDiff), 0.1)));
+			else return canvasColor;
 			// if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
 			// else return canvasColor;
+		case 1: return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
 		case 2: return (x1 * sin(y1 * OSCILATION) < x2 * -y2)? colorPoints[0].color : colorPoints[1].color;
 		case 3: return (x1 * y1 < cos(x2 * OSCILATION) * y2)? colorPoints[0].color : colorPoints[1].color;
 		case 4: return (tan(x1 * OSCILATION) * y1 < x2 * tan(-y2 * OSCILATION))? colorPoints[0].color : colorPoints[1].color;
 		case 5: return (xDiff / yDiff + x - y < yDiff / xDiff - x + y)? colorPoints[0].color : colorPoints[1].color;
 		case 6: return (fabs(xDiff - yDiff) < (0.25 * (x2 / y1 * y2 / x1)/*(xDiff / yDiff)*/))? colorPoints[0].color : colorPoints[1].color;
-			// if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return colors_blend(0xFF00FF00, canvasColor, (pow(fabs(xDiff - yDiff), 0.1)));
-			// else return canvasColor;
 		case 7: return (xDiff / x1 / x2 / x3 / x4 > yDiff / y1 / y2 / y3 / y4)? colorPoints[0].color : colorPoints[1].color;
 		case 8: return (pow(x1 * x2 * x3 * x4, 1.0) > pow(y1 * y2 * y3 * y4, 1.0))? colorPoints[0].color : colorPoints[1].color;
 		default: return wavePaint(x, y);
@@ -121,7 +122,7 @@ Rasteron_Image* drawImgOp(/* TODO: Add parameters */){
 static void update(){
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
 	if(colorPointTable.pointCount > COLOR_POINTS){
-		if(mode > 0 && mode < 10) _outputImg = mapImgOp((ImageSize){1024, 1024}, strokePaint);
+		if(mode >= 0 && mode < 10) _outputImg = mapImgOp((ImageSize){1024, 1024}, strokePaint);
 		else if(mode >= 10 && mode < 17) _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
 		else if(mode < 24) _outputImg = drawImgOp();
 	}

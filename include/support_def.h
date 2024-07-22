@@ -31,5 +31,7 @@
 #include <time.h>
 #include <math.h>
 
+// TODO: Include methods from helpers.h
+
 #define RASTERON_SUPPORT_H
 #endif

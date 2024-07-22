@@ -14,6 +14,7 @@ void replaceFwdSlash(char* str){
 	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
 } */
 
+// Move to Basics/Filtering/Mixing?
 
 void bitSwitch_RB(uint32_t* data, unsigned pixels) {
 	for (unsigned i = 0; i < pixels; i++) {
@@ -203,6 +204,8 @@ uint32_t colors_powroot(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type 
 	return (uint32_t)((0xFF << 24) + (redColor << 16) + (greenColor << 8) + blueColor);
 } */
 
+// Move to Procedural?
+
 double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth){
 	long int x1 = p1 % imageWidth;
 	long int y1 = p1 / imageWidth;
@@ -306,6 +309,8 @@ void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned shor
         }
     }
 }
+
+// Move to Cellwise?
 
 static void setFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target | (1 << (flagBit))); }
 

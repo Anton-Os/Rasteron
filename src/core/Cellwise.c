@@ -1,6 +1,6 @@
 #include "Rasteron.h"
 
-// Cellular operations
+// Cellular Images
 
 Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback){
 	assert(refImage != NULL);
@@ -120,9 +120,26 @@ Rasteron_Image* cellwiseOutImgOp(ImageSize size, unsigned color1, unsigned color
 
 	for(unsigned s = 0; s < 9; s++) *(seedImg->data + s) = (s == 4)? color1 : color2; // inner and outer colors
 
-	// TODO: Do algorithm
+	unsigned width = seedImg->width;
+	unsigned height = seedImg->height;
+	Rasteron_Image* cellwiseImg = copyImgOp(seedImg);
 
-	return errorImgOp("Not ready yet");
+	while(width < size.width && height < size.height){
+		width += 2;
+		height += 2;
+		Rasteron_Image* tempImg = copyImgOp(cellwiseImg);
+		RASTERON_DEALLOC(cellwiseImg);
+		cellwiseImg = RASTERON_ALLOC("cellwise-out", height, width);
+		for(unsigned c = 0; c < height; c++)
+			for(unsigned r = 0; r < width; r++){
+				if(c == 0 || c == height  - 1 || r == 0 || r == width - 1)
+					*(cellwiseImg->data + (c * width) + r) = color2; // TODO: Perform Cellwise calculation
+				else *(cellwiseImg->data + (c * width) + r) = color1; // TODO: Perform copying
+			}
+		RASTERON_DEALLOC(tempImg);
+	}
+
+	return cellwiseImg;	
 }
 
 
@@ -134,13 +151,6 @@ unsigned antialias(unsigned target, unsigned neighbors[8]){
 		if(neighbors[n] != NO_COLOR) finalColor = colors_blend(finalColor, neighbors[n], 0.5F - (n * (1.0 / 8.0)));
 		else continue;
 
-	/* for(unsigned n = 1; n < 8; n++){
-		if(neighbors[n] != NO_COLOR){
-			finalColor += neighbors[n];
-			nCount++;
-		}
-	} */
-	
 	return finalColor / nCount;
 }
 
