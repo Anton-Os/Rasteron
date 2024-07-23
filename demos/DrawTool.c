@@ -34,13 +34,31 @@ unsigned strokePaint(double x, double y){
 
 	double x1 = colorPoints[0].x - x; double y1 = colorPoints[0].y - y;
 	double x2 = colorPoints[1].x - x; double y2 = colorPoints[1].y - y;
-	double x3 = colorPoints[2].x - x; double y3 = colorPoints[2].y - y;
-	double x4 = colorPoints[3].x - x; double y4 = colorPoints[3].y - y;
+	// double x3 = colorPoints[2].x - x; double y3 = colorPoints[2].y - y;
+	// double x4 = colorPoints[3].x - x; double y4 = colorPoints[3].y - y;
 
 	double xDiff = (x - x2) / (x1 - x2);
 	double yDiff = (y - y2) / (y1 - y2);
+	double slope = (y1 - y2) / (x2 - x1);
+
+	double dist = sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0));
+    double dist1 = sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0));
+    double dist2 = sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0));
 
 	switch(mode){
+        case 0: return (xDiff > yDiff - 0.1 && xDiff < yDiff + 0.1)? colorPoints[0].color : colorPoints[1].color;
+        case 1: return (xDiff / yDiff > 0.9 && xDiff / yDiff < 1.1)? colorPoints[0].color : colorPoints[1].color;
+        case 2: return (dist1 < 0.05 || dist2 < 0.05)? colorPoints[0].color : colorPoints[1].color;
+        case 3: return (dist1 + dist2 < dist + 0.05)? colorPoints[0].color : colorPoints[1].color;
+		case 4: return (dist1 + dist2 < dist + 0.05 && (fabs(dist1 - dist2) < dist * 0.1))? colorPoints[0].color : colorPoints[1].color;
+		case 5: return (dist1 + dist2 < dist + 0.05 && (xDiff > yDiff - 0.1 * (xDiff / yDiff) && xDiff < yDiff + 0.1 * (xDiff / yDiff)))? colorPoints[0].color : colorPoints[1].color;
+		case 6: return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
+        case 7: return colors_blend(colorPoints[0].color, colorPoints[1].color, xDiff - yDiff);
+		case 8: return colors_blend(colorPoints[0].color, colorPoints[1].color, xDiff / yDiff);
+        default: return (((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2)))? colorPoints[0].color : colorPoints[1].color;
+    }
+
+	/* switch(mode){
 		// case 0: return (fabs(xDiff) - fabs(yDiff) > -0.05 && fabs(xDiff) - fabs(yDiff) < 0.05)? colorPoints[0].color : colorPoints[1].color;
 		case 0: if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return colors_blend(0xFF00FF00, canvasColor, (pow(fabs(xDiff - yDiff), 0.1)));
 			else return canvasColor;
@@ -51,11 +69,11 @@ unsigned strokePaint(double x, double y){
 		case 3: return (x1 * y1 < cos(x2 * OSCILATION) * y2)? colorPoints[0].color : colorPoints[1].color;
 		case 4: return (tan(x1 * OSCILATION) * y1 < x2 * tan(-y2 * OSCILATION))? colorPoints[0].color : colorPoints[1].color;
 		case 5: return (xDiff / yDiff + x - y < yDiff / xDiff - x + y)? colorPoints[0].color : colorPoints[1].color;
-		case 6: return (fabs(xDiff - yDiff) < (0.25 * (x2 / y1 * y2 / x1)/*(xDiff / yDiff)*/))? colorPoints[0].color : colorPoints[1].color;
+		case 6: return (fabs(xDiff - yDiff) < (0.25 * (x2 / y1 * y2 / x1)))? colorPoints[0].color : colorPoints[1].color;
 		case 7: return (xDiff / x1 / x2 / x3 / x4 > yDiff / y1 / y2 / y3 / y4)? colorPoints[0].color : colorPoints[1].color;
 		case 8: return (pow(x1 * x2 * x3 * x4, 1.0) > pow(y1 * y2 * y3 * y4, 1.0))? colorPoints[0].color : colorPoints[1].color;
 		default: return wavePaint(x, y);
-	}
+	} */
 }
 
 static unsigned dotSplash(unsigned color, double distance, PixelPoint pixPoint){
@@ -101,15 +119,15 @@ Rasteron_Image* drawImgOp(/* TODO: Add parameters */){
 			xAccum += xOff; yAccum += yOff;
 
 			switch(mode){
-			case 17: if(sin(xOff * 10.0) > cos(yOff * 10.0)) *(drawImg->data + p) += 0xF; break;
-			// case 18: if(xOff < 0.1) *(drawImg->data + p) += 0xF; else if(yOff < 0.1) *(drawImg->data + p) -= 0xF; break;
-			case 18: *(drawImg->data + p) = colors_blend(colors_blend(color1, color_invert(color1), fabs(xAccum)), colors_blend(color2, color_invert(color2), fabs(yAccum)), fabs(xAccum / yAccum));
-			case 19: if(fabs(xOffLo) < fabs(yOffLo)) *(drawImg->data + p) = color1; else if(fabs(xOffHi) > fabs(yOffHi)) *(drawImg->data + p) = color2; break;
-			case 20: *(drawImg->data + p) = colors_blend(color1, color2, xOff / yOff); break;
-			case 21: *(drawImg->data + p) = colors_blend(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
-			case 22: *(drawImg->data + p) = colors_fuse(color1, color2, (x / y) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
-			case 23: *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi);
-			default: *(drawImg->data + p) = *(drawImg->data + p);
+				case 17: if(sin(xOff * 10.0) > cos(yOff * 10.0)) *(drawImg->data + p) += 0xF; break;
+				// case 18: if(xOff < 0.1) *(drawImg->data + p) += 0xF; else if(yOff < 0.1) *(drawImg->data + p) -= 0xF; break;
+				case 18: *(drawImg->data + p) = colors_blend(colors_blend(color1, color_invert(color1), fabs(xAccum)), colors_blend(color2, color_invert(color2), fabs(yAccum)), fabs(xAccum / yAccum));
+				case 19: if(fabs(xOffLo) < fabs(yOffLo)) *(drawImg->data + p) = color1; else if(fabs(xOffHi) > fabs(yOffHi)) *(drawImg->data + p) = color2; break;
+				case 20: *(drawImg->data + p) = colors_blend(color1, color2, xOff / yOff); break;
+				case 21: *(drawImg->data + p) = colors_blend(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
+				case 22: *(drawImg->data + p) = colors_fuse(color1, color2, (x / y) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
+				case 23: *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi);
+				default: *(drawImg->data + p) = *(drawImg->data + p);
 			}
 		}
 	}

@@ -2,6 +2,22 @@
 
 #include "support_def.h"
 
+uint8_t channel_fractional(uint8_t refColor, double frac){
+    if(frac >= 1.0) return refColor;
+    else if(frac <= 0.0) return 0x00;
+    else return ((double)refColor / 255.0) * frac * 255.0;
+}
+
+uint32_t color_fractional(uint32_t refColor, double frac){
+    uint8_t alpha = channel_fractional((refColor & ALPHA_CHANNEL) >> 24, frac);
+    uint8_t red = channel_fractional((refColor & RED_CHANNEL) >> 16, frac);
+    uint8_t green = channel_fractional((refColor & GREEN_CHANNEL) >> 8, frac);
+    uint8_t blue = channel_fractional(refColor & BLUE_CHANNEL, frac);
+
+    uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
+    return result;
+}
+
 uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal){
 	if(bVal <= 0.0) return color1;
 	else if(bVal >= 1.0) return color2;

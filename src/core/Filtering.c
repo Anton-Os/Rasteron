@@ -65,6 +65,25 @@ int8_t channel_diff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	return (int8_t)((int)(color1 & mask) - (int)(color2 & mask));
 }
 
+uint32_t color_grayscale(uint32_t refColor) {
+    if (refColor == WHITE_COLOR) return WHITE_COLOR;
+    if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
+
+    uint8_t alpha = 0xFF; // Complete opacity desired for alpha
+    uint8_t avgColor = (((refColor & RED_CHANNEL) >> 16) + ((refColor & 0xFF00) >> 8) + (refColor & 0xFF)) / 3;
+
+    uint32_t result = ((alpha << 24) | (avgColor << 16) | (avgColor << 8) | avgColor);
+    return result;
+}
+
+uint8_t channel_grayscale(uint32_t refColor){
+    if (refColor == WHITE_COLOR) return WHITE_COLOR;
+    if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
+
+    uint8_t avgColor = (((refColor & RED_CHANNEL) >> 16) + ((refColor & 0xFF00) >> 8) + (refColor & 0xFF)) / 3;
+    return avgColor;
+}
+
 // --------------------------------   Filtering Operations    -------------------------------- //
 
 #include "Rasteron.h"

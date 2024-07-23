@@ -2,15 +2,6 @@
 
 #include "support_def.h"
 
-void seedRandGen(){ srand (time(NULL)); }
-
-/*uint32_t color_random(){
-	uint8_t redBit = rand() % 255;
-	uint8_t greenBit = rand() % 255;
-	uint8_t blueBit = rand() % 255;
-	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
-} */
-
 uint32_t color_unique(){
 	static unsigned invoke = 0; // increases each invocation
 	unsigned color = 0xFFFFFFFF;
@@ -29,41 +20,6 @@ uint32_t color_unique(){
 
 	invoke++;
 	return color;
-}
-
-uint32_t color_grayscale(uint32_t refColor) {
-	if (refColor == WHITE_COLOR) return WHITE_COLOR;
-	if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
-	
-	uint8_t alpha = 0xFF; // Complete opacity desired for alpha
-	uint8_t avgColor = (((refColor & RED_CHANNEL) >> 16) + ((refColor & 0xFF00) >> 8) + (refColor & 0xFF)) / 3;
-
-	uint32_t result = ((alpha << 24) | (avgColor << 16) | (avgColor << 8) | avgColor);
-	return result;
-}
-
-uint8_t channel_grayscale(uint32_t refColor){
-	if (refColor == WHITE_COLOR) return WHITE_COLOR;
-	if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
-
-	uint8_t avgColor = (((refColor & RED_CHANNEL) >> 16) + ((refColor & 0xFF00) >> 8) + (refColor & 0xFF)) / 3;
-	return avgColor;
-}
-
-uint8_t channel_fractional(uint8_t refColor, double frac){
-	if(frac >= 1.0) return refColor;
-	else if(frac <= 0.0) return 0x00;
-	else return ((double)refColor / 255.0) * frac * 255.0;
-}
-
-uint32_t color_fractional(uint32_t refColor, double frac){
-	uint8_t alpha = channel_fractional((refColor & ALPHA_CHANNEL) >> 24, frac);
-	uint8_t red = channel_fractional((refColor & RED_CHANNEL) >> 16, frac);
-	uint8_t green = channel_fractional((refColor & GREEN_CHANNEL) >> 8, frac);
-	uint8_t blue = channel_fractional(refColor & BLUE_CHANNEL, frac);
-
-	uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
-	return result;
 }
 
 uint32_t color_level(uint32_t color, double level){
