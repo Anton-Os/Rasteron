@@ -42,15 +42,7 @@ Rasteron_Image* growImgOp(Rasteron_Image* refImg, double balance, double exFacto
     return growthImg;
 }
 
-/* unsigned reactDiffuse(unsigned color, unsigned neighbors[8]){ 
-    if(neighbors[0] == chemical2 || neighbors[1] == chemical2 || neighbors[2] == chemical2 || neighbors[3] == chemical2 || neighbors[4] == chemical2 || neighbors[5] == chemical2 || neighbors[6] == chemical2 || neighbors[7] == chemical2)
-        return ((double)rand() / (double)RAND_MAX < feedRate)? chemical2 : color;
-    if(neighbors[0] == chemical1 || neighbors[1] == chemical1 || neighbors[2] == chemical1 || neighbors[3] == chemical1 || neighbors[4] == chemical1 || neighbors[5] == chemical1 || neighbors[6] == chemical1 || neighbors[7] == chemical1)
-        return ((double)rand() / (double)RAND_MAX < killRate)? 0xFF333333 : chemical1;
-    return color; 
-} */
-
-Rasteron_Image* feedChemOp(ref_image_t refImg, unsigned short iters){ // Rasteron_Image* lChemImg, Rasteron_Image* dChemImg){
+Rasteron_Image* feedImgOp(ref_image_t refImg, unsigned short iters){ // Rasteron_Image* lChemImg, Rasteron_Image* dChemImg){
     Rasteron_Image* chemsImg = (refImg != NULL)? copyImgOp(refImg) : seedImgOp(NULL, 0.5);
 
     for(unsigned short i = 0; i < iters; i++)
@@ -63,8 +55,6 @@ Rasteron_Image* feedChemOp(ref_image_t refImg, unsigned short iters){ // Rastero
 
     return chemsImg;
 }
-
-unsigned antialias(unsigned target, unsigned neighbors[8]); // Defined in Cellwise.c
 
 static unsigned conwayRules(unsigned color, unsigned neighbors[8]){ 
     unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
@@ -105,25 +95,62 @@ static unsigned amplifyRules(unsigned color, unsigned neighbors[8]){
     else return color;
 }
 
-// static unsigned upscaleRules(unsigned color, unsigned neighbors[8]){}
+static unsigned levelRules(unsigned color, unsigned neighbors[8]){
+    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
+    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors);
+    unsigned short diff = abs((short)lives - (short)kills);
 
-Rasteron_Image* simImgOp(ref_image_t refImage){
-    NebrTable_List* nebrTables = loadNebrTables(refImage);
-	Rasteron_Image* cellwiseImg = RASTERON_ALLOC("cellwise-nebr", refImage->height, refImage->width);
+    if(diff == 0) return color;
+    else if(diff % 2 == 1) return (diff == 1)? _swatch.colors[SWATCH_Red_Add] : _swatch.colors[SWATCH_Light];
+    else return (diff == 2)? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Dark];
+}
 
-	for (unsigned p = 0; p < refImage->height * refImage->width; p++) {
-		NebrTable* currentTable = nebrTables->tables + p;
-		unsigned* target = refImage->data + p;
-		unsigned *br, *b, *bl, *r, *l, *tr, *t, *tl;
+static unsigned matchRules(unsigned color, unsigned neighbors[8]){
+    if(neighbors[NEBR_Left] == neighbors[NEBR_Right]) return neighbors[NEBR_Left];
+    else if(neighbors[NEBR_Top] == neighbors[NEBR_Bot]) return neighbors[NEBR_Top];
+    else if(neighbors[NEBR_Top_Left] == neighbors[NEBR_Bot_Right]) return neighbors[NEBR_Bot_Right];
+    else if(neighbors[NEBR_Bot_Left] == neighbors[NEBR_Top_Right]) return neighbors[NEBR_Top_Right];
+    else return neighbors[rand() % 8];
+}
 
-        neighbors_load(currentTable, br, b, bl, r, l, tr, t, tl);
+static unsigned colorizeRules(unsigned color, unsigned neighbors[8]){
+    if(color == _swatch.colors[SWATCH_Light] || color == _swatch.colors[SWATCH_Green_Add]) return colors_blend(color, _swatch.colors[SWATCH_Green_Add], (float)rand() / RAND_MAX);
+    else if(color == _swatch.colors[SWATCH_Dark] || color == _swatch.colors[SWATCH_Red_Add]) return colors_blend(color, _swatch.colors[SWATCH_Red_Add], (float)rand() / RAND_MAX);
+    else return color;
+}
 
-        // TODO: Perform operations
-	}
+static unsigned scatterRules(unsigned color, unsigned neighbors[8]){
+    if(neighbors[NEBR_Left] == neighbors[NEBR_Right] && neighbors[NEBR_Top] == neighbors[NEBR_Bot]) return _swatch.colors[rand() % 8];
+    else return color;
+}
 
-	delNebrTables(nebrTables);
+unsigned antialias(unsigned target, unsigned neighbors[8]); // Defined in Cellwise.c
+
+Rasteron_Image* simImgOp(ref_image_t refImage, unsigned short iters, nebrCallback8 callback){
+	Rasteron_Image* cellwiseImg = copyImgOp(refImage);
+
+    for(unsigned i = 0; i < iters; i++){
+        Rasteron_Image* tempImg = resizeImgOp((ImageSize){ 1024 / (iters - i), 1024 / (iters - i) }, cellwiseImg);
+        NebrTable_List* nebrTables = loadNebrTables(tempImg);
+        for (unsigned p = 0; p < tempImg->height * tempImg->width; p++) {
+            NebrTable* currentTable = nebrTables->tables + p;
+            unsigned* target = tempImg->data + p;
+            unsigned *br = NULL, *b = NULL, *bl = NULL, *r = NULL, *l = NULL, *tr = NULL, *t = NULL, *tl = NULL;
+
+            neighbors_load(currentTable, br, b, bl, r, l, tr, t, tl);
+            unsigned nebrs[] = { br, b, bl, r, l, tr, t, tl };
+
+            unsigned color = callback(target, nebrs);
+            if(color != NO_COLOR) *(tempImg->data + p) = color;
+        }
+        RASTERON_DEALLOC(cellwiseImg);
+        cellwiseImg = copyImgOp(tempImg);
+        delNebrTables(nebrTables);
+    }
+
 	return cellwiseImg;
 }
+
 
 void fillSimQueue(Rasteron_Image* targetImg, nebrCallback8 algorithm, nebrCallback8 process){
     Rasteron_Image* simImg = NULL;
@@ -168,17 +195,22 @@ void _onKeyEvent(char key){
         switch(key){
             case 'q': growImg = growImgOp(backgroundImg, 1.0, 0.1); break;
             case 'w': growImg = growImgOp(backgroundImg, 1.0, 0.33); break;
-            case 'e': growImg = feedChemOp(NULL, 3); break;
-            case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p': 
-                growImg = seedImgOp(backgroundImg, 0.1); break;
+            case 'e': growImg = feedImgOp(NULL, 3); break;
+            case 'r': growImg = checkeredImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, (ColorGrid){ 30 / _dimens[0], 30 / _dimens[1], _swatch.colors[SWATCH_Green_Add], _swatch.colors[SWATCH_Red_Add] }); break;
+            case 't': growImg = linedImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, _swatch.colors[SWATCH_Green_Add], _swatch.colors[SWATCH_Red_Add], 30 / _dimens[1], 0.0); break;
+            case 'y': case 'u': case 'i': case 'o': case 'p': growImg = seedImgOp(backgroundImg, 0.1); break;
             case 'a': algorithm = &conwayRules; break;
             case 's': algorithm = &randWalkRules; break;
             case 'd': algorithm = &amplifyRules; break;
-            case 'f': case 'g': case 'h': case 'j': case 'k': case 'l': puts("New algorithm selected"); break;
+            case 'f': algorithm = &levelRules; break;
+            case 'g': algorithm = &matchRules; break;
+            case 'h': case 'j': case 'k': case 'l': puts("New algorithm selected"); break;
             case 'z': process = NULL; break;
             case 'x': process = algorithm; break;
             case 'c': process = antialias; break;
-            case 'v': case 'b': case 'n': case 'm': puts("New processing selected"); break;
+            case 'v': process = colorizeRules; break;
+            case 'b': process = scatterRules; break;
+            case 'n': case 'm': puts("New processing selected"); break;
         }
 
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
@@ -206,10 +238,9 @@ void _onTickEvent(unsigned secs){
 
 int main(int argc, char** argv) {
     Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ 1024, 1024 }, _swatch.base);
-    _outputImg = growImgOp(backgroundImg, 0.5, 0.1);
+    Rasteron_Image* growthImg = growImgOp(backgroundImg, 0.5, 0.1);
+    _outputImg = simImgOp(growthImg, 1, conwayRules);
     _mainQueue = RASTERON_QUEUE_ALLOC("sim", internal_create_size(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
-
-    // fillSimQueue(_outputImg, conwayRules);
  
 
     _run(argc, argv, NULL); // system specific initialization and continuous loop
