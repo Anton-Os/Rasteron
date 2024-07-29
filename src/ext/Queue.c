@@ -252,7 +252,7 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
     assert(levels > 1);
 
     ImageSize menuSize = getUI_ImageSize(size);
-    menuSize.width += (menuSize.width / 2) * (levels - 2); // scaling slider
+    // menuSize.width += (menuSize.width / 2) * (levels - 2); // scaling slider
     Rasteron_Queue* menuQueue = (Rasteron_Queue*)internal_alloc_queue("slider", menuSize, levels);
 
     Rasteron_Image* refImages[5] = {
@@ -276,7 +276,9 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
                 *(sliderImg->data + p) = *(refImages[1]->data + p); // populate slider bar
                 for(unsigned s = 0; s < levels; s++){
                     double sliderX = 0.15 + (((double)0.7 / ((double)levels - 1)) * s);
-                    if(sliderX > x - 0.01 && sliderX < x + 0.01) *(sliderImg->data + p) = *(refImages[(s == 0)? 3 : (s == levels - 1)? 2 : 4]->data + p); // indicator status based on offset
+                    double tickSize = (s > 0 && s < levels - 1)? 0.015 / (levels / 5) : 0.015;
+                    unsigned tickColor = *(refImages[(s == 0)? 3 : (s == levels - 1)? 2 : 4]->data + p);
+                    if(sliderX > x - tickSize && sliderX < x + tickSize) *(sliderImg->data + p) = tickColor;
                 }
             }
             if(sliderX > x - 0.015 && sliderX < x + 0.015 && y < 0.8 && y > 0.2) *(sliderImg->data + p) = *(refImages[4]->data + p); // populate slider thumb

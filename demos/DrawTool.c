@@ -44,17 +44,18 @@ unsigned strokePaint(double x, double y){
 	double dist = sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0));
     double dist1 = sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0));
     double dist2 = sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0));
+	double cross = ((x - x1) * (x2 - x1)) - ((y - y1) * (y2 - y1));
 
 	switch(mode){
-        case 0: return (xDiff > yDiff - 0.1 && xDiff < yDiff + 0.1)? colorPoints[0].color : colorPoints[1].color;
+        case 0: return (xDiff > yDiff - 0.05 && xDiff < yDiff + 0.05)? colorPoints[0].color : colorPoints[1].color;
         case 1: return (xDiff / yDiff > 0.9 && xDiff / yDiff < 1.1)? colorPoints[0].color : colorPoints[1].color;
         case 2: return (dist1 < 0.05 || dist2 < 0.05)? colorPoints[0].color : colorPoints[1].color;
         case 3: return (dist1 + dist2 < dist + 0.05)? colorPoints[0].color : colorPoints[1].color;
 		case 4: return (dist1 + dist2 < dist + 0.05 && (fabs(dist1 - dist2) < dist * 0.1))? colorPoints[0].color : colorPoints[1].color;
 		case 5: return (dist1 + dist2 < dist + 0.05 && (xDiff > yDiff - 0.1 * (xDiff / yDiff) && xDiff < yDiff + 0.1 * (xDiff / yDiff)))? colorPoints[0].color : colorPoints[1].color;
 		case 6: return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
-        case 7: return colors_blend(colorPoints[0].color, colorPoints[1].color, xDiff - yDiff);
-		case 8: return colors_blend(colorPoints[0].color, colorPoints[1].color, xDiff / yDiff);
+        case 7: return (cross < 0.1 && cross > -0.1)? colorPoints[0].color : colorPoints[1].color;
+		case 8: return (slope < 0.1 && slope > -0.1)? colorPoints[0].color : colorPoints[1].color;
         default: return (((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2)))? colorPoints[0].color : colorPoints[1].color;
     }
 
