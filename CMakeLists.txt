@@ -51,8 +51,8 @@ include(externalTargets.cmake)
 
 ### Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${ext_src} "src/Experimental.c") # library only
-add_library(Rasteron STATIC ${core_src} ${ext_src} ${util_src} "src/Experimental.c") # library with examples
+# add_library(Rasteron STATIC ${core_src} ${ext_src} "demos/Catalouge.c") # library only
+add_library(Rasteron STATIC ${core_src} ${ext_src} ${util_src} "demos/Catalouge.c") # library with examples
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) # include necessary external libs
 
@@ -104,6 +104,10 @@ target_link_libraries(DrawTool Rasteron)
 add_executable(TexTool demos/TexTool.c)
 target_include_directories(TexTool PUBLIC include demos)
 target_link_libraries(TexTool Rasteron)
+
+add_executable(TileTool demos/TileTool.c)
+target_include_directories(TileTool PUBLIC include demos)
+target_link_libraries(TileTool Rasteron)
 
 add_executable(SimTool demos/SimTool.c)
 target_include_directories(SimTool PUBLIC include demos)
