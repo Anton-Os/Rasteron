@@ -1,20 +1,22 @@
 #define RASTERON_ENABLE_ANIM
 
-#include "Rasteron.h"
+#include "Catalouge.h"
 
 #define OCTAVES 3
 #define TEXTOOL_COUNT 10
 
-#include "Util_Demo.h"
+#include "Util_Runner.h"
 
 Rasteron_Image* savedImg = NULL; // always keep a record of last image
 static char texMode = 'a';
 
 static float noiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
-/* static float noiseMod(float value){ 
-    for(float n = 0; n < 5; n++) if(value < (1.0 / 5) * n) return (1.0 / 5) * n;
-    return 1.0;
-} */
+
+static float sinMod(float value){ return sin(value); }
+
+static float cosMod(float value){ return cos(value); }
+
+static float tanMod(float value){ return tan(value); }
 
 static float quiltNoiseMod(float value){ 
 	static float m = 0.0;
@@ -45,14 +47,14 @@ Rasteron_Image* createTex(char t, unsigned m){
 
     switch(tolower(t)){
         case 'a': return noiseImgOp_value((ImageSize){ 1024, 1024 }, grid); break;
-        case 's': return noiseImgOp_tiled((ImageSize){ 1024, 1024 }, grid); break;
-        case 'd': return noiseImgOp_scratch((ImageSize){ 1024, 1024 }, grid); break;
-        case 'f': return noiseImgOp_octave((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
-        case 'g': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
-        case 'h': return noiseImgOp_low((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
-        case 'j': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
-        case 'k': Rasteron_Image* image = noiseExtImgOp_value((ImageSize){ 1024, 1024 }, grid, noiseMod); break;
-        case 'l': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, grid, quiltNoiseMod); break;
+        case 's': return noiseImgOp_scratch((ImageSize){ 1024, 1024 }, grid); break;
+        case 'd': return noiseImgOp_octave((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
+        case 'f': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
+        case 'g': return noiseImgOp_low((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
+        case 'h': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
+        case 'j': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, grid, noiseMod); break;
+        case 'k': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, grid, cosMod); break;
+        case 'l': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, grid, tanMod); break;
         default: return noiseImgOp_value((ImageSize){ 1024, 1024 }, grid); break;
     }
 

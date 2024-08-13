@@ -82,25 +82,25 @@ void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned shor
         for(unsigned c = 0; c < height + 1; c++){
             switch(type){
                 case TILE_Square: // regular grid tiling
-                    pixelPointToTable(&table, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / height) * c, (1.0 / width) * r); 
+                    pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r); 
                     break;
                 case TILE_Triangle: // triangular tiling attempt
                     if((r % 2 == 0 && c % 2 == 0) || (r % 2 == 1 && c % 2 == 1))
-                        pixelPointToTable(&table, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / height) * c, (1.0 / width) * r); 
+                        pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r); 
                     break;
                 case TILE_Hexagon: // hexagonal tiling attempt
                     if((r % 2 == 0 && c % 3 != 0) || (r % 2 == 1 && c % 3 == 0))
-                        pixelPointToTable(&table, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / height) * c, (1.0 / width) * r);
+                        pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r);
                     break;
                 case TILE_Diagonal: // diagonal tiling attempt
                     if(c == r || c == height + 1 - r || r == width + 1 - c) // TODO: Fix this
-                        pixelPointToTable(&table, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / height) * c, (1.0 / width) * r);
+                        pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r);
                     break;
                 case TILE_Perimiter: // perimiter tiling attempt
                     if(c == 0 || c == height + 1 || r == 0 || r == width + 1) // TODO: Fix this
-                        pixelPointToTable(&table, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (1.0 / height) * c, (1.0 / width) * r);
+                        pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r);
                     break;
-                default: pixelPointToTable(&table, (c % 2 == 0)? 0xFFFFFF00 : 0xFFFF00FF, (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX); // random
+                default: pixelPointToTable(&table, (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX); // random
             }
         }
     }

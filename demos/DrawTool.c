@@ -1,4 +1,4 @@
-#include "Experimental.h"
+#include "Catalouge.h"
 
 #define CANVAS_COLOR 0xFF111111
 #define COLOR_POINTS 4
@@ -15,7 +15,7 @@ static unsigned yColor = 0xFFFF00FF;
 static unsigned canvasColor = CANVAS_COLOR;
 static unsigned short mode = 0;
 
-#include "Util_Demo.h"
+#include "Util_Runner.h"
 
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
@@ -34,8 +34,8 @@ unsigned strokePaint(double x, double y){
 
 	double x1 = colorPoints[0].x - x; double y1 = colorPoints[0].y - y;
 	double x2 = colorPoints[1].x - x; double y2 = colorPoints[1].y - y;
-	// double x3 = colorPoints[2].x - x; double y3 = colorPoints[2].y - y;
-	// double x4 = colorPoints[3].x - x; double y4 = colorPoints[3].y - y;
+	double x3 = colorPoints[2].x - x; double y3 = colorPoints[2].y - y;
+	double x4 = colorPoints[3].x - x; double y4 = colorPoints[3].y - y;
 
 	double xDiff = (x - x2) / (x1 - x2);
 	double yDiff = (y - y2) / (y1 - y2);
@@ -46,7 +46,7 @@ unsigned strokePaint(double x, double y){
     double dist2 = sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0));
 	double cross = ((x - x1) * (x2 - x1)) - ((y - y1) * (y2 - y1));
 
-	switch(mode){
+	/* switch(mode){
         case 0: return (xDiff > yDiff - 0.05 && xDiff < yDiff + 0.05)? colorPoints[0].color : colorPoints[1].color;
         case 1: return (xDiff / yDiff > 0.9 && xDiff / yDiff < 1.1)? colorPoints[0].color : colorPoints[1].color;
         case 2: return (dist1 < 0.05 || dist2 < 0.05)? colorPoints[0].color : colorPoints[1].color;
@@ -57,9 +57,9 @@ unsigned strokePaint(double x, double y){
         case 7: return (cross < 0.1 && cross > -0.1)? colorPoints[0].color : colorPoints[1].color;
 		case 8: return (slope < 0.1 && slope > -0.1)? colorPoints[0].color : colorPoints[1].color;
         default: return (((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2)))? colorPoints[0].color : colorPoints[1].color;
-    }
+    } */
 
-	/* switch(mode){
+	switch(mode){
 		// case 0: return (fabs(xDiff) - fabs(yDiff) > -0.05 && fabs(xDiff) - fabs(yDiff) < 0.05)? colorPoints[0].color : colorPoints[1].color;
 		case 0: if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return colors_blend(0xFF00FF00, canvasColor, (pow(fabs(xDiff - yDiff), 0.1)));
 			else return canvasColor;
@@ -74,7 +74,7 @@ unsigned strokePaint(double x, double y){
 		case 7: return (xDiff / x1 / x2 / x3 / x4 > yDiff / y1 / y2 / y3 / y4)? colorPoints[0].color : colorPoints[1].color;
 		case 8: return (pow(x1 * x2 * x3 * x4, 1.0) > pow(y1 * y2 * y3 * y4, 1.0))? colorPoints[0].color : colorPoints[1].color;
 		default: return wavePaint(x, y);
-	} */
+	}
 }
 
 static unsigned dotSplash(unsigned color, double distance, PixelPoint pixPoint){

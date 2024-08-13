@@ -1,14 +1,13 @@
-#define RASTERON_ENABLE_ANIM
+#include "Catalouge.h"
 
-#include "Rasteron.h"
-
+#define NSIM_GROW 0.1
 #define NSIM_COUNT 12
 
 // ColorPointTable colorPointTable;
 
 int mode = -1;
 
-#include "Util_Demo.h"
+#include "Util_Runner.h"
 
 static double killRate = 0.1;
 static double feedRate = 0.025; // 0.025;
@@ -41,6 +40,9 @@ Rasteron_Image* growImgOp(Rasteron_Image* refImg, double balance, double exFacto
     
     return growthImg;
 }
+
+// unsigned lineRules(unsigned color, unsigned neighbors[2]){ return (rand() % 2 == 0)? color : (rand() % 2 == 0)? neighbors[0] : neighbors[1]; }
+unsigned lineRules(unsigned color, unsigned neighbors[2]){ return (neighbors[0] == neighbors[1])? neighbors[0] + neighbors[1] : color; }
 
 Rasteron_Image* feedImgOp(ref_image_t refImg, unsigned short iters){ // Rasteron_Image* lChemImg, Rasteron_Image* dChemImg){
     Rasteron_Image* chemsImg = (refImg != NULL)? copyImgOp(refImg) : seedImgOp(NULL, 0.5);
@@ -92,6 +94,29 @@ static unsigned amplifyRules(unsigned color, unsigned neighbors[8]){
 
     if(lives > kills) return (color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light])? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Light]; // color_level(color, 0.5 + (lives * (0.5 / 8.0)));
     else if(kills > lives) return (color == _swatch.colors[SWATCH_Red_Add] || color == _swatch.colors[SWATCH_Dark])? _swatch.colors[SWATCH_Dark] : _swatch.colors[SWATCH_Red_Add]; // color_level(color, 0.5 - (lives * (0.5 / 8.0)));
+    else return color;
+}
+
+static unsigned recursiveRules(unsigned color, unsigned neighbors[8]){
+    color += (neighbors[NEBR_Left] > neighbors[NEBR_Right])? 16 : -16;
+    color += (neighbors[NEBR_Top] > neighbors[NEBR_Bot])? 16 : -16;
+    color += (neighbors[NEBR_Top_Left] + neighbors[NEBR_Top_Right] > neighbors[NEBR_Bot_Left] + neighbors[NEBR_Bot_Right])? 32 : -32;
+    return color;
+}
+
+static unsigned bloomRules(unsigned color, unsigned neighbors[8]){
+    if(neighbors[NEBR_Bot] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Top] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Left] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Right] == _swatch.colors[SWATCH_Green_Add])
+        return _swatch.colors[SWATCH_Red_Add];
+    else if(neighbors[NEBR_Bot_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Right] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Bot_Right] == _swatch.colors[SWATCH_Red_Add])
+        return _swatch.colors[SWATCH_Green_Add];
+    else return color;
+}
+
+static unsigned unbloomRules(unsigned color, unsigned neighbors[8]){
+    if(neighbors[NEBR_Bot_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Right] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Bot_Right] == _swatch.colors[SWATCH_Red_Add])
+        return _swatch.colors[SWATCH_Green_Add];
+    else if(neighbors[NEBR_Bot] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Top] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Left] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Right] == _swatch.colors[SWATCH_Green_Add])
+        return _swatch.colors[SWATCH_Red_Add];
     else return color;
 }
 
@@ -198,19 +223,28 @@ void _onKeyEvent(char key){
             case 'e': growImg = feedImgOp(NULL, 3); break;
             case 'r': growImg = checkeredImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, (ColorGrid){ 30 / _dimens[0], 30 / _dimens[1], _swatch.colors[SWATCH_Green_Add], _swatch.colors[SWATCH_Red_Add] }); break;
             case 't': growImg = linedImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, _swatch.colors[SWATCH_Green_Add], _swatch.colors[SWATCH_Red_Add], 30 / _dimens[1], 0.0); break;
-            case 'y': case 'u': case 'i': case 'o': case 'p': growImg = seedImgOp(backgroundImg, 0.1); break;
+            case 'y': case 'u':
+                Rasteron_Image* tempImg = seedImgOp(backgroundImg, NSIM_GROW); 
+                growImg = (key == 'y')? cellwiseColImgOp(tempImg, lineRules) : cellwiseRowImgOp(tempImg, lineRules);
+                RASTERON_DEALLOC(tempImg);
+                break; 
+            case 'i': case 'o': case 'p': growImg = seedImgOp(backgroundImg, (key == 'i')? NSIM_GROW : (key == 'o')? NSIM_GROW * 0.5 : NSIM_GROW * 0.1); break;
             case 'a': algorithm = &conwayRules; break;
             case 's': algorithm = &randWalkRules; break;
             case 'd': algorithm = &amplifyRules; break;
             case 'f': algorithm = &levelRules; break;
             case 'g': algorithm = &matchRules; break;
-            case 'h': case 'j': case 'k': case 'l': puts("New algorithm selected"); break;
+            case 'h': algorithm = &recursiveRules; break;
+            case 'j': algorithm = &bloomRules; break;
+            case 'k': algorithm = &unbloomRules; break;
+            case 'l': puts("New algorithm selected"); break;
             case 'z': process = NULL; break;
             case 'x': process = algorithm; break;
             case 'c': process = antialias; break;
             case 'v': process = colorizeRules; break;
             case 'b': process = scatterRules; break;
-            case 'n': case 'm': puts("New processing selected"); break;
+            case 'n': process = recursiveRules; break;
+            case 'm': puts("New processing selected"); break;
         }
 
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);

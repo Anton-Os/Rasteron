@@ -1,7 +1,4 @@
-#define RASTERON_ENABLE_FONT
-#define RASTERON_ENABLE_ANIM
-
-#include "Experimental.h"
+#include "Catalouge.h"
 
 #define CANVAS_PRESET_MIN -1
 #define CANVAS_PRESET_MAX 2
@@ -12,7 +9,7 @@ static double yArg = 0.0;
 
 static char keysave = 'd';
 
-#include "Util_Demo.h"
+#include "Util_Runner.h"
 
 void setup(char input){
 	if(isalnum(input)) {
