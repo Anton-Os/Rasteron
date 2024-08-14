@@ -78,7 +78,9 @@ unsigned strokePaint(double x, double y){
 }
 
 static unsigned dotSplash(unsigned color, double distance, PixelPoint pixPoint){
-    return (distance > dotSize * DOT_RADIUS * pow((double)rand() / (double)RAND_MAX, 0.25))? canvasColor : color;
+    switch(mode){
+        default: return (distance > dotSize * DOT_RADIUS * pow((double)rand() / (double)RAND_MAX, 0.25))? canvasColor : color;
+    }
 }
 
 static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
@@ -90,6 +92,7 @@ static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint
 		case 14: return colors_blend(xColor, yColor, cos(distances[0] * FIELD_PRODUCT * 10.0));
 		case 15: return colors_blend(xColor, yColor, tan(distances[0] * FIELD_PRODUCT * 10.0));
 		case 16: return (distances[2] > distances[0] + distances[1])? xColor : yColor;
+        case 17: return (distances[0] / distances[1] > distances[2] / (distances[1] / distances[0]))? xColor : yColor;
 		default: return (((distances[2] + distances[1] + distances[0]) / 3) > distances[1])? xColor : yColor;
 	}
 }
@@ -127,7 +130,8 @@ Rasteron_Image* drawImgOp(/* TODO: Add parameters */){
 				case 20: *(drawImg->data + p) = colors_blend(color1, color2, xOff / yOff); break;
 				case 21: *(drawImg->data + p) = colors_blend(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
 				case 22: *(drawImg->data + p) = colors_fuse(color1, color2, (x / y) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
-				case 23: *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi);
+				case 23: *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi); break;
+                case 24: *(drawImg->data + p) = (color1 / color2) * floor(xOffLo * 20.0) * ceil(yOffHi * 20.0); break;
 				default: *(drawImg->data + p) = *(drawImg->data + p);
 			}
 		}
@@ -142,8 +146,8 @@ static void update(){
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
 	if(colorPointTable.pointCount > COLOR_POINTS){
 		if(mode >= 0 && mode < 10) _outputImg = mapImgOp((ImageSize){1024, 1024}, strokePaint);
-		else if(mode >= 10 && mode < 17) _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
-		else if(mode < 24) _outputImg = drawImgOp();
+		else if(mode >= 10 && mode <= 18) _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
+		else if(mode <= 25) _outputImg = drawImgOp();
 	}
 	else _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, dotSplash);
 }
@@ -156,11 +160,11 @@ void _onKeyEvent(char key){
 		case 'u': mode = 6; break; case 'i': mode = 7; break; case 'o': mode = 8; break;
 		case 'p': mode = 9; break; 
 		case 'a': mode = 10; break; case 's': mode = 11; break; case 'd': mode = 12; break; 
-		case 'f': mode = 13; break; case 'g': mode = 14; break; case 'h': mode = 13; break; 
-		case 'j': mode = 14; break; case 'k': mode = 15; break; case 'l': mode = 16; break; 
-		case 'z': mode = 17; break; case 'x': mode = 18; break; case 'c': mode = 19; break;
-		case 'v': mode = 20; break; case 'b': mode = 21; break; case 'n': mode = 22; break;
-		case 'm': mode = 23;
+		case 'f': mode = 13; break; case 'g': mode = 14; break; case 'h': mode = 15; break;
+		case 'j': mode = 16; break; case 'k': mode = 17; break; case 'l': mode = 18; break;
+		case 'z': mode = 19; break; case 'x': mode = 20; break; case 'c': mode = 21; break;
+		case 'v': mode = 22; break; case 'b': mode = 23; break; case 'n': mode = 24; break;
+		case 'm': mode = 25;
 		// default: mode = -1;
 	}
 	if(isspace(key)) mode = (mode + 1) % 18;

@@ -1,8 +1,8 @@
 
 #ifndef RASTERON_SUPPORT_H
 
-#define ASSETS_DIR "F:/Codex/PROJECT/Rasteron/master/assets"
-#define MATERIAL_ICONS_FILE "F:/Codex/PROJECT/Rasteron/master/assets/material-icons-png/_MaterialIconList.txt"
+#define ASSETS_DIR "C:/Users/aoome/Documents/Codex/Rasteron-master/assets"
+#define MATERIAL_ICONS_FILE "C:/Users/aoome/Documents/Codex/Rasteron-master/assets/material-icons-png/_MaterialIconList.txt"
 
 #define USE_IMG_TIFF // Enable TIFF Support
 #define USE_IMG_PNG // Enable PNG Support

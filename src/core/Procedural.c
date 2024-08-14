@@ -59,11 +59,11 @@ void pixPoionts_expand(PixelPointTable* table, unsigned short divs){
 	PixelPointTable newTable;
 	newTable.pointCount = 0;// table->pointCount + ((table->pointCount - 1) * divs);
 
-	for(unsigned p = 0; p < table->pointCount - 1; p++){
+	for(unsigned p = 0; p < table->pointCount - 1 && p < MAX_PIXELPOINTS; p++){
 		newTable.points[newTable.pointCount] = table->points[p];
 		newTable.pointCount++;
 
-		PixelPoint pixDiff = { table->points[p - 1].x - table->points[p].x, table->points[p - 1].y - table->points[p].y }; // difference between next and current point
+		PixelPoint pixDiff = { table->points[p].x - table->points[p + 2].x, table->points[p].y - table->points[p + 1].y }; // difference between next and current point
 		PixelPoint pixInc = { pixDiff.x / (double)(divs + 1), pixDiff.y / (double)(divs + 1) }; // increment step between points
 		for(unsigned short d = 0; d < divs; d++){
 			newTable.points[newTable.pointCount] = (PixelPoint){ table->points[p].x + ((d + 1) * pixInc.x), table->points[p].y + ((d + 1) * pixInc.y) };
@@ -78,32 +78,31 @@ void pixPoionts_expand(PixelPointTable* table, unsigned short divs){
 void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned short height, unsigned short width){
 	table->pointCount = 0;
 
-	for(unsigned r = 0; r < width + 1; r++){
-        for(unsigned c = 0; c < height + 1; c++){
+	for(unsigned r = 0; r < width + 1; r++)
+        for(unsigned c = 0; c < height + 1; c++)
             switch(type){
-                case TILE_Square: // regular grid tiling
-                    pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r); 
+                case 0: // regular grid tiling
+                    pixelPointToTable(table, (1.0 / height) * c, (1.0 / width) * r);
                     break;
-                case TILE_Triangle: // triangular tiling attempt
+                case 1: // triangular tiling attempt
                     if((r % 2 == 0 && c % 2 == 0) || (r % 2 == 1 && c % 2 == 1))
-                        pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r); 
+                        pixelPointToTable(table, (1.0 / height) * c, (1.0 / width) * r);
                     break;
-                case TILE_Hexagon: // hexagonal tiling attempt
+                case 2: // hexagonal tiling attempt
                     if((r % 2 == 0 && c % 3 != 0) || (r % 2 == 1 && c % 3 == 0))
-                        pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r);
+                        pixelPointToTable(table, (1.0 / height) * c, (1.0 / width) * r);
                     break;
-                case TILE_Diagonal: // diagonal tiling attempt
+                case 3: // diagonal tiling attempt
                     if(c == r || c == height + 1 - r || r == width + 1 - c) // TODO: Fix this
-                        pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r);
+                        pixelPointToTable(table, (1.0 / height) * c, (1.0 / width) * r);
                     break;
-                case TILE_Perimiter: // perimiter tiling attempt
+                case 4: // perimiter tiling attempt
                     if(c == 0 || c == height + 1 || r == 0 || r == width + 1) // TODO: Fix this
-                        pixelPointToTable(&table, (1.0 / height) * c, (1.0 / width) * r);
+                        pixelPointToTable(table, (1.0 / height) * c, (1.0 / width) * r);
                     break;
-                default: pixelPointToTable(&table, (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX); // random
+                default: pixelPointToTable(table, (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX); // random
             }
-        }
-    }
+
 }
 
 

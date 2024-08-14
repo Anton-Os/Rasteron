@@ -60,7 +60,7 @@ typedef struct {
 	unsigned pointCount;
 } PixelPointTable;
 
-typedef struct { double x; double y; unsigned color; } ColorPoint; // x and y fractional offset with color
+typedef struct { unsigned color; double x; double y; } ColorPoint; // x and y fractional offset with color
 
 typedef struct {
 	ColorPoint points[MAX_PIXELPOINTS];
