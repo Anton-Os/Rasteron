@@ -9,16 +9,21 @@ ColorPointTable colorTable;
 
 #include "Util_Runner.h"
 
-static unsigned tiling(unsigned color, double distance, PixelPoint pixPoint){
-    return color;
-}
-
 static unsigned eqTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return colors_blend(colors[0], colors_blend(colors[1], colors[2], fabs(distances[0] - distances[2])), fabs(distances[0] - distances[1]));
-    // return (fabs(distances[0] - distances[1]) < 0.05)? colors[0] : colors[1];
+}
+
+static unsigned softTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return colors_blend(colors[0], color_invert(colors[0]), fabs(pixPoint[0].x / pixPoint[0].y));
+}
+
+static unsigned hardTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return (distances[0] / distances[1] > pixPoint[0].x / pixPoint[1].y)? colors[0] : colors[1];
 }
 
 void setup(char input){
+    static fieldCallback3 callback = &eqTiling;
+
     if(isdigit(input))
         switch(input - '0'){
             case 1: pixPoints_tiling(&table, TILE_Square, _dimens[0], _dimens[1]); break;
@@ -38,16 +43,16 @@ void setup(char input){
     for(unsigned t = 0; t < colorTable.pointCount; t++)
         colorTable.points[t] = (ColorPoint){ RAND_COLOR(), table.points[t].x, table.points[t].y };
 
-	// switch(keysave){
-		// TODO: Generate image
-	// }
-
-
+	switch(keysave){
+        case 'q': callback = &eqTiling; break;
+        case 'w': callback = &softTiling; break;
+        case 'e': callback = &hardTiling; break;
+	}
 
     if(isalnum(input) && colorTable.pointCount >= 1) {
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
         // _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorTable, tiling);
-        _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, eqTiling);
+        _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback);
     }
 }
 
