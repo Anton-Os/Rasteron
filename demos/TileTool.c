@@ -7,6 +7,8 @@ static char keysave = 'a';
 PixelPointTable table;
 ColorPointTable colorTable;
 
+static double dotDist = 0.05;
+
 #include "Util_Runner.h"
 
 static unsigned eqTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
@@ -19,6 +21,31 @@ static unsigned softTiling(unsigned colors[3], double distances[3], PixelPoint p
 
 static unsigned hardTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return (distances[0] / distances[1] > pixPoint[0].x / pixPoint[1].y)? colors[0] : colors[1];
+}
+
+static unsigned dotTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return (distances[0] < dotDist)? colors[0] : colors[1];
+}
+
+static unsigned dotTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return (distances[0] / distances[1] * distances[2] < dotDist)? colors[0] : colors[1];
+}
+
+static unsigned dotTiling3(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return (distances[0] + distances[1] - distances[2] < dotDist)? colors[0] : colors[1];
+}
+
+static trialTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return (pixPoint[0].x + pixPoint[1].y > distances[0] / distances[2])? colors[0] : colors_powroot(colors[1], colors[2]);
+}
+
+static trialTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    // return colors_blend(colors[0], colors_blend(colors[1], colors[2], pow(pixPoint[0].x * pixPoint[1].y, distances[0])), distances[2] / distances[1]);
+    return colors_blend(colors[0] + colors[1], colors[2] - colors[1], pixPoint[0].x / pixPoint[0].y);
+}
+
+static trialTiling3(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return colors_blend(colors[0], colors_blend(colors[1], colors[2], sin(distances[0] / distances[1])), cos(distances[2] / distances[1]));
 }
 
 void setup(char input){
@@ -47,12 +74,21 @@ void setup(char input){
         case 'q': callback = &eqTiling; break;
         case 'w': callback = &softTiling; break;
         case 'e': callback = &hardTiling; break;
+        case 'a': callback = &dotTiling1; break;
+        case 's': callback = &dotTiling2; break;
+        case 'd': callback = &dotTiling3; break;
+        case 'z': callback = &trialTiling1; break;
+        case 'x': callback = &trialTiling2; break;
+        case 'c': callback = &trialTiling3; break;    
 	}
 
     if(isalnum(input) && colorTable.pointCount >= 1) {
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
         // _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorTable, tiling);
         _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback);
+        if(_dimens[0] > 1 || _dimens[1] > 1){
+            // TODO: Perform truschet tiling
+        } 
     }
 }
 

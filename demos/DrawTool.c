@@ -61,18 +61,18 @@ unsigned strokePaint(double x, double y){
 
 	switch(mode){
 		// case 0: return (fabs(xDiff) - fabs(yDiff) > -0.05 && fabs(xDiff) - fabs(yDiff) < 0.05)? colorPoints[0].color : colorPoints[1].color;
-		case 0: if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return colors_blend(0xFF00FF00, canvasColor, (pow(fabs(xDiff - yDiff), 0.1)));
+		case 'q': if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return colors_blend(0xFF00FF00, canvasColor, (pow(fabs(xDiff - yDiff), 0.1)));
 			else return canvasColor;
 			// if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
 			// else return canvasColor;
-		case 1: return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
-		case 2: return (x1 * sin(y1 * OSCILATION) < x2 * -y2)? colorPoints[0].color : colorPoints[1].color;
-		case 3: return (x1 * y1 < cos(x2 * OSCILATION) * y2)? colorPoints[0].color : colorPoints[1].color;
-		case 4: return (tan(x1 * OSCILATION) * y1 < x2 * tan(-y2 * OSCILATION))? colorPoints[0].color : colorPoints[1].color;
-		case 5: return (xDiff / yDiff + x - y < yDiff / xDiff - x + y)? colorPoints[0].color : colorPoints[1].color;
-		case 6: return (fabs(xDiff - yDiff) < (0.25 * (x2 / y1 * y2 / x1)))? colorPoints[0].color : colorPoints[1].color;
-		case 7: return (xDiff / x1 / x2 / x3 / x4 > yDiff / y1 / y2 / y3 / y4)? colorPoints[0].color : colorPoints[1].color;
-		case 8: return (pow(x1 * x2 * x3 * x4, 1.0) > pow(y1 * y2 * y3 * y4, 1.0))? colorPoints[0].color : colorPoints[1].color;
+		case 'w': return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
+		case 'e': return (x1 * sin(y1 * OSCILATION) < x2 * -y2)? colorPoints[0].color : colorPoints[1].color;
+		case 'r': return (x1 * y1 < cos(x2 * OSCILATION) * y2)? colorPoints[0].color : colorPoints[1].color;
+		case 't': return (tan(x1 * OSCILATION) * y1 < x2 * tan(-y2 * OSCILATION))? colorPoints[0].color : colorPoints[1].color;
+		case 'y': return (xDiff / yDiff + x - y < yDiff / xDiff - x + y)? colorPoints[0].color : colorPoints[1].color;
+		case 'u': return (fabs(xDiff - yDiff) < (0.25 * (x2 / y1 * y2 / x1)))? colorPoints[0].color : colorPoints[1].color;
+		case 'i': return (xDiff / x1 / x2 / x3 / x4 > yDiff / y1 / y2 / y3 / y4)? colorPoints[0].color : colorPoints[1].color;
+		case 'o': return (pow(x1 * x2 * x3 * x4, 1.0) > pow(y1 * y2 * y3 * y4, 1.0))? colorPoints[0].color : colorPoints[1].color;
 		default: return wavePaint(x, y);
 	}
 }
@@ -85,19 +85,19 @@ static unsigned dotSplash(unsigned color, double distance, PixelPoint pixPoint){
 
 static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
 	switch(mode){
-		case 10: return colors_blend(xColor, yColor, distances[0] * FIELD_PRODUCT);
-		case 11: return colors_blend(xColor, yColor, distances[1] * FIELD_PRODUCT);
-		case 12: return colors_blend(xColor, yColor, distances[2] * FIELD_PRODUCT);
-		case 13: return colors_blend(xColor, yColor, sin(distances[0] * FIELD_PRODUCT * 10.0));
-		case 14: return colors_blend(xColor, yColor, cos(distances[0] * FIELD_PRODUCT * 10.0));
-		case 15: return colors_blend(xColor, yColor, tan(distances[0] * FIELD_PRODUCT * 10.0));
-		case 16: return (distances[2] > distances[0] + distances[1])? xColor : yColor;
-        case 17: return (distances[0] / distances[1] > distances[2] / (distances[1] / distances[0]))? xColor : yColor;
+		case 'a': return colors_blend(xColor, yColor, distances[0] * FIELD_PRODUCT);
+		case 's': return colors_blend(xColor, yColor, distances[1] * FIELD_PRODUCT);
+		case 'd': return colors_blend(xColor, yColor, distances[2] * FIELD_PRODUCT);
+		case 'f': return colors_blend(xColor, yColor, sin(distances[0] * FIELD_PRODUCT * 10.0));
+		case 'g': return colors_blend(xColor, yColor, cos(distances[0] * FIELD_PRODUCT * 10.0));
+		case 'h': return colors_blend(xColor, yColor, tan(distances[0] * FIELD_PRODUCT * 10.0));
+		case 'j': return (distances[2] > distances[0] + distances[1])? xColor : yColor;
+        case 'k': return (pixPoints[0].x / pixPoints[1].y > pow(pixPoints[2].x, pixPoints[0].y))? xColor : yColor;
 		default: return (((distances[2] + distances[1] + distances[0]) / 3) > distances[1])? xColor : yColor;
 	}
 }
 
-Rasteron_Image* drawImgOp(/* TODO: Add parameters */){
+Rasteron_Image* drawImgOp(double xVar, double yVar){
 	static unsigned swatchOffset = SWATCH_Light;
 	unsigned color1 = _swatch.colors[swatchOffset % 8];
 	unsigned color2 = _swatch.colors[(swatchOffset + 1) % 8];
@@ -105,8 +105,10 @@ Rasteron_Image* drawImgOp(/* TODO: Add parameters */){
 	Rasteron_Image* drawImg = checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ _dimens[0], _dimens[1], color2 });
 
 	for(unsigned p = 0; p < 1024 * 1024; p++){
-		double x = (1.0 / (double)1024) * (p % 1024);
-		double y = (1.0 / (double)1024) * (p / 1024);
+		double x = (1.0 / (double)1024) * (p % 1024); // (1.0 / (double)1024) * (p % 1024);
+		double y = (1.0 / (double)1024) * (p / 1024); // (1.0 / (double)1024) * (p / 1024)
+		x *= 1.0 + sin(xVar * x);
+		y *= 1.0 + sin(yVar * y);
 
 		double xOffLo = 0.0; double yOffLo = 0.0; // lowest value
 		double xOffHi = 0.0; double yOffHi = 0.0; // highest value
@@ -123,15 +125,15 @@ Rasteron_Image* drawImgOp(/* TODO: Add parameters */){
 			xAccum += xOff; yAccum += yOff;
 
 			switch(mode){
-				case 17: if(sin(xOff * 10.0) > cos(yOff * 10.0)) *(drawImg->data + p) += 0xF; break;
+				// case 17: if(sin(xOff * 10.0) > cos(yOff * 10.0)) *(drawImg->data + p) += 0xF; break;
 				// case 18: if(xOff < 0.1) *(drawImg->data + p) += 0xF; else if(yOff < 0.1) *(drawImg->data + p) -= 0xF; break;
-				case 18: *(drawImg->data + p) = colors_blend(colors_blend(color1, color_invert(color1), fabs(xAccum)), colors_blend(color2, color_invert(color2), fabs(yAccum)), fabs(xAccum / yAccum));
-				case 19: if(fabs(xOffLo) < fabs(yOffLo)) *(drawImg->data + p) = color1; else if(fabs(xOffHi) > fabs(yOffHi)) *(drawImg->data + p) = color2; break;
-				case 20: *(drawImg->data + p) = colors_blend(color1, color2, xOff / yOff); break;
-				case 21: *(drawImg->data + p) = colors_blend(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
-				case 22: *(drawImg->data + p) = colors_fuse(color1, color2, (x / y) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
-				case 23: *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi); break;
-                case 24: *(drawImg->data + p) = (color1 / color2) * floor(xOffLo * 20.0) * ceil(yOffHi * 20.0); break;
+				case 'z': *(drawImg->data + p) = colors_blend(colors_blend(color1, color_invert(color1), fabs(xAccum)), colors_blend(color2, color_invert(color2), fabs(yAccum)), fabs(xAccum / yAccum)); break;
+				case 'x': if(fabs(xOffLo) < fabs(yOffLo)) *(drawImg->data + p) = color1; else if(fabs(xOffHi) > fabs(yOffHi)) *(drawImg->data + p) = color2; break;
+				case 'c': *(drawImg->data + p) = colors_blend(color1, color2, (xAccum / yOffHi) * (xOffLo / yAccum)); break;
+				case 'v': *(drawImg->data + p) = colors_blend(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
+				case 'b': *(drawImg->data + p) = colors_fuse(color1, color2, (xOffHi / yOffLo) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
+				case 'n': *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi); break;
+                case 'm': *(drawImg->data + p) = (color1 / color2) * (xOffLo * xAccum) / (yOff * yAccum); break;
 				default: *(drawImg->data + p) = *(drawImg->data + p);
 			}
 		}
@@ -142,46 +144,38 @@ Rasteron_Image* drawImgOp(/* TODO: Add parameters */){
 	return drawImg;
 }
 
-static void update(){
+void _onKeyEvent(char key){
+	mode = key;
+
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-	if(colorPointTable.pointCount > COLOR_POINTS){
-		if(mode >= 0 && mode < 10) _outputImg = mapImgOp((ImageSize){1024, 1024}, strokePaint);
-		else if(mode >= 10 && mode <= 18) _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
-		else if(mode <= 25) _outputImg = drawImgOp();
+
+	if(colorPointTable.pointCount > COLOR_POINTS && !isdigit(key))
+	switch(key){
+		case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p':
+			_outputImg = mapImgOp((ImageSize){1024, 1024}, strokePaint);
+		break;
+		case 'a': case 's': case 'd': case 'f': case 'g': case 'h': case 'j': case 'k': case 'l':
+			_outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
+		break;
+		case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm': 
+			_outputImg = drawImgOp(-0.5, -0.5); 
+		break;
 	}
 	else _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, dotSplash);
-}
 
-void _onKeyEvent(char key){
-	// if(key - '0' >= 0 && key - '0' < 10) coordSpace = key - '0'
-	switch(key){
-		case 'q': mode = 0; break; case 'w': mode = 1; break; case 'e': mode = 2; break;
-		case 'r': mode = 3; break; case 't': mode = 4; break; case 'y': mode = 5; break;
-		case 'u': mode = 6; break; case 'i': mode = 7; break; case 'o': mode = 8; break;
-		case 'p': mode = 9; break; 
-		case 'a': mode = 10; break; case 's': mode = 11; break; case 'd': mode = 12; break; 
-		case 'f': mode = 13; break; case 'g': mode = 14; break; case 'h': mode = 15; break;
-		case 'j': mode = 16; break; case 'k': mode = 17; break; case 'l': mode = 18; break;
-		case 'z': mode = 19; break; case 'x': mode = 20; break; case 'c': mode = 21; break;
-		case 'v': mode = 22; break; case 'b': mode = 23; break; case 'n': mode = 24; break;
-		case 'm': mode = 25;
-		// default: mode = -1;
-	}
-	if(isspace(key)) mode = (mode + 1) % 18;
-
-	update();
+	// update();
 }
 
 void _onPressEvent(double x, double y){ 
 	xFactor = x * OSCILATION; 
 	yFactor = y * OSCILATION;
-	xColor = 0xFF006600 | ((unsigned)(x * 256) * 0x10001); 
-	yColor = 0xFF660000 | ((unsigned)(y * 256) * 0x101); 
+	xColor = 0xFF00FF00 | ((unsigned)(x * 256) * 0x10001); 
+	yColor = 0xFFFF0000 | ((unsigned)(y * 256) * 0x101); 
 
 	pixelPointToTable(&pixelPointTable, x, y);
 	colorPointToTable(&colorPointTable, (colorPointTable.pointCount % 2 == 0)? xColor : yColor, x, y);
 
-	update();
+	// update();
 }
 
 void _onTickEvent(unsigned secs){}

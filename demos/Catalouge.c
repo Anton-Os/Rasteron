@@ -704,9 +704,9 @@ unsigned ultCoord(double x, double y){
     unsigned short xDivs = 2;
     unsigned short yDivs = 2;
 
-    for(unsigned u = 0; u < 5; u++){
-        double xInc = (pow(xDivs, u + 1) * x) - floor(pow(xDivs, u + 1) * x);
-        double yInc = (pow(yDivs, u + 1) * y) - floor(pow(yDivs, y + 1) * x);
+    for(unsigned u = 0; u < 3; u++){
+        double xInc = (pow(xDivs, u + 1) * (1.0 - x)) - pow(xDivs, (u + 1) * y) * x;
+        double yInc = (pow(yDivs, u + 1) * (1.0 - y)) - pow(yDivs, (y + 1) * x) * y;
 
         if(color == 0xFF333333)
             if(fabs(xInc / yInc) > 0.9 * ultX1 && fabs(xInc / yInc) < 1.1 * ultY1) color = colors_blend(0xFFFF0000, 0xFF0000FF, (xInc * ultX2) * (yInc * ultY2));
@@ -721,25 +721,11 @@ unsigned ultCoord(double x, double y){
 } */
 
 unsigned ultMix(unsigned color1, unsigned color2){
-    for(unsigned c = 0; c < 5; c++){
-        if(color1 % ultM > color2 % ultM){ 
-            color1 += color2 % (ultM / 2);
-            color2 -= color1 % (ultM / 2);
-            if(c == 4) return color1;
-        }
-        else {
-            color1 -= color2 % (ultM / 2);
-            color2 += color1 % (ultM / 2);
-            if(c == 4) return color2;
-        }
-    }
-    return colors_blend(color1, color2, 0.5);
+    return colors_blend(color1 % color2, color1 + color2, 0.5F);
 }
 
 unsigned ultCellwise(unsigned cell, unsigned nebrs[8]){
-    static unsigned i = 0;
-    i++;
-    return cell; // nebrs[(i % 2 == 0)? nebrs[NEBR_Left] : nebrs[NEBR_Right]];
+    return colors_blend(cell + nebrs[0] + nebrs[1], cell - nebrs[3] - nebrs[4], 0.5F);
 }
 
 Rasteron_Image* ultImgOp(short seed, unsigned short factor, double x1, double x2, double y1, double y2){
@@ -747,7 +733,7 @@ Rasteron_Image* ultImgOp(short seed, unsigned short factor, double x1, double x2
     ultY1 = y1; ultY2 = y2;
     ultM = factor;
     
-    Rasteron_Image* coordImg = mapImgOp((ImageSize){ 256, 256 }, ultCoord);
+    Rasteron_Image* coordImg = mapImgOp((ImageSize){ 1024, 1024 }, ultCoord);
     Rasteron_Image* coordVarImgs[3] = {
         copyImgOp(coordImg), copyImgOp(coordImg), copyImgOp(coordImg)
     };
@@ -760,7 +746,7 @@ Rasteron_Image* ultImgOp(short seed, unsigned short factor, double x1, double x2
 
     // Rasteron_Image* mixImg = mixingExtImgOp(coordImg, coordVarImgs[0], coordVarImgs[1],  coordVarImgs[2], ultMix);
     Rasteron_Image* mixImg = mixingImgOp(coordImg, coordVarImgs[seed % 3], ultMix);
-    Rasteron_Image* ultImg = cellwiseExtImgOp(mixImg, ultCellwise, 3);
+    Rasteron_Image* ultImg = cellwiseImgOp(mixImg, ultCellwise);
 
     RASTERON_DEALLOC(coordImg);
     for(unsigned i = 0; i < 3; i++) RASTERON_DEALLOC(coordVarImgs[i]);

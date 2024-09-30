@@ -50,7 +50,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
 	FileImage fileImage;
 
 	loadFromFile(fileName, &fileImage);
-	if(fileImage.fileFormat == IMG_NonValid) return errorImgOp("Inavlid image file");
+	if(fileImage.fileFormat == IMG_NonValid) return errorImgOp("Invalid image file");
 
     Rasteron_Image* refImage = NULL;
     switch(fileImage.fileFormat){
