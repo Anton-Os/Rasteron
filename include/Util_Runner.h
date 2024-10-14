@@ -53,8 +53,6 @@ typedef struct {
 
 unsigned elapseSecs = 0;
 
-ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
-
 unsigned _dimens[2] = { 1, 1 };
 
 // --------------------------------   Unimplemented Functions for Demo    -------------------------------- //
@@ -91,7 +89,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         // TODO: Save image on special sequence
         if(_onKeyEvent != NULL){
             if(isdigit(wParam))  printf("Parsing numeric input for %d", wParam);
-            else if(wParam == '/') _swatch = createSwatch(RAND_COLOR(), rand() % 0xFF);
+            // else if(wParam == '/') _swatch = createSwatch(RAND_COLOR(), rand() % 0xFF);
             else if(wParam == '-'){ if(_dimens[0] != 0) _dimens[0]--; if(_dimens[1] != 0) _dimens[1]--; } 
             else if(wParam == '='){ if(_dimens[0] != 10) _dimens[0]++; if(_dimens[1] != 10) _dimens[1]++; }
             _onKeyEvent(wParam);

@@ -1,6 +1,130 @@
-#include "Catalouge.h"
+#include "catalouge.h"
 
 static char fullFilePath[1024];
+
+ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
+// ColorSwatch _swatch = { 0xFF111111, { 0xFFFF1111, 0xFF11FF11, 0xFF1111FF, 0xFF333333, 0xFFEEEEEE, 0xFF111100, 0xFF110011, 0xFF001111 }, 0xF }; // determines color oprations
+// ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88AA88, 0xFF8888AA, 0xFF333333, 0xFFEEEEEE, 0xFFAAAA00, 0xFFAA00AA, 0xFF00AAAA }, 0xF }; // determines color oprations
+
+// Catalouged Rules/Callbacks
+
+unsigned addlineRules(unsigned color, unsigned neighbors[2]){ return (neighbors[0] == neighbors[1])? neighbors[0] + neighbors[1] : color; }
+
+unsigned serpinskyRules(unsigned color, unsigned neighbors[2]){ 
+    unsigned short s = 0;
+    if(color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) s++;
+    if(neighbors[0] == _swatch.colors[SWATCH_Green_Add] || neighbors[0] == _swatch.colors[SWATCH_Light]) s++;
+    if(neighbors[1] == _swatch.colors[SWATCH_Green_Add] || neighbors[1] == _swatch.colors[SWATCH_Light]) s++;
+    return (s == 1)? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Red_Add];
+}
+
+unsigned conwayRules(unsigned color, unsigned neighbors[8]){ 
+    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
+    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors); // countKills(neighbors);
+    // printf("Lives is %d, %d", lives, kills);
+
+    if((color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) && lives < 2) return _swatch.colors[SWATCH_Red_Add]; // Any live cell with fewer than two live neighbors dies, as if by underpopulation.
+    else if((color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) && (lives == 2 || lives == 3)) return _swatch.colors[SWATCH_Green_Add]; // Any live cell with two or three live neighbors lives on to the next generation.
+    else if((color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) && lives > 3) return _swatch.colors[SWATCH_Red_Add]; // Any live cell with more than three live neighbors dies, as if by overpopulation.
+    else if((color == _swatch.colors[SWATCH_Red_Add] || color == _swatch.colors[SWATCH_Dark]) && lives == 3) return _swatch.colors[SWATCH_Light]; // Any kills cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+    else if(color == _swatch.colors[SWATCH_Red_Add]) return _swatch.colors[SWATCH_Dark];
+    else return color; 
+}
+
+unsigned randWalkRules(unsigned color, unsigned neighbors[8]){
+    unsigned short direction = 0;
+
+    if(color == _swatch.colors[SWATCH_Light]) return _swatch.colors[SWATCH_Green_Add];
+    else if(color == _swatch.colors[SWATCH_Red_Add]) return _swatch.colors[SWATCH_Dark];
+    else if(neighbors[direction] == _swatch.colors[SWATCH_Light] || neighbors[direction] == _swatch.colors[SWATCH_Green_Add]){
+        direction = rand() % 8; // randomize walk direction
+        return _swatch.colors[SWATCH_Light];
+    }
+    else if(neighbors[direction] == _swatch.colors[SWATCH_Dark] || neighbors[direction] == _swatch.colors[SWATCH_Red_Add]){
+        direction = rand() % 8; // randomize walk direction
+        return _swatch.colors[SWATCH_Red_Add];
+    }
+    else return color;
+}
+
+unsigned amplifyRules(unsigned color, unsigned neighbors[8]){ 
+    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
+    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors); // countKills(neighbors);
+    // printf("Lives is %d, %d", lives, kills);
+
+    if(lives > kills) return (color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light])? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Light]; // color_level(color, 0.5 + (lives * (0.5 / 8.0)));
+    else if(kills > lives) return (color == _swatch.colors[SWATCH_Red_Add] || color == _swatch.colors[SWATCH_Dark])? _swatch.colors[SWATCH_Dark] : _swatch.colors[SWATCH_Red_Add]; // color_level(color, 0.5 - (lives * (0.5 / 8.0)));
+    else return color;
+}
+
+unsigned recursiveRules(unsigned color, unsigned neighbors[8]){
+    color += (neighbors[NEBR_Left] > neighbors[NEBR_Right])? 16 : -16;
+    color += (neighbors[NEBR_Top] > neighbors[NEBR_Bot])? 16 : -16;
+    color += (neighbors[NEBR_Top_Left] + neighbors[NEBR_Top_Right] > neighbors[NEBR_Bot_Left] + neighbors[NEBR_Bot_Right])? 32 : -32;
+    return color;
+}
+
+unsigned bloomRules(unsigned color, unsigned neighbors[8]){
+    if(neighbors[NEBR_Bot] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Top] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Left] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Right] == _swatch.colors[SWATCH_Green_Add])
+        return _swatch.colors[SWATCH_Red_Add];
+    else if(neighbors[NEBR_Bot_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Right] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Bot_Right] == _swatch.colors[SWATCH_Red_Add])
+        return _swatch.colors[SWATCH_Green_Add];
+    else return color;
+}
+
+unsigned unbloomRules(unsigned color, unsigned neighbors[8]){
+    if(neighbors[NEBR_Bot_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Right] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Bot_Right] == _swatch.colors[SWATCH_Red_Add])
+        return _swatch.colors[SWATCH_Green_Add];
+    else if(neighbors[NEBR_Bot] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Top] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Left] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Right] == _swatch.colors[SWATCH_Green_Add])
+        return _swatch.colors[SWATCH_Red_Add];
+    else return color;
+}
+
+unsigned levelRules(unsigned color, unsigned neighbors[8]){
+    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
+    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors);
+    unsigned short diff = abs((short)lives - (short)kills);
+
+    if(diff == 0) return color;
+    else if(diff % 2 == 1) return (diff == 1)? _swatch.colors[SWATCH_Red_Add] : _swatch.colors[SWATCH_Light];
+    else return (diff == 2)? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Dark];
+}
+
+unsigned matchRules(unsigned color, unsigned neighbors[8]){
+    if(neighbors[NEBR_Left] == neighbors[NEBR_Right]) return neighbors[NEBR_Left];
+    else if(neighbors[NEBR_Top] == neighbors[NEBR_Bot]) return neighbors[NEBR_Top];
+    else if(neighbors[NEBR_Top_Left] == neighbors[NEBR_Bot_Right]) return neighbors[NEBR_Bot_Right];
+    else if(neighbors[NEBR_Bot_Left] == neighbors[NEBR_Top_Right]) return neighbors[NEBR_Top_Right];
+    else return neighbors[rand() % 8];
+}
+
+unsigned colorizeRules(unsigned color, unsigned neighbors[8]){
+    if(color == _swatch.colors[SWATCH_Light] || color == _swatch.colors[SWATCH_Green_Add]) return colors_blend(color, _swatch.colors[SWATCH_Green_Add], (float)rand() / RAND_MAX);
+    else if(color == _swatch.colors[SWATCH_Dark] || color == _swatch.colors[SWATCH_Red_Add]) return colors_blend(color, _swatch.colors[SWATCH_Red_Add], (float)rand() / RAND_MAX);
+    else return color;
+}
+
+unsigned scatterRules(unsigned color, unsigned neighbors[8]){
+    if(neighbors[NEBR_Left] == neighbors[NEBR_Right] && neighbors[NEBR_Top] == neighbors[NEBR_Bot]) return _swatch.colors[rand() % 8];
+    else return color;
+}
+
+unsigned flipRules(unsigned color, unsigned neighbors[8]){
+    if(color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]){
+        unsigned lifeCount = 0;
+        for(unsigned d = 0; d < 8; d++) 
+            if(neighbors[d] == _swatch.colors[SWATCH_Green_Add] || neighbors[d] == _swatch.colors[SWATCH_Light]) lifeCount++;
+        return (lifeCount % 2 == 0)? _swatch.colors[SWATCH_Red_Add] : _swatch.colors[SWATCH_Dark];
+    } else if(color == _swatch.colors[SWATCH_Red_Add] || color == _swatch.colors[SWATCH_Dark]){
+        unsigned deadCount = 0;
+        for(unsigned d = 0; d < 8; d++) 
+            if(neighbors[d] == _swatch.colors[SWATCH_Red_Add] || neighbors[d] == _swatch.colors[SWATCH_Dark]) deadCount++;
+        return (deadCount % 2 == 0)? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Light];
+    }
+    return color;
+}
+
+// Catalouged Image Algorithms
 
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){ 
     genFullFilePath("Logroller.bmp", &fullFilePath);

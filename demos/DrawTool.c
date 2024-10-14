@@ -1,4 +1,4 @@
-#include "Catalouge.h"
+#include "catalouge.h"
 
 #define CANVAS_COLOR 0xFF111111
 #define COLOR_POINTS 4
@@ -46,25 +46,8 @@ unsigned strokePaint(double x, double y){
     double dist2 = sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0));
 	double cross = ((x - x1) * (x2 - x1)) - ((y - y1) * (y2 - y1));
 
-	/* switch(mode){
-        case 0: return (xDiff > yDiff - 0.05 && xDiff < yDiff + 0.05)? colorPoints[0].color : colorPoints[1].color;
-        case 1: return (xDiff / yDiff > 0.9 && xDiff / yDiff < 1.1)? colorPoints[0].color : colorPoints[1].color;
-        case 2: return (dist1 < 0.05 || dist2 < 0.05)? colorPoints[0].color : colorPoints[1].color;
-        case 3: return (dist1 + dist2 < dist + 0.05)? colorPoints[0].color : colorPoints[1].color;
-		case 4: return (dist1 + dist2 < dist + 0.05 && (fabs(dist1 - dist2) < dist * 0.1))? colorPoints[0].color : colorPoints[1].color;
-		case 5: return (dist1 + dist2 < dist + 0.05 && (xDiff > yDiff - 0.1 * (xDiff / yDiff) && xDiff < yDiff + 0.1 * (xDiff / yDiff)))? colorPoints[0].color : colorPoints[1].color;
-		case 6: return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
-        case 7: return (cross < 0.1 && cross > -0.1)? colorPoints[0].color : colorPoints[1].color;
-		case 8: return (slope < 0.1 && slope > -0.1)? colorPoints[0].color : colorPoints[1].color;
-        default: return (((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2)))? colorPoints[0].color : colorPoints[1].color;
-    } */
-
 	switch(mode){
-		// case 0: return (fabs(xDiff) - fabs(yDiff) > -0.05 && fabs(xDiff) - fabs(yDiff) < 0.05)? colorPoints[0].color : colorPoints[1].color;
-		case 'q': if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return colors_blend(0xFF00FF00, canvasColor, (pow(fabs(xDiff - yDiff), 0.1)));
-			else return canvasColor;
-			// if(((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2))) return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
-			// else return canvasColor;
+		case 'q': return (((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2)))? colors_blend(0xFF00FF00, canvasColor, (pow(fabs(xDiff - yDiff), 0.1))) : canvasColor;
 		case 'w': return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
 		case 'e': return (x1 * sin(y1 * OSCILATION) < x2 * -y2)? colorPoints[0].color : colorPoints[1].color;
 		case 'r': return (x1 * y1 < cos(x2 * OSCILATION) * y2)? colorPoints[0].color : colorPoints[1].color;

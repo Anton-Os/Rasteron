@@ -51,8 +51,8 @@ include(externalTargets.cmake)
 
 ### Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${ext_src} "demos/Catalouge.c") # library only
-add_library(Rasteron STATIC ${core_src} ${ext_src} ${util_src} "demos/Catalouge.c") # library with examples
+# add_library(Rasteron STATIC ${core_src} ${ext_src} "demos/catalouge.c") # library only
+add_library(Rasteron STATIC ${core_src} ${ext_src} ${util_src} "demos/catalouge.c") # library with examples
 
 target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) # include necessary external libs
 

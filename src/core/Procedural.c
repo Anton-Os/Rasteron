@@ -143,9 +143,7 @@ Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTabl
 			double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * (1.0 / (double)(fieldImage->width)); // distance multiplied by pixel size
 			if (dist < minDist) {
 				minDist = dist;
-				// pixPoint =  (PixelPoint){ colorPointTable->points[t].x, colorPointTable->points[t].y };
-				// pixPoint =  (PixelPoint){ colorPointTable->points[t].x - x, colorPointTable->points[t].y - y };
-				pixPoint =  (PixelPoint){ x - colorPointTable->points[t].x, y - colorPointTable->points[t].y };
+				pixPoint = (PixelPoint){ x - colorPointTable->points[t].x, y - colorPointTable->points[t].y };
 				color = colorPointTable->points[t].color;
 			}
 			*(fieldImage->data + p) = callback(color, minDist, pixPoint);

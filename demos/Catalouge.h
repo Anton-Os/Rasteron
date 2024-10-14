@@ -5,7 +5,23 @@
 
 #include "Rasteron.h"
 
-// TODO: Incldue global definitions
+extern ColorSwatch _swatch; // = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
+
+unsigned addlineRules(unsigned color, unsigned neighbors[2]);
+unsigned serpinskyRules(unsigned color, unsigned neighbors[2]);
+
+unsigned conwayRules(unsigned color, unsigned neighbors[8]);
+unsigned randWalkRules(unsigned color, unsigned neighbors[8]);
+unsigned amplifyRules(unsigned color, unsigned neighbors[8]);
+unsigned recursiveRules(unsigned color, unsigned neighbors[8]);
+unsigned bloomRules(unsigned color, unsigned neighbors[8]);
+unsigned unbloomRules(unsigned color, unsigned neighbors[8]);
+unsigned levelRules(unsigned color, unsigned neighbors[8]);
+unsigned matchRules(unsigned color, unsigned neighbors[8]);
+unsigned colorizeRules(unsigned color, unsigned neighbors[8]);
+unsigned scatterRules(unsigned color, unsigned neighbors[8]);
+unsigned flipRules(unsigned color, unsigned neighbors[8]);
+
 
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop); // Flipping, mirroring, and cropping
 Rasteron_Image* nestboxesImgOp(double x, double y); // Looped nesting of ever-smaller squares

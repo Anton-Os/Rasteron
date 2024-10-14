@@ -1,6 +1,6 @@
 #define RASTERON_ENABLE_ANIM
 
-#include "Catalouge.h"
+#include "catalouge.h"
 
 #define OCTAVES 3
 #define TEXTOOL_COUNT 10

@@ -65,7 +65,7 @@ unsigned pixPoint_offset(PixelPoint pixPos, ref_image_t refImage); // gets pixel
 unsigned pixPoint_color(PixelPoint pixPos, ref_image_t refImage); // gets pixel color from image coordinates
 unsigned pixPoint_cursorOffset(PixelPoint cursorPos, ref_image_t refImage); // gets pixel offset from cursor coordinates
 unsigned pixPoint_cursorColor(PixelPoint cursorPos, ref_image_t refImage); // gets pixel color from cursor coordinates
-// TODO: Add a function to calculate direction
+// TODO: Add a function to calculate directio
 void pixPoionts_expand(PixelPointTable* table, unsigned short divs);
 void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned short height, unsigned short width);
 

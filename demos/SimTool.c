@@ -1,4 +1,4 @@
-#include "Catalouge.h"
+#include "catalouge.h"
 
 #define NSIM_GROW 0.1
 #define NSIM_COUNT 12
@@ -8,6 +8,8 @@
 int mode = -1;
 
 #include "Util_Runner.h"
+
+unsigned antialias(unsigned target, unsigned neighbors[8]); // Defined in Cellwise.c
 
 static double killRate = 0.1;
 static double feedRate = 0.025; // 0.025;
@@ -41,9 +43,6 @@ Rasteron_Image* growImgOp(Rasteron_Image* refImg, double balance, double exFacto
     return growthImg;
 }
 
-// unsigned lineRules(unsigned color, unsigned neighbors[2]){ return (rand() % 2 == 0)? color : (rand() % 2 == 0)? neighbors[0] : neighbors[1]; }
-unsigned lineRules(unsigned color, unsigned neighbors[2]){ return (neighbors[0] == neighbors[1])? neighbors[0] + neighbors[1] : color; }
-
 Rasteron_Image* feedImgOp(ref_image_t refImg, unsigned short iters){ // Rasteron_Image* lChemImg, Rasteron_Image* dChemImg){
     Rasteron_Image* chemsImg = (refImg != NULL)? copyImgOp(refImg) : seedImgOp(NULL, 0.5);
 
@@ -57,99 +56,6 @@ Rasteron_Image* feedImgOp(ref_image_t refImg, unsigned short iters){ // Rasteron
 
     return chemsImg;
 }
-
-static unsigned conwayRules(unsigned color, unsigned neighbors[8]){ 
-    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
-    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors); // countKills(neighbors);
-    // printf("Lives is %d, %d", lives, kills);
-
-    if((color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) && lives < 2) return _swatch.colors[SWATCH_Red_Add]; // Any live cell with fewer than two live neighbors dies, as if by underpopulation.
-    else if((color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) && (lives == 2 || lives == 3)) return _swatch.colors[SWATCH_Green_Add]; // Any live cell with two or three live neighbors lives on to the next generation.
-    else if((color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) && lives > 3) return _swatch.colors[SWATCH_Red_Add]; // Any live cell with more than three live neighbors dies, as if by overpopulation.
-    else if((color == _swatch.colors[SWATCH_Red_Add] || color == _swatch.colors[SWATCH_Dark]) && lives == 3) return _swatch.colors[SWATCH_Light]; // Any kills cell with exactly three live neighbors becomes a live cell, as if by reproduction.
-    else if(color == _swatch.colors[SWATCH_Red_Add]) return _swatch.colors[SWATCH_Dark];
-    else return color; 
-}
-
-static unsigned randWalkRules(unsigned color, unsigned neighbors[8]){
-    static unsigned short direction = 0;
-
-    if(color == _swatch.colors[SWATCH_Light]) return _swatch.colors[SWATCH_Green_Add];
-    else if(color == _swatch.colors[SWATCH_Red_Add]) return _swatch.colors[SWATCH_Dark];
-    else if(neighbors[direction] == _swatch.colors[SWATCH_Light] || neighbors[direction] == _swatch.colors[SWATCH_Green_Add]){
-        direction = rand() % 8; // randomize walk direction
-        return _swatch.colors[SWATCH_Light];
-    }
-    else if(neighbors[direction] == _swatch.colors[SWATCH_Dark] || neighbors[direction] == _swatch.colors[SWATCH_Red_Add]){
-        direction = rand() % 8; // randomize walk direction
-        return _swatch.colors[SWATCH_Red_Add];
-    }
-    else return color;
-}
-
-static unsigned amplifyRules(unsigned color, unsigned neighbors[8]){ 
-    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
-    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors); // countKills(neighbors);
-    // printf("Lives is %d, %d", lives, kills);
-
-    if(lives > kills) return (color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light])? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Light]; // color_level(color, 0.5 + (lives * (0.5 / 8.0)));
-    else if(kills > lives) return (color == _swatch.colors[SWATCH_Red_Add] || color == _swatch.colors[SWATCH_Dark])? _swatch.colors[SWATCH_Dark] : _swatch.colors[SWATCH_Red_Add]; // color_level(color, 0.5 - (lives * (0.5 / 8.0)));
-    else return color;
-}
-
-static unsigned recursiveRules(unsigned color, unsigned neighbors[8]){
-    color += (neighbors[NEBR_Left] > neighbors[NEBR_Right])? 16 : -16;
-    color += (neighbors[NEBR_Top] > neighbors[NEBR_Bot])? 16 : -16;
-    color += (neighbors[NEBR_Top_Left] + neighbors[NEBR_Top_Right] > neighbors[NEBR_Bot_Left] + neighbors[NEBR_Bot_Right])? 32 : -32;
-    return color;
-}
-
-static unsigned bloomRules(unsigned color, unsigned neighbors[8]){
-    if(neighbors[NEBR_Bot] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Top] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Left] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Right] == _swatch.colors[SWATCH_Green_Add])
-        return _swatch.colors[SWATCH_Red_Add];
-    else if(neighbors[NEBR_Bot_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Right] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Bot_Right] == _swatch.colors[SWATCH_Red_Add])
-        return _swatch.colors[SWATCH_Green_Add];
-    else return color;
-}
-
-static unsigned unbloomRules(unsigned color, unsigned neighbors[8]){
-    if(neighbors[NEBR_Bot_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Right] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Bot_Right] == _swatch.colors[SWATCH_Red_Add])
-        return _swatch.colors[SWATCH_Green_Add];
-    else if(neighbors[NEBR_Bot] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Top] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Left] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Right] == _swatch.colors[SWATCH_Green_Add])
-        return _swatch.colors[SWATCH_Red_Add];
-    else return color;
-}
-
-static unsigned levelRules(unsigned color, unsigned neighbors[8]){
-    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
-    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors);
-    unsigned short diff = abs((short)lives - (short)kills);
-
-    if(diff == 0) return color;
-    else if(diff % 2 == 1) return (diff == 1)? _swatch.colors[SWATCH_Red_Add] : _swatch.colors[SWATCH_Light];
-    else return (diff == 2)? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Dark];
-}
-
-static unsigned matchRules(unsigned color, unsigned neighbors[8]){
-    if(neighbors[NEBR_Left] == neighbors[NEBR_Right]) return neighbors[NEBR_Left];
-    else if(neighbors[NEBR_Top] == neighbors[NEBR_Bot]) return neighbors[NEBR_Top];
-    else if(neighbors[NEBR_Top_Left] == neighbors[NEBR_Bot_Right]) return neighbors[NEBR_Bot_Right];
-    else if(neighbors[NEBR_Bot_Left] == neighbors[NEBR_Top_Right]) return neighbors[NEBR_Top_Right];
-    else return neighbors[rand() % 8];
-}
-
-static unsigned colorizeRules(unsigned color, unsigned neighbors[8]){
-    if(color == _swatch.colors[SWATCH_Light] || color == _swatch.colors[SWATCH_Green_Add]) return colors_blend(color, _swatch.colors[SWATCH_Green_Add], (float)rand() / RAND_MAX);
-    else if(color == _swatch.colors[SWATCH_Dark] || color == _swatch.colors[SWATCH_Red_Add]) return colors_blend(color, _swatch.colors[SWATCH_Red_Add], (float)rand() / RAND_MAX);
-    else return color;
-}
-
-static unsigned scatterRules(unsigned color, unsigned neighbors[8]){
-    if(neighbors[NEBR_Left] == neighbors[NEBR_Right] && neighbors[NEBR_Top] == neighbors[NEBR_Bot]) return _swatch.colors[rand() % 8];
-    else return color;
-}
-
-unsigned antialias(unsigned target, unsigned neighbors[8]); // Defined in Cellwise.c
 
 Rasteron_Image* simImgOp(ref_image_t refImage, unsigned short iters, nebrCallback8 callback){
 	Rasteron_Image* cellwiseImg = copyImgOp(refImage);
@@ -202,14 +108,12 @@ void _onKeyEvent(char key){
     static double factor = 1.0;
     static Rasteron_Image* backgroundImg = NULL;
     static Rasteron_Image* growImg = NULL;
+    static Rasteron_Image* stageImg = NULL;
     static nebrCallback8 algorithm = &conwayRules;
     static nebrCallback8 process = NULL;
 
     if(backgroundImg == NULL) backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT / _dimens[0], RASTERON_WIN_WIDTH / _dimens[1]}, _swatch.base);
     if(growImg == NULL) growImg = growImgOp(backgroundImg, 1.0, 0.1);
-
-    // _swatch.colors[SWATCH_Green_Add] = RAND_COLOR(); _swatch.colors[SWATCH_Light] = color_level(_swatch.colors[SWATCH_Green_Add], 0.85); // randomize color
-    // _swatch.colors[SWATCH_Red_Add] = RAND_COLOR(); _swatch.colors[SWATCH_Dark] = color_level(_swatch.colors[SWATCH_Red_Add], 0.15); // randomize color
 
     printf("On key event with key %c", key);
     if(isspace(key)) mode *= -1; // switches mode into active state
@@ -223,12 +127,13 @@ void _onKeyEvent(char key){
             case 'e': growImg = feedImgOp(NULL, 3); break;
             case 'r': growImg = checkeredImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, (ColorGrid){ 30 / _dimens[0], 30 / _dimens[1], _swatch.colors[SWATCH_Green_Add], _swatch.colors[SWATCH_Red_Add] }); break;
             case 't': growImg = linedImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, _swatch.colors[SWATCH_Green_Add], _swatch.colors[SWATCH_Red_Add], 30 / _dimens[1], 0.0); break;
-            case 'y': case 'u':
-                Rasteron_Image* tempImg = seedImgOp(backgroundImg, NSIM_GROW); 
-                growImg = (key == 'y')? cellwiseColImgOp(tempImg, lineRules) : cellwiseRowImgOp(tempImg, lineRules);
-                RASTERON_DEALLOC(tempImg);
-                break; 
-            case 'i': case 'o': case 'p': growImg = seedImgOp(backgroundImg, (key == 'i')? NSIM_GROW : (key == 'o')? NSIM_GROW * 0.5 : NSIM_GROW * 0.1); break;
+            case 'y': case 'u': case 'i': case 'o': 
+                stageImg = seedImgOp(backgroundImg, NSIM_GROW); 
+                if(key == 'y' || key == 'u') growImg = (key == 'y')? cellwiseColImgOp(stageImg, addlineRules) : cellwiseRowImgOp(stageImg, addlineRules); 
+                else growImg = (key == 'i')? cellwiseColImgOp(stageImg, serpinskyRules) : cellwiseRowImgOp(stageImg, serpinskyRules);
+                RASTERON_DEALLOC(stageImg);
+            break; 
+            case 'p': growImg = seedImgOp(backgroundImg, NSIM_GROW); break;
             case 'a': algorithm = &conwayRules; break;
             case 's': algorithm = &randWalkRules; break;
             case 'd': algorithm = &amplifyRules; break;
@@ -237,14 +142,14 @@ void _onKeyEvent(char key){
             case 'h': algorithm = &recursiveRules; break;
             case 'j': algorithm = &bloomRules; break;
             case 'k': algorithm = &unbloomRules; break;
-            case 'l': puts("New algorithm selected"); break;
+            case 'l': algorithm = &flipRules; break;
             case 'z': process = NULL; break;
             case 'x': process = algorithm; break;
             case 'c': process = antialias; break;
             case 'v': process = colorizeRules; break;
             case 'b': process = scatterRules; break;
             case 'n': process = recursiveRules; break;
-            case 'm': puts("New processing selected"); break;
+            case 'm': process = flipRules; break;
         }
 
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
