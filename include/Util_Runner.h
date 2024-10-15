@@ -168,7 +168,9 @@ void _run(int argc, char** argv, argCallback callback){
     createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
     eventLoop(NULL);
 #elif defined __linux__
+    puts("Window Creation");
     createWindow(&unixContext, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
+    puts("Event Loop");
     eventLoop(unixContext.display, unixContext.window, unixProc);
 #endif
 }

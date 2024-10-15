@@ -91,7 +91,7 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
     ImageSize menuSize = getUI_ImageSize(size);
 
     char iconPath[1024];
-    genFullFilePath("material-icons-png\\", &iconPath);
+    genFullFilePath("material-icons-png\\", iconPath);
     strcat(iconPath, name);
     strcat(iconPath, ".png");
     Rasteron_Image* iconImg = loadImgOp(iconPath);

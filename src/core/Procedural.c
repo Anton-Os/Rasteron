@@ -110,7 +110,7 @@ void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned shor
 
 #include "Rasteron.h"
 
-static unsigned callback_vornoi(unsigned color, double distance){ return color; }
+static unsigned callback_vornoi(unsigned color, double distance, PixelPoint pixPoint){ return color; }
 
 Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback){
 	Rasteron_Image* mappedImage = RASTERON_ALLOC("map", size.height, size.width);
@@ -196,7 +196,7 @@ Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointT
 }
 
 Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable){
-	return fieldImgOp(size, colorPointTable, callback_vornoi);
+    return fieldImgOp(size, colorPointTable, callback_vornoi);
 }
 
 /* Rasteron_Image* seededImgOp(ref_image_t refImage, const ColorPointTable* colorPointTable){

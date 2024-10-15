@@ -1,8 +1,8 @@
 
 #ifndef RASTERON_SUPPORT_H
 
-#define ASSETS_DIR "F:/Codex/PROJECT/Rasteron/master/assets"
-#define MATERIAL_ICONS_FILE "F:/Codex/PROJECT/Rasteron/master/assets/material-icons-png/_MaterialIconList.txt"
+#define ASSETS_DIR "/home/antonos/Documents/Codex/Rasteron_New/assets"
+#define MATERIAL_ICONS_FILE "/home/antonos/Documents/Codex/Rasteron_New/assets/material-icons-png/_MaterialIconList.txt"
 
 #define USE_IMG_TIFF // Enable TIFF Support
 #define USE_IMG_PNG // Enable PNG Support
@@ -27,12 +27,18 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <ctype.h>
 #include <time.h>
 #include <math.h>
 
 #ifndef RASTERON_TYPE_H
 #include "type_def.h"
 #endif
+
+#ifdef __linux__
+#include <unistd.h>
+#endif
+void genFullFilePath(const char* name, char* fullFilePath);
 
 #define RAND_COLOR() (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255))
 
@@ -65,7 +71,7 @@ unsigned pixPoint_offset(PixelPoint pixPos, ref_image_t refImage); // gets pixel
 unsigned pixPoint_color(PixelPoint pixPos, ref_image_t refImage); // gets pixel color from image coordinates
 unsigned pixPoint_cursorOffset(PixelPoint cursorPos, ref_image_t refImage); // gets pixel offset from cursor coordinates
 unsigned pixPoint_cursorColor(PixelPoint cursorPos, ref_image_t refImage); // gets pixel color from cursor coordinates
-// TODO: Add a function to calculate directio
+// TODO: Add a function to calculate direction
 void pixPoionts_expand(PixelPointTable* table, unsigned short divs);
 void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned short height, unsigned short width);
 

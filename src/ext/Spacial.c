@@ -51,13 +51,13 @@ static float calcHeight(unsigned inputColor, float minDepth, float maxDepth){;
 	return heightVal + minDepth;
 }
 
-Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, double minDepth, double maxDepth){
+Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth){
 	Rasteron_Heightmap* heightmap = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
     
 	heightmap->bounds = createBounds(height, width);
 	heightmap->minDepth = minDepth; // default min is zero
 	heightmap->maxDepth = maxDepth; // default max is one
-    heightmap->data = (double*)malloc(height * width * sizeof(double));
+    heightmap->data = (float*)malloc(height * width * sizeof(float));
 
 	return heightmap;
 }

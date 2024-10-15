@@ -25,7 +25,6 @@ void genFullFilePath(const char* name, char* fullFilePath);
 #elif defined __linux__
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>
-	#include <unistd.h>
 
 	typedef struct {
 		Display* display;
