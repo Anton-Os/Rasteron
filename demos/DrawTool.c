@@ -166,18 +166,14 @@ void _onTickEvent(unsigned secs){}
 int main(int argc, char** argv){
 	canvasImg = solidImgOp((ImageSize){ 1024, 1024 }, canvasColor);
 
-    puts("Stage 1");
 	pixelPointTable.pointCount = 0;
 	colorPointTable.pointCount = 0;
 
-    puts("Stage 2");
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = mapImgOp((ImageSize){1024, 1024}, wavePaint); // global canvas for drawing
 
-    puts("Stage 3");
 	_run(argc, argv, NULL); // system specific initialization and continuous loop
 
-    puts("Stage 4");
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;
 }
