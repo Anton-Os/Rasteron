@@ -49,6 +49,7 @@ void eventLoop(Display* display, Window window, eventLoopCallback callback){
         case KeyRelease:
             KeySym keysym = XLookupKeysym(&event.xkey, 0);
             lastKey = keysym;
+            printf("Last key is %c", lastKey);
             break;
         // case ButtonPress: puts("Mouse button pressed"); break;
         case ButtonPress:

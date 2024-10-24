@@ -72,7 +72,7 @@ static unsigned amorphTiling(unsigned colors[3], double distances[3], PixelPoint
     else return colors[2];
 }
 
-static unsigned sequenceTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+static unsigned lumenTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     if(distances[0] > c1){
         if(pixPoint[0].x / pixPoint[1].y > c2) return colors_blend(colors[1], colors[2], fabs(tan(pow(distances[0], distances[1] + distances[2]))));
         else return colors_blend(colors[0], colors[1], fabs(tan(distances[1] - distances[2]) * 10.0));
@@ -82,46 +82,49 @@ static unsigned sequenceTiling(unsigned colors[3], double distances[3], PixelPoi
 
 
 Rasteron_Image* fieldMosaicImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback) {
-	Rasteron_Image* fieldImage = RASTERON_ALLOC("field", size.height, size.width);
+    Rasteron_Image* fieldImage = RASTERON_ALLOC("field", size.height, size.width);
 
-	unsigned* colorPoints = malloc(colorPointTable->pointCount * sizeof(unsigned));
-	for (unsigned t = 0; t < colorPointTable->pointCount; t++)
-		*(colorPoints + t) = pixPoint_offset((PixelPoint){colorPointTable->points[t].x, colorPointTable->points[t].y}, fieldImage);
+    unsigned* colorPoints = malloc(colorPointTable->pointCount * sizeof(unsigned));
+    for (unsigned t = 0; t < colorPointTable->pointCount; t++)
+        *(colorPoints + t) = pixPoint_offset((PixelPoint){ colorPointTable->points[t].x + sin(d2 * t), colorPointTable->points[t].y - sin(d2 * t) }, fieldImage);
+        // *(colorPoints + t) = pixPoint_offset((PixelPoint){ pow(colorPointTable->points[t].x + sin(d2 * t), d3), pow(colorPointTable->points[t].y - sin(d2 * t), d3) }, fieldImage);
 
     unsigned pixColors[3] = { NO_COLOR, NO_COLOR, NO_COLOR };
-	double pixDistances[3] = { 1.0, 1.0, 1.0 };
-	PixelPoint pixPoints[3] = {{ 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }};
+    double pixDistances[3] = { 1.0, 1.0, 1.0 };
+    PixelPoint pixPoints[3] = {{ 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }};
 
-	for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
-		double x = (1.0 / (double)size.width) * (p % size.width);
-		double y = (1.0 / (double)size.height) * (p / size.width);
+    for (unsigned p = 0; p < fieldImage->width * fieldImage->height; p++) {
+        double x = (1.0 / (double)size.width) * (p % size.width);
+        double y = (1.0 / (double)size.height) * (p / size.width);
 
-        x += d1; y -= d1; // coordinate mod 1
+        /* x += d1; y -= d1; // coordinate mod 1
         x *= 1.0 + d2; y /= 1.0 + d2; // coordinate mod 2
-        x = pow(x, d3); y = pow(y, d3); // coordinate mod 3
+        x = pow(x, d3); y = pow(y, d3); // coordinate mod 3 */
 
         pixDistances[0] = 1.0; pixDistances[1] = 1.0; pixDistances[2] = 1.0; // reset
-		for (unsigned t = 0; t < colorPointTable->pointCount; t++) {
-			double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * (1.0 / (double)(fieldImage->width)); // distance multiplied by pixel size
-			if (dist < pixDistances[0]) {
+        for (unsigned t = 0; t < colorPointTable->pointCount; t++) {
+            double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * (1.0 / (double)(fieldImage->width)); // distance multiplied by pixel size
+            if (dist < pixDistances[0]) {
                 for(unsigned d = 0; d < 3; d++){
                     pixDistances[d] = dist + (d * d1) * (d3 - d2); // experimental change
-                    pixPoints[d] = (PixelPoint){ 
-                        (x - colorPointTable->points[t].x) * (1.0 + (d * d1) + sin(d * d2)), // experimental change
-                        (y - colorPointTable->points[t].y) * (1.0 + (d * d1) + sin(d * d3)) // experimental change
+                    pixPoints[d] = (PixelPoint){
+                        (x - colorPointTable->points[t].x) / (1.0 + (d * d1) + sin(d * d2)), // experimental change
+                        // pow(x - colorPointTable->points[t].x, 1.0 + (d * d1) + sin(d * d2)), // experimental change
+                        (y - colorPointTable->points[t].y) / (1.0 + (d * d1) + cos(d * d3)) // experimental change
+                        // pow(y - colorPointTable->points[t].y, 1.0 + (d * d1) + cos(d * d3))
                     };
                 }
                 pixColors[0] = colorPointTable->points[t].color;
                 pixColors[1] = colors_blend(colorPointTable->points[t].color, 0xFF000000, 0.5); // darken color
                 pixColors[2] = colors_blend(colorPointTable->points[t].color, 0xFFFFFFFF, 0.5); // lighten color
-			}
-		}
+            }
+        }
 
         *(fieldImage->data + p) = callback(pixColors, pixDistances, pixPoints);
-	}
+    }
 
-	free(colorPoints);
-	return fieldImage;
+    free(colorPoints);
+    return fieldImage;
 }
 
 void setup(char input){
@@ -146,7 +149,7 @@ void setup(char input){
     for(unsigned t = 0; t < colorTable.pointCount; t++)
         colorTable.points[t] = (ColorPoint){ RAND_COLOR(), table.points[t].x, table.points[t].y };
 
-	switch(keysave){
+    switch(keysave){
         case 'q': callback = &eqTiling; break;
         case 'w': callback = &softTiling; break;
         case 'e': callback = &hardTiling; break;
@@ -155,11 +158,11 @@ void setup(char input){
         case 'y': callback = &dotTiling3; break;
         case 'u': callback = &trialTiling1; break;
         case 'i': callback = &trialTiling2; break;
-        case 'o': callback = &trialTiling3; break;  
+        case 'o': callback = &trialTiling3; break;
         case 'p': callback = &funTiling; break;
         // Complex Tiling Parameters
-        case 'a': c1 = 0.01; break; case 's': c1 = 0.25; break; case 'd': c1 = 0.5; break; 
-        case 'f': c2 = 0.01; break; case 'g': c2 = 0.25; break; case 'h': c2 = 0.5; break; 
+        case 'a': c1 = 0.01; break; case 's': c1 = 0.25; break; case 'd': c1 = 0.5; break;
+        case 'f': c2 = 0.01; break; case 'g': c2 = 0.25; break; case 'h': c2 = 0.5; break;
         case 'j': c3 = 0.0; break; case 'k': c3 = 0.25; break; case 'l': c3 = 0.5; break;
         // Deviated Tiling Parameters
         case 'z': d1 = 0.05; d2 = 0.0; d3 = 1.0; break;
@@ -169,27 +172,27 @@ void setup(char input){
         case 'b': d1 = 0.005; d2 = -0.1; d3 = 0.9; break;
         case 'n': d1 = 0.25; d2 = 0.5; d3 = 1.5; break;
         case 'm': d1 = -0.05; d2 = -0.5; d3 = 0.5; break;
-	}
+    }
 
     if(isalnum(input) && colorTable.pointCount >= 1) {
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
         switch(keysave){
             case 'a': case 's': case 'd': case 'f': case 'g': case 'h': case 'j': case 'k': case 'l':
-                // callback = &zebraTiling; // complex tiling with parameters set
+                callback = &zebraTiling; // complex tiling with parameters set
                 // callback = &amorphTiling;
-                callback = &sequenceTiling;
+                // callback = &lumenTiling;
                 _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
             case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm':
                 _outputImg = fieldMosaicImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
             default: _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
         }
 
-        
+
         if(_dimens[0] > 1 || _dimens[1] > 1){
             Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ 1024 / _dimens[1], 1024 / _dimens[0] }, _outputImg);
             // TODO: Perform truschet tiling
             RASTERON_DEALLOC(resizeImg);
-        } 
+        }
     }
 }
 
@@ -198,8 +201,8 @@ void _onPressEvent(double x, double y){ }
 void _onTickEvent(unsigned secs){}
 
 int main(int argc, char** argv) {
-	srand(time(NULL));
-	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
+    srand(time(NULL));
+    if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = nuTileImgOp(0, 3, 0.0, 0.0);
 
     table.pointCount = 1;
@@ -207,7 +210,7 @@ int main(int argc, char** argv) {
     colorTable.pointCount = 1;
     colorTable.points[0] = (ColorPoint){ RAND_COLOR(), 0.0, 0.0 };
 
-	_run(argc, argv, NULL); // system specific initialization and continuous loop
+    _run(argc, argv, NULL); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

@@ -62,6 +62,15 @@ void _onPressEvent(double x, double y);
 void _onTickEvent(unsigned secs);
 typedef void (*argCallback)(int argc, char** argv);
 
+void parseInput(char lastInput){
+    if(isdigit(lastInput)){
+        printf("Parsing numeric input for %d", lastInput);
+        // TODO: Change Properties
+    }
+    else if(lastInput == '-'){ if(_dimens[0] > 0) _dimens[0]--; if(_dimens[1] > 0) _dimens[1]--; }
+    else if(lastInput == '='){ if(_dimens[0] < 20) _dimens[0]++; if(_dimens[1] < 20) _dimens[1]++; }
+}
+
 // --------------------------------   Porting layer for Demo    -------------------------------- //
 
 #ifdef _WIN32
@@ -88,10 +97,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
         // TODO: Save image on special sequence
         if(_onKeyEvent != NULL){
-            if(isdigit(wParam))  printf("Parsing numeric input for %d", wParam);
-            // else if(wParam == '/') _swatch = createSwatch(RAND_COLOR(), rand() % 0xFF);
-            else if(wParam == '-'){ if(_dimens[0] != 0) _dimens[0]--; if(_dimens[1] != 0) _dimens[1]--; } 
-            else if(wParam == '='){ if(_dimens[0] != 10) _dimens[0]++; if(_dimens[1] != 10) _dimens[1]++; }
+            parseInput((char)wParam);
             _onKeyEvent(wParam);
             bmap = createWinBmap(_outputImg);
 	    }
@@ -123,7 +129,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 Platform_Context unixContext;
 
 void unixProc(char lastKey, double cursorPos[2]){
-	if(_onKeyEvent != NULL) _onKeyEvent(lastKey);
+	if(_onKeyEvent != NULL){
+        parseInput(lastKey);
+        _onKeyEvent(lastKey);
+    }
 	if(_onPressEvent != NULL) _onPressEvent(cursorPos[0] / RASTERON_WIN_WIDTH, cursorPos[1] / RASTERON_WIN_HEIGHT);
 	// if(_onTickEvent != NULL) // TODO: Track timer and perform updates
 
