@@ -69,11 +69,11 @@ Rasteron_Image* simImgOp(ref_image_t refImage, unsigned short iters, nebrCallbac
             unsigned *br = NULL, *b = NULL, *bl = NULL, *r = NULL, *l = NULL, *tr = NULL, *t = NULL, *tl = NULL;
 
             neighbors_load(currentTable, br, b, bl, r, l, tr, t, tl);
-            // unsigned nebrs[] = { br, b, bl, r, l, tr, t, tl };
-            unsigned nebrs[] = { *br, *b, *bl, *r, *l, *tr, *t, *tl };
+            unsigned nebrs[] = { br, b, bl, r, l, tr, t, tl };
+            // unsigned nebrs[] = { *br, *b, *bl, *r, *l, *tr, *t, *tl };
 
-            // unsigned color = callback(target, nebrs);
-            unsigned color = callback(*target, nebrs);
+            unsigned color = callback(target, nebrs);
+            // unsigned color = callback(*target, nebrs);
             if(color != NO_COLOR) *(tempImg->data + p) = color;
         }
         RASTERON_DEALLOC(cellwiseImg);
@@ -183,7 +183,6 @@ int main(int argc, char** argv) {
     _outputImg = simImgOp(growthImg, 1, conwayRules);
     _mainQueue = RASTERON_QUEUE_ALLOC("sim", internal_create_size(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
  
-
     _run(argc, argv, NULL); // system specific initialization and continuous loop
     
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);

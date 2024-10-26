@@ -448,7 +448,7 @@ Rasteron_Image* combImgOp(unsigned short rows, unsigned short cols){
 
 // Placeholder Images
 
-Rasteron_Image* expImgOp1(){
+Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2){
     Rasteron_Image* paintImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
 
     int direction = 1; // positive
@@ -458,8 +458,8 @@ Rasteron_Image* expImgOp1(){
     for(unsigned p = 0; p < 1024 * 1024; p++){
         *(paintImg->data + p) = 0xFF000000 | color;
 
-        if(direction == 1 && color > 0xFFAAFFFF) direction = 0;
-        else if(direction == 0 && color < 0xFF0000AA) direction = 1;
+        if(direction == 1 && color > color1) direction = 0;
+        else if(direction == 0 && color < color2) direction = 1;
 
         if(direction) color += rand() % 256;
         else color -= rand() % 256;

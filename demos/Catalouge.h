@@ -7,6 +7,8 @@
 
 extern ColorSwatch _swatch; // = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
 
+// Rules
+
 unsigned addlineRules(unsigned color, unsigned neighbors[2]);
 unsigned serpinskyRules(unsigned color, unsigned neighbors[2]);
 
@@ -22,6 +24,7 @@ unsigned colorizeRules(unsigned color, unsigned neighbors[8]);
 unsigned scatterRules(unsigned color, unsigned neighbors[8]);
 unsigned flipRules(unsigned color, unsigned neighbors[8]);
 
+// Experimental Images
 
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop); // Flipping, mirroring, and cropping
 Rasteron_Image* nestboxesImgOp(double x, double y); // Looped nesting of ever-smaller squares
@@ -49,8 +52,14 @@ Rasteron_Image* displacerImgOp(unsigned short cells, unsigned color1, unsigned c
 Rasteron_Image* bilineImgOp(unsigned color, unsigned short variant);
 Rasteron_Image* arcaneImgOp(double radius, unsigned short count);
 Rasteron_Image* ultImgOp(short seed, unsigned short factor, double x1, double x2, double y1, double y2);
+Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2);
 
-Rasteron_Image* expImgOp1(); // placeholder for new images
+// Specialized Images
+
+Rasteron_Image* texImgOp(char mode, ColorGrid* grid);
+Rasteron_Image* drawImgOp(Rasteron_Image* targetImg);
+Rasteron_Image* simImgOp(ref_image_t refImage, unsigned short iters, nebrCallback8 callback);
+Rasteron_Image* fieldAltImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback);
 
 #define RASTERON_EXPERIMENTAL_H
 #endif

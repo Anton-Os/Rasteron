@@ -56,7 +56,7 @@ void setup(char input){
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
 		case 'y': _outputImg = arcaneImgOp(100.0, (mode + 2) * 10); break;
 		case 'z': _outputImg = ultImgOp(2, 128, 1.0 + xArg, 1.0 - xArg, 1.0 + yArg, 1.0 - yArg); break;
-		default: _outputImg = expImgOp1(); break;
+		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 }
 

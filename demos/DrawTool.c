@@ -20,8 +20,6 @@ static unsigned short mode = 0;
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
-Rasteron_Image* canvasImg;
-
 unsigned wavePaint(double x, double y){ return (sin(x * xFactor) > tan(y * yFactor))? xColor : yColor; } 
 
 unsigned strokePaint(double x, double y){
@@ -80,18 +78,18 @@ static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint
 	}
 }
 
-Rasteron_Image* drawImgOp(double xVar, double yVar){
+Rasteron_Image* drawImgOp(Rasteron_Image* targetImg){
 	static unsigned swatchOffset = SWATCH_Light;
 	unsigned color1 = _swatch.colors[swatchOffset % 8];
 	unsigned color2 = _swatch.colors[(swatchOffset + 1) % 8];
 
-	Rasteron_Image* drawImg = checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ _dimens[0], _dimens[1], color2 });
+	Rasteron_Image* drawImg = (targetImg != NULL)? copyImgOp(targetImg) : checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ _dimens[0], _dimens[1], color2 });
 
 	for(unsigned p = 0; p < 1024 * 1024; p++){
 		double x = (1.0 / (double)1024) * (p % 1024); // (1.0 / (double)1024) * (p % 1024);
 		double y = (1.0 / (double)1024) * (p / 1024); // (1.0 / (double)1024) * (p / 1024)
-		x *= 1.0 + sin(xVar * x);
-		y *= 1.0 + sin(yVar * y);
+		// x *= (p % 1024) - (1024 / 2); // x *= 1.0 + sin(xVar * x);
+		// y *= (p % 1024) - (1024 / 2); // y /= 1.0 + sin(yVar * y);
 
 		double xOffLo = 0.0; double yOffLo = 0.0; // lowest value
 		double xOffHi = 0.0; double yOffHi = 0.0; // highest value
@@ -130,8 +128,6 @@ Rasteron_Image* drawImgOp(double xVar, double yVar){
 void _onKeyEvent(char key){
 	mode = key;
 
-	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-
 	if(colorPointTable.pointCount > COLOR_POINTS && !isdigit(key))
 	switch(key){
 		case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p':
@@ -141,12 +137,10 @@ void _onKeyEvent(char key){
 			_outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
 		break;
 		case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm': 
-			_outputImg = drawImgOp(-0.5, -0.5); 
+			_outputImg = drawImgOp(_savedImg); 
 		break;
 	}
 	else _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, dotSplash);
-
-	// update();
 }
 
 void _onPressEvent(double x, double y){ 
@@ -157,27 +151,19 @@ void _onPressEvent(double x, double y){
 
 	pixelPointToTable(&pixelPointTable, x, y);
 	colorPointToTable(&colorPointTable, (colorPointTable.pointCount % 2 == 0)? xColor : yColor, x, y);
-
-	// update();
 }
 
 void _onTickEvent(unsigned secs){}
 
 int main(int argc, char** argv){
-	canvasImg = solidImgOp((ImageSize){ 1024, 1024 }, canvasColor);
-
-    puts("Stage 1");
 	pixelPointTable.pointCount = 0;
 	colorPointTable.pointCount = 0;
 
-    puts("Stage 2");
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = mapImgOp((ImageSize){1024, 1024}, wavePaint); // global canvas for drawing
 
-    puts("Stage 3");
 	_run(argc, argv, NULL); // system specific initialization and continuous loop
 
-    puts("Stage 4");
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;
 }

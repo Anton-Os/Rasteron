@@ -7,8 +7,7 @@
 
 #include "Util_Runner.h"
 
-Rasteron_Image* savedImg = NULL; // always keep a record of last image
-static char texMode = 'a';
+static char mode = 'a';
 
 static float noiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
 
@@ -42,10 +41,10 @@ unsigned wavyMix(unsigned color1, unsigned color2){
     return colors_fuse(color1 + color2, color1 - color2, 0.5);
 }
 
-Rasteron_Image* createTex(char t, unsigned m){
+Rasteron_Image* texImgOp(char mode){
     ColorGrid grid = { pow(2, _dimens[0]), pow(2, _dimens[1]),  _swatch.colors[SWATCH_Light],  _swatch.colors[SWATCH_Dark] };
 
-    switch(tolower(t)){
+    switch(tolower(mode)){
         case 'a': return noiseImgOp_value((ImageSize){ 1024, 1024 }, grid); break;
         case 's': return noiseImgOp_scratch((ImageSize){ 1024, 1024 }, grid); break;
         case 'd': return noiseImgOp_octave((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
@@ -57,15 +56,12 @@ Rasteron_Image* createTex(char t, unsigned m){
         case 'l': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, grid, tanMod); break;
         default: return noiseImgOp_value((ImageSize){ 1024, 1024 }, grid); break;
     }
-
 }
 
 void _onKeyEvent(char key){ 
     static unsigned mode = 0;
 
-    if(key == '-' && mode != 0) mode--; // decrease size
-    else if(key == '=' && mode != TEXTOOL_COUNT - 1) mode++; // increase size
-    else if(isspace(key) && _outputImg != NULL) saveToFile(_outputImg);
+    if(isspace(key) && _outputImg != NULL) saveToFile(_outputImg);
     else if(tolower(key) == 'q' || tolower(key) == 'w' || tolower(key) == 'e' || tolower(key) == 'r' || tolower(key) == 't' || tolower(key) == 'y' || tolower(key) == 'u' || tolower(key) == 'i' || tolower(key) == 'o' || tolower(key) == 'p'){
         switch(tolower(key)){
             case 'w': _swatch = createSwatch(0xFF0000FF, 0x32); _swatch.colors[SWATCH_Light] = 0xFF0000FF; _swatch.colors[SWATCH_Dark] = 0xFFFF0000; break;
@@ -82,14 +78,14 @@ void _onKeyEvent(char key){
     }
 
     if(tolower(key) == 'a' || tolower(key) == 's' || tolower(key) == 'd' || tolower(key) == 'f' || tolower(key) == 'g' || tolower(key) == 'h' || tolower(key) == 'j' || tolower(key) == 'k' || tolower(key) == 'l' || tolower(key) == 'p')
-        texMode = tolower(key);
+        mode = tolower(key);
         
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-        _outputImg = createTex(texMode, mode);
+        _outputImg = texImgOp(mode);
 
     if(_outputImg != NULL){
         Rasteron_Image* currentImg = copyImgOp(_outputImg);
-        Rasteron_Image* mixerImg = createTex(texMode, mode);
+        Rasteron_Image* mixerImg = texImgOp(mode);
 
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
@@ -107,10 +103,8 @@ void _onKeyEvent(char key){
         RASTERON_DEALLOC(currentImg);
         RASTERON_DEALLOC(mixerImg);
     }
-
-    if(savedImg != NULL) RASTERON_DEALLOC(savedImg);
-    savedImg = copyImgOp(_outputImg); 
 }
+
 void _onPressEvent(double x, double y){}
 void _onTickEvent(unsigned secs){}
 

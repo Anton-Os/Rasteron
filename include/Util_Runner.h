@@ -20,10 +20,11 @@
 
 // --------------------------------   Objects for Demo    -------------------------------- //
 
-Rasteron_Image* _outputImg; // final image used for drawing // IMPORTANT!!!
+Rasteron_Image* _savedImg = NULL;
+Rasteron_Image* _outputImg;
 
 #ifdef RASTERON_ENABLE_ANIM
-Rasteron_Queue* _mainQueue; // main queue used for multiple images // IMPORTANT!!!
+Rasteron_Queue* _mainQueue;
 #endif
 
 /*
@@ -99,6 +100,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         if(_onKeyEvent != NULL){
             parseInput((char)wParam);
             _onKeyEvent(wParam);
+            if(_outputImg != NULL){
+                if(_savedImg != NULL) RASTERON_DEALLOC(_savedImg);
+                _savedImg = copyImgOp(_outputImg);
+            }
             bmap = createWinBmap(_outputImg);
 	    }
     }
@@ -132,6 +137,10 @@ void unixProc(char lastKey, double cursorPos[2]){
 	if(_onKeyEvent != NULL){
         parseInput(lastKey);
         _onKeyEvent(lastKey);
+        if(_outputImg != NULL){
+            if(_savedImg != NULL) RASTERON_DEALLOC(_savedImg);
+            _savedImg = copyImgOp(_outputImg);
+        }
     }
 	if(_onPressEvent != NULL) _onPressEvent(cursorPos[0] / RASTERON_WIN_WIDTH, cursorPos[1] / RASTERON_WIN_HEIGHT);
 	// if(_onTickEvent != NULL) // TODO: Track timer and perform updates
