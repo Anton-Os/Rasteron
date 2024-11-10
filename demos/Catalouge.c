@@ -5,8 +5,10 @@ static char fullFilePath[1024];
 ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
 // ColorSwatch _swatch = { 0xFF111111, { 0xFFFF1111, 0xFF11FF11, 0xFF1111FF, 0xFF333333, 0xFFEEEEEE, 0xFF111100, 0xFF110011, 0xFF001111 }, 0xF }; // determines color oprations
 // ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88AA88, 0xFF8888AA, 0xFF333333, 0xFFEEEEEE, 0xFFAAAA00, 0xFFAA00AA, 0xFF00AAAA }, 0xF }; // determines color oprations
-
 // Catalouged Rules/Callbacks
+
+
+/*** Rules ***/
 
 unsigned addlineRules(unsigned color, unsigned neighbors[2]){ return (neighbors[0] == neighbors[1])? neighbors[0] + neighbors[1] : color; }
 
@@ -124,7 +126,9 @@ unsigned flipRules(unsigned color, unsigned neighbors[8]){
     return color;
 }
 
-// Catalouged Image Algorithms
+
+
+/*** Experimental Image Algorithms ***/
 
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){ 
     genFullFilePath("Logroller.bmp", fullFilePath);
@@ -818,63 +822,4 @@ Rasteron_Image* arcaneImgOp(double radius, unsigned short count){
 }
 
 
-double ultX1 = 1.0; double ultX2 = 1.0;
-double ultY1 = 1.0; double ultY2 = 1.0;
-unsigned ultM = 64;
-
-unsigned ultCoord(double x, double y){
-    unsigned color = 0xFF333333;
-
-    unsigned short xDivs = 2;
-    unsigned short yDivs = 2;
-
-    for(unsigned u = 0; u < 3; u++){
-        double xInc = (pow(xDivs, u + 1) * (1.0 - x)) - pow(xDivs, (u + 1) * y) * x;
-        double yInc = (pow(yDivs, u + 1) * (1.0 - y)) - pow(yDivs, (y + 1) * x) * y;
-
-        if(color == 0xFF333333)
-            if(fabs(xInc / yInc) > 0.9 * ultX1 && fabs(xInc / yInc) < 1.1 * ultY1) color = colors_blend(0xFFFF0000, 0xFF0000FF, (xInc * ultX2) * (yInc * ultY2));
-        else break;
-    }
-
-    return color;
-}
-
-/* unsigned ultMix(unsigned color1, unsigned color2, unsigned color3, unsigned color4){ 
-    return (color1 - color2) + (color2 - color1) + (color4 - color3) + (color3 - color4);
-} */
-
-unsigned ultMix(unsigned color1, unsigned color2){
-    return colors_blend(color1 % color2, color1 + color2, 0.5F);
-}
-
-unsigned ultCellwise(unsigned cell, unsigned nebrs[8]){
-    return colors_blend(cell + nebrs[0] + nebrs[1], cell - nebrs[3] - nebrs[4], 0.5F);
-}
-
-Rasteron_Image* ultImgOp(short seed, unsigned short factor, double x1, double x2, double y1, double y2){
-    ultX1 = x1; ultX2 = x2;
-    ultY1 = y1; ultY2 = y2;
-    ultM = factor;
-    
-    Rasteron_Image* coordImg = mapImgOp((ImageSize){ 1024, 1024 }, ultCoord);
-    Rasteron_Image* coordVarImgs[3] = {
-        copyImgOp(coordImg), copyImgOp(coordImg), copyImgOp(coordImg)
-    };
-
-    for(unsigned p = 0; p < 256 * 256; p++){
-        *(coordVarImgs[0]->data + p) = color_invert(*(coordImg->data + p));
-        *(coordVarImgs[1]->data + p) = color_level(*(coordImg->data + p), 0.5);
-        *(coordVarImgs[2]->data + p) = colors_diff(*(coordImg->data + p), color_unique());
-    }
-
-    // Rasteron_Image* mixImg = mixingExtImgOp(coordImg, coordVarImgs[0], coordVarImgs[1],  coordVarImgs[2], ultMix);
-    Rasteron_Image* mixImg = mixingImgOp(coordImg, coordVarImgs[seed % 3], ultMix);
-    Rasteron_Image* ultImg = cellwiseImgOp(mixImg, ultCellwise);
-
-    RASTERON_DEALLOC(coordImg);
-    for(unsigned i = 0; i < 3; i++) RASTERON_DEALLOC(coordVarImgs[i]);
-    RASTERON_DEALLOC(mixImg);
-
-    return ultImg;
-}
+/*** Specialized Image Algorithms ***/

@@ -47,7 +47,7 @@ void setup(char input){
 		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'q': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
-		// case 'r': _outputImg = fuzzlikeImgOp((mode + 2) * 4); break;
+        case 'r': _outputImg = fuzzlikeImgOp((mode + 2) * 4); break;
 		case 's': _outputImg = oozelikeImgOp(mode); break;
 		case 't': _outputImg = recurrantImgOp(mode + 3); break;
 		case 'u': _outputImg = intersectImgOp(1.0, 0.0); break;
@@ -55,7 +55,7 @@ void setup(char input){
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
 		case 'y': _outputImg = arcaneImgOp(100.0, (mode + 2) * 10); break;
-		case 'z': _outputImg = ultImgOp(2, 128, 1.0 + xArg, 1.0 - xArg, 1.0 + yArg, 1.0 - yArg); break;
+        // case 'z': _outputImg = ultImgOp(2, 128, 1.0 + xArg, 1.0 - xArg, 1.0 + yArg, 1.0 - yArg); break;
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 }

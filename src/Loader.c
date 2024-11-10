@@ -11,7 +11,7 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
 		'\0'
     }; // gets the last 3 letters of a file extension
 
-    printf("Extension is %s", extension);
+    printf("Filename is %s, Extension is %s", fileName, extension);
     if(!strcmp(extension, "bmp")) // bmp file check
         return IMG_Bmp;
     else if(! strcmp(extension, "png")) // png file check
@@ -27,8 +27,9 @@ void loadFromFile(const char* fileName, FileImage* image){
     replaceFwdSlash(fileName);
     if(_access(fileName, 0)){
 #elif defined(__linux__)
-    if(access(fileName, F_OK) == 0){
+    if(access(fileName, F_OK) != 0){ // image not loaded successfully
 #endif
+
         image->fileFormat = IMG_NonValid;
         return;
     }

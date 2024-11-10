@@ -44,6 +44,7 @@ Rasteron_Image* euclidTileImgOp(int mode, unsigned short density, double xFactor
 Rasteron_Image* nuTileImgOp(int mode, unsigned short density, double xFactor, double yFactor);
 Rasteron_Image* graterImgOp(unsigned color1, unsigned color2);
 Rasteron_Image* mildewImgOp(unsigned short iters);
+Rasteron_Image* fuzzlikeImgOp(unsigned short iters);
 Rasteron_Image* oozelikeImgOp(unsigned short colorMode);
 Rasteron_Image* recurrantImgOp(unsigned short iters);
 Rasteron_Image* intersectImgOp(double angle1, double angle2);
@@ -51,15 +52,14 @@ Rasteron_Image* swirlyImgOp(double swirlFactor);
 Rasteron_Image* displacerImgOp(unsigned short cells, unsigned color1, unsigned color2);
 Rasteron_Image* bilineImgOp(unsigned color, unsigned short variant);
 Rasteron_Image* arcaneImgOp(double radius, unsigned short count);
-Rasteron_Image* ultImgOp(short seed, unsigned short factor, double x1, double x2, double y1, double y2);
 Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2);
 
 // Specialized Images
 
 Rasteron_Image* texImgOp(char mode, ColorGrid* grid);
-Rasteron_Image* drawImgOp(Rasteron_Image* targetImg);
+Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, unsigned short pointsMin);
 Rasteron_Image* simImgOp(ref_image_t refImage, unsigned short iters, nebrCallback8 callback);
-Rasteron_Image* fieldAltImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback);
+Rasteron_Image* fieldClxImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback);
 
 #define RASTERON_EXPERIMENTAL_H
 #endif

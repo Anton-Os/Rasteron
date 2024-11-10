@@ -1,8 +1,8 @@
 
 #ifndef RASTERON_SUPPORT_H
 
-#define ASSETS_DIR "/home/antonos/Documents/Codex/Rasteron_New/assets"
-#define MATERIAL_ICONS_FILE "/home/antonos/Documents/Codex/Rasteron_New/assets/material-icons-png/_MaterialIconList.txt"
+#define ASSETS_DIR "F:/Codex/PROJECT/Rasteron/master/assets"
+#define MATERIAL_ICONS_FILE "F:/Codex/PROJECT/Rasteron/master/assets/material-icons-png/_MaterialIconList.txt"
 
 #define USE_IMG_TIFF // Enable TIFF Support
 #define USE_IMG_PNG // Enable PNG Support
@@ -27,18 +27,12 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include <ctype.h>
 #include <time.h>
 #include <math.h>
 
 #ifndef RASTERON_TYPE_H
 #include "type_def.h"
 #endif
-
-#ifdef __linux__
-#include <unistd.h>
-#endif
-void genFullFilePath(const char* name, char* fullFilePath);
 
 #define RAND_COLOR() (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255))
 

@@ -12,9 +12,7 @@ static char mode = 'a';
 static float noiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
 
 static float sinMod(float value){ return sin(value); }
-
 static float cosMod(float value){ return cos(value); }
-
 static float tanMod(float value){ return tan(value); }
 
 static float quiltNoiseMod(float value){ 

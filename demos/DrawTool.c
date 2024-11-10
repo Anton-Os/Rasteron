@@ -14,15 +14,26 @@ static unsigned xColor = 0xFFFFFF00;
 static unsigned yColor = 0xFFFF00FF;
 static unsigned canvasColor = CANVAS_COLOR;
 static unsigned short mode = 0;
+static unsigned short drawIters = 1;
 
 #include "Util_Runner.h"
 
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
+static double sinMod(double val){ return sin(val * drawIters); }
+static double cosMod(double val){ return sin(val * drawIters); }
+static double tanMod(double val){ return sin(val * drawIters); }
+static double sinModX(double val){ return val * sin(val * drawIters); }
+static double cosModX(double val){ return val * cos(val * drawIters); }
+static double tanModX(double val){ return val * tan(val * drawIters); }
+static double sinModD(double val){ return val / sin(val * drawIters); }
+static double cosModD(double val){ return val / cos(val * drawIters); }
+static double tanModD(double val){ return val / tan(val * drawIters); }
+
 unsigned wavePaint(double x, double y){ return (sin(x * xFactor) > tan(y * yFactor))? xColor : yColor; } 
 
-unsigned strokePaint(double x, double y){
+unsigned strokeDraw(double x, double y){
 	x *= 0.5 * _dimens[0]; 
 	y *= 0.5 * _dimens[1];
 
@@ -58,7 +69,7 @@ unsigned strokePaint(double x, double y){
 	}
 }
 
-static unsigned dotSplash(unsigned color, double distance, PixelPoint pixPoint){
+static unsigned dotDraw(unsigned color, double distance, PixelPoint pixPoint){
     switch(mode){
 		case '1': return (distance > dotSize * DOT_RADIUS)? canvasColor : color;
 		case '2': return (distance > dotSize * DOT_RADIUS || distance < dotSize * (DOT_RADIUS / 3.0))? canvasColor : color;
@@ -87,36 +98,41 @@ static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint
 	}
 }
 
-Rasteron_Image* drawImgOp(Rasteron_Image* targetImg){
-	static unsigned swatchOffset = SWATCH_Light;
-	unsigned color1 = _swatch.colors[swatchOffset % 8];
-	unsigned color2 = _swatch.colors[(swatchOffset + 1) % 8];
+Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, unsigned short count, double (*xModCallback)(double), double (*yModCallback)(double)){
+	drawIters = count;
 
-	Rasteron_Image* drawImg = (targetImg != NULL)? copyImgOp(targetImg) : checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ _dimens[0], _dimens[1], color2 });
+	unsigned color1 = _swatch.colors[count % 8];
+	unsigned color2 = _swatch.colors[(count + 1) % 8];
+	unsigned color3 = _swatch.colors[(count - 1) % 8];
+
+    Rasteron_Image* drawImg = (targetImg != NULL)? copyImgOp(targetImg) : checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ _dimens[0], _dimens[1], color2 });
 
 	for(unsigned p = 0; p < 1024 * 1024; p++){
 		double x = (1.0 / (double)1024) * (p % 1024); // (1.0 / (double)1024) * (p % 1024);
-		double y = (1.0 / (double)1024) * (p / 1024); // (1.0 / (double)1024) * (p / 1024)
-		// x *= (p % 1024) - (1024 / 2); // x *= 1.0 + sin(xVar * x);
-		// y *= (p % 1024) - (1024 / 2); // y /= 1.0 + sin(yVar * y);
+        double y = (1.0 / (double)1024) * (p / 1024); // (1.0 / (double)1024) * (p / 1024)
+        if(xModCallback != NULL) x = xModCallback(x);
+		if(yModCallback != NULL) y = yModCallback(y);
+		// x *= sin(x * (double)count);
+        // y *= cos(y * (double)count);
 
-		double xOffLo = 0.0; double yOffLo = 0.0; // lowest value
-		double xOffHi = 0.0; double yOffHi = 0.0; // highest value
+        double xOffLo = 9999.99, yOffLo = 9999.99; // lowest value
+        double xOffHi = 0.0, yOffHi = 0.0; // highest value
 		double xAccum = 0.0; double yAccum = 0.0; // accumulated value
 
-		for(unsigned o = 0; o < pixelPointTable.pointCount; o++){
-			double xOff = x - pixelPointTable.points[o].x;
-			double yOff = y - pixelPointTable.points[o].y;
+        // for(unsigned o = pixelPointTable.pointCount; o > (count < pixelPointTable.pointCount - 1)? count : pixelPointTable.pointCount - 1; o--){
+        for(unsigned o = pixelPointTable.pointCount; o > count; o--){
+            double xOff = x - pixelPointTable.points[o - 1].x;
+            double yOff = y - pixelPointTable.points[o - 1].y;
+			double angle = atan(xOff / yOff);
+			double distance = sqrt(pow(xOff, 2) + pow(yOff, 2));
 
 			if(o == 0 || fabs(xOff) < xOffLo) xOffLo = xOff; // minimum x value
 			if(o == 0 || fabs(xOff) > xOffHi) xOffHi = xOff; // maximum x value
 			if(o == 0 || fabs(yOff) < yOffLo) yOffLo = yOff; // minimum y value
 			if(o == 0 || fabs(yOff) > yOffHi) yOffHi = yOff; // maximum y value
-			xAccum += xOff; yAccum += yOff;
+            xAccum += fabs(xOff); yAccum += fabs(yOff);
 
-			switch(mode){
-				// case 17: if(sin(xOff * 10.0) > cos(yOff * 10.0)) *(drawImg->data + p) += 0xF; break;
-				// case 18: if(xOff < 0.1) *(drawImg->data + p) += 0xF; else if(yOff < 0.1) *(drawImg->data + p) -= 0xF; break;
+			/* switch(mode){
 				case 'z': *(drawImg->data + p) = colors_blend(colors_blend(color1, color_invert(color1), fabs(xAccum)), colors_blend(color2, color_invert(color2), fabs(yAccum)), fabs(xAccum / yAccum)); break;
 				case 'x': if(fabs(xOffLo) < fabs(yOffLo)) *(drawImg->data + p) = color1; else if(fabs(xOffHi) > fabs(yOffHi)) *(drawImg->data + p) = color2; break;
 				case 'c': *(drawImg->data + p) = colors_blend(color1, color2, (xAccum / yOffHi) * (xOffLo / yAccum)); break;
@@ -125,11 +141,19 @@ Rasteron_Image* drawImgOp(Rasteron_Image* targetImg){
 				case 'n': *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi); break;
                 case 'm': *(drawImg->data + p) = (color1 / color2) * (xOffLo * xAccum) / (yOff * yAccum); break;
 				default: *(drawImg->data + p) = *(drawImg->data + p);
-			}
-		}
-	}
+			} */
 
-	swatchOffset++;
+			switch(mode){
+				case 'z': if(o == pixelPointTable.pointCount) *(drawImg->data + p) = colors_blend(color1, color2, angle); break;
+				case 'x': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color1, pow(angle, count)); break;
+				case 'c': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color1, angle / distance); break;
+				case 'v': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color1, (distance - angle) / (angle + distance)); break;
+				case 'b': *(drawImg->data + p) = (angle > distance)? color1 : color2; break;
+				case 'n': *(drawImg->data + p) = colors_fuse(color1, color2, sin(angle) + cos(distance)); break;
+				case 'm': *(drawImg->data + p) = colors_fuse(colors_blend(color1, color2, angle), colors_blend(color1, color3, distance), 1.0 / (xAccum + yAccum)); break;
+			}
+        }
+	}
 
 	return drawImg;
 }
@@ -140,16 +164,16 @@ void _onKeyEvent(char key){
 	if(colorPointTable.pointCount > COLOR_POINTS && !isdigit(key))
 	switch(key){
 		case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p':
-			_outputImg = mapImgOp((ImageSize){1024, 1024}, strokePaint);
+			_outputImg = mapImgOp((ImageSize){1024, 1024}, strokeDraw);
 		break;
 		case 'a': case 's': case 'd': case 'f': case 'g': case 'h': case 'j': case 'k': case 'l':
 			_outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
 		break;
 		case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm': 
-			_outputImg = drawImgOp(_savedImg); 
+            _outputImg = drawImgOp(_savedImg, pixelPointTable.pointCount - 4, sinModX, cosModD);
 		break;
 	}
-	else _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, dotSplash);
+	else _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, dotDraw);
 }
 
 void _onPressEvent(double x, double y){ 
