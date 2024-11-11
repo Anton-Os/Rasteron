@@ -87,13 +87,13 @@ static unsigned dotDraw(unsigned color, double distance, PixelPoint pixPoint){
 static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
 	switch(mode){
 		case 'a': return colors_blend(xColor, yColor, distances[0] * FIELD_PRODUCT);
-		case 's': return colors_blend(xColor, yColor, distances[1] * FIELD_PRODUCT);
-		case 'd': return colors_blend(xColor, yColor, distances[2] * FIELD_PRODUCT);
+		case 's': return (distances[1] - distances[0] > 0.01)? xColor : yColor; // colors_blend(xColor, yColor, distances[1] * FIELD_PRODUCT);
+		case 'd': return (distances[2] - distances[1] > 0.01)? xColor : yColor; // colors_blend(xColor, yColor, distances[2] * FIELD_PRODUCT);
 		case 'f': return colors_blend(xColor, yColor, sin(distances[0] * FIELD_PRODUCT * 10.0));
 		case 'g': return colors_blend(xColor, yColor, cos(distances[0] * FIELD_PRODUCT * 10.0));
 		case 'h': return colors_blend(xColor, yColor, tan(distances[0] * FIELD_PRODUCT * 10.0));
 		case 'j': return (distances[2] > distances[0] + distances[1])? xColor : yColor;
-        case 'k': return (pixPoints[0].x / pixPoints[1].y > pow(pixPoints[2].x, pixPoints[0].y))? xColor : yColor;
+        case 'k': return (pixPoints[0].x / pixPoints[1].y > pow(pixPoints[1].x, pixPoints[0].y))? xColor : yColor;
 		default: return (((distances[2] + distances[1] + distances[0]) / 3) > distances[1])? xColor : yColor;
 	}
 }
@@ -112,8 +112,6 @@ Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, unsigned short count, doubl
         double y = (1.0 / (double)1024) * (p / 1024); // (1.0 / (double)1024) * (p / 1024)
         if(xModCallback != NULL) x = xModCallback(x);
 		if(yModCallback != NULL) y = yModCallback(y);
-		// x *= sin(x * (double)count);
-        // y *= cos(y * (double)count);
 
         double xOffLo = 9999.99, yOffLo = 9999.99; // lowest value
         double xOffHi = 0.0, yOffHi = 0.0; // highest value
@@ -123,7 +121,7 @@ Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, unsigned short count, doubl
         for(unsigned o = pixelPointTable.pointCount; o > count; o--){
             double xOff = x - pixelPointTable.points[o - 1].x;
             double yOff = y - pixelPointTable.points[o - 1].y;
-			double angle = atan(xOff / yOff);
+			double angle = atan(((yOff + 1.0) * 0.5) / ((xOff + 1.0) * 0.5));
 			double distance = sqrt(pow(xOff, 2) + pow(yOff, 2));
 
 			if(o == 0 || fabs(xOff) < xOffLo) xOffLo = xOff; // minimum x value
@@ -145,11 +143,11 @@ Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, unsigned short count, doubl
 
 			switch(mode){
 				case 'z': if(o == pixelPointTable.pointCount) *(drawImg->data + p) = colors_blend(color1, color2, angle); break;
-				case 'x': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color1, pow(angle, count)); break;
-				case 'c': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color1, angle / distance); break;
+				case 'x': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color2, pow(angle, count)); break;
+				case 'c': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color3, angle / distance); break;
 				case 'v': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color1, (distance - angle) / (angle + distance)); break;
 				case 'b': *(drawImg->data + p) = (angle > distance)? color1 : color2; break;
-				case 'n': *(drawImg->data + p) = colors_fuse(color1, color2, sin(angle) + cos(distance)); break;
+				case 'n': *(drawImg->data + p) = colors_fuse(color1, color3, sin(angle) + cos(distance)); break;
 				case 'm': *(drawImg->data + p) = colors_fuse(colors_blend(color1, color2, angle), colors_blend(color1, color3, distance), 1.0 / (xAccum + yAccum)); break;
 			}
         }
@@ -170,7 +168,7 @@ void _onKeyEvent(char key){
 			_outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
 		break;
 		case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm': 
-            _outputImg = drawImgOp(_savedImg, pixelPointTable.pointCount - 4, sinModX, cosModD);
+            _outputImg = drawImgOp(_savedImg, pixelPointTable.pointCount - 4, sinMod, cosMod);
 		break;
 	}
 	else _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, dotDraw);

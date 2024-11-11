@@ -38,20 +38,20 @@ static unsigned dotTiling3(unsigned colors[3], double distances[3], PixelPoint p
     return (distances[0] + distances[1] - distances[2] < dotDist)? colors[0] : colors[1];
 }
 
-static unsigned trialTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return (pixPoint[0].x + pixPoint[1].y > distances[0] / distances[2])? colors[0] : colors_powroot(colors[1], colors[2]);
+static unsigned breakTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return (pixPoint[0].x + pixPoint[1].y > distances[0] / atan(((pixPoint[0].y + 1.0) * 0.5) / ((pixPoint[0].x + 1.0) * 0.5)))? colors_powroot(colors[2], colors[1]) : colors_powroot(colors[1], colors[2]);
 }
 
-static unsigned trialTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+static unsigned crossTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     // return colors_blend(colors[0], colors_blend(colors[1], colors[2], pow(pixPoint[0].x * pixPoint[1].y, distances[0])), distances[2] / distances[1]);
-    return colors_blend(colors[0] + colors[1], colors[2] - colors[1], pixPoint[0].x / pixPoint[0].y);
+    return colors_blend(colors[0] + colors[1], colors[2] - colors[1], atan(pixPoint[0].x / pixPoint[0].y));
 }
 
-static unsigned trialTiling3(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+static unsigned crossTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return colors_blend(colors[0], colors_blend(colors[1], colors[2], sin(distances[0] / distances[1])), cos(distances[2] / distances[1]));
 }
 
-static unsigned funTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+static unsigned shineTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return colors_fuse(colors[0], colors[1], sin(pixPoint[0].x * (1.0 / distances[0]) + pixPoint[0].y * (1.0 / distances[0])));
 }
 
@@ -156,32 +156,32 @@ void setup(char input){
         case 'r': callback = &dotTiling1; break;
         case 't': callback = &dotTiling2; break;
         case 'y': callback = &dotTiling3; break;
-        case 'u': callback = &trialTiling1; break;
-        case 'i': callback = &trialTiling2; break;
-        case 'o': callback = &trialTiling3; break;
-        case 'p': callback = &funTiling; break;
+        case 'u': callback = &breakTiling; break;
+        case 'i': callback = &crossTiling1; break;
+        case 'o': callback = &crossTiling2; break;
+        case 'p': callback = &shineTiling; break;
         // Complex Tiling Parameters
-        case 'a': c1 = 0.01; break; case 's': c1 = 0.25; break; case 'd': c1 = 0.5; break;
+        /* case 'a': c1 = 0.01; break; case 's': c1 = 0.25; break; case 'd': c1 = 0.5; break;
         case 'f': c2 = 0.01; break; case 'g': c2 = 0.25; break; case 'h': c2 = 0.5; break;
-        case 'j': c3 = 0.0; break; case 'k': c3 = 0.25; break; case 'l': c3 = 0.5; break;
+        case 'j': c3 = 0.0; break; case 'k': c3 = 0.25; break; case 'l': c3 = 0.5; break; */
+        case 'a': callback = &zebraTiling; break;
+        case 's': callback = &amorphTiling; break;
+        case 'd': callback = &lumenTiling; break;
         // Deviated Tiling Parameters
-        case 'z': d1 = 0.05; d2 = 0.0; d3 = 1.0; break;
-        case 'x': d1 = 0.01; d2 = 0.01; d3 = 0.99; break;
-        case 'c': d1 = 0.1; d2 = -0.01; d3 = 1.01; break;
-        case 'v': d1 = 0.05; d2 = 0.1; d3 = 1.1; break;
-        case 'b': d1 = 0.005; d2 = -0.1; d3 = 0.9; break;
-        case 'n': d1 = 0.25; d2 = 0.5; d3 = 1.5; break;
-        case 'm': d1 = -0.05; d2 = -0.5; d3 = 0.5; break;
+        case 'z': d1 = 0.05; d2 = 0.0; d3 = 1.0;
+                  c1 = 0.01; c2 = 0.01; c3 = 0.01;
+        break;
+        case 'x': d1 = 0.01; d2 = 0.01; d3 = 0.99; c1 = 0.25; break;
+        case 'c': d1 = 0.1; d2 = -0.01; d3 = 1.01; c2 = 0.25; break;
+        case 'v': d1 = 0.05; d2 = 0.1; d3 = 1.1; c3 = 0.25; break;
+        case 'b': d1 = 0.005; d2 = -0.1; d3 = 0.9; c1 = 0.5; break;
+        case 'n': d1 = 0.25; d2 = 0.5; d3 = 1.5; c2 = 0.5; break;
+        case 'm': d1 = -0.05; d2 = -0.5; d3 = 0.5; c3 = 0.5; break;
     }
 
     if(isalnum(input) && colorTable.pointCount >= 1) {
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
         switch(keysave){
-            case 'a': case 's': case 'd': case 'f': case 'g': case 'h': case 'j': case 'k': case 'l':
-                callback = &zebraTiling; // complex tiling with parameters set
-                // callback = &amorphTiling;
-                // callback = &lumenTiling;
-                _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
             case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm':
                 _outputImg = fieldMosaicImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
             default: _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
