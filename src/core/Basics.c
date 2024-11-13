@@ -194,6 +194,34 @@ Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type){
 	return flipImg;
 }
 
+Rasteron_Image* cornerImgOp(ref_image_t refImage, double tl, double tr, double bl, double br){
+	Rasteron_Image* cornerImage = RASTERON_ALLOC("corner", (!_invertImage)? refImage->height : refImage->width, (!_invertImage)? refImage->width : refImage->height);
+
+	double s = 5.0; // TODO: Make this image dependent
+
+	if(tl > 1.0) tl = 1.0; // clamp max value
+	if(tr > 1.0) tr = 1.0; // clamp max value
+	if(bl > 1.0) bl = 1.0; // clamp max value
+	if(br > 1.0) br = 1.0; // clamp max value
+
+	for(unsigned p = 0; p < cornerImage->width * cornerImage->height; p++){
+		double x = (1.0 / (double)cornerImage->width) * (p % cornerImage->width);
+		double y = (1.0 / (double)cornerImage->height) * (p / cornerImage->width);
+
+		if(tr > 0.0 && x > 1.0 - (tr / s) && y > 1.0 - (tr / s)) 
+			*(cornerImage->data + p) = ((x - (1.0 - (tr / s))) + (y - (1.0 - (tr / s))) > tr / s)? NO_COLOR : *(refImage->data + p);
+		else if(tl > 0.0 && x < tl / s && y > 1.0 - (tl / s))
+			*(cornerImage->data + p) = (((1.0 - x) - (1.0 - (tl / s))) + (y - (1.0 - (tl / s))) > tl / s)? NO_COLOR : *(refImage->data + p);
+		else if(br > 0.0 && x > 1.0 - (br / s) && y < br / s) 
+			*(cornerImage->data + p) = *(cornerImage->data + p) = ((x - (1.0 - (br / s))) + ((1.0 - y) - (1.0 - (br / s))) > br / s)? NO_COLOR : *(refImage->data + p);
+		else if(bl > 0.0 && x < bl / s && y < bl / s) 
+			*(cornerImage->data + p) = (x + y < bl / s)? NO_COLOR : *(refImage->data + p);
+		else *(cornerImage->data + p) = *(refImage->data + p);
+	}
+
+	return cornerImage;
+}
+
 Rasteron_Image* errorImgOp(const char* errorMsg){
 	fprintf(stderr, "ERROR! message: %s", errorMsg);
 

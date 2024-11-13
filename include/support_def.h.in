@@ -25,6 +25,7 @@
 #define TWOPOWER(x) (1 << (x))
 
 #include <stdio.h>
+#include <ctype.h>
 #include <assert.h>
 #include <string.h>
 #include <time.h>
@@ -37,6 +38,7 @@
 #define RAND_COLOR() (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255))
 
 void seedRandGen(); // seeds the random number generator
+void genFullFilePath(const char* name, char* fullFilePath);
 
 uint32_t color_unique(); // produces reusable color identifier
 uint32_t color_invert(uint32_t refColor); // inverts red, green, and blue values

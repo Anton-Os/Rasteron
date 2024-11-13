@@ -67,7 +67,7 @@ static Rasteron_Image* _textImgOp(const Rasteron_Text* textObj, unsigned size){
 	replaceFwdSlash(textObj->fontFile);
     if(_access(textObj->fontFile, 0)){
 #elif defined(__linux__)
-    if(access(textObj->fontFile, F_OK) == 0){
+    if(access(textObj->fontFile, F_OK) != 0){
 #endif
         return errorImgOp("Invalid font file");
     }

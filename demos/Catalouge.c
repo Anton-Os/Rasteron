@@ -142,7 +142,7 @@ Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){
 
     Rasteron_Image* flipImg = flipImgOp(cropImgY, flip);
 
-    Rasteron_Image* finalImg = resizeImgOp((ImageSize){ 512, 512 }, flipImg); // attempting to resize
+    Rasteron_Image* finalImg = cornerImgOp(flipImg, 1.0, 0.75, 0.5, 0.25);
 
     RASTERON_DEALLOC(loadedImg);
     RASTERON_DEALLOC(cropImgX); RASTERON_DEALLOC(cropImgY);
@@ -485,9 +485,9 @@ static unsigned sharpTruschetTile(double x, double y){
     else return 0xFFFF00FF;
 }
 
-Rasteron_Image* truschetImgOp(unsigned short wDiv, unsigned short hDiv){ 
+Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv){
     // Rasteron_Image* truchetTile = RASTERON_ALLOC("truschet_tile", 1024 / hDiv, 1024 / wDiv);
-    Rasteron_Image* truschetTile = mapImgOp((ImageSize){ 1024 / hDiv, 1024 / wDiv }, sharpTruschetTile);
+    Rasteron_Image* truschetTile = (truschetImg == NULL)? mapImgOp((ImageSize){ 1024 / hDiv, 1024 / wDiv }, sharpTruschetTile) : copyImgOp(truschetImg);
     Rasteron_Image* truschetTile2 = flipImgOp(truschetTile, FLIP_Upside);
     Rasteron_Image* truschetTile3 = flipImgOp(truschetTile, FLIP_Clock);
     Rasteron_Image* truschetTile4 = flipImgOp(truschetTile, FLIP_Counter);

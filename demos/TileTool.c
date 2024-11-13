@@ -43,7 +43,6 @@ static unsigned breakTiling(unsigned colors[3], double distances[3], PixelPoint 
 }
 
 static unsigned crossTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    // return colors_blend(colors[0], colors_blend(colors[1], colors[2], pow(pixPoint[0].x * pixPoint[1].y, distances[0])), distances[2] / distances[1]);
     return colors_blend(colors[0] + colors[1], colors[2] - colors[1], atan(pixPoint[0].x / pixPoint[0].y));
 }
 
@@ -55,6 +54,33 @@ static unsigned shineTiling(unsigned colors[3], double distances[3], PixelPoint 
     return colors_fuse(colors[0], colors[1], sin(pixPoint[0].x * (1.0 / distances[0]) + pixPoint[0].y * (1.0 / distances[0])));
 }
 
+static unsigned lumenTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    if(distances[0] > c1){
+        if(pixPoint[0].x / pixPoint[1].y > c2) return colors_blend(colors[1], colors[2], fabs(tan(pow(distances[0], distances[1] + distances[2]))));
+        else return colors_blend(colors[0], colors[1], fabs(tan(distances[1] - distances[2]) * 10.0));
+    }
+    else return colors_blend(colors[0], colors[1], fabs(tan((distances[0] - distances[1]) * 10.0)));
+}
+
+static unsigned flashTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    double angle = atan(pixPoint[0].y / pixPoint[1].x);
+    if(angle > c3) return colors_blend(colors[0], colors[1], angle - (distances[0] / c1));
+    else colors_fuse(colors[0], colors[1], angle + (distances[0] / fabs(c2)));
+}
+
+static unsigned amorphTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    unsigned s = (pixPoint[0].x / pixPoint[0].y) / (distances[0] / distances[1] / distances[2]);
+    if(s < 0.0) return colors[0];
+    else if(s > 1.0) return colors[1];
+    else return colors[2];
+}
+
+static unsigned focalTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    double xRel = (distances[0] / pixPoint[0].x) * c1 + c3;
+    double yRel = (distances[0] / pixPoint[0].y) * c2 + c3;
+    return colors_fuse(colors[0], colors[1], fabs(xRel - yRel));
+}
+
 static unsigned zebraTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     unsigned color = colors[0];
     double dist = distances[0] + distances[1] + distances[2];
@@ -63,21 +89,25 @@ static unsigned zebraTiling(unsigned colors[3], double distances[3], PixelPoint 
     return color;
 }
 
-static unsigned amorphTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    unsigned s = (pixPoint[0].x / pixPoint[0].y) / (distances[0] / distances[1] / distances[2]);
-    // s = ((s + d1) * pow(s, d2)) / (1.0 / d3);
-    // s = ((s + c1) * pow(s, 1.0 + c2)) / (1.0 + c3);
-    if(s < 0.0) return colors[0];
-    else if(s > 1.0) return colors[1];
+static unsigned surroundTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    double stepDistance = distances[0] * 10.0;
+    double subtDistance = stepDistance - floor(stepDistance);
+    if(subtDistance < c1) return colors[0];
+    else if(subtDistance > 1.0 - fabs(c2)) return colors[1];
     else return colors[2];
 }
 
-static unsigned lumenTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    if(distances[0] > c1){
-        if(pixPoint[0].x / pixPoint[1].y > c2) return colors_blend(colors[1], colors[2], fabs(tan(pow(distances[0], distances[1] + distances[2]))));
-        else return colors_blend(colors[0], colors[1], fabs(tan(distances[1] - distances[2]) * 10.0));
-    }
-    else return colors_blend(colors[0], colors[1], fabs(tan((distances[0] - distances[1]) * 10.0)));
+static unsigned complexTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    unsigned targetColor = colors_blend(colors[0], colors[2], tan(distances[2] * 10.0)); // atan((pixPoint[0].y * c1) / (pixPoint[1].x * c2)));
+
+    if(pow(distances[0], pixPoint[0].x + pixPoint[0].y) > c1)
+        targetColor = color_level(targetColor, pow((distances[0] * c1) / (distances[1] * fabs(c2)), 1.0 + c3));
+    else if(pixPoint[1].x - pixPoint[1].y < distances[1] + (1.0 / c2))
+        targetColor = colors_fuse(targetColor, colors[1], atan((pixPoint[0].y * c1) / (pixPoint[1].x * c2)));
+    else if(distances[2] - c3 > sin(pixPoint[2].y * 10.0) / cos(pixPoint[2].x * 10.0))
+        targetColor = colors_blend(targetColor, colors[2], (double)targetColor / (double)colors[2]);
+
+    return targetColor;
 }
 
 
@@ -97,21 +127,19 @@ Rasteron_Image* fieldMosaicImgOp(ImageSize size, const ColorPointTable* colorPoi
         double x = (1.0 / (double)size.width) * (p % size.width);
         double y = (1.0 / (double)size.height) * (p / size.width);
 
-        /* x += d1; y -= d1; // coordinate mod 1
-        x *= 1.0 + d2; y /= 1.0 + d2; // coordinate mod 2
-        x = pow(x, d3); y = pow(y, d3); // coordinate mod 3 */
-
         pixDistances[0] = 1.0; pixDistances[1] = 1.0; pixDistances[2] = 1.0; // reset
         for (unsigned t = 0; t < colorPointTable->pointCount; t++) {
             double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * (1.0 / (double)(fieldImage->width)); // distance multiplied by pixel size
             if (dist < pixDistances[0]) {
                 for(unsigned d = 0; d < 3; d++){
-                    pixDistances[d] = dist + (d * d1) * (d3 - d2); // experimental change
+                    pixDistances[d] = dist + (d * d1) * (d3 + d2);
+                    // pixDistances[d] = dist + (d * d1) - (d3 + d2);
+                    // pixDistances[d] = dist + pow(d * d1, d3 + d2);
                     pixPoints[d] = (PixelPoint){
-                        (x - colorPointTable->points[t].x) / (1.0 + (d * d1) + sin(d * d2)), // experimental change
-                        // pow(x - colorPointTable->points[t].x, 1.0 + (d * d1) + sin(d * d2)), // experimental change
-                        (y - colorPointTable->points[t].y) / (1.0 + (d * d1) + cos(d * d3)) // experimental change
-                        // pow(y - colorPointTable->points[t].y, 1.0 + (d * d1) + cos(d * d3))
+                        // (pow(x, dist * (1.0 / (1 + d))) - colorPointTable->points[t].x),
+                        (x - colorPointTable->points[t].x) / (1.0 + (d * d1) + sin(d * d2)),
+                        // (pow(y, dist * (1.0 / (1 + d))) - colorPointTable->points[t].y)
+                        (y - colorPointTable->points[t].y) / (1.0 + (d * d1) + cos(d * d3))
                     };
                 }
                 pixColors[0] = colorPointTable->points[t].color;
@@ -150,6 +178,7 @@ void setup(char input){
         colorTable.points[t] = (ColorPoint){ RAND_COLOR(), table.points[t].x, table.points[t].y };
 
     switch(keysave){
+        // Basic Tiling
         case 'q': callback = &eqTiling; break;
         case 'w': callback = &softTiling; break;
         case 'e': callback = &hardTiling; break;
@@ -160,23 +189,24 @@ void setup(char input){
         case 'i': callback = &crossTiling1; break;
         case 'o': callback = &crossTiling2; break;
         case 'p': callback = &shineTiling; break;
-        // Complex Tiling Parameters
-        /* case 'a': c1 = 0.01; break; case 's': c1 = 0.25; break; case 'd': c1 = 0.5; break;
-        case 'f': c2 = 0.01; break; case 'g': c2 = 0.25; break; case 'h': c2 = 0.5; break;
-        case 'j': c3 = 0.0; break; case 'k': c3 = 0.25; break; case 'l': c3 = 0.5; break; */
-        case 'a': callback = &zebraTiling; break;
-        case 's': callback = &amorphTiling; break;
-        case 'd': callback = &lumenTiling; break;
-        // Deviated Tiling Parameters
-        case 'z': d1 = 0.05; d2 = 0.0; d3 = 1.0;
-                  c1 = 0.01; c2 = 0.01; c3 = 0.01;
-        break;
-        case 'x': d1 = 0.01; d2 = 0.01; d3 = 0.99; c1 = 0.25; break;
-        case 'c': d1 = 0.1; d2 = -0.01; d3 = 1.01; c2 = 0.25; break;
-        case 'v': d1 = 0.05; d2 = 0.1; d3 = 1.1; c3 = 0.25; break;
-        case 'b': d1 = 0.005; d2 = -0.1; d3 = 0.9; c1 = 0.5; break;
-        case 'n': d1 = 0.25; d2 = 0.5; d3 = 1.5; c2 = 0.5; break;
-        case 'm': d1 = -0.05; d2 = -0.5; d3 = 0.5; c3 = 0.5; break;
+        // Complex Tiling
+        case 'a': callback = &lumenTiling; break;
+        case 's': callback = &flashTiling; break;
+        case 'd': callback = &focalTiling; break;
+        case 'f': callback = &amorphTiling; break;
+        case 'g': callback = &zebraTiling; break;
+        case 'h': callback = &surroundTiling; break;
+        case 'j': callback = &complexTiling; c1 = 0.01; c2 = 0.01; c3 = 0.0; break;
+        case 'k': callback = &complexTiling; c1 = 0.15; c2 = -0.15; c3 = 0.5; break;
+        case 'l': callback = &complexTiling; c1 = 0.25; c2 = -0.25; c3 = 1.0; break;
+        // Deviated Tiling
+        case 'z': d1 = 0.05; d2 = 0.0; d3 = 1.0; break;
+        case 'x': d1 = 0.01; d2 = 0.01; d3 = 0.99; break;
+        case 'c': d1 = -0.1; d2 = -0.01; d3 = 1.01; break;
+        case 'v': d1 = 0.05; d2 = 0.1; d3 = 1.1; break;
+        case 'b': d1 = 0.005; d2 = -0.1; d3 = 0.9; break;
+        case 'n': d1 = -0.25; d2 = 0.5; d3 = 1.5; break;
+        case 'm': d1 = -0.05; d2 = -0.5; d3 = 0.5; break;
     }
 
     if(isalnum(input) && colorTable.pointCount >= 1) {
@@ -186,13 +216,11 @@ void setup(char input){
                 _outputImg = fieldMosaicImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
             default: _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
         }
-
-
-        if(_dimens[0] > 1 || _dimens[1] > 1){
-            Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ 1024 / _dimens[1], 1024 / _dimens[0] }, _outputImg);
-            // TODO: Perform truschet tiling
-            RASTERON_DEALLOC(resizeImg);
-        }
+    } else if(_outputImg != NULL && input == ';'){
+        puts("Generating truschet image");
+        Rasteron_Image* tempImg = copyImgOp(_outputImg);
+        RASTERON_DEALLOC(_outputImg);
+        _outputImg = truschetImgOp(tempImg, _dimens[0], _dimens[1]);
     }
 }
 

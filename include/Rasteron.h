@@ -15,14 +15,14 @@ extern "C"{
 
 Rasteron_Image* loadImgOp(const char* fileName); // creates an image from a file
 Rasteron_Image* solidImgOp(ImageSize size, uint32_t color); // creates a solid color image
-Rasteron_Image* copyImgOp(ref_image_t refImage); // creates copy of image
+Rasteron_Image* copyImgOp(ref_image_t refImage); // creates copy of imagea
 Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage); // resize image to size
 Rasteron_Image* cropImgOp(ref_image_t refImage, enum SIDE_Type type, double factor); // creates cropped image
 Rasteron_Image* mirrorImgOp(ref_image_t refImage); // creates horizontal mirror image
 Rasteron_Image* flipImgOp(ref_image_t refImage, enum FLIP_Type type); // creates flipped image
+Rasteron_Image* cornerImgOp(ref_image_t refImage, double tl, double tr, double bl, double br); // cut corners in image
 
 Rasteron_Image* errorImgOp(const char* error); // shows up on error
-
 
 // --------------------------------   Filtering Operations    -------------------------------- //
 //

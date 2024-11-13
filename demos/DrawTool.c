@@ -98,7 +98,7 @@ static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint
 	}
 }
 
-Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, unsigned short count, double (*xModCallback)(double), double (*yModCallback)(double)){
+Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, PixelPointTable* pointsTable, unsigned short count, double (*xModCallback)(double), double (*yModCallback)(double)){
 	drawIters = count;
 
 	unsigned color1 = _swatch.colors[count % 8];
@@ -117,10 +117,10 @@ Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, unsigned short count, doubl
         double xOffHi = 0.0, yOffHi = 0.0; // highest value
 		double xAccum = 0.0; double yAccum = 0.0; // accumulated value
 
-        // for(unsigned o = pixelPointTable.pointCount; o > (count < pixelPointTable.pointCount - 1)? count : pixelPointTable.pointCount - 1; o--){
-        for(unsigned o = pixelPointTable.pointCount; o > count; o--){
-            double xOff = x - pixelPointTable.points[o - 1].x;
-            double yOff = y - pixelPointTable.points[o - 1].y;
+        // for(unsigned o = pointsTable->pointCount; o > (count < pointsTable->pointCount - 1)? count : pointsTable->pointCount - 1; o--){
+        for(unsigned o = pointsTable->pointCount; o > count; o--){
+            double xOff = x - pointsTable->points[o - 1].x;
+            double yOff = y - pointsTable->points[o - 1].y;
 			double angle = atan(((yOff + 1.0) * 0.5) / ((xOff + 1.0) * 0.5));
 			double distance = sqrt(pow(xOff, 2) + pow(yOff, 2));
 
@@ -142,7 +142,7 @@ Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, unsigned short count, doubl
 			} */
 
 			switch(mode){
-				case 'z': if(o == pixelPointTable.pointCount) *(drawImg->data + p) = colors_blend(color1, color2, angle); break;
+                case 'z': if(o == pointsTable->pointCount) *(drawImg->data + p) = colors_blend(color1, color2, angle); break;
 				case 'x': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color2, pow(angle, count)); break;
 				case 'c': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color3, angle / distance); break;
 				case 'v': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color1, (distance - angle) / (angle + distance)); break;
@@ -157,20 +157,35 @@ Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, unsigned short count, doubl
 }
 
 void _onKeyEvent(char key){
+    static double (*xMod)(double) = &sinMod;
+    static double (*yMod)(double) = &cosMod;
 	mode = key;
 
-	if(colorPointTable.pointCount > COLOR_POINTS && !isdigit(key))
-	switch(key){
-		case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p':
-			_outputImg = mapImgOp((ImageSize){1024, 1024}, strokeDraw);
-		break;
-		case 'a': case 's': case 'd': case 'f': case 'g': case 'h': case 'j': case 'k': case 'l':
-			_outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
-		break;
-		case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm': 
-            _outputImg = drawImgOp(_savedImg, pixelPointTable.pointCount - 4, sinMod, cosMod);
-		break;
-	}
+
+    if(colorPointTable.pointCount > COLOR_POINTS && isalpha(key))
+        switch(key){
+            case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p':
+                _outputImg = mapImgOp((ImageSize){1024, 1024}, strokeDraw);
+            break;
+            case 'a': case 's': case 'd': case 'f': case 'g': case 'h': case 'j': case 'k': case 'l':
+                _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
+            break;
+            case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm':
+                _outputImg = drawImgOp(_savedImg, &pixelPointTable, pixelPointTable.pointCount - 4, xMod, yMod);
+            break;
+        }
+    else if(key == '<'){
+        if(xMod == NULL) xMod = &sinMod;
+        else if(xMod == &sinMod) xMod = &sinModX;
+        else if(xMod == &sinModX) xMod = &sinModD;
+        else xMod = NULL;
+    } else if(key == '>'){
+        if(yMod == NULL) yMod = &cosMod;
+        else if(yMod == &cosMod) yMod = &cosModX;
+        else if(yMod == &cosModX) yMod = &cosModD;
+        else yMod = NULL;
+    }
+
 	else _outputImg = fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, dotDraw);
 }
 

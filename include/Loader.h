@@ -2,6 +2,10 @@
 
 #include "support_def.h"
 
+#ifdef __linux__
+#include "unistd.h"
+#endif
+
 #ifdef USE_IMG_TIFF
 
 #include <tiffio.h>
