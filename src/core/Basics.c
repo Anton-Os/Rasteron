@@ -199,11 +199,6 @@ Rasteron_Image* cornerImgOp(ref_image_t refImage, double tl, double tr, double b
 
 	double s = 5.0; // TODO: Make this image dependent
 
-	if(tl > 1.0) tl = 1.0; // clamp max value
-	if(tr > 1.0) tr = 1.0; // clamp max value
-	if(bl > 1.0) bl = 1.0; // clamp max value
-	if(br > 1.0) br = 1.0; // clamp max value
-
 	for(unsigned p = 0; p < cornerImage->width * cornerImage->height; p++){
 		double x = (1.0 / (double)cornerImage->width) * (p % cornerImage->width);
 		double y = (1.0 / (double)cornerImage->height) * (p / cornerImage->width);

@@ -11,7 +11,6 @@ static enum IMG_FileFormat getFormat(const char* fileName) {
 		'\0'
     }; // gets the last 3 letters of a file extension
 
-    printf("Filename is %s, Extension is %s", fileName, extension);
     if(!strcmp(extension, "bmp")) // bmp file check
         return IMG_Bmp;
     else if(! strcmp(extension, "png")) // png file check
