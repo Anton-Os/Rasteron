@@ -42,7 +42,7 @@ void setup(char input){
 		case 'j': _outputImg = ballingImgOp((double)(mode + 2)); break;
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
 		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
-		case 'm': _outputImg = combImgOp(mode + 6, mode + 5); break;
+        case 'm': _outputImg = chaosImgOp(mode + 3, mode + 3); break;
         case 'n': _outputImg = truschetImgOp(NULL, mode + 3, mode + 3); break;
 		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;

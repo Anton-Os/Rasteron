@@ -3,7 +3,7 @@
 #define CANVAS_COLOR 0xFF111111
 #define COLOR_POINTS 4
 #define OSCILATION 30.0
-#define DOT_RADIUS 0.075
+#define DOT_RADIUS 0.05
 #define FIELD_PRODUCT 5.0
 
 static double xFactor = 10.0; 
@@ -43,8 +43,8 @@ unsigned strokeDraw(double x, double y){
 
 	double x1 = colorPoints[0].x - x; double y1 = colorPoints[0].y - y;
 	double x2 = colorPoints[1].x - x; double y2 = colorPoints[1].y - y;
-	double x3 = colorPoints[2].x - x; double y3 = colorPoints[2].y - y;
-	double x4 = colorPoints[3].x - x; double y4 = colorPoints[3].y - y;
+    // double x3 = colorPoints[2].x - x; double y3 = colorPoints[2].y - y;
+    // double x4 = colorPoints[3].x - x; double y4 = colorPoints[3].y - y;
 
 	double xDiff = (x - x2) / (x1 - x2);
 	double yDiff = (y - y2) / (y1 - y2);
@@ -53,9 +53,10 @@ unsigned strokeDraw(double x, double y){
 	double dist = sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0));
     double dist1 = sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0));
     double dist2 = sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0));
+    double lineDist = fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
 	double cross = ((x - x1) * (x2 - x1)) - ((y - y1) * (y2 - y1));
 
-	switch(mode){
+    /* switch(mode){
 		case 'q': return (((x > x1 && x < x2) || (x < x1 && x > x2)) && ((y > y1 && y < y2) || (y < y1 && y > y2)))? colors_blend(0xFF00FF00, canvasColor, (pow(fabs(xDiff - yDiff), 0.1))) : canvasColor;
 		case 'w': return (xDiff > yDiff)? colorPoints[0].color : colorPoints[1].color;
 		case 'e': return (x1 * sin(y1 * OSCILATION) < x2 * -y2)? colorPoints[0].color : colorPoints[1].color;
@@ -66,7 +67,23 @@ unsigned strokeDraw(double x, double y){
 		case 'i': return (xDiff / x1 / x2 / x3 / x4 > yDiff / y1 / y2 / y3 / y4)? colorPoints[0].color : colorPoints[1].color;
 		case 'o': return (pow(x1 * x2 * x3 * x4, 1.0) > pow(y1 * y2 * y3 * y4, 1.0))? colorPoints[0].color : colorPoints[1].color;
 		default: return wavePaint(x, y);
-	}
+    } */
+
+
+    if(lineDist < DOT_RADIUS && dist2 < dist && dist1 < dist)
+        switch(mode){
+            case 'q': return colorPoints[0].color;
+            case 'w': return colorPoints[0].color;
+            case 'e': return colorPoints[0].color;
+            case 'r': return colorPoints[0].color;
+            case 't': return colorPoints[0].color;
+            case 'y': return colorPoints[0].color;
+            case 'u': return colorPoints[0].color;
+            case 'i': return colorPoints[0].color;
+            case 'o': return colorPoints[0].color;
+            default: return colorPoints[0].color;
+        }
+    else return _swatch.colors[SWATCH_Dark]; // colors_blend(_swatch.colors[SWATCH_Light], _swatch.colors[SWATCH_Dark], dist1 + dist2);
 }
 
 static unsigned dotDraw(unsigned color, double distance, PixelPoint pixPoint){
@@ -84,17 +101,17 @@ static unsigned dotDraw(unsigned color, double distance, PixelPoint pixPoint){
     }
 }
 
-static unsigned fieldCompute(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
+static unsigned fieldDraw(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
 	switch(mode){
-		case 'a': return colors_blend(xColor, yColor, distances[0] * FIELD_PRODUCT);
-		case 's': return (distances[1] - distances[0] > 0.01)? xColor : yColor; // colors_blend(xColor, yColor, distances[1] * FIELD_PRODUCT);
-		case 'd': return (distances[2] - distances[1] > 0.01)? xColor : yColor; // colors_blend(xColor, yColor, distances[2] * FIELD_PRODUCT);
-		case 'f': return colors_blend(xColor, yColor, sin(distances[0] * FIELD_PRODUCT * 10.0));
-		case 'g': return colors_blend(xColor, yColor, cos(distances[0] * FIELD_PRODUCT * 10.0));
-		case 'h': return colors_blend(xColor, yColor, tan(distances[0] * FIELD_PRODUCT * 10.0));
-		case 'j': return (distances[2] > distances[0] + distances[1])? xColor : yColor;
+        case 'a': return colors_blend(xColor, yColor, distances[0] * FIELD_PRODUCT);
+        case 's': return (distances[1] - distances[0] > 0.01)? xColor : yColor; // colors_blend(xColor, yColor, distances[1] * FIELD_PRODUCT);
+        case 'd': return (distances[2] - distances[1] > 0.01)? xColor : yColor; // colors_blend(xColor, yColor, distances[2] * FIELD_PRODUCT);
+        case 'f': return colors_blend(xColor, yColor, sin(pow(distances[0], pixPoints[0].x) * FIELD_PRODUCT * 5.0));
+        case 'g': return colors_blend(xColor, yColor, cos(pow(distances[0], pixPoints[0].y) * FIELD_PRODUCT * 5.0));
+        case 'h': return colors_blend(xColor, yColor, tan(pow(distances[0], pixPoints[0].x * pixPoints[0].y) * FIELD_PRODUCT * 100.0));
+        case 'j': return (distances[2] > distances[0] + distances[1])? xColor : yColor;
         case 'k': return (pixPoints[0].x / pixPoints[1].y > pow(pixPoints[1].x, pixPoints[0].y))? xColor : yColor;
-		default: return (((distances[2] + distances[1] + distances[0]) / 3) > distances[1])? xColor : yColor;
+        default: return (((distances[2] + distances[1] + distances[0]) / 3) > distances[1])? xColor : yColor;
 	}
 }
 
@@ -168,7 +185,7 @@ void _onKeyEvent(char key){
                 _outputImg = mapImgOp((ImageSize){1024, 1024}, strokeDraw);
             break;
             case 'a': case 's': case 'd': case 'f': case 'g': case 'h': case 'j': case 'k': case 'l':
-                _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldCompute);
+                _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw);
             break;
             case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm':
                 _outputImg = drawImgOp(_savedImg, &pixelPointTable, pixelPointTable.pointCount - 4, xMod, yMod);

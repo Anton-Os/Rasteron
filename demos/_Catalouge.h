@@ -38,7 +38,7 @@ Rasteron_Image* perturbImgOp(double xCenter, double yCenter); // Purturbs a cros
 Rasteron_Image* ballingImgOp(double size); // Black and white blobs transformed into gradients effects
 Rasteron_Image* stratifyImgOp(unsigned short levels); // Stratifies colors into discrete intervals based on brightness
 Rasteron_Image* barkodeImgOp(unsigned short iters, unsigned color1, unsigned color2);
-Rasteron_Image* combImgOp(unsigned short rows, unsigned short cols);
+Rasteron_Image* chaosImgOp(unsigned short rows, unsigned short cols);
 Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv);
 Rasteron_Image* euclidTileImgOp(int mode, unsigned short density, double xFactor, double yFactor);
 Rasteron_Image* nuTileImgOp(int mode, unsigned short density, double xFactor, double yFactor);
