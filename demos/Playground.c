@@ -37,7 +37,7 @@ void setup(char input){
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
 		case 'f': _outputImg = fisheyeImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mozaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
-		case 'h': _outputImg = interferenceImgOp(32, mode + 2); break;
+		case 'h': _outputImg = interferenceImgOp(16 + mode, 16 - mode); break;
 		case 'i': _outputImg = perturbImgOp(xArg + 0.5F, yArg + 0.5); break;
 		case 'j': _outputImg = ballingImgOp((double)(mode + 2)); break;
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
@@ -49,8 +49,8 @@ void setup(char input){
 		case 'q': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
         case 'r': _outputImg = fuzzlikeImgOp((mode + 2) * 4); break;
 		case 's': _outputImg = oozelikeImgOp(mode); break;
-		case 't': _outputImg = recurrantImgOp(mode + 3); break;
-		case 'u': _outputImg = intersectImgOp(1.0, 0.0); break;
+		case 't': _outputImg = recurrantImgOp(mode + 2); break;
+		case 'u': _outputImg = intersectImgOp(xArg, yArg); break;
 		case 'v': _outputImg = swirlyImgOp((mode + 2) * 5.0); break;
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
