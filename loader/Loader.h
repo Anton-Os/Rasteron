@@ -1,6 +1,7 @@
 #ifndef IMAGE_LOADER_H
 
 #include "support_def.h"
+#include "type_def.h"
 
 #ifdef __linux__
 #include "unistd.h"

@@ -7,7 +7,7 @@
 
 int mode = -1;
 
-#include "Util_Runner.h"
+#include "_Demo.h"
 
 unsigned antialias(unsigned target, unsigned neighbors[8]); // Defined in Cellwise.c
 

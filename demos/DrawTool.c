@@ -15,7 +15,7 @@ static unsigned yColor = 0xFFFF00FF;
 static unsigned short mode = 0;
 static unsigned short drawIters = 1;
 
-#include "Util_Runner.h"
+#include "_Demo.h"
 
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;

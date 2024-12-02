@@ -3,7 +3,7 @@
 #define RADIAL_SEGS 30.0
 #define RADIAL_DIST 30.0
 
-#include "Util_Runner.h"
+#include "_Demo.h"
 
 double segs = RADIAL_SEGS;
 double dist = RADIAL_DIST;

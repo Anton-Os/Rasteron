@@ -6,41 +6,39 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-# Core Sources
+# Sources
+
+set(support_src 
+    support/type_def.c
+    support/func_def.c
+)
 
 set(core_src
-    src/type_def.c
-    
-    src/Loader.c
-
-    src/core/Basics.c
-    src/core/Filtering.c
-    # src/core/Seeding.c
-    src/core/Mixing.c
-    src/core/Procedural.c
-    src/core/Cellwise.c
-    src/core/Noise.c
+    core/Basics.c
+    core/Filtering.c
+    core/Mixing.c
+    core/Procedural.c
+    core/Cellwise.c
+    core/Noise.c
 )
 
-list(APPEND core_src src/ImgBmp.c) # BMP does not require dependencies
-
-# ext Sources
+set(loader_src 
+    loader/Loader.c
+    loader/ImgBmp.c # BMP does not require dependencies
+)
 
 set(ext_src
-    src/ext/Spacial.c
-    src/ext/Queue.c
+    ext/Spacial.c
+    ext/Queue.c
 )
 
-# Utility Sources
-
 if(WIN32) # Windows Specific
-    list(APPEND util_src src/util/Util_Win.c)
+    list(APPEND util_src util/Util_Win.c)
 elseif(UNIX AND NOT APPLE) # Unix Specific
     include(FindX11)
-    list(APPEND util_src src/util/Util_Unix.c)
+    list(APPEND util_src util/Util_Unix.c)
     SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -lm")
 endif()
-
 
 
 ### External Libraries
@@ -48,13 +46,15 @@ endif()
 include(externalTargets.cmake)
 
 
-
 ### Rasteron Library
 
 # add_library(Rasteron STATIC ${core_src} ${ext_src} "demos/_Catalouge.c") # library only
-add_library(Rasteron STATIC ${core_src} ${ext_src} ${util_src} "demos/_Catalouge.c") # library with examples
+add_library(Rasteron STATIC 
+    ${support_src} ${loader_src} ${core_src} ${ext_src} ${util_src} 
+    "demos/_Catalouge.c"
+)
 
-target_include_directories(Rasteron PRIVATE include ${EXTERNAL_INSTALL_DIR}/include) # include necessary external libs
+target_include_directories(Rasteron PRIVATE loader support core ext util ${EXTERNAL_INSTALL_DIR}/include) # loader support core ext util necessary external libs
 
 if(WIN32)
     target_link_libraries(Rasteron PUBLIC tiff png ${zlibstatic})
@@ -62,7 +62,7 @@ elseif(UNIX AND NOT APPLE) # Unix Specific
     target_link_libraries(Rasteron PUBLIC tiff png ${zlib})
 endif()
 
-if(SUPPORT_FONT_BAKING AND NOT freetype_lib EQUAL "freetype_lib-NOTFOUND")
+if(SUPPORT_FONT_BAKING AND NOT freetype_lib STREQUAL "freetype_lib-NOTFOUND")
     # target_link_libraries(Rasteron PUBLIC freetype)
     target_include_directories(Rasteron PUBLIC ${freetype_h})
     target_link_libraries(Rasteron PUBLIC ${freetype_lib})
@@ -77,44 +77,34 @@ target_include_directories(Rasteron
     $<INSTALL_INTERFACE:include/Rasteron>
 )
 
-# Test Applications
-
-add_executable(Read test/Read.c)
-target_include_directories(Read PUBLIC include)
-target_link_libraries(Read Rasteron)
-
-add_executable(Write test/Write.c)
-target_include_directories(Write PUBLIC include)
-target_link_libraries(Write Rasteron)
-
 # Demo Applications
 
 add_executable(Playground demos/Playground.c)
-target_include_directories(Playground PUBLIC include demos)
+target_include_directories(Playground PUBLIC loader support core ext util demos)
 target_link_libraries(Playground Rasteron)
 
 add_executable(EasyGUI demos/EasyGUI.c)
-target_include_directories(EasyGUI PUBLIC include demos)
+target_include_directories(EasyGUI PUBLIC loader support core ext util demos)
 target_link_libraries(EasyGUI Rasteron)
 
 add_executable(DrawTool demos/DrawTool.c)
-target_include_directories(DrawTool PUBLIC include demos)
+target_include_directories(DrawTool PUBLIC loader support core ext util demos)
 target_link_libraries(DrawTool Rasteron)
 
 add_executable(TexTool demos/TexTool.c)
-target_include_directories(TexTool PUBLIC include demos)
+target_include_directories(TexTool PUBLIC loader support core ext util demos)
 target_link_libraries(TexTool Rasteron)
 
 add_executable(TileTool demos/TileTool.c)
-target_include_directories(TileTool PUBLIC include demos)
+target_include_directories(TileTool PUBLIC loader support core ext util demos)
 target_link_libraries(TileTool Rasteron)
 
 add_executable(SimTool demos/SimTool.c)
-target_include_directories(SimTool PUBLIC include demos)
+target_include_directories(SimTool PUBLIC loader support core ext util demos)
 target_link_libraries(SimTool Rasteron)
 
 add_executable(RadTool demos/RadTool.c)
-target_include_directories(RadTool PUBLIC include demos)
+target_include_directories(RadTool PUBLIC loader support core ext util demos)
 target_link_libraries(RadTool Rasteron)
 
 
@@ -135,7 +125,13 @@ if(UNIX)
     endif()
 endif()
 
-file(GLOB interfaceHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+file(GLOB interfaceHeaders 
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/support/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/loader/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/util/*.h
+)
 install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)
 install(EXPORT Rasteron DESTINATION lib/Rasteron FILE RasteronConfig.cmake)
 
@@ -146,4 +142,4 @@ configure_file(
 )
 
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
-configure_file("${CMAKE_SOURCE_DIR}/include/support_def.h.in" "${CMAKE_SOURCE_DIR}/include/support_def.h")
+configure_file("${CMAKE_SOURCE_DIR}/support/support_def.h.in" "${CMAKE_SOURCE_DIR}/support/support_def.h")

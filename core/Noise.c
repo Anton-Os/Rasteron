@@ -1,18 +1,3 @@
-// --------------------------------   Support Functions   -------------------------------- //
-
-#include "support_def.h"
-
-void seedRandGen(){ srand (time(NULL)); }
-
-/*uint32_t color_random(){
-	uint8_t redBit = rand() % 255;
-	uint8_t greenBit = rand() % 255;
-	uint8_t blueBit = rand() % 255;
-	return (uint32_t)((0xFF << 24) + (redBit << 16) + (greenBit << 8) + blueBit);
-} */
-
-// --------------------------------  Noise Operations  -------------------------------- //
-
 #include "Rasteron.h"
 
 #define OCTAVE_MAX 8

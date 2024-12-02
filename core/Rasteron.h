@@ -7,6 +7,7 @@ extern "C"{
 #include "Loader.h"
 
 #include "type_def.h"
+#include "func_def.h"
 
 // --------------------------------   Basic Operations    -------------------------------- //
 //
