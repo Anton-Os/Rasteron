@@ -61,7 +61,8 @@ unsigned _dimens[2] = { 1, 1 };
 void _onKeyEvent(char key);
 void _onPressEvent(double x, double y);
 void _onTickEvent(unsigned secs);
-typedef void (*argCallback)(int argc, char** argv);
+
+typedef void (*argCallback)(int, char**);
 
 void parseInput(char lastInput){
     if(isdigit(lastInput)){
@@ -186,9 +187,7 @@ void _run(int argc, char** argv, argCallback callback){
     createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
     eventLoop(NULL);
 #elif defined __linux__
-    puts("Window Creation");
     createWindow(&unixContext, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
-    puts("Event Loop");
     eventLoop(unixContext.display, unixContext.window, unixProc);
 #endif
 }

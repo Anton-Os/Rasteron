@@ -828,3 +828,61 @@ Rasteron_Image* arcaneImgOp(double radius, unsigned short count){
 
 
 /*** Specialized Image Algorithms ***/
+
+
+Rasteron_Image* drawImgOp(char mode, Rasteron_Image* targetImg, PixelPointTable* pointsTable, unsigned short count, double (*xModCallback)(double), double (*yModCallback)(double)){
+
+    unsigned color1 = _swatch.colors[count % 8];
+    unsigned color2 = _swatch.colors[(count + 1) % 8];
+    unsigned color3 = _swatch.colors[(count - 1) % 8];
+
+    Rasteron_Image* drawImg = (targetImg != NULL)? copyImgOp(targetImg) : checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 10, 10, color1, color2 });
+
+    for(unsigned p = 0; p < 1024 * 1024; p++){
+        double x = (1.0 / (double)1024) * (p % 1024); // (1.0 / (double)1024) * (p % 1024);
+        double y = (1.0 / (double)1024) * (p / 1024); // (1.0 / (double)1024) * (p / 1024)
+        if(xModCallback != NULL) x = xModCallback(x);
+        if(yModCallback != NULL) y = yModCallback(y);
+
+        double xOffLo = 9999.99, yOffLo = 9999.99; // lowest value
+        double xOffHi = 0.0, yOffHi = 0.0; // highest value
+        double xAccum = 0.0; double yAccum = 0.0; // accumulated value
+
+        // for(unsigned o = pointsTable->pointCount; o > (count < pointsTable->pointCount - 1)? count : pointsTable->pointCount - 1; o--){
+        for(unsigned o = pointsTable->pointCount; o > count; o--){
+            double xOff = x - pointsTable->points[o - 1].x;
+            double yOff = y - pointsTable->points[o - 1].y;
+            double angle = atan(((yOff + 1.0) * 0.5) / ((xOff + 1.0) * 0.5));
+            double distance = sqrt(pow(xOff, 2) + pow(yOff, 2));
+
+            if(o == 0 || fabs(xOff) < xOffLo) xOffLo = xOff; // minimum x value
+            if(o == 0 || fabs(xOff) > xOffHi) xOffHi = xOff; // maximum x value
+            if(o == 0 || fabs(yOff) < yOffLo) yOffLo = yOff; // minimum y value
+            if(o == 0 || fabs(yOff) > yOffHi) yOffHi = yOff; // maximum y value
+            xAccum += fabs(xOff); yAccum += fabs(yOff);
+
+            /* switch(mode){
+                case 'z': *(drawImg->data + p) = colors_blend(colors_blend(color1, color_invert(color1), fabs(xAccum)), colors_blend(color2, color_invert(color2), fabs(yAccum)), fabs(xAccum / yAccum)); break;
+                case 'x': if(fabs(xOffLo) < fabs(yOffLo)) *(drawImg->data + p) = color1; else if(fabs(xOffHi) > fabs(yOffHi)) *(drawImg->data + p) = color2; break;
+                case 'c': *(drawImg->data + p) = colors_blend(color1, color2, (xAccum / yOffHi) * (xOffLo / yAccum)); break;
+                case 'v': *(drawImg->data + p) = colors_blend(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
+                case 'b': *(drawImg->data + p) = colors_fuse(color1, color2, (xOffHi / yOffLo) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
+                case 'n': *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi); break;
+                case 'm': *(drawImg->data + p) = (color1 / color2) * (xOffLo * xAccum) / (yOff * yAccum); break;
+                default: *(drawImg->data + p) = *(drawImg->data + p);
+            } */
+
+            switch(mode){
+                case 'z': if(o == pointsTable->pointCount) *(drawImg->data + p) = colors_blend(color1, color2, angle); break;
+                case 'x': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color2, pow(angle, count)); break;
+                case 'c': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color3, angle / distance); break;
+                case 'v': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color1, (distance - angle) / (angle + distance)); break;
+                case 'b': *(drawImg->data + p) = (angle > distance)? color1 : color2; break;
+                case 'n': *(drawImg->data + p) = colors_fuse(color1, color3, sin(angle) + cos(distance)); break;
+                case 'm': *(drawImg->data + p) = colors_fuse(colors_blend(color1, color2, angle), colors_blend(color1, color3, distance), 1.0 / (xAccum + yAccum)); break;
+            }
+        }
+    }
+
+    return drawImg;
+}

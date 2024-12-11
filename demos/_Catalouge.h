@@ -57,7 +57,7 @@ Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2);
 // Specialized Images
 
 Rasteron_Image* texImgOp(char mode, ColorGrid* grid);
-Rasteron_Image* drawImgOp(Rasteron_Image* targetImg, PixelPointTable* pointsTable, unsigned short count, double (*xModCallback)(double), double (*yModCallback)(double));
+Rasteron_Image* drawImgOp(char mode, Rasteron_Image* targetImg, PixelPointTable* pointsTable, unsigned short count, double (*xModCallback)(double), double (*yModCallback)(double));
 Rasteron_Image* simImgOp(ref_image_t refImage, unsigned short iters, nebrCallback8 callback);
 Rasteron_Image* fieldClxImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback);
 

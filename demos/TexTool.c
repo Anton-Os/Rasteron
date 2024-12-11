@@ -8,6 +8,7 @@
 #include "_Demo.h"
 
 static char mode = 'a';
+static ColorGrid grid;
 
 static float noiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
 
@@ -39,25 +40,26 @@ unsigned wavyMix(unsigned color1, unsigned color2){
     return colors_fuse(color1 + color2, color1 - color2, 0.5);
 }
 
-Rasteron_Image* texImgOp(char mode){
-    ColorGrid grid = { pow(2, _dimens[0]), pow(2, _dimens[1]),  _swatch.colors[SWATCH_Light],  _swatch.colors[SWATCH_Dark] };
+Rasteron_Image* texImgOp(char mode, ColorGrid* grid){
+    // ColorGrid grid = { pow(2, _dimens[0]), pow(2, _dimens[1]),  _swatch.colors[SWATCH_Light],  _swatch.colors[SWATCH_Dark] };
 
     switch(tolower(mode)){
-        case 'a': return noiseImgOp_value((ImageSize){ 1024, 1024 }, grid); break;
-        case 's': return noiseImgOp_scratch((ImageSize){ 1024, 1024 }, grid); break;
-        case 'd': return noiseImgOp_octave((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
-        case 'f': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
-        case 'g': return noiseImgOp_low((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
-        case 'h': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, grid, OCTAVES); break;
-        case 'j': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, grid, noiseMod); break;
-        case 'k': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, grid, cosMod); break;
-        case 'l': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, grid, tanMod); break;
-        default: return noiseImgOp_value((ImageSize){ 1024, 1024 }, grid); break;
+        case 'a': return noiseImgOp_value((ImageSize){ 1024, 1024 }, *grid); break;
+        case 's': return noiseImgOp_scratch((ImageSize){ 1024, 1024 }, *grid); break;
+        case 'd': return noiseImgOp_octave((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'f': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'g': return noiseImgOp_low((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'h': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'j': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, *grid, noiseMod); break;
+        case 'k': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
+        case 'l': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, *grid, tanMod); break;
+        default: return noiseImgOp_value((ImageSize){ 1024, 1024 }, *grid); break;
     }
 }
 
 void _onKeyEvent(char key){ 
     static unsigned mode = 0;
+    grid = (ColorGrid){ pow(2, _dimens[0]), pow(2, _dimens[1]),  _swatch.colors[SWATCH_Light],  _swatch.colors[SWATCH_Dark] };
 
     if(isspace(key) && _outputImg != NULL) saveToFile(_outputImg);
     else if(tolower(key) == 'q' || tolower(key) == 'w' || tolower(key) == 'e' || tolower(key) == 'r' || tolower(key) == 't' || tolower(key) == 'y' || tolower(key) == 'u' || tolower(key) == 'i' || tolower(key) == 'o' || tolower(key) == 'p'){
@@ -79,11 +81,11 @@ void _onKeyEvent(char key){
         mode = tolower(key);
         
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-        _outputImg = texImgOp(mode);
+        _outputImg = texImgOp(mode, &grid);
 
     if(_outputImg != NULL){
         Rasteron_Image* currentImg = copyImgOp(_outputImg);
-        Rasteron_Image* mixerImg = texImgOp(mode);
+        Rasteron_Image* mixerImg = texImgOp(mode, &grid);
 
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
