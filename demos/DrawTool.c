@@ -5,31 +5,49 @@
 #define OSCILATION 30.0
 #define DOT_RADIUS 0.05
 #define FIELD_PRODUCT 5.0
+#define STROKE_MOD 5.0
 
 static unsigned dotSize = 1.0;
 static unsigned isCoords = CANVAS_COLOR;
 static unsigned xColor = 0xFFFFFF00; 
 static unsigned yColor = 0xFFFF00FF;
 static unsigned short mode = '1';
-static unsigned short drawIters = 1;
 static unsigned short pressCount = 0;
-static double (*xMod)(double) = NULL;
-static double (*yMod)(double) = NULL;
 
 #include "_Demo.h"
 
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
-static double sinMod(double val){ return sin(val * drawIters); }
-static double cosMod(double val){ return sin(val * drawIters); }
-static double tanMod(double val){ return sin(val * drawIters); }
-static double sinModX(double val){ return val * sin(val * drawIters); }
-static double cosModX(double val){ return val * cos(val * drawIters); }
-static double tanModX(double val){ return val * tan(val * drawIters); }
-static double sinModD(double val){ return val / sin(val * drawIters); }
-static double cosModD(double val){ return val / cos(val * drawIters); }
-static double tanModD(double val){ return val / tan(val * drawIters); }
+/* static double sinMod(double val){ return sin(val * STROKE_MOD); }
+static double cosMod(double val){ return sin(val * STROKE_MOD); }
+static double tanMod(double val){ return sin(val * STROKE_MOD); }
+static double sinModX(double val){ return val * sin(val * STROKE_MOD); }
+static double cosModX(double val){ return val * cos(val * STROKE_MOD); }
+static double tanModX(double val){ return val * tan(val * STROKE_MOD); }
+static double sinModD(double val){ return val / sin(val * STROKE_MOD); }
+static double cosModD(double val){ return val / cos(val * STROKE_MOD); }
+static double tanModD(double val){ return val / tan(val * STROKE_MOD); }
+
+static double (*xMod)(double) = &sinMod;
+static double (*yMod)(double) = &cosMod; */
+
+static double basicLine(double x, double y, double x1, double y1, double x2, double y2){
+    return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
+}
+
+static double wobbleLine(double x, double y, double x1, double y1, double x2, double y2){
+    x *= 1.0 + sin(x); y *= 1.0 + sin(y);
+    return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
+}
+
+static double powerLine(double x, double y, double x1, double y1, double x2, double y2){
+    x += sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0)); 
+    y += sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0));
+    return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
+}
+
+static double (*lineEq)(double, double, double, double, double, double) = &basicLine;
 
 unsigned waveDraw(double x, double y){ return (sin(x * 10.0) > tan(y * 10.0))? xColor : yColor; }
 
@@ -67,39 +85,24 @@ unsigned strokeDraw(double x, double y){
 	double yDiff = (y - y2) / (y1 - y2);
 	double slope = (y1 - y2) / (x2 - x1);
 
-    // if(xMod != NULL) x += xMod(x);
-    // if(yMod != NULL) y += yMod(y);
-
 	double dist = sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0));
     double dist1 = sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0));
     double dist2 = sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0));
     double cross = ((x - x1) * (x2 - x1)) - ((y - y1) * (y2 - y1));
 
-    double lineDist;
-    if(xMod == NULL && yMod == NULL) lineDist = fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
-    else {
-        // puts("Triggering different distance function");
-        double mx = x + xMod(x); double mx1 = xMod(x1); double mx2 = xMod(x2);
-        double my = y + yMod(y); double my1 = yMod(y1); double my2 = yMod(y2);
-        lineDist = fabs(((my2 - my1) * mx) - ((mx2 - mx1) * my) + (mx2 * my1) - (my2 * mx1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
-    }
-
-    // TODO: Modify line dist based on input
+    double lineDist = lineEq(x, y, x1, y1, x2, y2);
 
     if(lineDist < DOT_RADIUS && dist2 < dist && dist1 < dist)
         switch(mode){
-            // case 'w': return colors_blend(colorPoints[0].color, color_invert(colorPoints[1].color), lineDist * (dist / (dist1 * dist2)));
-            // case 'e': return colors_blend(colorPoints[0].color, color_invert(colorPoints[1].color), lineDist / (fabs(dist1 + dist2) / FIELD_PRODUCT));
-            // case 'r': return colors_blend(colorPoints[0].color, color_invert(colorPoints[1].color), pow(lineDist, (fabs(dist1 - dist2) * FIELD_PRODUCT)));
             case 'w': return (lineDist * (dist / (dist1 * dist2)) < 0.5)? colorPoints[0].color : NO_COLOR; // SAVE THIS
             case 'e': return (lineDist * (dist / (dist1 * dist2)) < cos(lineDist * 50.0))? colorPoints[0].color : NO_COLOR; // SAVE THIS!
             case 'r': return (lineDist / (fabs(dist1 + dist2 + cross) / FIELD_PRODUCT) > 0.1)? colorPoints[0].color : NO_COLOR;
             case 't': return (pow(lineDist, (fabs(dist1 - dist2) * FIELD_PRODUCT)) < fabs(sin(lineDist * 10.0)))? colorPoints[0].color : NO_COLOR;
             case 'y': return (lineDist * (dist / (dist1 * dist2)) < pow(xDiff / yDiff, yDiff * xDiff))? colorPoints[0].color : NO_COLOR;
             case 'u': return (lineDist * (dist / (dist1 * dist2)) < (lineDist * fabs(x / y)) * 30.0)? colorPoints[0].color : NO_COLOR;
-            case 'i': return (lineDist < xMod(dist1) + yMod(dist2))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
-            case 'o': return (lineDist * xMod(dist1) < lineDist * yMod(dist2))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
-            case 'p': return (pow(lineDist, xMod(x - x1)) < pow(lineDist, yMod(y - y2)))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
+            // case 'i': return (lineDist < xMod(dist1) + yMod(dist2))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
+            // case 'o': return (lineDist * xMod(dist1) < lineDist * yMod(dist2))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
+            // case 'p': return (pow(lineDist, xMod(x - x1)) < pow(lineDist, yMod(y - y2)))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
             default: return colorPoints[0].color;
         }
     else return NO_COLOR; // colors_blend(_swatch.colors[SWATCH_Light], _swatch.colors[SWATCH_Dark], dist1 + dist2);
@@ -122,8 +125,7 @@ static unsigned fieldDraw(unsigned colors[3], double distances[3], PixelPoint pi
 	}
 }
 
-void setup(char input, double (*xMod)(double), double (*yMod)(double)){
-    printf("Mode is %d\n", mode);
+void setup(char input){ // double (*xMod)(double), double (*yMod)(double)){
     if(!isdigit(input))
         switch(input){
             case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p':
@@ -137,15 +139,8 @@ void setup(char input, double (*xMod)(double), double (*yMod)(double)){
                 RASTERON_DEALLOC(_outputImg);
                 _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw);
             break;
-            /* case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm':
-                if(colorPointTable.pointCount > COLOR_POINTS){
-                    RASTERON_DEALLOC(_outputImg);
-                    _outputImg = drawImgOp(_savedImg, &pixelPointTable, pixelPointTable.pointCount - COLOR_POINTS, xMod, yMod);
-                }
-            break; */
         }
     else {
-        puts("Setup triggered");
         Rasteron_Image* tempImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw);
         for(unsigned p = 0; p < tempImg->width * tempImg->height; p++)
             if(*(tempImg->data + p) != NO_COLOR) *(_outputImg->data + p) = *(tempImg->data + p);
@@ -156,7 +151,7 @@ void setup(char input, double (*xMod)(double), double (*yMod)(double)){
 void _onKeyEvent(char key){
     if(colorPointTable.pointCount > COLOR_POINTS && key != 13) mode = key;
 
-    switch(key){
+    /* switch(key){
         case 'z': xMod = &sinMod; yMod = &cosMod; break;
         case 'x': xMod = &sinModX; yMod = &cosModD; break;
         case 'c': xMod = &cosModD; yMod = &sinModD; break;
@@ -164,8 +159,13 @@ void _onKeyEvent(char key){
         case 'b': xMod = &tanMod; yMod = &sinModX; break;
         case 'n': xMod = &tanMod; yMod = &cosModD; break;
         case 'm': xMod = &tanModX; yMod = &tanModD; break;
+    } */
+    switch(key){
+        case 'z': lineEq = &basicLine; break;
+        case 'x': lineEq = &wobbleLine; break;
+        case 'c': lineEq = &powerLine; break;
     }
-    setup(mode, xMod, yMod);
+    setup(mode); // xMod, yMod);
 }
 
 void _onPressEvent(double x, double y){
@@ -176,7 +176,7 @@ void _onPressEvent(double x, double y){
     // colorPointToTable(&colorPointTable, (colorPointTable.pointCount % 2 == 0)? xColor : yColor, x, y);
     colorPointToTable(&colorPointTable, color_level((colorPointTable.pointCount % 2 == 0)? xColor : yColor, (x + y) / 2.0), x, y);
 
-    setup(mode, tanModD, tanModX);
+    setup(mode);
     pressCount++;
 }
 
