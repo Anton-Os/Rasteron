@@ -42,8 +42,15 @@ static double wobbleLine(double x, double y, double x1, double y1, double x2, do
 }
 
 static double powerLine(double x, double y, double x1, double y1, double x2, double y2){
-    x += sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0)); 
-    y += sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0));
+    x += pow(x, 1.0 / sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0)));
+    y += pow(y, 1.0 / sqrt(pow(x - x1, 2.0) + pow(y - y2, 2.0)));
+    return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
+}
+
+static double squigLine(double x, double y, double x1, double y1, double x2, double y2){
+    double dist = sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0));
+    x *= sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0)) / dist;
+    y *= sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0)) / dist;
     return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
 }
 
@@ -95,11 +102,14 @@ unsigned strokeDraw(double x, double y){
     if(lineDist < DOT_RADIUS && dist2 < dist && dist1 < dist)
         switch(mode){
             case 'w': return (lineDist * (dist / (dist1 * dist2)) < 0.5)? colorPoints[0].color : NO_COLOR; // SAVE THIS
-            case 'e': return (lineDist * (dist / (dist1 * dist2)) < cos(lineDist * 50.0))? colorPoints[0].color : NO_COLOR; // SAVE THIS!
+            case 'e': return (lineDist * (dist / (dist1 * dist2)) < cos(lineDist * 5.0 * 10))? colorPoints[0].color : NO_COLOR; // SAVE THIS!
             case 'r': return (lineDist / (fabs(dist1 + dist2 + cross) / FIELD_PRODUCT) > 0.1)? colorPoints[0].color : NO_COLOR;
             case 't': return (pow(lineDist, (fabs(dist1 - dist2) * FIELD_PRODUCT)) < fabs(sin(lineDist * 10.0)))? colorPoints[0].color : NO_COLOR;
             case 'y': return (lineDist * (dist / (dist1 * dist2)) < pow(xDiff / yDiff, yDiff * xDiff))? colorPoints[0].color : NO_COLOR;
             case 'u': return (lineDist * (dist / (dist1 * dist2)) < (lineDist * fabs(x / y)) * 30.0)? colorPoints[0].color : NO_COLOR;
+            case 'i': return (lineDist - sin((dist1 + dist2) * 5.0 * 10) < DOT_RADIUS / 5)? colorPoints[0].color : NO_COLOR;
+            case 'o': return (lineDist * cos((dist1 + dist2) * 5.0 * 10) < DOT_RADIUS / 5)? colorPoints[0].color : NO_COLOR;
+            case 'p': return (pow(lineDist, tan((dist1 / dist2) * 5.0 * 10)) < DOT_RADIUS)? colorPoints[0].color : NO_COLOR;
             // case 'i': return (lineDist < xMod(dist1) + yMod(dist2))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
             // case 'o': return (lineDist * xMod(dist1) < lineDist * yMod(dist2))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
             // case 'p': return (pow(lineDist, xMod(x - x1)) < pow(lineDist, yMod(y - y2)))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
@@ -164,6 +174,7 @@ void _onKeyEvent(char key){
         case 'z': lineEq = &basicLine; break;
         case 'x': lineEq = &wobbleLine; break;
         case 'c': lineEq = &powerLine; break;
+        case 'v': lineEq = &squigLine; break;
     }
     setup(mode); // xMod, yMod);
 }
