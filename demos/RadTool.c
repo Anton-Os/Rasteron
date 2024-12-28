@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = hypnosisImgOp(0, 0xFF00FF00, 0xFF0000FF);
 
-	_run(argc, argv, NULL); // system specific initialization and continuous loop
+    _run(argc, argv); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

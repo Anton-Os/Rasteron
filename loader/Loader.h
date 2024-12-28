@@ -78,6 +78,7 @@ typedef struct {
 
 // Generic Loader Functions
 
+enum IMG_FileFormat getFormat(const char* fileName);
 void loadFromFile(const char* fileName, FileImage* image);
 void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data);
 void delFileImage(FileImage* image);

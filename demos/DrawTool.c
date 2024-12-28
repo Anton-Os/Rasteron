@@ -9,7 +9,7 @@
 
 static unsigned dotSize = 1.0;
 static unsigned isCoords = CANVAS_COLOR;
-static unsigned xColor = 0xFFFFFF00; 
+static unsigned xColor = 0xFFFFFF00;
 static unsigned yColor = 0xFFFF00FF;
 static unsigned short mode = '1';
 static unsigned short pressCount = 0;
@@ -78,21 +78,21 @@ static unsigned dotDraw(unsigned color, double distance, PixelPoint pixPoint){
 }
 
 unsigned strokeDraw(double x, double y){
-	x *= 0.5 * _dimens[0]; 
-	y *= 0.5 * _dimens[1];
+    x *= 0.5 * _dimens[0];
+    y *= 0.5 * _dimens[1];
 
-	ColorPoint colorPoints[COLOR_POINTS]; // TODO: Add color points
-	for(unsigned short c = 0; c < COLOR_POINTS; c++)
-		colorPoints[c] = colorPointTable.points[colorPointTable.pointCount - 1 - c];
+    ColorPoint colorPoints[COLOR_POINTS]; // TODO: Add color points
+    for(unsigned short c = 0; c < COLOR_POINTS; c++)
+        colorPoints[c] = colorPointTable.points[colorPointTable.pointCount - 1 - c];
 
-	double x1 = colorPoints[0].x - x; double y1 = colorPoints[0].y - y;
-	double x2 = colorPoints[1].x - x; double y2 = colorPoints[1].y - y;
+    double x1 = colorPoints[0].x - x; double y1 = colorPoints[0].y - y;
+    double x2 = colorPoints[1].x - x; double y2 = colorPoints[1].y - y;
 
-	double xDiff = (x - x2) / (x1 - x2);
-	double yDiff = (y - y2) / (y1 - y2);
-	double slope = (y1 - y2) / (x2 - x1);
+    double xDiff = (x - x2) / (x1 - x2);
+    double yDiff = (y - y2) / (y1 - y2);
+    double slope = (y1 - y2) / (x2 - x1);
 
-	double dist = sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0));
+    double dist = sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0));
     double dist1 = sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0));
     double dist2 = sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0));
     double cross = ((x - x1) * (x2 - x1)) - ((y - y1) * (y2 - y1));
@@ -122,7 +122,7 @@ static unsigned fieldDraw(unsigned colors[3], double distances[3], PixelPoint pi
     unsigned c1 = colors[0];
     unsigned c2 = colors[1];
 
-	switch(mode){
+    switch(mode){
         case 'a': return colors_blend(c1, c2, distances[0] * FIELD_PRODUCT);
         case 's': return (distances[1] - distances[0] > 0.01)? colors_blend(c1, c2, (distances[1] - distances[0]) * 10.0) : c2; // colors_blend(c1, c2, distances[1] * FIELD_PRODUCT);
         case 'd': return (distances[2] - distances[1] > 0.01)? colors_blend(c1, c2, (distances[2] - distances[1]) * 10.0) : c2; // colors_blend(c1, c2, distances[2] * FIELD_PRODUCT);
@@ -132,7 +132,7 @@ static unsigned fieldDraw(unsigned colors[3], double distances[3], PixelPoint pi
         case 'j': return (distances[2] * 0.5 > distances[0] + distances[1])? c1 : c2;
         case 'k': return (pixPoints[0].x / pixPoints[1].y > pow(pixPoints[1].x, fabs(pixPoints[0].y)))? c1 : c2;
         default: return (((distances[2] + distances[1] + distances[0]) / 3.0) > distances[1])? c1 : c2;
-	}
+    }
 }
 
 void setup(char input){ // double (*xMod)(double), double (*yMod)(double)){
@@ -183,7 +183,7 @@ void _onPressEvent(double x, double y){
     xColor = RAND_COLOR(); // | ((unsigned)(x * 256) * 0x10001);
     yColor = color_invert(xColor); // | ((unsigned)(y * 256) * 0x101);
 
-	pixelPointToTable(&pixelPointTable, x, y);
+    pixelPointToTable(&pixelPointTable, x, y);
     // colorPointToTable(&colorPointTable, (colorPointTable.pointCount % 2 == 0)? xColor : yColor, x, y);
     colorPointToTable(&colorPointTable, color_level((colorPointTable.pointCount % 2 == 0)? xColor : yColor, (x + y) / 2.0), x, y);
 
@@ -193,27 +193,14 @@ void _onPressEvent(double x, double y){
 
 void _onTickEvent(unsigned secs){}
 
-void parseArgs(int argc, char** argv){
-    puts("Parsing arguments");
-    for(unsigned a = 0; a < argc; a++){
-        char* arg = *(argv + a);
-        unsigned short argSize = strlen(arg);
-        printf("Arg %d with size %d: %s\n", a, argSize, arg);
-        // TODO: Parse brush pattern
-        // TODO: Parse draw scale
-        // TODO: Parse target algorithm
-        // TODO: Parse input coordinates
-    }
-}
-
 int main(int argc, char** argv){
     pixelPointTable.pointCount = 0;
-	colorPointTable.pointCount = 0;
+    colorPointTable.pointCount = 0;
 
-	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
+    if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     _outputImg = solidImgOp((ImageSize){1024, 1024}, 0xFF333333); // mapImgOp((ImageSize){1024, 1024}, waveDraw); // global canvas for drawing
 
-    _run(argc, argv, parseArgs); // system specific initialization and continuous loop
+    _run(argc, argv); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

@@ -238,7 +238,7 @@ int main(int argc, char** argv) {
     colorTable.pointCount = 1;
     colorTable.points[0] = (ColorPoint){ RAND_COLOR(), 0.0, 0.0 };
 
-    _run(argc, argv, NULL); // system specific initialization and continuous loop
+    _run(argc, argv); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

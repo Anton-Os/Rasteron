@@ -52,6 +52,7 @@ include(externalTargets.cmake)
 add_library(Rasteron STATIC 
     ${support_src} ${loader_src} ${core_src} ${ext_src} ${util_src} 
     "demos/_Catalouge.c"
+    "demos/_Demo.c"
 )
 
 target_include_directories(Rasteron PRIVATE loader support core ext util ${EXTERNAL_INSTALL_DIR}/include) # loader support core ext util necessary external libs

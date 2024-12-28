@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
 
     _mainQueue = RASTERON_QUEUE_ALLOC("tex", internal_create_size(1024, 1024), TEXTOOL_COUNT);
 
-    _run(argc, argv, NULL); // system specific initialization and continuous loop
+    _run(argc, argv); // system specific initialization and continuous loop
 
     RASTERON_QUEUE_DEALLOC(_mainQueue);
     RASTERON_DEALLOC(_outputImg);

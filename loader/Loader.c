@@ -2,7 +2,7 @@
 
 #include "Loader.h"
 
-static enum IMG_FileFormat getFormat(const char* fileName) {
+enum IMG_FileFormat getFormat(const char* fileName) {
     size_t len = strlen(fileName);
     char extension[] = {
         *(fileName + len - 3),

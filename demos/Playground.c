@@ -73,10 +73,7 @@ int main(int argc, char** argv) {
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities");
 	puts("\nPress numbered keys 0-9 to tweak function parameters and modify the image outputs");
 
-	_run(argc, argv, NULL); // system specific initialization and continuous loop
-
-	if(_outputImg != NULL)
-		writeFileImageRaw("Output", IMG_Png, _outputImg->height, _outputImg->width, _outputImg->data);
+    _run(argc, argv); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

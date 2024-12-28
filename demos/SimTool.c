@@ -183,7 +183,7 @@ int main(int argc, char** argv) {
     _outputImg = simImgOp(growthImg, 1, conwayRules);
     _mainQueue = RASTERON_QUEUE_ALLOC("sim", internal_create_size(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
  
-    _run(argc, argv, NULL); // system specific initialization and continuous loop
+    _run(argc, argv); // system specific initialization and continuous loop
     
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     RASTERON_QUEUE_DEALLOC(_mainQueue);
