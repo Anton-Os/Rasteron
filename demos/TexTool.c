@@ -44,16 +44,16 @@ Rasteron_Image* texImgOp(char mode, ColorGrid* grid){
     // ColorGrid grid = { pow(2, _dimens[0]), pow(2, _dimens[1]),  _swatch.colors[SWATCH_Light],  _swatch.colors[SWATCH_Dark] };
 
     switch(tolower(mode)){
-        case 'a': return noiseImgOp_value((ImageSize){ 1024, 1024 }, *grid); break;
+        case 'a': return noiseImgOp((ImageSize){ 1024, 1024 }, *grid); break;
         case 's': return noiseImgOp_scratch((ImageSize){ 1024, 1024 }, *grid); break;
         case 'd': return noiseImgOp_octave((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
         case 'f': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
         case 'g': return noiseImgOp_low((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
         case 'h': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'j': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, *grid, noiseMod); break;
-        case 'k': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
-        case 'l': return noiseExtImgOp_value((ImageSize){ 1024, 1024 }, *grid, tanMod); break;
-        default: return noiseImgOp_value((ImageSize){ 1024, 1024 }, *grid); break;
+        case 'j': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, noiseMod); break;
+        case 'k': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
+        case 'l': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, tanMod); break;
+        default: return noiseImgOp((ImageSize){ 1024, 1024 }, *grid); break;
     }
 }
 

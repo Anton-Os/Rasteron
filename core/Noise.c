@@ -18,7 +18,7 @@ Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color
     return noiseImg;
 }
 
-Rasteron_Image* noiseExtImgOp_value(ImageSize size, ColorGrid grid, float (*callback)(float)){
+Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, float (*callback)(float)){
 	assert(grid.xCells > 0 && grid.yCells > 0);
 
     Rasteron_Image* noiseImg = RASTERON_ALLOC("gradient_noise", size.height, size.width);
@@ -81,23 +81,23 @@ static float scratchNoiseMod(float value){ return (value > 0.5)? value - 0.25 : 
 // static float expNoiseMod(float value){ if(value < 0.15) return 0.15; else if(value > 0.85) return 0.85; else return 0.5; }
 
 
-Rasteron_Image* noiseImgOp_value(ImageSize size, ColorGrid grid){
-	return noiseExtImgOp_value(size, grid, valueNoiseMod);
+Rasteron_Image* noiseImgOp(ImageSize size, ColorGrid grid){
+	return noiseExtImgOp(size, grid, valueNoiseMod);
 }
 
 Rasteron_Image* noiseImgOp_tiled(ImageSize size, ColorGrid grid){
-	return noiseExtImgOp_value(size, grid, tiledNoiseMod);
+	return noiseExtImgOp(size, grid, tiledNoiseMod);
 }
 
 Rasteron_Image* noiseImgOp_scratch(ImageSize size, ColorGrid grid){
-	return noiseExtImgOp_value(size, grid, scratchNoiseMod);
+	return noiseExtImgOp(size, grid, scratchNoiseMod);
 }
 
 Rasteron_Image* noiseExtImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves, mixCallback callback){
 	assert(grid.xCells > 0 && grid.yCells > 0);
 	if(octaves > OCTAVE_MAX) octaves = OCTAVE_MAX;
 
-	Rasteron_Image* noiseImg = noiseImgOp_value(size, grid);
+	Rasteron_Image* noiseImg = noiseImgOp(size, grid);
 
 	if(octaves > 1)
 		for(unsigned o = 0; o < octaves; o++){

@@ -431,7 +431,7 @@ Rasteron_Image* chaosImgOp(unsigned short rows, unsigned short cols){
     Rasteron_Image* img2 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Top, 0xFF00FFFF, 0xFFFFFF00);
     Rasteron_Image* img3 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Right, 0xFF00FF00, 0xFFFF00FF);
     Rasteron_Image* img4 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
-    // Rasteron_Image* img1 = noiseImgOp_value((ImageSize){ 1024 / rows, 1024 / cols }, (ColorGrid){ 0xFFFF0000, 0xFF0000FF, rows, cols });
+    // Rasteron_Image* img1 = noiseImgOp((ImageSize){ 1024 / rows, 1024 / cols }, (ColorGrid){ 0xFFFF0000, 0xFF0000FF, rows, cols });
 
     Rasteron_Image* chaosoImgs[4] = {
         flipImgOp(img1, FLIP_Counter), flipImgOp(img2, FLIP_Upside), flipImgOp(img3, FLIP_None), flipImgOp(img4, FLIP_Clock)
@@ -688,7 +688,7 @@ Rasteron_Image* recurrantImgOp(unsigned short iters){
     ColorGrid colorGrid = { 2, 2, 0xFF333333, 0xFFEEEEEE };
 
     Rasteron_Image* noiseImg = noiseImgOp_octave((ImageSize){ 1024, 1024 }, colorGrid, iters);
-    Rasteron_Image* recurrantImg = noiseImgOp_value((ImageSize){ 1024, 1024 }, colorGrid);
+    Rasteron_Image* recurrantImg = noiseImgOp((ImageSize){ 1024, 1024 }, colorGrid);
 
     for(unsigned i = 0; i < iters; i++){
         Rasteron_Image* tempImg = mixingImgOp(noiseImg, recurrantImg, recurrantMix);
@@ -757,11 +757,11 @@ Rasteron_Image* swirlyImgOp(double swirlFactor){
 }
 
 Rasteron_Image* displacerImgOp(unsigned short iters, unsigned color1, unsigned color2){
-    Rasteron_Image* noiseTileImg1 = noiseImgOp_value((ImageSize){ 1024, 1024 }, (ColorGrid){ iters * 5, iters, color1, color2 });
-    Rasteron_Image* noiseTileImg2 = noiseImgOp_value((ImageSize){ 1024, 1024 }, (ColorGrid){ iters, iters * 5, color1, color2 });
+    Rasteron_Image* noiseTileImg1 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ iters * 5, iters, color1, color2 });
+    Rasteron_Image* noiseTileImg2 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ iters, iters * 5, color1, color2 });
     Rasteron_Image* gradientImg1 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Left, color1, color2);
     Rasteron_Image* gradientImg2 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Right, color_invert(color1), color_invert(color2));
-    // Rasteron_Image* warpTileImg = noiseImgOp_value((ImageSize){ 1024, 1024 }, (ColorGrid){ cells, cells, 0xFF666666, 0xFFAAAAAA });
+    // Rasteron_Image* warpTileImg = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ cells, cells, 0xFF666666, 0xFFAAAAAA });
 
     Rasteron_Image* displacerImg = warpingImgOp(gradientImg1, noiseTileImg2);
     for(int i = 0; i < iters; i++){
