@@ -132,3 +132,16 @@ if(SUPPORT_FONT_BAKING)
 else()
     set(freetype_found FALSE)
 endif()
+
+set(SUPPORT_MEDIA false CACHE BOOL "Include animation encoding module" FORCE)
+if(SUPPORT_MEDIA)
+ExternalProject_Add(MLT
+    GIT_REPOSITORY "https://github.com/mltframework/mlt.git"
+    GIT_TAG "32abe16667692816814fd5d37676e6e4cd6c44f6"
+
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+
+    PREFIX ${EXTERNAL_PROJ_DIR}/MLT
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+)
+endif()
