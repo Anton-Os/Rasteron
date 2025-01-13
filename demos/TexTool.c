@@ -61,7 +61,7 @@ void _onKeyEvent(char key){
     static unsigned mode = 0;
     grid = (ColorGrid){ pow(2, _dimens[0]), pow(2, _dimens[1]),  _swatch.colors[SWATCH_Light],  _swatch.colors[SWATCH_Dark] };
 
-    if(isspace(key) && _outputImg != NULL) saveToFile(_outputImg);
+    if(isspace(key) && _outputImg != NULL) saveToFile(_outputImg, IMG_Bmp);
     else if(tolower(key) == 'q' || tolower(key) == 'w' || tolower(key) == 'e' || tolower(key) == 'r' || tolower(key) == 't' || tolower(key) == 'y' || tolower(key) == 'u' || tolower(key) == 'i' || tolower(key) == 'o' || tolower(key) == 'p'){
         switch(tolower(key)){
             case 'w': _swatch = createSwatch(0xFF0000FF, 0x32); _swatch.colors[SWATCH_Light] = 0xFF0000FF; _swatch.colors[SWATCH_Dark] = 0xFFFF0000; break;

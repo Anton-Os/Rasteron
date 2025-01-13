@@ -108,7 +108,7 @@ void unixProc(char lastKey, double cursorPos[2]){
 
 // --------------------------------   Callable Methods for Demo    -------------------------------- //
 
-static void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format){
+void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format){
     assert(image != NULL);
 
     char fileName[1024];
@@ -139,7 +139,7 @@ static void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format){
 }
 
 void parseArgs(int argc, char** argv){
-    for(unsigned a = 0; a < argc; a++){
+    for(unsigned a = 1; a < argc; a++){
         char* arg = *(argv + a);
         unsigned short argSize = strlen(arg);
         printf("Arg %d with size %d: %s, start is %c\n", a, argSize, arg, *(arg + 0));

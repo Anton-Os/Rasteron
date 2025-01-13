@@ -1,3 +1,5 @@
+#define RASTERON_ENABLE_ANIM
+
 #include "Util_OS.h"
 
 // --------------------------------   Directives for Demo    -------------------------------- //
@@ -82,7 +84,7 @@ void unixProc(char lastKey, double cursorPos[2]);
 
 // --------------------------------   Callable Methods for Demo    -------------------------------- //
 
-static void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format);
+void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format);
 
 void parseArgs(int argc, char** argv);
 

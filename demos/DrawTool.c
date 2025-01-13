@@ -19,19 +19,6 @@ static unsigned short pressCount = 0;
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
-/* static double sinMod(double val){ return sin(val * STROKE_MOD); }
-static double cosMod(double val){ return sin(val * STROKE_MOD); }
-static double tanMod(double val){ return sin(val * STROKE_MOD); }
-static double sinModX(double val){ return val * sin(val * STROKE_MOD); }
-static double cosModX(double val){ return val * cos(val * STROKE_MOD); }
-static double tanModX(double val){ return val * tan(val * STROKE_MOD); }
-static double sinModD(double val){ return val / sin(val * STROKE_MOD); }
-static double cosModD(double val){ return val / cos(val * STROKE_MOD); }
-static double tanModD(double val){ return val / tan(val * STROKE_MOD); }
-
-static double (*xMod)(double) = &sinMod;
-static double (*yMod)(double) = &cosMod; */
-
 static double basicLine(double x, double y, double x1, double y1, double x2, double y2){
     return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
 }
@@ -51,6 +38,22 @@ static double squigLine(double x, double y, double x1, double y1, double x2, dou
     double dist = sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0));
     x *= sqrt(pow(x - x1, 2.0) + pow(y - y1, 2.0)) / dist;
     y *= sqrt(pow(x - x2, 2.0) + pow(y - y2, 2.0)) / dist;
+    return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
+}
+
+static double bulge(double x, double y, double x1, double y1, double x2, double y2){
+    return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) - sin(y * 10) + pow(x2 - x1, 2.0) + sin(x * 10));
+}
+
+static double cutLine(double x, double y, double x1, double y1, double x2, double y2){
+    x *= (1.0 - (y * 2)) * (1.0 + (x * 2));
+    y *= (1.0 + (x * 2)) * (1.0 - (y * 2));
+    return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
+}
+
+static double waves(double x, double y, double x1, double y1, double x2, double y2){
+    x = y * tan(x1 * x2 * 100);
+    y = x / tan(y1 * y2 * 100);
     return fabs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1)) / sqrt(pow(y2 - y1, 2.0) + pow(x2 - x1, 2.0));
 }
 
@@ -161,20 +164,14 @@ void setup(char input){ // double (*xMod)(double), double (*yMod)(double)){
 void _onKeyEvent(char key){
     if(colorPointTable.pointCount > COLOR_POINTS && key != 13) mode = key;
 
-    /* switch(key){
-        case 'z': xMod = &sinMod; yMod = &cosMod; break;
-        case 'x': xMod = &sinModX; yMod = &cosModD; break;
-        case 'c': xMod = &cosModD; yMod = &sinModD; break;
-        case 'v': xMod = &cosModX; yMod = &sinModX; break;
-        case 'b': xMod = &tanMod; yMod = &sinModX; break;
-        case 'n': xMod = &tanMod; yMod = &cosModD; break;
-        case 'm': xMod = &tanModX; yMod = &tanModD; break;
-    } */
     switch(key){
         case 'z': lineEq = &basicLine; break;
         case 'x': lineEq = &wobbleLine; break;
         case 'c': lineEq = &powerLine; break;
         case 'v': lineEq = &squigLine; break;
+        case 'b': lineEq = &cutLine; break;
+        case 'n': lineEq = &bulge; break;
+        case 'm': lineEq = &waves; break;
     }
     setup(mode); // xMod, yMod);
 }
