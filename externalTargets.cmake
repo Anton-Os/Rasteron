@@ -123,7 +123,7 @@ ExternalProject_Add(FreeType
 )
 endif()
 
-if(SUPPORT_FONT_BAKING)
+if(SUPPORT_FONT_BAKING AND EXISTS "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     set(freetype_found TRUE)
     set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
     find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
@@ -133,15 +133,33 @@ else()
     set(freetype_found FALSE)
 endif()
 
-set(SUPPORT_MEDIA false CACHE BOOL "Include animation encoding module" FORCE)
-if(SUPPORT_MEDIA)
-ExternalProject_Add(MLT
-    GIT_REPOSITORY "https://github.com/mltframework/mlt.git"
-    GIT_TAG "32abe16667692816814fd5d37676e6e4cd6c44f6"
+set(SUPPORT_MEDIA_EXPORT true CACHE BOOL "Include animation encoding module" FORCE)
+if(SUPPORT_MEDIA_EXPORT)
+# ExternalProject_Add(MLT
+#    GIT_REPOSITORY "https://github.com/mltframework/mlt.git"
+#    GIT_TAG "32abe16667692816814fd5d37676e6e4cd6c44f6"
+ExternalProject_Add(FFMPEG
+    # GIT_REPOSITORY "https://github.com/Pawday/ffmpeg-cmake.git"
+    GIT_REPOSITORY "https://github.com/FFmpeg/FFmpeg.git"
+    # GIT_TAG "dea60f9dbe2f0052f4f9a6685016da9bc748e85a"
+    GIT_TAG "19a2d261771171cf338ab1822734b7cc4839a075"
 
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
 
-    PREFIX ${EXTERNAL_PROJ_DIR}/MLT
+    PREFIX ${EXTERNAL_PROJ_DIR}/FFMPEG
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND "" # Manual Build?
+    INSTALL_COMMAND "" # Manual Install?
 )
+endif()
+
+if(SUPPORT_MEDIA_EXPORT AND EXISTS "${EXTERNAL_PROJ_DIR}/FFMPEG/src/FFMPEG")
+    set(ffmpeg_found TRUE)
+    set(ffmpeg_source "${EXTERNAL_PROJ_DIR}/FFMPEG/src/FFMPEG")
+    
+    # TODO: BUILD/INSTALL SOURCES MANUALLY!!!
+else()
+    set(ffmpeg_found FALSE)
 endif()

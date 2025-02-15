@@ -18,7 +18,7 @@ Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color
     return noiseImg;
 }
 
-Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, float (*callback)(float)){
+Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback callback){
 	assert(grid.xCells > 0 && grid.yCells > 0);
 
     Rasteron_Image* noiseImg = RASTERON_ALLOC("gradient_noise", size.height, size.width);
