@@ -29,6 +29,8 @@ void setup(char input){
 	if(mode > CANVAS_PRESET_MAX) mode = CANVAS_PRESET_MIN; // bounds mode to upper limit
 	else if(mode < CANVAS_PRESET_MIN) mode = CANVAS_PRESET_MAX;
 
+	Rasteron_Image* targetImg = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, 0xFF000000, 0xFFFFFFFF);
+
 	switch(keysave){
 		case 'a': _outputImg = oragamiImgOp(mode, xArg, yArg); break;
 		case 'b': _outputImg = nestboxesImgOp(xArg, yArg); break;
@@ -43,7 +45,7 @@ void setup(char input){
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
 		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
         case 'm': _outputImg = chaosImgOp(mode + 3, mode + 3); break;
-        case 'n': _outputImg = truschetImgOp(NULL, mode + 3, mode + 3); break;
+        case 'n': _outputImg = truschetImgOp(targetImg, mode + 3, mode + 3); break;
 		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'q': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
@@ -55,9 +57,11 @@ void setup(char input){
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
 		case 'y': _outputImg = arcaneImgOp(100.0, (mode + 2) * 10); break;
-        // case 'z': _outputImg = ultImgOp(2, 128, 1.0 + xArg, 1.0 - xArg, 1.0 + yArg, 1.0 - yArg); break;
+        case 'z': _outputImg = ditherImgOp(targetImg, 0xFF000000, 0xFFFFFFFF); break;
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
+
+	RASTERON_DEALLOC(targetImg);
 }
 
 void _onKeyEvent(char key){ setup(key); }

@@ -78,8 +78,8 @@ Rasteron_Image* checkeredImgOp(ImageSize size, ColorGrid grid); // Rasteron_Imag
 //
 //      Operations for creating various types of noises
 
-Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback); // extended version that can be reused
 Rasteron_Image* noiseImgOp(ImageSize size, ColorGrid grid); // imitation of perlin noise
+Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback); // extended version that can be reused
 
 Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2); // white noise generated between two values
 Rasteron_Image* noiseImgOp_tiled(ImageSize size, ColorGrid grid); // variation of value noise with discrete tiles

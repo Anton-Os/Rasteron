@@ -39,7 +39,6 @@ Rasteron_Image* ballingImgOp(double size); // Black and white blobs transformed 
 Rasteron_Image* stratifyImgOp(unsigned short levels); // Stratifies colors into discrete intervals based on brightness
 Rasteron_Image* barkodeImgOp(unsigned short iters, unsigned color1, unsigned color2);
 Rasteron_Image* chaosImgOp(unsigned short rows, unsigned short cols);
-Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv);
 Rasteron_Image* euclidTileImgOp(int mode, unsigned short density, double xFactor, double yFactor);
 Rasteron_Image* nuTileImgOp(int mode, unsigned short density, double xFactor, double yFactor);
 Rasteron_Image* graterImgOp(unsigned color1, unsigned color2);
@@ -53,6 +52,8 @@ Rasteron_Image* displacerImgOp(unsigned short cells, unsigned color1, unsigned c
 Rasteron_Image* bilineImgOp(unsigned color, unsigned short variant);
 Rasteron_Image* arcaneImgOp(double radius, unsigned short count);
 Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2);
+Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv);
+Rasteron_Image* ditherImgOp(ref_image_t targetImg, unsigned color1, unsigned color2);
 
 // Specialized Images
 

@@ -113,7 +113,7 @@ Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned colo
 
 		if(side == SIDE_Left) *(gradientImg->data + p) = colors_blend(color1, color2, x);
 		else if(side == SIDE_Right) *(gradientImg->data + p) = colors_blend(color1, color2, 1.0 - x);
-		if(side == SIDE_Top) *(gradientImg->data + p) = colors_blend(color1, color2, y);
+		else if(side == SIDE_Top) *(gradientImg->data + p) = colors_blend(color1, color2, y);
 		else if(side == SIDE_Bottom) *(gradientImg->data + p) = colors_blend(color1, color2, 1.0 - y);
 		else {
 			double centerDist = pix_dist(p, ((size.width * size.height) / 2) + (size.width / 2), size.width) * (1.0 / (double)size.width);

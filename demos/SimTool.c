@@ -101,8 +101,6 @@ void fillSimQueue(Rasteron_Image* targetImg, nebrCallback8 algorithm, nebrCallba
         }
         RASTERON_DEALLOC(resizeImg);
     }
-
-    puts("Populating queue finished");
 }
 
 void _onKeyEvent(char key){
@@ -117,7 +115,6 @@ void _onKeyEvent(char key){
     if(backgroundImg == NULL) backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT / _dimens[0], RASTERON_WIN_WIDTH / _dimens[1]}, _swatch.base);
     if(growImg == NULL) growImg = growImgOp(backgroundImg, 1.0, 0.1);
 
-    printf("On key event with key %c", key);
     if(isspace(key)) mode *= -1; // switches mode into active state
     else if(isalpha(key)){
         if(backgroundImg != NULL) RASTERON_DEALLOC(backgroundImg);

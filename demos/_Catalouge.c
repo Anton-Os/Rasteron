@@ -518,6 +518,33 @@ Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsi
     return finalImg; 
 }
 
+// #define DITHER_THRESH 0xFF888888
+#define DITHER_THRESH 0x66
+
+static unsigned ditherColor1;
+static unsigned ditherColor2;
+
+unsigned dither(unsigned color, unsigned neighbors[8]){
+    float probability = (float)rand() / (float)RAND_MAX;
+
+    long addColor = color;
+    for(unsigned n = 0; n < 8; n++) addColor += neighbors[n];
+
+    unsigned avgColor = addColor / 9;
+    unsigned avgChannel = ((avgColor & BLUE_CHANNEL) + ((avgColor & GREEN_CHANNEL) >> 8) + ((avgColor & RED_CHANNEL) >> 16)) / 3;
+
+    // return (avgColor > DITHER_THRESH)? ditherColor1 : ditherColor2;
+    // return (color > DITHER_THRESH)? ditherColor1 : ditherColor2;
+    return (avgChannel > DITHER_THRESH)? ditherColor1 : ditherColor2;
+}
+
+Rasteron_Image* ditherImgOp(ref_image_t refImg, unsigned color1, unsigned color2){
+    ditherColor1 = color1;
+    ditherColor2 = color2;
+
+    return cellwiseImgOp(refImg, dither);
+}
+
 ColorPointTable tilingTable;
 
 static double euclidX = 0.01;

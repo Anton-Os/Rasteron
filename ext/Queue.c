@@ -97,6 +97,7 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
     Rasteron_Image* iconImg = loadImgOp(iconPath);
     Rasteron_Image* sizedIconImg = resizeImgOp((ImageSize){ (unsigned)(menuSize.height * 0.8), (unsigned)(menuSize.width * 0.8) }, iconImg);
     Rasteron_Image* finalIconImg = copyImgOp(sizedIconImg); // antialiasImgOp(sizedIconImg, 1);
+    printf("Full icon file path is %s", iconPath);
 
     Rasteron_Image* refImages[5] = {
         noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, internal_ui_bk, internal_ui_bk + 0xFF111111),
