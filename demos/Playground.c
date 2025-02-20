@@ -57,7 +57,7 @@ void setup(char input){
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
 		case 'y': _outputImg = arcaneImgOp(100.0, (mode + 2) * 10); break;
-        case 'z': _outputImg = ditherImgOp(targetImg, 0xFF000000, 0xFFFFFFFF); break;
+        case 'z': _outputImg = ditherImgOp(targetImg, (mode + 2) * 0x22, RAND_COLOR(), RAND_COLOR()); break;
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 

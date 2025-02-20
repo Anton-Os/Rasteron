@@ -53,7 +53,7 @@ Rasteron_Image* bilineImgOp(unsigned color, unsigned short variant);
 Rasteron_Image* arcaneImgOp(double radius, unsigned short count);
 Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2);
 Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv);
-Rasteron_Image* ditherImgOp(ref_image_t targetImg, unsigned color1, unsigned color2);
+Rasteron_Image* ditherImgOp(ref_image_t targetImg, uint8_t thresh, unsigned color1, unsigned color2);
 
 // Specialized Images
 

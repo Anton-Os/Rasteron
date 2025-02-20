@@ -1,7 +1,8 @@
 #include "_Catalouge.h"
 
-#define RADIAL_SEGS 30.0
-#define RADIAL_DIST 30.0
+#define RADIAL_SEGS 10.0
+#define RADIAL_DIST 10.0
+#define RADIAL_INVOKE 10
 
 #include "_Demo.h"
 
@@ -12,32 +13,12 @@ unsigned color2 = 0xFF88EEEE;
 
 static char keysave = '0';
 
-
-unsigned radialMix(unsigned c1, unsigned c2, unsigned c3, unsigned c4){
-    return colors_diff(colors_diff(c1 , c4), c3 - c2);
-}
-
-Rasteron_Image* radialImgOp(unsigned colors[4]){
-    Rasteron_Image* radialImgs[4] = {
-        gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, colors[0], colors[1]),
-        gradientImgOp((ImageSize){ 1024 / 2, 1024 / 2 }, SIDE_Radial, colors[1], colors[2]),
-        gradientImgOp((ImageSize){ 1024 / 4, 1024 / 4 }, SIDE_Radial, colors[2], colors[3]),
-        gradientImgOp((ImageSize){ 1024 / 6, 1024 / 6 }, SIDE_Radial, colors[3], colors[0])
-    };
-
-    Rasteron_Image* radialImg = mixingExtImgOp(radialImgs[0], radialImgs[1], radialImgs[2], radialImgs[3], radialMix);
-
-    for(unsigned i = 0; i < 4; i++) RASTERON_DEALLOC(radialImgs[i]);
-
-    return radialImg;
-}
-
 static unsigned spirals(double x, double y){
     double centerAngle = atan((y - 0.5) / (x - 0.5));
     double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 
-    double factor = (centerAngle * segs) - floor(centerAngle * segs) * tan(centerDist * dist);
-    return colors_fuse(color_level(color1, sin(centerAngle * dist)), color_level(color2, cos(centerDist * dist)), factor);
+    double factor = (centerAngle * segs) - floor(centerAngle * segs) * tan(centerDist * (segs + dist));
+    return colors_fuse(color_level(color1, sin(centerAngle * segs)), color_level(color2, cos(centerDist * dist)), factor);
 }
 
 Rasteron_Image* spiralsImgOp(double s, double d){
@@ -47,27 +28,55 @@ Rasteron_Image* spiralsImgOp(double s, double d){
     return mapImgOp((ImageSize){ 1024, 1024 }, spirals);
 }
 
+unsigned radialMix1(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(colors_diff(c1, c4), c3 - c2); } // starting
+unsigned radialMix2(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(colors_diff(c2, c3), c4 - c1); } // reverse
+unsigned radialMix3(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(colors_diff(c3, c1), c2 - c4); } // odds and evens
+unsigned radialMix4(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(colors_diff(c4, c2), c1 - c3); } // evens and odds
+unsigned radialMix5(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(c3 - c2, colors_diff(c1, c4)); } // starting alt
+unsigned radialMix6(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(c4 + c1, colors_diff(c2, c3)); } // reverse alt
+unsigned radialMix7(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(c2 * c4, colors_diff(c3, c1)); } // odds and evens alt
+unsigned radialMix8(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(c1 % c3, colors_diff(c4, c2)); } // evens and odds alt
+unsigned radialMix9(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return (c1 + c2 > c3 + c4)? colors_blend(c1, c2, 0.5) : colors_fuse(c3, c4, 0.5); } // inbetween
+
+Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback){
+    Rasteron_Image* radialImgs[4] = {
+        gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, colors[0], colors[1]),
+        gradientImgOp((ImageSize){ 1024 / 2, 1024 / 2 }, SIDE_Radial, colors[1], colors[2]),
+        gradientImgOp((ImageSize){ 1024 / 4, 1024 / 4 }, SIDE_Radial, colors[2], colors[3]),
+        gradientImgOp((ImageSize){ 1024 / 6, 1024 / 6 }, SIDE_Radial, colors[3], colors[0])
+    };
+
+    Rasteron_Image* radialImg = mixingExtImgOp(radialImgs[0], radialImgs[1], radialImgs[2], radialImgs[3], mix_callback);
+
+    for(unsigned i = 0; i < 4; i++) RASTERON_DEALLOC(radialImgs[i]);
+
+    return radialImg;
+}
+
+static unsigned mandalaMix1(unsigned c1, unsigned c2){ return c1 + c2; }
+static unsigned mandalaMix2(unsigned c1, unsigned c2){ return c1 * c2; }
+static unsigned mandalaMix3(unsigned c1, unsigned c2){ return colors_powroot(c1, c2); }
+static unsigned mandalaMix4(unsigned c1, unsigned c2){ return (c1 * 2) - (c2 / 2); }
+static unsigned mandalaMix5(unsigned c1, unsigned c2){ return (c1 > c2)? color_invert(c1) : color_invert(c2); }
+static unsigned mandalaMix6(unsigned c1, unsigned c2){ return (c1 * color_invert(c2) > color_invert(c1) * c2)? c1 : c2; }
+static unsigned mandalaMix7(unsigned c1, unsigned c2){ return (colors_fuse(c1, c2, 0.5F) > colors_blend(c1, c2, 0.5F))? c1 : c2; }
+static unsigned restoreMix(unsigned c1, unsigned c2){ return (c1 == 0xFF000000 || c1 == NO_COLOR)? c2 : c1; }
+
 static unsigned mandalaMap(double x, double y){
     static unsigned invocation = 0;
 
     double centerAngle = atan((y - 0.5) / (x - 0.5));
     double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 
-    // x *= pow((x - 0.5), 1.0 / 3.0);
-    // y *= pow((y - 0.5), 1.0 / 3.0);
-
     unsigned mandalaColor = colors_blend(
         colors_fuse(color1, color2, sin(y / centerAngle) + cos(x / centerDist)), 
         colors_diff(color_invert(color1), color_invert(color2)),
-        tan((x + y) / invocation) * pow(centerAngle, centerDist)
+        tan((x + y) / (invocation / RADIAL_INVOKE)) * pow(centerAngle, centerDist)
     );
 
     invocation++;
     return mandalaColor;
 }
-
-static unsigned mandalaMix(unsigned c1, unsigned c2){ return c1 + c2; }
-static unsigned restoreMix(unsigned c1, unsigned c2){ return (c1 == 0xFF000000 || c1 == NO_COLOR)? c2 : c1; }
 
 Rasteron_Image* mandalaImgOp(coordCallback coord_callback, mixCallback mix_callback){
     Rasteron_Image* mapImg1 = mapImgOp((ImageSize){ 1024, 1024 }, coord_callback);
@@ -87,19 +96,35 @@ Rasteron_Image* mandalaImgOp(coordCallback coord_callback, mixCallback mix_callb
 void _onKeyEvent(char key){
     if(isalpha(key)) RASTERON_DEALLOC(_outputImg);
 
+    color1 = RAND_COLOR(); color2 = RAND_COLOR();
+    unsigned radialColors[4] = { color1, color2, color_invert(color1), color_invert(color2) };
     switch(tolower(key)){
-        case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p':
-            unsigned radialColors[4] = { RAND_COLOR(), RAND_COLOR(), RAND_COLOR(), RAND_COLOR() };
-            _outputImg = radialImgOp(radialColors);
-            break;
-        case 'a': case 's': case 'd': case 'f': case 'g': case 'h': case 'j': case 'k': case 'l':
-            color1 = RAND_COLOR(); color2 = RAND_COLOR();
-            _outputImg = spiralsImgOp(((float)rand() / (float)RAND_MAX) * RADIAL_SEGS, ((float)rand() / (float)RAND_MAX) * RADIAL_DIST);
-            break;
-        case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm':
-            color1 = RAND_COLOR(); color2 = RAND_COLOR();
-            _outputImg = mandalaImgOp(mandalaMap, mandalaMix);
-            break;
+        case 'q': _outputImg = spiralsImgOp(0.1F * RADIAL_SEGS, 0.1F * RADIAL_DIST); break;
+        case 'w': _outputImg = spiralsImgOp(0.1F * RADIAL_SEGS, 0.5F * RADIAL_DIST); break;
+        case 'e': _outputImg = spiralsImgOp(0.5F * RADIAL_SEGS, 0.1F * RADIAL_DIST); break;
+        case 'r': _outputImg = spiralsImgOp(1.0F * RADIAL_SEGS, 1.0F * RADIAL_DIST); break;
+        case 't': _outputImg = spiralsImgOp(2.0F * RADIAL_SEGS, 2.0F * RADIAL_DIST); break;
+        case 'y': _outputImg = spiralsImgOp(3.0F * RADIAL_SEGS, 3.0F * RADIAL_DIST); break;
+        case 'u': _outputImg = spiralsImgOp(5.0F * RADIAL_SEGS, 5.0F * RADIAL_DIST); break;
+        case 'i': _outputImg = spiralsImgOp(10.0F * RADIAL_SEGS, 10.0F * RADIAL_DIST); break;
+        case 'o': _outputImg = spiralsImgOp(((float)rand() / (float)RAND_MAX) * RADIAL_SEGS, ((float)rand() / (float)RAND_MAX) * RADIAL_DIST); break;
+        case 'p': _outputImg = spiralsImgOp((double)((unsigned)RADIAL_SEGS % rand()), (double)((unsigned)RADIAL_DIST % rand())); break;
+        case 'a': _outputImg = radialImgOp(radialColors, radialMix1); break;
+        case 's': _outputImg = radialImgOp(radialColors, radialMix2); break;
+        case 'd': _outputImg = radialImgOp(radialColors, radialMix3); break;
+        case 'f': _outputImg = radialImgOp(radialColors, radialMix4); break;
+        case 'g': _outputImg = radialImgOp(radialColors, radialMix5); break;
+        case 'h': _outputImg = radialImgOp(radialColors, radialMix6); break;
+        case 'j': _outputImg = radialImgOp(radialColors, radialMix7); break;
+        case 'k': _outputImg = radialImgOp(radialColors, radialMix8); break;
+        case 'l': _outputImg = radialImgOp(radialColors, radialMix9); break;
+        case 'z': _outputImg = mandalaImgOp(mandalaMap, mandalaMix1); break;
+        case 'x': _outputImg = mandalaImgOp(mandalaMap, mandalaMix2); break;
+        case 'c': _outputImg = mandalaImgOp(mandalaMap, mandalaMix3); break;
+        case 'v': _outputImg = mandalaImgOp(mandalaMap, mandalaMix4); break;
+        case 'b': _outputImg = mandalaImgOp(mandalaMap, mandalaMix5); break;
+        case 'n': _outputImg = mandalaImgOp(mandalaMap, mandalaMix6); break;
+        case 'm': _outputImg = mandalaImgOp(mandalaMap, mandalaMix7); break;
         default: segs = 0.0; dist = 0.0; break;
     }
 }
