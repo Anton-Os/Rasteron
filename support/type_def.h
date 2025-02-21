@@ -134,8 +134,8 @@ typedef uint8_t (*remaskCallback)(CHANNEL_Type channel, uint8_t value);
 typedef unsigned (*mixCallback)(unsigned color1, unsigned color2);
 typedef unsigned (*mixCallback4)(unsigned color1, unsigned color2, unsigned color3, unsigned color4);
 
-typedef unsigned (*coordCallback)(double x, double y);
 typedef float (*noiseCallback)(float p);
+typedef unsigned (*coordCallback)(double x, double y);
 typedef unsigned (*fieldCallback)(unsigned color, double distance, PixelPoint pixelPoint);
 typedef unsigned (*fieldCallback3)(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]);
 

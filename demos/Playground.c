@@ -35,7 +35,7 @@ void setup(char input){
 		case 'a': _outputImg = oragamiImgOp(mode, xArg, yArg); break;
 		case 'b': _outputImg = nestboxesImgOp(xArg, yArg); break;
 		case 'c': _outputImg = lensesImgOp(mode); break;
-		case 'd': _outputImg = hypnosisImgOp(mode, 0xFFFFFF00, 0xFF00FFFF); break;
+		case 'd': _outputImg = hypnosisImgOp(mode, RAND_COLOR(), RAND_COLOR()); break;
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
 		case 'f': _outputImg = fisheyeImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mozaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
@@ -57,7 +57,7 @@ void setup(char input){
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
 		case 'y': _outputImg = arcaneImgOp(100.0, (mode + 2) * 10); break;
-        case 'z': _outputImg = ditherImgOp(targetImg, (mode + 2) * 0x22, RAND_COLOR(), RAND_COLOR()); break;
+        case 'z': _outputImg = ditherImgOp(targetImg, (mode + 2) * 0x22, 0xFF000000, 0xFFFFFFFF); break;
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 
