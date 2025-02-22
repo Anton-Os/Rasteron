@@ -15,11 +15,11 @@ static double d1 = 0.05, d2 = 0.0, d3 = 1.0;
 #include "_Demo.h"
 
 static unsigned eqTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return colors_blend(colors[0], colors_blend(colors[1], colors[2], fabs(distances[0] - distances[2])), fabs(distances[0] - distances[1]));
+    return blend_colors(colors[0], blend_colors(colors[1], colors[2], fabs(distances[0] - distances[2])), fabs(distances[0] - distances[1]));
 }
 
 static unsigned softTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return colors_blend(colors[0], color_invert(colors[0]), fabs(pixPoint[0].x / pixPoint[0].y));
+    return blend_colors(colors[0], color_invert(colors[0]), fabs(pixPoint[0].x / pixPoint[0].y));
 }
 
 static unsigned hardTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
@@ -39,33 +39,33 @@ static unsigned dotTiling3(unsigned colors[3], double distances[3], PixelPoint p
 }
 
 static unsigned breakTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return (pixPoint[0].x + pixPoint[1].y > distances[0] / atan(((pixPoint[0].y + 1.0) * 0.5) / ((pixPoint[0].x + 1.0) * 0.5)))? colors_powroot(colors[2], colors[1]) : colors_powroot(colors[1], colors[2]);
+    return (pixPoint[0].x + pixPoint[1].y > distances[0] / atan(((pixPoint[0].y + 1.0) * 0.5) / ((pixPoint[0].x + 1.0) * 0.5)))? root_colors(colors[2], colors[1]) : root_colors(colors[1], colors[2]);
 }
 
 static unsigned crossTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return colors_blend(colors[0] + colors[1], colors[2] - colors[1], atan(pixPoint[0].x / pixPoint[0].y));
+    return blend_colors(colors[0] + colors[1], colors[2] - colors[1], atan(pixPoint[0].x / pixPoint[0].y));
 }
 
 static unsigned crossTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return colors_blend(colors[0], colors_blend(colors[1], colors[2], sin(distances[0] / distances[1])), cos(distances[2] / distances[1]));
+    return blend_colors(colors[0], blend_colors(colors[1], colors[2], sin(distances[0] / distances[1])), cos(distances[2] / distances[1]));
 }
 
 static unsigned shineTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return colors_fuse(colors[0], colors[1], sin(pixPoint[0].x * (1.0 / distances[0]) + pixPoint[0].y * (1.0 / distances[0])));
+    return fuse_colors(colors[0], colors[1], sin(pixPoint[0].x * (1.0 / distances[0]) + pixPoint[0].y * (1.0 / distances[0])));
 }
 
 static unsigned lumenTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     if(distances[0] > c1){
-        if(pixPoint[0].x / pixPoint[1].y > c2) return colors_blend(colors[1], colors[2], fabs(tan(pow(distances[0], distances[1] + distances[2]))));
-        else return colors_blend(colors[0], colors[1], fabs(tan(distances[1] - distances[2]) * 10.0));
+        if(pixPoint[0].x / pixPoint[1].y > c2) return blend_colors(colors[1], colors[2], fabs(tan(pow(distances[0], distances[1] + distances[2]))));
+        else return blend_colors(colors[0], colors[1], fabs(tan(distances[1] - distances[2]) * 10.0));
     }
-    else return colors_blend(colors[0], colors[1], fabs(tan((distances[0] - distances[1]) * 10.0)));
+    else return blend_colors(colors[0], colors[1], fabs(tan((distances[0] - distances[1]) * 10.0)));
 }
 
 static unsigned flashTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     double angle = atan(pixPoint[0].y / pixPoint[1].x);
-    if(angle > c3) return colors_blend(colors[0], colors[1], angle - (distances[0] / c1));
-    else colors_fuse(colors[0], colors[1], angle + (distances[0] / fabs(c2)));
+    if(angle > c3) return blend_colors(colors[0], colors[1], angle - (distances[0] / c1));
+    else fuse_colors(colors[0], colors[1], angle + (distances[0] / fabs(c2)));
 }
 
 static unsigned amorphTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
@@ -78,7 +78,7 @@ static unsigned amorphTiling(unsigned colors[3], double distances[3], PixelPoint
 static unsigned focalTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     double xRel = (distances[0] / pixPoint[0].x) * c1 + c3;
     double yRel = (distances[0] / pixPoint[0].y) * c2 + c3;
-    return colors_fuse(colors[0], colors[1], fabs(xRel - yRel));
+    return fuse_colors(colors[0], colors[1], fabs(xRel - yRel));
 }
 
 static unsigned zebraTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
@@ -98,14 +98,14 @@ static unsigned surroundTiling(unsigned colors[3], double distances[3], PixelPoi
 }
 
 static unsigned complexTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    unsigned targetColor = colors_blend(colors[0], colors[2], tan(distances[2] * 10.0)); // atan((pixPoint[0].y * c1) / (pixPoint[1].x * c2)));
+    unsigned targetColor = blend_colors(colors[0], colors[2], tan(distances[2] * 10.0)); // atan((pixPoint[0].y * c1) / (pixPoint[1].x * c2)));
 
     if(pow(distances[0], pixPoint[0].x + pixPoint[0].y) > c1)
         targetColor = color_level(targetColor, pow((distances[0] * c1) / (distances[1] * fabs(c2)), 1.0 + c3));
     else if(pixPoint[1].x - pixPoint[1].y < distances[1] + (1.0 / c2))
-        targetColor = colors_fuse(targetColor, colors[1], atan((pixPoint[0].y * c1) / (pixPoint[1].x * c2)));
+        targetColor = fuse_colors(targetColor, colors[1], atan((pixPoint[0].y * c1) / (pixPoint[1].x * c2)));
     else if(distances[2] - c3 > sin(pixPoint[2].y * 10.0) / cos(pixPoint[2].x * 10.0))
-        targetColor = colors_blend(targetColor, colors[2], (double)targetColor / (double)colors[2]);
+        targetColor = blend_colors(targetColor, colors[2], (double)targetColor / (double)colors[2]);
 
     return targetColor;
 }
@@ -143,8 +143,8 @@ Rasteron_Image* fieldMosaicImgOp(ImageSize size, const ColorPointTable* colorPoi
                     };
                 }
                 pixColors[0] = colorPointTable->points[t].color;
-                pixColors[1] = colors_blend(colorPointTable->points[t].color, 0xFF000000, 0.5); // darken color
-                pixColors[2] = colors_blend(colorPointTable->points[t].color, 0xFFFFFFFF, 0.5); // lighten color
+                pixColors[1] = blend_colors(colorPointTable->points[t].color, 0xFF000000, 0.5); // darken color
+                pixColors[2] = blend_colors(colorPointTable->points[t].color, 0xFFFFFFFF, 0.5); // lighten color
             }
         }
 

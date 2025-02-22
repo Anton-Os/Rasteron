@@ -37,7 +37,7 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 		if(coordX >= xBounds[0] && coordX < xBounds[1] && coordY >= yBounds[0] && coordY < yBounds[1]){
 			uint8_t iAlphaVal = (*(innerImg->data + ip) & ALPHA_CHANNEL) >> 24;
 			if(iAlphaVal == 0xFF) *(insertImg->data + op) = *(innerImg->data + ip);
-			else *(insertImg->data + op) = colors_blend(*(innerImg->data + ip), *(outerImg->data + op), (double)(0xFF / iAlphaVal) );
+			else *(insertImg->data + op) = blend_colors(*(innerImg->data + ip), *(outerImg->data + op), (double)(0xFF / iAlphaVal) );
 			ip++;
 		} else *(insertImg->data + op) = *(outerImg->data + op);
 	}
@@ -88,16 +88,12 @@ Rasteron_Image* mixingExtImgOp(ref_image_t image1, ref_image_t image2, ref_image
     return mixImage;
 }
 
-static unsigned equalBlend(unsigned color1, unsigned color2){ return colors_blend(color1, color2, 0.5); }
-
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2){
-	return mixingImgOp(image1, image2, equalBlend);
+	return mixingImgOp(image1, image2, blend_colors_eq);
 }
 
-static unsigned equalFusion(unsigned color1, unsigned color2){ return colors_blend(color1, color2, 0.5); }
-
 Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2){
-	return mixingImgOp(image1, image2, equalFusion);
+	return mixingImgOp(image1, image2, fuse_colors_eq);
 }
 
 Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage){

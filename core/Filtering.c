@@ -39,7 +39,7 @@ Rasteron_Image* greyImgOp(ref_image_t refImage) {
 	Rasteron_Image* greyImage = RASTERON_ALLOC("grey", refImage->height, refImage->width);
 	
 	for (unsigned p = 0; p < greyImage->width * greyImage->height; p++)
-		*(greyImage->data + p) = color_grayscale(*(refImage->data + p));
+		*(greyImage->data + p) = color_gray(*(refImage->data + p));
 
 	return greyImage;
 }
@@ -93,7 +93,7 @@ Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels){
 	Rasteron_Image* splitImg = copyImgOp(refImage);
 
 	for(unsigned p = 0; p < splitImg->width * splitImg->height; p++){
-        double colorLevel = channel_grayscale(*(splitImg->data + p)) / 256.0;
+        double colorLevel = channel_gray(*(splitImg->data + p)) / 256.0;
         double adjustLevel = 1.0;
         
         for(unsigned l = 0; l < levels; l++)
@@ -112,12 +112,21 @@ Rasteron_Image* colorSwitchImgOp(ref_image_t refImage, CHANNEL_Type channel1, CH
     
     Rasteron_Image* colorSwitchImg = copyImgOp(refImage);
 
-	if((channel1 == CHANNEL_Red && channel2 == CHANNEL_Blue) || (channel2 == CHANNEL_Red && channel1 == CHANNEL_Blue))
+	for(unsigned p = 0; p < refImage->width * refImage->height; p++){
+		if((channel1 == CHANNEL_Red && channel2 == CHANNEL_Blue) || (channel2 == CHANNEL_Red && channel1 == CHANNEL_Blue))
+			*(colorSwitchImg->data + p) = swap_rb(*(colorSwitchImg->data + p));
+		if((channel1 == CHANNEL_Red && channel2 == CHANNEL_Green) || (channel2 == CHANNEL_Red && channel1 == CHANNEL_Green))
+			*(colorSwitchImg->data + p) = swap_rg(*(colorSwitchImg->data + p));
+		if((channel1 == CHANNEL_Green && channel2 == CHANNEL_Blue) || (channel2 == CHANNEL_Green && channel1 == CHANNEL_Blue))
+			*(colorSwitchImg->data + p) = swap_gb(*(colorSwitchImg->data + p));
+	}
+
+	/* if((channel1 == CHANNEL_Red && channel2 == CHANNEL_Blue) || (channel2 == CHANNEL_Red && channel1 == CHANNEL_Blue))
 		bitSwitch_RB(colorSwitchImg->data, colorSwitchImg->width * colorSwitchImg->height);
 	if((channel1 == CHANNEL_Red && channel2 == CHANNEL_Green) || (channel2 == CHANNEL_Red && channel1 == CHANNEL_Green))
 		bitSwitch_RG(colorSwitchImg->data, colorSwitchImg->width * colorSwitchImg->height);
 	if((channel1 == CHANNEL_Green && channel2 == CHANNEL_Blue) || (channel2 == CHANNEL_Green && channel1 == CHANNEL_Blue))
-		bitSwitch_GB(colorSwitchImg->data, colorSwitchImg->width * colorSwitchImg->height);
+		bitSwitch_GB(colorSwitchImg->data, colorSwitchImg->width * colorSwitchImg->height); */
 
 	return colorSwitchImg;
 }

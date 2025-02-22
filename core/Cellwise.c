@@ -148,7 +148,7 @@ unsigned antialias(unsigned target, unsigned neighbors[8]){
 	unsigned short nCount = 1;
 
 	for(unsigned n = 0; n < 8; n++)
-		if(neighbors[n] != NO_COLOR) finalColor = colors_blend(finalColor, neighbors[n], 0.5F - (n * (1.0 / 8.0)));
+		if(neighbors[n] != NO_COLOR) finalColor = blend_colors(finalColor, neighbors[n], 0.5F - (n * (1.0 / 8.0)));
 		else continue;
 
 	return finalColor / nCount;

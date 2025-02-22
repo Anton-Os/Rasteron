@@ -101,8 +101,8 @@ unsigned matchRules(unsigned color, unsigned neighbors[8]){
 }
 
 unsigned colorizeRules(unsigned color, unsigned neighbors[8]){
-    if(color == _swatch.colors[SWATCH_Light] || color == _swatch.colors[SWATCH_Green_Add]) return colors_blend(color, _swatch.colors[SWATCH_Green_Add], (float)rand() / RAND_MAX);
-    else if(color == _swatch.colors[SWATCH_Dark] || color == _swatch.colors[SWATCH_Red_Add]) return colors_blend(color, _swatch.colors[SWATCH_Red_Add], (float)rand() / RAND_MAX);
+    if(color == _swatch.colors[SWATCH_Light] || color == _swatch.colors[SWATCH_Green_Add]) return blend_colors(color, _swatch.colors[SWATCH_Green_Add], (float)rand() / RAND_MAX);
+    else if(color == _swatch.colors[SWATCH_Dark] || color == _swatch.colors[SWATCH_Red_Add]) return blend_colors(color, _swatch.colors[SWATCH_Red_Add], (float)rand() / RAND_MAX);
     else return color;
 }
 
@@ -204,8 +204,9 @@ Rasteron_Image* lensesImgOp(int channel){
     return flipImg; 
 }
 
-static unsigned gradientMix(unsigned color1, unsigned color2){
-    return color1 * color2; // pretty cool effect by multiplying colors
+static unsigned hypnoticMix(unsigned color1, unsigned color2){
+    // return mult_colors(color1, color2);
+    return root_colors(color1, color2);
 }
 
 Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2){ 
@@ -219,17 +220,17 @@ Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2){
         gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, color1, color2),
     };
 
-    Rasteron_Image* mixImg1 = mixingImgOp(gradientImgs[0], gradientImgs[1], gradientMix);
-    Rasteron_Image* mixImg2 = mixingImgOp(gradientImgs[2], gradientImgs[0], gradientMix);
-    Rasteron_Image* mixImg3 = mixingImgOp(gradientImgs[1], gradientImgs[3], gradientMix);
+    Rasteron_Image* mixImg1 = mixingImgOp(gradientImgs[0], gradientImgs[1], hypnoticMix);
+    Rasteron_Image* mixImg2 = mixingImgOp(gradientImgs[2], gradientImgs[0], hypnoticMix);
+    Rasteron_Image* mixImg3 = mixingImgOp(gradientImgs[1], gradientImgs[3], hypnoticMix);
 
-    // Rasteron_Image* hypnosisImg = mixingImgOp(gradientImgs[0], gradientImgs[1], gradientMix);
-    Rasteron_Image* hypnosisImg; // = mixingImgOp(mixImg3, gradientImgs[4], gradientMix);
+    // Rasteron_Image* hypnosisImg = mixingImgOp(gradientImgs[0], gradientImgs[1], hypnoticMix);
+    Rasteron_Image* hypnosisImg; // = mixingImgOp(mixImg3, gradientImgs[4], hypnoticMix);
     switch(pArg){
-        case 0: hypnosisImg = mixingImgOp(mixImg1, gradientImgs[4], gradientMix); break;
-        case 1: hypnosisImg = mixingImgOp(mixImg2, gradientImgs[4], gradientMix); break;
-        case 2: hypnosisImg = mixingImgOp(mixImg3, gradientImgs[4], gradientMix); break;
-        default: hypnosisImg = mixingImgOp(gradientImgs[4], gradientImgs[4], gradientMix); break;
+        case 0: hypnosisImg = mixingImgOp(mixImg1, gradientImgs[4], hypnoticMix); break;
+        case 1: hypnosisImg = mixingImgOp(mixImg2, gradientImgs[4], hypnoticMix); break;
+        case 2: hypnosisImg = mixingImgOp(mixImg3, gradientImgs[4], hypnoticMix); break;
+        default: hypnosisImg = mixingImgOp(gradientImgs[4], gradientImgs[4], hypnoticMix); break;
     }
     
     for(unsigned g = 0; g < 5; g++) RASTERON_DEALLOC(gradientImgs[g]);
@@ -304,8 +305,8 @@ static unsigned zigzag(double x, double y){
     xDiff *= xDiff / (1.0 - y) / y;
     yDiff *= yDiff / (1.0 - x) / x;
 
-    if(xDiff > yDiff) return colors_blend(0xFFFF00FF, 0xFFEEEEEE, xDiff - yDiff);
-    else return colors_blend(0xFF00FF00, 0xFF111111, yDiff - xDiff);
+    if(xDiff > yDiff) return blend_colors(0xFFFF00FF, 0xFFEEEEEE, xDiff - yDiff);
+    else return blend_colors(0xFF00FF00, 0xFF111111, yDiff - xDiff);
 }
 
 Rasteron_Image* mozaicImgOp(double z1, double z2){
@@ -343,8 +344,8 @@ static unsigned perturb(double x, double y){
     unsigned perturbColor1 = 0xFF00FF00;
     unsigned perturbColor2 = 0xFFFF0000;
 
-    return colors_blend(0xFFFF0000, 0xFF00FF00, (x * 2) * (y * 2)) | 0x88;
-    // return colors_blend(perturbColor1, perturbColor2, x * y) | 0x33;
+    return blend_colors(0xFFFF0000, 0xFF00FF00, (x * 2) * (y * 2)) | 0x88;
+    // return blend_colors(perturbColor1, perturbColor2, x * y) | 0x33;
 }
 
 Rasteron_Image* perturbImgOp(double xCenter, double yCenter){
@@ -374,11 +375,11 @@ Rasteron_Image* ballingImgOp(double size){
         double blobDist2 = pix_dist(p, pixPoint_offset((PixelPoint){ blobX2, blobY2 }, ballingImg), 1024);
 
         if(sin(torusDist) * size < (300.0 * size)) 
-            *(ballingImg->data + p) = colors_blend(0xFF333333, 0xFFEEEEEE, (torusDist - 150.0) / (300.00 * size));
+            *(ballingImg->data + p) = blend_colors(0xFF333333, 0xFFEEEEEE, (torusDist - 150.0) / (300.00 * size));
         if(blobDist1 < (200.0 * size)) 
-            *(ballingImg->data + p) = colors_blend(0xFF00EE00, 0xFF333333, (blobDist1 - 50.0) / (200.0 * size));
+            *(ballingImg->data + p) = blend_colors(0xFF00EE00, 0xFF333333, (blobDist1 - 50.0) / (200.0 * size));
         if(blobDist2 < (100.0 * size)) 
-            *(ballingImg->data + p) = colors_blend(0xFF0000EE, 0xFF333333, (blobDist2 - 50.0) / (100.0 * size));
+            *(ballingImg->data + p) = blend_colors(0xFF0000EE, 0xFF333333, (blobDist2 - 50.0) / (100.0 * size));
     }
 
     return ballingImg;
@@ -406,7 +407,7 @@ unsigned grainPattern(unsigned color){
 }
 
 unsigned bark(unsigned color, unsigned neighbors[2]){ return (rand() % 2 == 0)? neighbors[0] : neighbors[1]; }
-// unsigned napkin(unsigned color, unsigned neighbors[2]){ return colors_blend(neighbors[0], neighbors[1], 0.5); }
+// unsigned napkin(unsigned color, unsigned neighbors[2]){ return blend_colors(neighbors[0], neighbors[1], 0.5); }
 
 Rasteron_Image* barkodeImgOp(unsigned short iters, unsigned color1, unsigned color2){
     barcode1 = color1; barcode2 = color2;
@@ -446,8 +447,8 @@ Rasteron_Image* chaosImgOp(unsigned short rows, unsigned short cols){
         unsigned c = x * rows;
         unsigned r = y * cols;
 
-        *(chaosImg->data + p) = colors_fuse(*(chaosoImgs[c % 3]->data + (p % (1024 / rows))), *(chaosoImgs[r % 3]->data + (p % (1024 / rows))), atan(x + y));
-        *(chaosImg->data + p) = colors_diff(*(chaosImg->data + p), *(chaosoImgs[(c + 3) % 3]->data + p));
+        *(chaosImg->data + p) = fuse_colors(*(chaosoImgs[c % 3]->data + (p % (1024 / rows))), *(chaosoImgs[r % 3]->data + (p % (1024 / rows))), atan(x + y));
+        *(chaosImg->data + p) = diff_colors(*(chaosImg->data + p), *(chaosoImgs[(c + 3) % 3]->data + p));
     }
 
     for(unsigned i = 0; i < 4; i++) RASTERON_DEALLOC(chaosoImgs[i]);
@@ -485,7 +486,7 @@ double truschetX1 = 0.25; // double truschetX2 = 0.25;
 double truschetY1 = 0.75; // double truschetY2 = 0.75;
 
 static unsigned sharpTruschetTile(double x, double y){
-    return colors_blend(0xFFFF00FF, 0xFF00FFFF, asin(pow(x, y)) + acos(pow(y, x)));
+    return blend_colors(0xFFFF00FF, 0xFF00FFFF, asin(pow(x, y)) + acos(pow(y, x)));
 }
 
 Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv){
@@ -633,8 +634,8 @@ static unsigned grater(double x, double y){
     double largeY = y * 10.0; double smallY = largeY - floor(largeY);
 
     if(largeX / largeY > largeY / largeX) 
-        return (pow(smallX, smallY) > 0.5)? colors_blend(graterColor1, graterColor2, fabs(smallX - smallY)) : graterColor2;
-    else return (pow(smallX, smallY) < 0.5)? colors_blend(graterColor1, graterColor2, fabs(smallX - smallY)) : graterColor2;
+        return (pow(smallX, smallY) > 0.5)? blend_colors(graterColor1, graterColor2, fabs(smallX - smallY)) : graterColor2;
+    else return (pow(smallX, smallY) < 0.5)? blend_colors(graterColor1, graterColor2, fabs(smallX - smallY)) : graterColor2;
 }
 
 Rasteron_Image* graterImgOp(unsigned color1, unsigned color2){
@@ -807,7 +808,7 @@ unsigned biline(unsigned color, unsigned neighbors[2]){ return (neighbors[0] < c
 Rasteron_Image* bilineImgOp(unsigned color, unsigned short variant){
     unsigned colorLine[1024];
 
-    for(unsigned p = 0; p < 1024; p++) colorLine[p] = colors_blend(color, color_invert(color), (p % 256) / 256.0); // color + (rand() % variant) - (variant / 2);
+    for(unsigned p = 0; p < 1024; p++) colorLine[p] = blend_colors(color, color_invert(color), (p % 256) / 256.0); // color + (rand() % variant) - (variant / 2);
 
     Rasteron_Image* lineImg = RASTERON_ALLOC("biline", 1024, 1024);
     for(unsigned l = 0; l < 1024; l++){
@@ -842,7 +843,7 @@ Rasteron_Image* arcaneImgOp(double radius, unsigned short count){
             if(dist < radius * sin(x * radius) * cos(y * radius)){
                 if(a == 0) *(arcImg->data + p) = arcTable.points[a].color;
                 else if(*(arcImg->data + p) == arcDefColor) *(arcImg->data + p) = arcTable.points[a].color;
-                else *(arcImg->data + p) = colors_blend(*(arcImg->data + p), arcTable.points[a].color, 0.5);
+                else *(arcImg->data + p) = blend_colors(*(arcImg->data + p), arcTable.points[a].color, 0.5);
             } 
             else if(a == 0) *(arcImg->data + p) = arcDefColor;
         }
@@ -886,24 +887,24 @@ Rasteron_Image* drawImgOp(char mode, Rasteron_Image* targetImg, PixelPointTable*
             xAccum += fabs(xOff); yAccum += fabs(yOff);
 
             /* switch(mode){
-                case 'z': *(drawImg->data + p) = colors_blend(colors_blend(color1, color_invert(color1), fabs(xAccum)), colors_blend(color2, color_invert(color2), fabs(yAccum)), fabs(xAccum / yAccum)); break;
+                case 'z': *(drawImg->data + p) = blend_colors(blend_colors(color1, color_invert(color1), fabs(xAccum)), blend_colors(color2, color_invert(color2), fabs(yAccum)), fabs(xAccum / yAccum)); break;
                 case 'x': if(fabs(xOffLo) < fabs(yOffLo)) *(drawImg->data + p) = color1; else if(fabs(xOffHi) > fabs(yOffHi)) *(drawImg->data + p) = color2; break;
-                case 'c': *(drawImg->data + p) = colors_blend(color1, color2, (xAccum / yOffHi) * (xOffLo / yAccum)); break;
-                case 'v': *(drawImg->data + p) = colors_blend(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
-                case 'b': *(drawImg->data + p) = colors_fuse(color1, color2, (xOffHi / yOffLo) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
-                case 'n': *(drawImg->data + p) = (xOff / yOff > 0.5)? colors_blend(*(drawImg->data + p), color1, xOffHi) : colors_blend(*(drawImg->data + p), color2, yOffHi); break;
+                case 'c': *(drawImg->data + p) = blend_colors(color1, color2, (xAccum / yOffHi) * (xOffLo / yAccum)); break;
+                case 'v': *(drawImg->data + p) = blend_colors(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
+                case 'b': *(drawImg->data + p) = fuse_colors(color1, color2, (xOffHi / yOffLo) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
+                case 'n': *(drawImg->data + p) = (xOff / yOff > 0.5)? blend_colors(*(drawImg->data + p), color1, xOffHi) : blend_colors(*(drawImg->data + p), color2, yOffHi); break;
                 case 'm': *(drawImg->data + p) = (color1 / color2) * (xOffLo * xAccum) / (yOff * yAccum); break;
                 default: *(drawImg->data + p) = *(drawImg->data + p);
             } */
 
             switch(mode){
-                case 'z': if(o == pointsTable->pointCount) *(drawImg->data + p) = colors_blend(color1, color2, angle); break;
-                case 'x': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color2, pow(angle, count)); break;
-                case 'c': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color3, angle / distance); break;
-                case 'v': *(drawImg->data + p) = colors_blend(*(drawImg->data + p), color1, (distance - angle) / (angle + distance)); break;
+                case 'z': if(o == pointsTable->pointCount) *(drawImg->data + p) = blend_colors(color1, color2, angle); break;
+                case 'x': *(drawImg->data + p) = blend_colors(*(drawImg->data + p), color2, pow(angle, count)); break;
+                case 'c': *(drawImg->data + p) = blend_colors(*(drawImg->data + p), color3, angle / distance); break;
+                case 'v': *(drawImg->data + p) = blend_colors(*(drawImg->data + p), color1, (distance - angle) / (angle + distance)); break;
                 case 'b': *(drawImg->data + p) = (angle > distance)? color1 : color2; break;
-                case 'n': *(drawImg->data + p) = colors_fuse(color1, color3, sin(angle) + cos(distance)); break;
-                case 'm': *(drawImg->data + p) = colors_fuse(colors_blend(color1, color2, angle), colors_blend(color1, color3, distance), 1.0 / (xAccum + yAccum)); break;
+                case 'n': *(drawImg->data + p) = fuse_colors(color1, color3, sin(angle) + cos(distance)); break;
+                case 'm': *(drawImg->data + p) = fuse_colors(blend_colors(color1, color2, angle), blend_colors(color1, color3, distance), 1.0 / (xAccum + yAccum)); break;
             }
         }
     }

@@ -28,8 +28,8 @@ uint32_t color_level(uint32_t color, double level){
 	if(level >= 1.0) return 0xFFFFFFFF;
 	else if(level <= 0.0) return 0xFF000000;
 	else if(level == 0.5) return color;
-	else if(level > 0.5) return colors_blend(color, 0xFFFFFFFF, (level - 0.5) * 2.0);
-	else if(level < 0.5) return colors_blend(color, 0xFF000000, (0.5 - level) * 2.0);
+	else if(level > 0.5) return blend_colors(color, 0xFFFFFFFF, (level - 0.5) * 2.0);
+	else if(level < 0.5) return blend_colors(color, 0xFF000000, (0.5 - level) * 2.0);
 	else return color;
 }
 
@@ -43,11 +43,11 @@ uint32_t color_invert(uint32_t refColor){
 	return result;
 }
 
-uint32_t color_fractional(uint32_t refColor, double frac){
-    uint8_t alpha = channel_fractional((refColor & ALPHA_CHANNEL) >> 24, frac);
-    uint8_t red = channel_fractional((refColor & RED_CHANNEL) >> 16, frac);
-    uint8_t green = channel_fractional((refColor & GREEN_CHANNEL) >> 8, frac);
-    uint8_t blue = channel_fractional(refColor & BLUE_CHANNEL, frac);
+uint32_t color_frac(uint32_t refColor, double frac){
+    uint8_t alpha = channel_frac((refColor & ALPHA_CHANNEL) >> 24, frac);
+    uint8_t red = channel_frac((refColor & RED_CHANNEL) >> 16, frac);
+    uint8_t green = channel_frac((refColor & GREEN_CHANNEL) >> 8, frac);
+    uint8_t blue = channel_frac(refColor & BLUE_CHANNEL, frac);
 
     uint32_t result = ((alpha << 24) | (red << 16) | (green << 8) | blue);
     return result;
@@ -55,31 +55,13 @@ uint32_t color_fractional(uint32_t refColor, double frac){
 
 // --------------------------------   Channel Functions   -------------------------------- //
 
-void bitSwitch_RB(uint32_t* data, unsigned pixels) {
-	for (unsigned i = 0; i < pixels; i++) {
-		unsigned val = *(data + i);
-		unsigned res = ((val & 0xFF) << 16) + (val & 0xFF00) + ((val >> 16) & 0xFF);
-		*(data + i) = res;
-	}
-}
+uint32_t swap_rb(uint32_t color){ return ((color & 0xFF) << 16) + (color & 0xFF00) + ((color >> 16) & 0xFF); }
 
-void bitSwitch_GB(uint32_t* data, unsigned pixels) {
-	for (unsigned i = 0; i < pixels; i++) {
-		unsigned val = *(data + i);
-		unsigned res = (val & 0xFF0000) + ((val & 0xFF) << 8) + ((val >> 8) & 0xFF);
-		*(data + i) = res;
-	}
-}
+uint32_t swap_gb(uint32_t color){ return ((color & 0xFF0000) + ((color & 0xFF) << 8) + ((color >> 8) & 0xFF)); }
 
-void bitSwitch_RG(uint32_t* data, unsigned pixels) {
-	for (unsigned i = 0; i < pixels; i++) {
-		unsigned val = *(data + i);
-		unsigned res = ((val & 0xFF00) << 8) + ((val >> 8) & 0xFF00) + (val & 0xFF);
-		*(data + i) = res;
-	}
-}
+uint32_t swap_rg(uint32_t color){ return ((color & 0xFF00) << 8) + ((color >> 8) & 0xFF00) + (color & 0xFF); }
 
-uint8_t channel_low(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+uint8_t lo_channel(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask, shift;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
@@ -91,7 +73,7 @@ uint8_t channel_low(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	return ((color1 & mask) < (color2 & mask)) ? ((color1 & mask) >> shift) : ((color2 & mask) >> shift);
 }
 
-uint8_t channel_hi(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+uint8_t hi_channel(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask, shift;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; shift = 24; break;
@@ -104,10 +86,10 @@ uint8_t channel_hi(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 }
 
 /* int8_t getLightDiff(uint32_t color1, uint32_t color2){ 
-	return (int8_t)((int)channel_grayscale(color1) - (int)channel_grayscale(color2)); 
+	return (int8_t)((int)channel_gray(color1) - (int)channel_gray(color2)); 
 } */
 
-int8_t channel_diff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
+uint8_t diff_channel(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 	uint32_t mask;
 	switch(channel){
 		case CHANNEL_Alpha: mask = ALPHA_CHANNEL; break;
@@ -115,10 +97,10 @@ int8_t channel_diff(uint32_t color1, uint32_t color2, CHANNEL_Type channel){
 		case CHANNEL_Green: mask = GREEN_CHANNEL; break;
 		case CHANNEL_Blue: mask = BLUE_CHANNEL; break;
 	}
-	return (int8_t)((int)(color1 & mask) - (int)(color2 & mask));
+	return (uint8_t)((int)(color1 & mask) - (int)(color2 & mask));
 }
 
-uint32_t color_grayscale(uint32_t refColor) {
+uint32_t color_gray(uint32_t refColor) {
     if (refColor == WHITE_COLOR) return WHITE_COLOR;
     if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
 
@@ -129,7 +111,7 @@ uint32_t color_grayscale(uint32_t refColor) {
     return result;
 }
 
-uint8_t channel_grayscale(uint32_t refColor){
+uint8_t channel_gray(uint32_t refColor){
     if (refColor == WHITE_COLOR) return WHITE_COLOR;
     if (refColor == 0 || refColor == BLACK_COLOR) return BLACK_COLOR;
 
@@ -137,7 +119,7 @@ uint8_t channel_grayscale(uint32_t refColor){
     return avgColor;
 }
 
-uint8_t channel_fractional(uint8_t refColor, double frac){
+uint8_t channel_frac(uint8_t refColor, double frac){
     if(frac >= 1.0) return refColor;
     else if(frac <= 0.0) return 0x00;
     else return ((double)refColor / 255.0) * frac * 255.0;
@@ -145,46 +127,82 @@ uint8_t channel_fractional(uint8_t refColor, double frac){
 
 // --------------------------------   Multi Color Functions   -------------------------------- //
 
-uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal){
+uint32_t blend_colors(uint32_t color1, uint32_t color2, double bVal){
 	if(bVal <= 0.0) return color1;
 	else if(bVal >= 1.0) return color2;
 	
-	uint32_t bColor1 = color_fractional(color1, 1.0 -bVal);
-	uint32_t bColor2 = color_fractional(color2, bVal);
+	uint32_t bColor1 = color_frac(color1, 1.0 -bVal);
+	uint32_t bColor2 = color_frac(color2, bVal);
 
 	return bColor1 + bColor2; 
 }
 
-uint32_t colors_fuse(uint32_t color1, uint32_t color2, double iVal){
-	uint8_t loRedBit = channel_low(color1, color2, CHANNEL_Red); uint8_t hiRedBit = channel_hi(color1, color2, CHANNEL_Red);
-    uint8_t loGreenBit = channel_low(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = channel_hi(color1, color2, CHANNEL_Green);
-    uint8_t loBlueBit = channel_low(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = channel_hi(color1, color2, CHANNEL_Blue);
+uint32_t blend_colors_eq(uint32_t color1, uint32_t color2){ return blend_colors(color1, color2, 0.5); }
+
+uint32_t fuse_colors(uint32_t color1, uint32_t color2, double iVal){
+	uint8_t loRedBit = lo_channel(color1, color2, CHANNEL_Red); uint8_t hiRedBit = hi_channel(color1, color2, CHANNEL_Red);
+    uint8_t loGreenBit = lo_channel(color1, color2, CHANNEL_Green); uint8_t hiGreenBit = hi_channel(color1, color2, CHANNEL_Green);
+    uint8_t loBlueBit = lo_channel(color1, color2, CHANNEL_Blue); uint8_t hiBlueBit = hi_channel(color1, color2, CHANNEL_Blue);
 
 	uint32_t loColor = (0 << 24) + (loRedBit << 16) + (loGreenBit << 8) + loBlueBit;
-	if(iVal <= 0.0) return loColor;
-
 	uint32_t hiColor = (0 << 24) + (hiRedBit << 16) + (hiGreenBit << 8) + hiBlueBit;
-	if(iVal >= 1.0) return hiColor;
 
-	uint32_t diffColor = (hiColor - loColor);
-	uint8_t finalRedBit = channel_fractional((diffColor & RED_CHANNEL) >> 16, iVal);
-	uint8_t finalGreenBit = channel_fractional((diffColor & GREEN_CHANNEL) >> 8, iVal);
-	uint8_t finalBlueBit = channel_fractional(diffColor & BLUE_CHANNEL, iVal);
+	if(iVal <= 0.0) return loColor;
+	else if(iVal >= 1.0) return hiColor;
+	else {
+		uint32_t diffColor = (hiColor - loColor);
+		uint8_t finalRedBit = channel_frac((diffColor & RED_CHANNEL) >> 16, iVal);
+		uint8_t finalGreenBit = channel_frac((diffColor & GREEN_CHANNEL) >> 8, iVal);
+		uint8_t finalBlueBit = channel_frac(diffColor & BLUE_CHANNEL, iVal);
 
-	return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
+		return loColor + (uint32_t)((0xFF << 24) + (finalRedBit << 16) + (finalGreenBit << 8) + finalBlueBit);
+	}
 }
 
-uint32_t colors_diff(uint32_t color1, uint32_t color2){
+uint32_t fuse_colors_eq(uint32_t color1, uint32_t color2){ return fuse_colors(color1, color2, 0.5); }
+
+uint32_t add_colors(uint32_t color1, uint32_t color2){ return (0xFF000000 | (color1 + color2)); }
+
+uint32_t add_rgb(uint32_t color1, uint32_t color2){ 
+	uint8_t red = ((color1 & RED_CHANNEL) >> 16) + ((color2 & RED_CHANNEL) >> 16);
+	uint8_t green = ((color1 & GREEN_CHANNEL) >> 8) + ((color2 & GREEN_CHANNEL) >> 8);
+	uint8_t blue = (color1 & BLUE_CHANNEL) + (color2 & BLUE_CHANNEL);
+
+	uint32_t result = ((0xFF << 24) | (red << 16) | (green << 8) | blue);
+    return result;
+}
+
+uint32_t diff_colors(uint32_t color1, uint32_t color2){
 	if(color1 & 0x00FFFFFF > color2 & 0x00FFFFFF) return (color1 - color2) | (0xFF000000 & color1);
 	else return (color2 - color1) | (0xFF000000 & color2);
 }
 
-uint32_t colors_powroot(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
+uint32_t diff_rgb(uint32_t color1, uint32_t color2){ 
+	uint8_t red = ((color1 & RED_CHANNEL) >> 16) - ((color2 & RED_CHANNEL) >> 16);
+	uint8_t green = ((color1 & GREEN_CHANNEL) >> 8) - ((color2 & GREEN_CHANNEL) >> 8);
+	uint8_t blue = (color1 & BLUE_CHANNEL) - (color2 & BLUE_CHANNEL);
+
+	uint32_t result = ((0xFF << 24) | (red << 16) | (green << 8) | blue);
+    return result;
+}
+
+uint32_t mult_colors(uint32_t color1, uint32_t color2){ return color1 * color2; }
+
+uint32_t mult_rgb(uint32_t color1, uint32_t color2){ 
+	uint8_t red = ((color1 & RED_CHANNEL) >> 16) * ((color2 & RED_CHANNEL) >> 16);
+	uint8_t green = ((color1 & GREEN_CHANNEL) >> 8) * ((color2 & GREEN_CHANNEL) >> 8);
+	uint8_t blue = (color1 & BLUE_CHANNEL) * (color2 & BLUE_CHANNEL);
+
+	uint32_t result = ((0xFF << 24) | (red << 16) | (green << 8) | blue);
+    return result;
+}
+
+uint32_t root_colors(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
 	unsigned product = (0xFFFFFF & color1) * (0xFFFFFF & color2); // power
 	unsigned color = ((unsigned)(pow((double)product, 0.5)) * 1) | 0xFF000000; // root
-	// bitSwitch_RG(&color, 1);
 
-	return color;
+	// return color;
+	return color * 0xFF; // test
 }
 
 // --------------------------------   Pixel Point Functions   -------------------------------- //

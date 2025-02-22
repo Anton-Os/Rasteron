@@ -118,7 +118,7 @@ unsigned strokeDraw(double x, double y){
             // case 'p': return (pow(lineDist, xMod(x - x1)) < pow(lineDist, yMod(y - y2)))? colorPoints[0].color : NO_COLOR; // TODO: Replace with draw algorithm
             default: return colorPoints[0].color;
         }
-    else return NO_COLOR; // colors_blend(_swatch.colors[SWATCH_Light], _swatch.colors[SWATCH_Dark], dist1 + dist2);
+    else return NO_COLOR; // blend_colors(_swatch.colors[SWATCH_Light], _swatch.colors[SWATCH_Dark], dist1 + dist2);
 }
 
 static unsigned fieldDraw(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
@@ -126,12 +126,12 @@ static unsigned fieldDraw(unsigned colors[3], double distances[3], PixelPoint pi
     unsigned c2 = colors[1];
 
     switch(mode){
-        case 'a': return colors_blend(c1, c2, distances[0] * FIELD_PRODUCT);
-        case 's': return (distances[1] - distances[0] > 0.01)? colors_blend(c1, c2, (distances[1] - distances[0]) * 10.0) : c2; // colors_blend(c1, c2, distances[1] * FIELD_PRODUCT);
-        case 'd': return (distances[2] - distances[1] > 0.01)? colors_blend(c1, c2, (distances[2] - distances[1]) * 10.0) : c2; // colors_blend(c1, c2, distances[2] * FIELD_PRODUCT);
-        case 'f': return colors_blend(c1, c2, sin(pow(fabs(pixPoints[0].x - pixPoints[1].y), distances[0]) * FIELD_PRODUCT * 5.0));
-        case 'g': return colors_blend(c1, c2, cos(pow(fabs(pixPoints[0].y + pixPoints[1].x), distances[0]) * FIELD_PRODUCT * 5.0));
-        case 'h': return colors_blend(c1, c2, tan(pow(distances[2], fabs(pixPoints[0].x * pixPoints[1].y)) * FIELD_PRODUCT * 100.0));
+        case 'a': return blend_colors(c1, c2, distances[0] * FIELD_PRODUCT);
+        case 's': return (distances[1] - distances[0] > 0.01)? blend_colors(c1, c2, (distances[1] - distances[0]) * 10.0) : c2; // blend_colors(c1, c2, distances[1] * FIELD_PRODUCT);
+        case 'd': return (distances[2] - distances[1] > 0.01)? blend_colors(c1, c2, (distances[2] - distances[1]) * 10.0) : c2; // blend_colors(c1, c2, distances[2] * FIELD_PRODUCT);
+        case 'f': return blend_colors(c1, c2, sin(pow(fabs(pixPoints[0].x - pixPoints[1].y), distances[0]) * FIELD_PRODUCT * 5.0));
+        case 'g': return blend_colors(c1, c2, cos(pow(fabs(pixPoints[0].y + pixPoints[1].x), distances[0]) * FIELD_PRODUCT * 5.0));
+        case 'h': return blend_colors(c1, c2, tan(pow(distances[2], fabs(pixPoints[0].x * pixPoints[1].y)) * FIELD_PRODUCT * 100.0));
         case 'j': return (distances[2] * 0.5 > distances[0] + distances[1])? c1 : c2;
         case 'k': return (pixPoints[0].x / pixPoints[1].y > pow(pixPoints[1].x, fabs(pixPoints[0].y)))? c1 : c2;
         default: return (((distances[2] + distances[1] + distances[0]) / 3.0) > distances[1])? c1 : c2;

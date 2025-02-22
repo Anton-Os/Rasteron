@@ -11,24 +11,35 @@ void genFullFilePath(const char* name, char* fullFilePath);
 uint32_t color_unique(); // produces reusable color identifier
 uint32_t color_invert(uint32_t refColor); // inverts red, green, and blue values
 uint32_t color_level(uint32_t color, double level); // levels color given brightness level
-uint8_t channel_grayscale(uint32_t refColor); // produces a 8 bit grey value based on reference color
-uint32_t color_grayscale(uint32_t refColor); // produces a 32 bit grey value based on reference color
-uint8_t channel_fractional(uint8_t refColor, double frac); // produces an 8 bit color value based on fraction of reference color
-uint32_t color_fractional(uint32_t refColor, double frac); // produces an 32 bit color value based on fraction of reference color
+uint8_t channel_gray(uint32_t refColor); // produces a 8 bit grey value based on reference color
+uint32_t color_gray(uint32_t refColor); // produces a 32 bit grey value based on reference color
+uint8_t channel_frac(uint8_t refColor, double frac); // produces an 8 bit color value based on fraction of reference color
+uint32_t color_frac(uint32_t refColor, double frac); // produces an 32 bit color value based on fraction of reference color
 
-void bitSwitch_RB(uint32_t* data, unsigned pixels); // switch red and blue bits
-void bitSwitch_GB(uint32_t* data, unsigned pixels); // switch green and blue bits
-void bitSwitch_RG(uint32_t* data, unsigned pixels); // switch red and green bits
-// enum CHANNEL_Type getDominantChan(unsigned color);
-int8_t channel_diff(uint32_t color1, uint32_t color2, CHANNEL_Type channel); // returns positive if lighter, negative if darker, zero on match
-uint8_t channel_low(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
-uint8_t channel_hi(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
+uint32_t swap_rb(uint32_t color);  // switch red and blue bits
+uint32_t swap_gb(uint32_t color); // switch green and blue bits
+uint32_t swap_rg(uint32_t color);  // switch red and green bits
 
-uint32_t colors_diff(uint32_t color1, uint32_t color2); // subtracts smaller color from larger
-uint32_t colors_blend(uint32_t color1, uint32_t color2, double bVal); // blends values between two colors
-uint32_t colors_fuse(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
-uint32_t colors_powroot(uint32_t color1, uint32_t color2); // enum CHANNEL_Type type); // multiplies colors and then takes the root
-uint32_t colors_scramble(uint32_t color1, uint32_t color2, double pVal); // scrambles per channel based on probability
+// enum CHANNEL_Type dom_channel(unsigned color);
+uint8_t add_channel(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
+uint8_t diff_channel(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
+uint8_t mult_channel(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
+uint8_t pow_channel(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
+uint8_t lo_channel(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
+uint8_t hi_channel(uint32_t color1, uint32_t color2, CHANNEL_Type channel);
+
+uint32_t add_colors(uint32_t color1, uint32_t color2); // adds colors together
+uint32_t add_rgb(uint32_t color1, uint32_t color2); // adds each channel together
+uint32_t diff_colors(uint32_t color1, uint32_t color2); // subtracts smaller color from larger
+uint32_t diff_rgb(uint32_t color1, uint32_t color2); // subtracts smaller channels from larger
+uint32_t mult_colors(uint32_t color1, uint32_t color2); // multiplies colors together
+uint32_t mult_rgb(uint32_t color1, uint32_t color2); // multiplies each channel together
+uint32_t blend_colors(uint32_t color1, uint32_t color2, double bVal); // blends values between two colors
+uint32_t blend_colors_eq(uint32_t color1, uint32_t color2); // blends equally between two colors
+uint32_t fuse_colors(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
+uint32_t fuse_colors_eq(uint32_t color1, uint32_t color2); // fuse equally between hi and low colors
+uint32_t root_colors(uint32_t color1, uint32_t color2); // enum CHANNEL_Type type); // multiplies colors and then takes the root
+uint32_t scramble_colors(uint32_t color1, uint32_t color2, double pVal); // scrambles per channel based on probability
 
 double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth); // get s pixel distance based on2 offsets
 unsigned pixPoint_offset(PixelPoint pixPos, ref_image_t refImage); // gets pixel offset from image coordinates

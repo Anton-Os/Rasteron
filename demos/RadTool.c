@@ -18,7 +18,7 @@ static unsigned spirals(double x, double y){
     double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 
     double factor = (centerAngle * segs) - floor(centerAngle * segs) * tan(centerDist * (segs + dist));
-    return colors_fuse(color_level(color1, sin(centerAngle * segs)), color_level(color2, cos(centerDist * dist)), factor);
+    return fuse_colors(color_level(color1, sin(centerAngle * segs)), color_level(color2, cos(centerDist * dist)), factor);
 }
 
 Rasteron_Image* spiralsImgOp(double s, double d){
@@ -28,15 +28,15 @@ Rasteron_Image* spiralsImgOp(double s, double d){
     return mapImgOp((ImageSize){ 1024, 1024 }, spirals);
 }
 
-unsigned radialMix1(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(colors_diff(c1, c4), c3 - c2); } // starting
-unsigned radialMix2(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(colors_diff(c2, c3), c4 + c1); } // reverse
-unsigned radialMix3(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(colors_diff(c3, c1), c2 * c4); } // odds and evens
-unsigned radialMix4(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(colors_diff(c4, c2), pow(c1, 1.0 / (double)(c3 & 0xFF))); } // evens and odds
-unsigned radialMix5(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(c3 - c2, colors_diff(c1, c4)); } // starting alt
-unsigned radialMix6(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(c4 + c1, colors_diff(c2, c3)); } // reverse alt
-unsigned radialMix7(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(c2 * c4, colors_diff(c3, c1)); } // odds and evens alt
-unsigned radialMix8(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return colors_diff(pow(c1, 1.0 / (double)(c3 & 0xFF)), colors_diff(c4, c2)); } // evens and odds alt
-unsigned radialMix9(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return (c1 + c2 > c3 + c4)? colors_blend(c1, c2, 0.5) : colors_fuse(c3, c4, 0.5); } // inbetween
+unsigned radialMix1(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c1, c4), c3 - c2); } // starting
+unsigned radialMix2(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c2, c3), c4 + c1); } // reverse
+unsigned radialMix3(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c3, c1), c2 * c4); } // odds and evens
+unsigned radialMix4(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c4, c2), pow(c1, 1.0 / (double)(c3 & 0xFF))); } // evens and odds
+unsigned radialMix5(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(c3 - c2, diff_colors(c1, c4)); } // starting alt
+unsigned radialMix6(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(c4 + c1, diff_colors(c2, c3)); } // reverse alt
+unsigned radialMix7(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(c2 * c4, diff_colors(c3, c1)); } // odds and evens alt
+unsigned radialMix8(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(pow(c1, 1.0 / (double)(c3 & 0xFF)), diff_colors(c4, c2)); } // evens and odds alt
+unsigned radialMix9(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return (c1 + c2 > c3 + c4)? blend_colors(c1, c2, 0.5) : fuse_colors(c3, c4, 0.5); } // inbetween
 
 Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback){
     Rasteron_Image* radialImgs[4] = {
@@ -55,11 +55,11 @@ Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback){
 
 static unsigned mandalaMix1(unsigned c1, unsigned c2){ return c1 + c2; }
 static unsigned mandalaMix2(unsigned c1, unsigned c2){ return c1 * c2; }
-static unsigned mandalaMix3(unsigned c1, unsigned c2){ return colors_powroot(c1, c2); }
+static unsigned mandalaMix3(unsigned c1, unsigned c2){ return root_colors(c1, c2); }
 static unsigned mandalaMix4(unsigned c1, unsigned c2){ return (c1 * 2) - (c2 / 2); }
 static unsigned mandalaMix5(unsigned c1, unsigned c2){ return (c1 > c2)? color_invert(c1) : color_invert(c2); }
 static unsigned mandalaMix6(unsigned c1, unsigned c2){ return (c1 * color_invert(c2) > color_invert(c1) * c2)? c1 : c2; }
-static unsigned mandalaMix7(unsigned c1, unsigned c2){ return (colors_fuse(c1, c2, 0.5F) > colors_blend(c1, c2, 0.5F))? c1 : c2; }
+static unsigned mandalaMix7(unsigned c1, unsigned c2){ return (fuse_colors(c1, c2, 0.5F) > blend_colors(c1, c2, 0.5F))? c1 : c2; }
 
 static unsigned restoreMix(unsigned c1, unsigned c2){
     static unsigned lastColor;
@@ -85,9 +85,9 @@ static unsigned mandalaMap(double x, double y){
     double centerAngle = atan((y - 0.5) / (x - 0.5));
     double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 
-    unsigned mandalaColor = colors_blend(
-        colors_fuse(color1, color2, sin(y / centerAngle) + cos(x / centerDist)), 
-        colors_diff(color_invert(color1), color_invert(color2)),
+    unsigned mandalaColor = blend_colors(
+        fuse_colors(color1, color2, sin(y / centerAngle) + cos(x / centerDist)), 
+        diff_colors(color_invert(color1), color_invert(color2)),
         interpolate(invocation, coords, centerAngle, centerDist)
     );
 

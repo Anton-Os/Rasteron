@@ -23,7 +23,7 @@ static float quiltNoiseMod(float value){
 	return newMod;
 }
 
-unsigned powrootMix(unsigned color1, unsigned color2){ return colors_powroot(color1, color2); }
+unsigned powrootMix(unsigned color1, unsigned color2){ return root_colors(color1, color2); }
 
 unsigned eqMix(unsigned color1, unsigned color2){
     while(color1 & 0xFFFFFF > 0xFFFFFF - (color2 & 0xFFFFFF)) color1 /= 2;
@@ -37,7 +37,7 @@ unsigned bitwiseMix_AND(unsigned color1, unsigned color2){ return (color1 & colo
 unsigned bitwiseMix_OR(unsigned color1, unsigned color2){ return (color1 | color2) | 0xFF000000; }
 
 unsigned wavyMix(unsigned color1, unsigned color2){
-    return colors_fuse(color1 + color2, color1 - color2, 0.5);
+    return fuse_colors(color1 + color2, color1 - color2, 0.5);
 }
 
 Rasteron_Image* texImgOp(char mode, ColorGrid* grid){
@@ -45,14 +45,17 @@ Rasteron_Image* texImgOp(char mode, ColorGrid* grid){
 
     switch(tolower(mode)){
         case 'a': return noiseImgOp((ImageSize){ 1024, 1024 }, *grid); break;
-        case 's': return noiseImgOp_scratch((ImageSize){ 1024, 1024 }, *grid); break;
-        case 'd': return noiseImgOp_octave((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'f': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'g': return noiseImgOp_low((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'h': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'j': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, noiseMod); break;
-        case 'k': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
-        case 'l': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, tanMod); break;
+        case 's': return noiseImgOp_crossed((ImageSize){ 1024, 1024 }, *grid); break;
+        case 'd': return noiseImgOp_stepped((ImageSize){ 1024, 1024 }, *grid); break;
+        case 'f': return noiseImgOp_octave((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'g': return noiseImgOp_add((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'h': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'j': return noiseImgOp_low((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'k': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'l': return noiseImgOp_rand((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        //case 'j': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, noiseMod); break;
+        //case 'k': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
+        //case 'l': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, tanMod); break;
         default: return noiseImgOp((ImageSize){ 1024, 1024 }, *grid); break;
     }
 }

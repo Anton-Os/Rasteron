@@ -83,13 +83,16 @@ Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback); //
 
 Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2); // white noise generated between two values
 Rasteron_Image* noiseImgOp_tiled(ImageSize size, ColorGrid grid); // variation of value noise with discrete tiles
-Rasteron_Image* noiseImgOp_scratch(ImageSize size, ColorGrid grid); // variation of value noise with scratch effects
+Rasteron_Image* noiseImgOp_crossed(ImageSize size, ColorGrid grid); // variation of value noise with scratch effects
+Rasteron_Image* noiseImgOp_stepped(ImageSize size, ColorGrid grid); // variation of value noise with step effects
 
 Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of brown noise
 Rasteron_Image* noiseImgOp_low(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of pink noise
 Rasteron_Image* noiseImgOp_hi(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of blue noise
+Rasteron_Image* noiseImgOp_rand(ImageSize size, ColorGrid grid, unsigned short octaves); // new noise with random interpolation
+Rasteron_Image* noiseImgOp_add(ImageSize size, ColorGrid grid, unsigned short octaves); // noise addition for cool effects
 Rasteron_Image* noiseImgOp_diff(ImageSize size, ColorGrid grid, unsigned short octaves); // noise substraction for cool effects
-
+Rasteron_Image* noiseImgOp_mult(ImageSize size, ColorGrid grid, unsigned short octaves); // noise addition for cool effects
 
 // --------------------------------   Cellwise Opertaions    -------------------------------- //
 //
