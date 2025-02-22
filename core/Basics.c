@@ -11,17 +11,14 @@ Rasteron_Image* loadImgOp(const char* fileName){
 #ifdef USE_IMG_TIFF
 	case(IMG_Tiff):
 		refImage = RASTERON_ALLOC("tiff", fileImage.data.tiff.length, fileImage.data.tiff.width);
-		bitSwitch_RB(fileImage.data.tiff.data, fileImage.data.tiff.width * fileImage.data.tiff.length);
 		for(unsigned i = 0; i < refImage->width * refImage->height; i++)
-		   // *(refImage->data + (refImage->width * refImage->height) - 1 - i) = *(fileImage.data.tiff.data + i); // copying operation
-		   *(refImage->data + i) = *(fileImage.data.tiff.data + i); // copying operation
+		   *(refImage->data + i) = swap_rb(*(fileImage.data.tiff.data + i)); // copying operation
 		break;
 #endif
 #ifdef USE_IMG_BMP
 	case(IMG_Bmp):
 		refImage = RASTERON_ALLOC("bmp", abs(fileImage.data.bmp.height), abs(fileImage.data.bmp.width));
 		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
-			// *(refImage->data + (refImage->width * refImage->height) - 1 - i) = *(fileImage.data.bmp.data + i); // copying operation
 			*(refImage->data + i) = *(fileImage.data.bmp.data + i); // copying operation
 		break;
 #endif
@@ -29,7 +26,6 @@ Rasteron_Image* loadImgOp(const char* fileName){
 	case(IMG_Png):
 		refImage = RASTERON_ALLOC("png", fileImage.data.png.height, fileImage.data.png.width);
 		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
-			// *(refImage->data + (refImage->width * refImage->height) - 1 - i) = *(fileImage.data.png.data + i); // copying operation
 			*(refImage->data + i) = *(fileImage.data.png.data + i); // copying operation
 		break;
 #endif

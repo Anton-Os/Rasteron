@@ -52,7 +52,7 @@ Rasteron_Image* texImgOp(char mode, ColorGrid* grid){
         case 'h': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
         case 'j': return noiseImgOp_low((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
         case 'k': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'l': return noiseImgOp_rand((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'l': return noiseImgOp_mult((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
         //case 'j': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, noiseMod); break;
         //case 'k': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
         //case 'l': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, tanMod); break;

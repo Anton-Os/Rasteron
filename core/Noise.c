@@ -123,7 +123,7 @@ Rasteron_Image* noiseExtImgOp_octave(ImageSize size, ColorGrid grid, unsigned sh
 static unsigned blendOctaves(unsigned color1, unsigned color2){ return blend_colors_eq(color1, color2); } // 0.5); }
 static unsigned addOctaves(unsigned color1, unsigned color2){ return add_colors(color1, color2); }
 static unsigned subOctaves(unsigned color1, unsigned color2){ return diff_colors(color1, color2); }
-static unsigned multOctaves(unsigned color1, unsigned color2){ return mult_colors(color1, color2); }
+static unsigned multOctaves(unsigned color1, unsigned color2){ return mult_rgb(color1, color2); }
 static unsigned fuseOctaves_low(unsigned color1, unsigned color2){ return fuse_colors(color1, color2, 0.0); }
 static unsigned fuseOctaves_hi(unsigned color1, unsigned color2){ return fuse_colors(color1, color2, 1.0); }
 static unsigned fuseOctaves_rand(unsigned color1, unsigned color2){ return fuse_colors(color1, color2, (float)rand() / (float)RAND_MAX); }
