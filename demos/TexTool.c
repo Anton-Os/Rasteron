@@ -10,11 +10,9 @@
 static char mode = 'a';
 static ColorGrid grid;
 
-static float noiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
+static float levelsNoiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
 
-static float sinMod(float value){ return sin(value); }
-static float cosMod(float value){ return cos(value); }
-static float tanMod(float value){ return tan(value); }
+static float rangeNoiseMod(float value){ return fabs((value - 0.5F) * 2.0F); }
 
 static float quiltNoiseMod(float value){ 
 	static float m = 0.0;
@@ -23,21 +21,21 @@ static float quiltNoiseMod(float value){
 	return newMod;
 }
 
-unsigned powrootMix(unsigned color1, unsigned color2){ return root_colors(color1, color2); }
-
-unsigned eqMix(unsigned color1, unsigned color2){
-    while(color1 & 0xFFFFFF > 0xFFFFFF - (color2 & 0xFFFFFF)) color1 /= 2;
-    return color1;
-}
+/* static float sinMod(float value){ return sin(value); }
+static float cosMod(float value){ return cos(value); }
+static float tanMod(float value){ return tan(value); } */
 
 unsigned invertMix(unsigned color1, unsigned color2){ return (0xFFFFFFFF - ((color1 > color2)? color_invert(color1 - color2) : color_invert(color2 - color1))) | 0xFF000000; }
 
-unsigned bitwiseMix_AND(unsigned color1, unsigned color2){ return (color1 & color2) | 0xFF000000; }
+unsigned wavyMix(unsigned color1, unsigned color2){ return fuse_colors(color1 + color2, color1 - color2, 0.5); }
 
-unsigned bitwiseMix_OR(unsigned color1, unsigned color2){ return (color1 | color2) | 0xFF000000; }
+uint32_t asm_rgb(uint32_t color1, uint32_t color2){ 
+	uint8_t red = ((color1 & RED_CHANNEL) >> 16) + ((color2 & RED_CHANNEL) >> 16);
+	uint8_t green = ((color1 & GREEN_CHANNEL) >> 8) - ((color2 & GREEN_CHANNEL) >> 8);
+	uint8_t blue = (color1 & BLUE_CHANNEL) * (color2 & BLUE_CHANNEL);
 
-unsigned wavyMix(unsigned color1, unsigned color2){
-    return fuse_colors(color1 + color2, color1 - color2, 0.5);
+	uint32_t result = ((0xFF << 24) | (red << 16) | (green << 8) | blue);
+    return result;
 }
 
 Rasteron_Image* texImgOp(char mode, ColorGrid* grid){
@@ -47,13 +45,13 @@ Rasteron_Image* texImgOp(char mode, ColorGrid* grid){
         case 'a': return noiseImgOp((ImageSize){ 1024, 1024 }, *grid); break;
         case 's': return noiseImgOp_crossed((ImageSize){ 1024, 1024 }, *grid); break;
         case 'd': return noiseImgOp_stepped((ImageSize){ 1024, 1024 }, *grid); break;
-        case 'f': return noiseImgOp_octave((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
+        case 'f': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, rangeNoiseMod); break;
         case 'g': return noiseImgOp_add((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
         case 'h': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
         case 'j': return noiseImgOp_low((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
         case 'k': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'l': return noiseImgOp_mult((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        //case 'j': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, noiseMod); break;
+        case 'l': return noiseExtImgOp_octave((ImageSize){ 1024, 1024 }, *grid, OCTAVES, asm_rgb); break;
+        //case 'j': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, levelsNoiseMod); break;
         //case 'k': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
         //case 'l': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, tanMod); break;
         default: return noiseImgOp((ImageSize){ 1024, 1024 }, *grid); break;
@@ -92,15 +90,13 @@ void _onKeyEvent(char key){
 
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
-            case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, eqMix); break;
-            case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, wavyMix); break;
-            case 'c': Rasteron_Image* powrootImg = mixingImgOp(currentImg, mixerImg, powrootMix);
-                _outputImg = colorSwitchImgOp(powrootImg, CHANNEL_Red, CHANNEL_Green); break;
-                RASTERON_DEALLOC(powrootImg);
-            case 'v': _outputImg = warpingImgOp(currentImg, mixerImg); break;
-            case 'b': _outputImg = mixingImgOp(currentImg, mixerImg, invertMix); break;
-            case 'n': _outputImg = mixingImgOp(currentImg, mixerImg, bitwiseMix_AND); break;
-            case 'm': _outputImg = mixingImgOp(currentImg, mixerImg, bitwiseMix_OR); break;
+            case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, blend_colors_eq); break;
+            case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, mult_colors); break;
+            case 'c': _outputImg = mixingImgOp(currentImg, mixerImg, root_colors); break;
+            case 'v': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_and); break;
+            case 'b': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_or); break;
+            case 'n': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_xor); break;
+            case 'm': _outputImg = warpingImgOp(currentImg, mixerImg); break;
             default: _outputImg = copyImgOp(currentImg); break;
         }
         RASTERON_DEALLOC(currentImg);

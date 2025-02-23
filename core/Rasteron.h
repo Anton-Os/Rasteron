@@ -87,6 +87,7 @@ Rasteron_Image* noiseImgOp_crossed(ImageSize size, ColorGrid grid); // variation
 Rasteron_Image* noiseImgOp_stepped(ImageSize size, ColorGrid grid); // variation of value noise with step effects
 
 Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of brown noise
+Rasteron_Image* noiseExtImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves, mixCallback callback); // custom callback noise
 Rasteron_Image* noiseImgOp_low(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of pink noise
 Rasteron_Image* noiseImgOp_hi(ImageSize size, ColorGrid grid, unsigned short octaves); // imitation of blue noise
 Rasteron_Image* noiseImgOp_rand(ImageSize size, ColorGrid grid, unsigned short octaves); // new noise with random interpolation

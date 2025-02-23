@@ -205,6 +205,12 @@ uint32_t root_colors(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type typ
 	return color * 0xFF; // test
 }
 
+uint32_t bit_colors_and(unsigned color1, unsigned color2){ return (color1 & color2) | 0xFF000000; }
+
+uint32_t bit_colors_or(unsigned color1, unsigned color2){ return (color1 | color2) | 0xFF000000; }
+
+uint32_t bit_colors_xor(unsigned color1, unsigned color2){ return (color1 ^ color2) | 0xFF000000; }
+
 // --------------------------------   Pixel Point Functions   -------------------------------- //
 
 double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth){

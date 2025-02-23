@@ -39,7 +39,10 @@ uint32_t blend_colors_eq(uint32_t color1, uint32_t color2); // blends equally be
 uint32_t fuse_colors(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
 uint32_t fuse_colors_eq(uint32_t color1, uint32_t color2); // fuse equally between hi and low colors
 uint32_t root_colors(uint32_t color1, uint32_t color2); // enum CHANNEL_Type type); // multiplies colors and then takes the root
-uint32_t scramble_colors(uint32_t color1, uint32_t color2, double pVal); // scrambles per channel based on probability
+uint32_t bit_colors_and(uint32_t color1, uint32_t color2); // mix colors with and operation
+uint32_t bit_colors_or(uint32_t color1, uint32_t color2); // mix colors with or operation
+uint32_t bit_colors_xor(uint32_t color1, uint32_t color2); // mix colors with xor operation
+// uint32_t scramble_colors(uint32_t color1, uint32_t color2, double pVal); // scrambles per channel based on probability
 
 double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth); // get s pixel distance based on2 offsets
 unsigned pixPoint_offset(PixelPoint pixPos, ref_image_t refImage); // gets pixel offset from image coordinates
