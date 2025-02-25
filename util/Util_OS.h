@@ -7,6 +7,18 @@
 	#include <Windows.h>
 	#include <windowsx.h>
 
+	#include <wincodec.h>
+	#include <wincodecsdk.h>
+	#pragma comment(lib, "WindowsCodecs.lib")
+
+	#include <vfw.h>
+	#include <mfapi.h>
+	#include <Mfidl.h>
+	#pragma comment(lib, "Vfw32")
+	#pragma comment(lib, "mfplat")
+	#pragma comment(lib, "mf")
+	#pragma comment(lib, "mfuuid")
+
 	#include <io.h> // for files
     #define F_OK 0
     #define access _access

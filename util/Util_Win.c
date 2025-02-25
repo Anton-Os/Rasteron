@@ -1,5 +1,9 @@
 #include "Util_OS.h"
 
+static IWICImagingFactory *wicFactory = NULL;
+static IWICBitmapEncoder *wicEncoder = NULL;
+static IWICBitmapFrameEncode *wicBitmapFrame = NULL;
+
 // Path Generation
 
 void replaceFwdSlash(char* str){
@@ -24,19 +28,23 @@ void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height
 	wndClass.lpszClassName = "Rasteron";
 	RegisterClass(&wndClass);
 
-	HWND wndWindow = CreateWindow(
+	// HWND window = capCreateCaptureWindow(
+	HWND window = CreateWindowA(
 		"Rasteron",
 		name,
-		WS_OVERLAPPEDWINDOW,
+		WS_OVERLAPPEDWINDOW, // WS_CHILD | WS_VISIBLE, 
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		width, height,
 		NULL, NULL, GetModuleHandle(NULL), NULL
 	);
 
-	ShowWindow(wndWindow, 1);
-	UpdateWindow(wndWindow);
+	ShowWindow(window, 1);
+	UpdateWindow(window);
 
-	SetTimer(wndWindow, TIMER_EVENT_ID, 1000, NULL); // creates timer event for every second
+	SetTimer(window, TIMER_EVENT_ID, 1000, NULL); // creates timer event for every second
+
+	capDriverConnect (window, 0);
+	capCaptureSequence (window); 
 }
 
 void eventLoop(eventLoopCallback callback){
