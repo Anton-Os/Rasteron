@@ -102,3 +102,29 @@ void drawWinBmap(HWND hwnd, const BITMAP* bmap){
     EndPaint(hwnd, &pStruct);
     ReleaseDC(hwnd, hTmpDC);
 }
+
+
+#ifdef RASTERON_ENABLE_ANIM
+void encodeQueue(Rasteron_Queue* queue){
+	const uint32_t frameWidth = queue_getImg(queue, 0)->width;
+	const uint32_t frameHeight = queue_getImg(queue, 0)->height;
+	const uint32_t frameRes = frameWidth * frameHeight;
+	const uint32_t fps = 30;
+	const uint32_t frameCount = queue-frameCount * fps;
+	const uint32_t bitrate = 800000; // is this correct?
+	const uint64_t duration = (queue->frameCount * 1000 * 1000) / fps; // is this correct?
+
+	const GUID encodeFrmt = MFVideoFormat_WMV3;
+	const GUID inputFrmt = MFVideoFormat_RGB32;
+
+	DWORD* data = (DWORD*)malloc(sizeof(DWORD) * frameRes * queue->frameCount);
+
+	unsigned d = 0;
+	for(unsigned f = 0; f < queue->frameCount; f++){
+		// TODO: Copy frames into data
+		d++;
+	}
+
+	free(data);
+}
+#endif
