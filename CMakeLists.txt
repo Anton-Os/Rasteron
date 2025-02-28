@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5)
 project(Rasteron DESCRIPTION "Rasteron Image Library")
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -84,9 +84,9 @@ add_executable(Playground demos/Playground.c)
 target_include_directories(Playground PUBLIC loader support core ext util demos)
 target_link_libraries(Playground Rasteron)
 
-add_executable(EasyGUI demos/EasyGUI.c)
-target_include_directories(EasyGUI PUBLIC loader support core ext util demos)
-target_link_libraries(EasyGUI Rasteron)
+add_executable(GUI demos/GUI.c)
+target_include_directories(GUI PUBLIC loader support core ext util demos)
+target_link_libraries(GUI Rasteron)
 
 add_executable(DrawTool demos/DrawTool.c)
 target_include_directories(DrawTool PUBLIC loader support core ext util demos)

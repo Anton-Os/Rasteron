@@ -131,10 +131,10 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
         else {
             unsigned iconColor = *(finalIconImg->data + iconPix);
             
-            *(queueImages[0]->data + p) = (iconColor != NO_COLOR)? *(refImages[4]->data + p) : *(refImages[1]->data + p);
-            *(queueImages[1]->data + p) = (iconColor != NO_COLOR)? *(refImages[4]->data + p) : *(refImages[1]->data + p);
-            *(queueImages[2]->data + p) = (iconColor != NO_COLOR)? *(refImages[2]->data + p) : *(refImages[4]->data + p);
-            *(queueImages[3]->data + p) = (iconColor != NO_COLOR)? *(refImages[1]->data + p) : *(refImages[4]->data + p);
+            *(queueImages[0]->data + p) = (iconColor & 0xFFFFFF != 0)? *(refImages[1]->data + p) : *(refImages[4]->data + p);
+            *(queueImages[1]->data + p) = (iconColor & 0xFFFFFF != 0)? *(refImages[1]->data + p) : *(refImages[4]->data + p);
+            *(queueImages[2]->data + p) = (iconColor & 0xFFFFFF != 0)? *(refImages[4]->data + p) : *(refImages[2]->data + p);
+            *(queueImages[3]->data + p) = (iconColor & 0xFFFFFF != 0)? *(refImages[4]->data + p) : *(refImages[1]->data + p);
 
             iconPix++;
         }

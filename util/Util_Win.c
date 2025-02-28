@@ -21,12 +21,12 @@ void genFullFilePath(const char* name, char* fullFilePath){
 // Windows Specific
 
 void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height){
-	WNDCLASS wndClass = { 0 };
-	wndClass.style = CS_HREDRAW | CS_VREDRAW;
-	wndClass.hInstance = GetModuleHandle(NULL);
-	wndClass.lpfnWndProc = wndProc;
-	wndClass.lpszClassName = "Rasteron";
-	RegisterClass(&wndClass);
+	WNDCLASS windowClass = { 0 };
+	windowClass.style = CS_HREDRAW | CS_VREDRAW;
+	windowClass.hInstance = GetModuleHandle(NULL);
+	windowClass.lpfnWndProc = wndProc;
+	windowClass.lpszClassName = "Rasteron";
+	RegisterClass(&windowClass);
 
 	// HWND window = capCreateCaptureWindow(
 	HWND window = CreateWindowA(
@@ -43,8 +43,16 @@ void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height
 
 	SetTimer(window, TIMER_EVENT_ID, 1000, NULL); // creates timer event for every second
 
+	/* HWND capWindow = capCreateCaptureWindow(
+		"Capture Window",
+		WS_CHILD | WS_VISIBLE,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		width / 2, height / 2,
+		window, 1
+	);
+
 	capDriverConnect (window, 0);
-	capCaptureSequence (window); 
+	capCaptureSequence (window); */
 }
 
 void eventLoop(eventLoopCallback callback){
