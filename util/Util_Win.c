@@ -105,7 +105,11 @@ void drawWinBmap(HWND hwnd, const BITMAP* bmap){
 
 
 #ifdef RASTERON_ENABLE_ANIM
+
 void encodeQueue(Rasteron_Queue* queue){
+	// static IMFSinkWriter* sinkWriter = NULL;
+	static IMFMediaType *mediaTypeIn = NULL, *mediaTypeOut = NULL;
+
 	const uint32_t frameWidth = queue_getImg(queue, 0)->width;
 	const uint32_t frameHeight = queue_getImg(queue, 0)->height;
 	const uint32_t frameRes = frameWidth * frameHeight;
@@ -120,10 +124,29 @@ void encodeQueue(Rasteron_Queue* queue){
 	DWORD* data = (DWORD*)malloc(sizeof(DWORD) * frameRes * queue->frameCount);
 
 	unsigned d = 0;
-	for(unsigned f = 0; f < queue->frameCount; f++){
-		// TODO: Copy frames into data
-		d++;
+	for(unsigned f = 0; f < queue->frameCount && d < frameRes; f++){
+		Rasteron_Image* frame = queue_getImg(queue, f);
+		for(unsigned p = 0; p < frame->width * frame->height; p++){
+			*(data + d) = *(frame->data + p);
+			d++;
+		}
 	}
+
+	char mediaOutputName[1024];
+	strcpy(mediaOutputName, queue->prefix);
+	strcat(mediaOutputName, ".wmv"); // Make this file format configurable?
+
+	// if(!SUCCEEDED(MFCreateSinkWriterFromURL(mediaOutputName, NULL, NULL, &sinkWriter))) return perror("Failed to create sink writer");
+
+	if(!SUCCEEDED(MFCreateMediaType(&mediaTypeOut))) return perror("Failed to create media type for output");
+	// TODO: Set parameters
+
+	if(!SUCCEEDED(MFCreateMediaType(&mediaTypeIn))) return perror("Failed to create media type for input");
+	// TODO: Set parameters
+
+	// SafeRelease(&sinkWriter);
+	// SafeRelease(&mediaTypeOut);
+	// SafeRelease(&mediaTypeIn);
 
 	free(data);
 }

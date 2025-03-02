@@ -14,6 +14,7 @@
 	#pragma comment(lib, "WindowsCodecs.lib")
 
 	#include <vfw.h>
+	// #include <mfreadwrite.h>
 	#include <mfapi.h>
 	#include <Mfidl.h>
 	#pragma comment(lib, "Vfw32")

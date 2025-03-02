@@ -5,6 +5,9 @@
 
 // Noise Image Operations
 
+// static noiseCallback xCellDeviation;
+// static noiseCallback yCellDeviation;
+
 Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color2){
     Rasteron_Image* noiseImg = RASTERON_ALLOC("white_noise", size.height, size.width);
 

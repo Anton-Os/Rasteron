@@ -2,8 +2,9 @@
 
 #include "_Catalouge.h"
 
-#define OCTAVES 3
+#define TEXTOOL_OCTAVES 2
 #define TEXTOOL_COUNT 10
+#define TEXTOOL_POWER 3
 
 #include "_Demo.h"
 
@@ -13,6 +14,8 @@ static ColorGrid grid;
 static float levelsNoiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
 
 static float rangeNoiseMod(float value){ return fabs((value - 0.5F) * 2.0F); }
+
+static float powerNoiseMod(float value){ return pow(value, 3); }
 
 static float quiltNoiseMod(float value){ 
 	static float m = 0.0;
@@ -43,14 +46,14 @@ Rasteron_Image* texImgOp(char mode, ColorGrid* grid){
 
     switch(tolower(mode)){
         case 'a': return noiseImgOp((ImageSize){ 1024, 1024 }, *grid); break;
-        case 's': return noiseImgOp_crossed((ImageSize){ 1024, 1024 }, *grid); break;
-        case 'd': return noiseImgOp_stepped((ImageSize){ 1024, 1024 }, *grid); break;
+        case 's': return noiseImgOp_stepped((ImageSize){ 1024, 1024 }, *grid); break;
+        case 'd': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, powerNoiseMod); break;
         case 'f': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, rangeNoiseMod); break;
-        case 'g': return noiseImgOp_add((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'h': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'j': return noiseImgOp_low((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'k': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, *grid, OCTAVES); break;
-        case 'l': return noiseExtImgOp_octave((ImageSize){ 1024, 1024 }, *grid, OCTAVES, asm_rgb); break;
+        case 'g': return noiseImgOp_add((ImageSize){ 1024, 1024 }, *grid, TEXTOOL_OCTAVES); break;
+        case 'h': return noiseImgOp_diff((ImageSize){ 1024, 1024 }, *grid, TEXTOOL_OCTAVES); break;
+        case 'j': return noiseImgOp_low((ImageSize){ 1024, 1024 }, *grid, TEXTOOL_OCTAVES); break;
+        case 'k': return noiseImgOp_hi((ImageSize){ 1024, 1024 }, *grid, TEXTOOL_OCTAVES); break;
+        case 'l': return noiseExtImgOp_octave((ImageSize){ 1024, 1024 }, *grid, TEXTOOL_OCTAVES, asm_rgb); break;
         //case 'j': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, levelsNoiseMod); break;
         //case 'k': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
         //case 'l': return noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, tanMod); break;
