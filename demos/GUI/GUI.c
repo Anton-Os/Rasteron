@@ -8,7 +8,7 @@
 
 #include "Rasteron.h"
 
-#include "_Demo.h"
+#include "../_Demo.h"
 
 void _onKeyEvent(char key){}
 void _onPressEvent(double x, double y){}

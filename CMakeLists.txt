@@ -84,27 +84,27 @@ add_executable(Playground demos/Playground.c)
 target_include_directories(Playground PUBLIC loader support core ext util demos)
 target_link_libraries(Playground Rasteron)
 
-add_executable(GUI demos/GUI.c)
+add_executable(GUI demos/GUI/GUI.c)
 target_include_directories(GUI PUBLIC loader support core ext util demos)
 target_link_libraries(GUI Rasteron)
 
-add_executable(DrawTool demos/DrawTool.c)
+add_executable(DrawTool demos/DrawTool/DrawTool.c)
 target_include_directories(DrawTool PUBLIC loader support core ext util demos)
 target_link_libraries(DrawTool Rasteron)
 
-add_executable(TexTool demos/TexTool.c)
+add_executable(TexTool demos/TexTool/TexTool.c)
 target_include_directories(TexTool PUBLIC loader support core ext util demos)
 target_link_libraries(TexTool Rasteron)
 
-add_executable(TileTool demos/TileTool.c)
+add_executable(TileTool demos/TileTool/TileTool.c)
 target_include_directories(TileTool PUBLIC loader support core ext util demos)
 target_link_libraries(TileTool Rasteron)
 
-add_executable(SimTool demos/SimTool.c)
+add_executable(SimTool demos/SimTool/SimTool.c)
 target_include_directories(SimTool PUBLIC loader support core ext util demos)
 target_link_libraries(SimTool Rasteron)
 
-add_executable(RadTool demos/RadTool.c)
+add_executable(RadTool demos/RadTool/RadTool.c)
 target_include_directories(RadTool PUBLIC loader support core ext util demos)
 target_link_libraries(RadTool Rasteron)
 
