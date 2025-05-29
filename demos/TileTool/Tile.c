@@ -95,7 +95,7 @@ static unsigned complexTiling(unsigned colors[3], double distances[3], PixelPoin
 }
 
 
-Rasteron_Image* fieldMosaicImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback) {
+Rasteron_Image* mosaicImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback) {
     Rasteron_Image* fieldImage = RASTERON_ALLOC("field", size.height, size.width);
 
     unsigned* colorPoints = malloc(colorPointTable->pointCount * sizeof(unsigned));
@@ -116,14 +116,14 @@ Rasteron_Image* fieldMosaicImgOp(ImageSize size, const ColorPointTable* colorPoi
             double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * (1.0 / (double)(fieldImage->width)); // distance multiplied by pixel size
             if (dist < pixDistances[0]) {
                 for(unsigned d = 0; d < 3; d++){
-                    pixDistances[d] = dist + (d * d1) * (d3 + d2);
+                    pixDistances[d] = dist; // + (d * d1) * (d3 + d2);
                     // pixDistances[d] = dist + (d * d1) - (d3 + d2);
                     // pixDistances[d] = dist + pow(d * d1, d3 + d2);
                     pixPoints[d] = (PixelPoint){
                         // (pow(x, dist * (1.0 / (1 + d))) - colorPointTable->points[t].x),
-                        (x - colorPointTable->points[t].x) / (1.0 + (d * d1) + sin(d * d2)),
+                        (x - colorPointTable->points[t].x) / ((1.0 + (d * d1) + sin(d * d2)) * ((x - 0.5) * 2)),
                         // (pow(y, dist * (1.0 / (1 + d))) - colorPointTable->points[t].y)
-                        (y - colorPointTable->points[t].y) / (1.0 + (d * d1) + cos(d * d3))
+                        (y - colorPointTable->points[t].y) / ((1.0 + (d * d1) + cos(d * d3)) * ((y - 0.5) * 2))
                     };
                 }
                 pixColors[0] = colorPointTable->points[t].color;

@@ -22,26 +22,39 @@ ColorPointTable colorPointTable;
 #include "Draw.c"
 
 void setup(char input){ // double (*xMod)(double), double (*yMod)(double)){
-    if(!isdigit(input))
-        switch(input){
-            case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p':
-            case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm':
-                Rasteron_Image* tempImg = mapImgOp((ImageSize){1024, 1024}, strokeDraw);
-                for(unsigned p = 0; p < tempImg->width * tempImg->height; p++)
-                    if(*(tempImg->data + p) != NO_COLOR) *(_outputImg->data + p) = *(tempImg->data + p);
-                RASTERON_DEALLOC(tempImg);
-            break;
-            case 'a': case 's': case 'd': case 'f': case 'g': case 'h': case 'j': case 'k': case 'l':
-                RASTERON_DEALLOC(_outputImg);
-                _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw);
-            break;
-        }
-    else {
-        Rasteron_Image* tempImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw);
-        for(unsigned p = 0; p < tempImg->width * tempImg->height; p++)
-            if(*(tempImg->data + p) != NO_COLOR) *(_outputImg->data + p) = *(tempImg->data + p);
-        RASTERON_DEALLOC(tempImg);
+    Rasteron_Image* stagingImg = NULL;
+
+    switch(input){
+    case 'q': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw1); break;
+    case 'w': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw2); break;
+    case 'e': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw3); break;
+    case 'r': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw4); break;
+    case 't': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw5); break;
+    case 'y': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw6); break;
+    case 'u': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw7); break;
+    case 'i': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw8); break;
+    case 'o': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw9); break;
+    case 'p': stagingImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw0); break;
+    case 'a': stagingImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw1); break;
+    case 's': stagingImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw2); break;
+    case 'd': stagingImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw3); break;
+    case 'f': stagingImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw4); break;
+    case 'g': stagingImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw5); break;
+    case 'h': stagingImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw6); break;
+    case 'j': stagingImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw7); break;
+    case 'k': stagingImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw8); break;
+    case 'z': stagingImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw1); break;
+    case 'x': stagingImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw2); break;
+    case 'c': stagingImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw3); break;
+    case 'v': stagingImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw4); break;
+    case 'b': stagingImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw5); break;
+    case 'n': stagingImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw6); break;
+    case 'm': stagingImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw7); break;
     }
+
+    if(stagingImg != NULL) 
+      for(unsigned p = 0; p < stagingImg->width * stagingImg->height; p++) 
+        if(*(stagingImg->data + p) != NO_COLOR) *(_outputImg->data + p) = *(stagingImg->data + p);
 }
 
 void _onKeyEvent(char key){
@@ -78,7 +91,7 @@ int main(int argc, char** argv){
     colorPointTable.pointCount = 0;
 
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    _outputImg = solidImgOp((ImageSize){1024, 1024}, 0xFF333333); // mapImgOp((ImageSize){1024, 1024}, waveDraw); // global canvas for drawing
+    _outputImg = solidImgOp((ImageSize){1024, 1024}, 0xFF333333); // brushDrawImgOp((ImageSize){1024, 1024}, waveDraw); // global canvas for drawing
 
     _run(argc, argv); // system specific initialization and continuous loop
 

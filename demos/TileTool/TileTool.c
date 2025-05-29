@@ -74,7 +74,7 @@ void setup(char input){
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
         switch(keysave){
             case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm':
-                _outputImg = fieldMosaicImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
+                _outputImg = mosaicImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
             default: _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
         }
     } else if(_outputImg != NULL && input == ';'){

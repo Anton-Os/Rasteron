@@ -5,6 +5,7 @@
 #define TEXTOOL_OCTAVES 2
 #define TEXTOOL_COUNT 10
 #define TEXTOOL_POWER 3
+#define TEXTOOL_PURTURB 0.25
 
 #include "../_Demo.h"
 
@@ -37,11 +38,27 @@ void _onKeyEvent(char key){
         mode = tolower(key);
         
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-        _outputImg = texImgOp(mode, &grid);
+    switch(tolower(mode)){
+        case 'a': _outputImg = noiseImgOp((ImageSize){ 1024, 1024 }, grid); break;
+        // case 's': _outputImg = noiseImgOp_crossed((ImageSize){ 1024, 1024 }, *grid); break;
+        // case 'd': _outputImg = noiseImgOp_stepped((ImageSize){ 1024, 1024 }, *grid); break;
+        case 's': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, powerNoiseMod, TEXTOOL_PURTURB, TEXTOOL_PURTURB); break;
+        case 'd': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, trigNoiseMod, TEXTOOL_PURTURB, TEXTOOL_PURTURB); break;
+        case 'f': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, rangeNoiseMod, TEXTOOL_PURTURB, TEXTOOL_PURTURB); break;
+        case 'g': _outputImg = noiseImgOp_add((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
+        case 'h': _outputImg = noiseImgOp_diff((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
+        case 'j': _outputImg = noiseImgOp_low((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
+        case 'k': _outputImg = noiseImgOp_hi((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
+        case 'l': _outputImg = noiseExtImgOp_octave((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES, asm_rgb); break;
+        //case 'j': _outputImg = noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, levelsNoiseMod); break;
+        //case 'k': _outputImg = noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
+        //case 'l': _outputImg = noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, tanMod); break;
+        // default: _outputImg = noiseImgOp((ImageSize){ 1024, 1024 }, grid); break;
+    }
 
     if(_outputImg != NULL){
         Rasteron_Image* currentImg = copyImgOp(_outputImg);
-        Rasteron_Image* mixerImg = texImgOp(mode, &grid);
+        Rasteron_Image* mixerImg = (_savedImg != NULL)? copyImgOp(_savedImg) : noiseImgOp((ImageSize){ 1024, 1024 }, grid); // texImgOp(mode, &grid);
 
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
