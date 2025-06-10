@@ -1,9 +1,5 @@
-#include "_Catalouge.h"
-
 #define NSIM_GROW 0.1
 #define NSIM_COUNT 12
-
-// ColorPointTable colorPointTable;
 
 int mode = -1;
 
@@ -11,7 +7,9 @@ int mode = -1;
 
 #include "Sim.c"
 
-void fillQueue(Rasteron_Image* targetImg, nebrCallback8 algorithm, nebrCallback8 process){
+// Overriden Functions
+
+static void createSimSequence(Rasteron_Image* targetImg, nebrCallback8 algorithm, nebrCallback8 process){
     Rasteron_Image* simImg = NULL;
 
     for(unsigned f = 0; f < NSIM_COUNT; f++){
@@ -83,7 +81,7 @@ void _onKeyEvent(char key){
     // else if(key == '\r'){
     else if(key == '.'){
         mode *= -1; // indicating resume
-        fillQueue(growImg, algorithm, process);
+        createSimSequence(growImg, algorithm, process);
     }
 }
 
@@ -100,19 +98,28 @@ void _onTickEvent(unsigned secs){
     // RASTERON_DEALLOC(queueImg);
 }
 
-int main(int argc, char** argv) {
+// Generative Function
+
+Rasteron_Image* simTool(int argc, char** argv){
     Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ 1024, 1024 }, _swatch.base);
     Rasteron_Image* growthImg = growImgOp(backgroundImg, 0.5, 0.1);
-    _outputImg = simImgOp(growthImg, 1, conwayRules);
-    _mainQueue = RASTERON_QUEUE_ALLOC("sim", internal_create_size(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
- 
-    _run(argc, argv); // system specific initialization and continuous loop
-    
-    if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    RASTERON_QUEUE_DEALLOC(_mainQueue);
-    RASTERON_DEALLOC(_outputImg);
+    Rasteron_Image* simImg = simImgOp(growthImg, 1, conwayRules);
 
     RASTERON_DEALLOC(backgroundImg);
+    RASTERON_DEALLOC(growthImg);
+
+    return simImg;
+}
+
+// Executable Function
+
+int main(int argc, char** argv) {
+    _mainQueue = RASTERON_QUEUE_ALLOC("sim", internal_create_size(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
+ 
+    _run(argc, argv, simTool); // system specific initialization and continuous loop
+    
+    RASTERON_DEALLOC(_outputImg);
+    RASTERON_QUEUE_DEALLOC(_mainQueue);
 
     return 0;
 }

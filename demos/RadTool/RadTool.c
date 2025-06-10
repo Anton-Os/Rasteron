@@ -15,6 +15,8 @@ static char keysave = '0';
 
 #include "Rad.c"
 
+// Overriden Functions
+
 void _onKeyEvent(char key){
     if(isalpha(key)) RASTERON_DEALLOC(_outputImg);
 
@@ -53,12 +55,18 @@ void _onKeyEvent(char key){
 void _onPressEvent(double x, double y){ }
 void _onTickEvent(unsigned secs){}
 
+// Generative Function
+
+Rasteron_Image* radTool(int argc, char** argv){
+    return mandalaImgOp(mandalaMap, mandalaMix1, mandalaInterp7)
+}
+
+// Executable Function
+
 int main(int argc, char** argv) {
 	srand(time(NULL));
-	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    _outputImg = hypnosisImgOp(0, 0xFF00FF00, 0xFF0000FF);
 
-    _run(argc, argv); // system specific initialization and continuous loop
+    _run(argc, argv, radTool); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

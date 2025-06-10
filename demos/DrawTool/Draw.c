@@ -78,7 +78,6 @@ typedef unsigned (*brushCallback)(unsigned[3], double[3], double, double, double
 Rasteron_Image* brushDrawImgOp(ImageSize size, brushCallback callback){
     Rasteron_Image* brushDrawImg = RASTERON_ALLOC("brush", size.height, size.width);
 
-    puts("Brush draw triggered");
     for(unsigned p = 0; p < brushDrawImg->width * brushDrawImg->height; p++){
 		double x = (1.0 / (double)size.width) * (p % size.width) * (0.5 * _dimens[0]);
 		double y = (1.0 / (double)size.height) * (p / size.width) * (0.5 * _dimens[1]);
@@ -107,7 +106,6 @@ Rasteron_Image* brushDrawImgOp(ImageSize size, brushCallback callback){
 		    *(brushDrawImg->data + p) = callback(colorPoints[0].color, distances, xDiff, yDiff, lineDist);
         else *(brushDrawImg->data + p) = colorPoints[0].color;
 	}
-    puts("Brush draw end");
 
     return brushDrawImg;
 }

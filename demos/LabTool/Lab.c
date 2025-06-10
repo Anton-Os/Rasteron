@@ -1,12 +1,11 @@
-#include "_Catalouge.h"
+#define RASTERON_ENABLE_ANIM
+#define RASTERON_ENABLE_FONT
+
+#include "Rasteron.h"
 
 static char fullFilePath[1024];
 
-ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
-// ColorSwatch _swatch = { 0xFF111111, { 0xFFFF1111, 0xFF11FF11, 0xFF1111FF, 0xFF333333, 0xFFEEEEEE, 0xFF111100, 0xFF110011, 0xFF001111 }, 0xF }; // determines color oprations
-// ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88AA88, 0xFF8888AA, 0xFF333333, 0xFFEEEEEE, 0xFFAAAA00, 0xFFAA00AA, 0xFF00AAAA }, 0xF }; // determines color oprations
-// Catalouged Rules/Callbacks
-
+extern ColorSwatch _swatch;
 
 /*** Rules ***/
 
@@ -482,43 +481,6 @@ Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2){
     return experimentalImg;
 }
 
-double truschetX1 = 0.25; // double truschetX2 = 0.25;
-double truschetY1 = 0.75; // double truschetY2 = 0.75;
-
-static unsigned sharpTruschetTile(double x, double y){
-    return blend_colors(0xFFFF00FF, 0xFF00FFFF, asin(pow(x, y)) + acos(pow(y, x)));
-}
-
-Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv){
-    // Rasteron_Image* truchetTile = RASTERON_ALLOC("truschet_tile", 1024 / hDiv, 1024 / wDiv);
-    Rasteron_Image* truschetTile = (truschetImg == NULL)? mapImgOp((ImageSize){ 1024 / hDiv, 1024 / wDiv }, sharpTruschetTile) : copyImgOp(truschetImg);
-    Rasteron_Image* truschetTile2 = flipImgOp(truschetTile, FLIP_Upside);
-    Rasteron_Image* truschetTile3 = flipImgOp(truschetTile, FLIP_Clock);
-    Rasteron_Image* truschetTile4 = flipImgOp(truschetTile, FLIP_Counter);
-
-    Rasteron_Image* finalImg = RASTERON_ALLOC("truschet", 1024, 1024);
-    for(unsigned p = 0; p < 1024 * 1024; p++){
-        double x = (1.0 / (double)1024) * (p % 1024);
-		double y = (1.0 / (double)1024) * (p / 1024);
-
-        unsigned c = x * wDiv;
-        unsigned r = y * hDiv;
-
-        Rasteron_Image** targetTileImg;
-        if(c % 2 == 0) targetTileImg = (r % 2 == 0)? &truschetTile : &truschetTile2;
-        else targetTileImg = (r % 2 == 0)? &truschetTile3 : &truschetTile4;
-
-        *(finalImg->data + p) = pixPoint_color((PixelPoint){ (x * wDiv) - floor(x * wDiv), (y * hDiv) - floor(y * hDiv) }, *targetTileImg);
-    }
-
-    RASTERON_DEALLOC(truschetTile);
-    RASTERON_DEALLOC(truschetTile2);
-    RASTERON_DEALLOC(truschetTile3);
-    RASTERON_DEALLOC(truschetTile4);
-
-    return finalImg; 
-}
-
 static unsigned ditherThresh;
 static unsigned ditherColor1;
 static unsigned ditherColor2;
@@ -849,65 +811,4 @@ Rasteron_Image* arcaneImgOp(double radius, unsigned short count){
         }
 
     return arcImg;
-}
-
-
-/*** Specialized Image Algorithms ***/
-
-
-Rasteron_Image* drawImgOp(char mode, Rasteron_Image* targetImg, PixelPointTable* pointsTable, unsigned short count, double (*xModCallback)(double), double (*yModCallback)(double)){
-
-    unsigned color1 = _swatch.colors[count % 8];
-    unsigned color2 = _swatch.colors[(count + 1) % 8];
-    unsigned color3 = _swatch.colors[(count - 1) % 8];
-
-    Rasteron_Image* drawImg = (targetImg != NULL)? copyImgOp(targetImg) : checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 10, 10, color1, color2 });
-
-    for(unsigned p = 0; p < 1024 * 1024; p++){
-        double x = (1.0 / (double)1024) * (p % 1024); // (1.0 / (double)1024) * (p % 1024);
-        double y = (1.0 / (double)1024) * (p / 1024); // (1.0 / (double)1024) * (p / 1024)
-        if(xModCallback != NULL) x = xModCallback(x);
-        if(yModCallback != NULL) y = yModCallback(y);
-
-        double xOffLo = 9999.99, yOffLo = 9999.99; // lowest value
-        double xOffHi = 0.0, yOffHi = 0.0; // highest value
-        double xAccum = 0.0; double yAccum = 0.0; // accumulated value
-
-        // for(unsigned o = pointsTable->pointCount; o > (count < pointsTable->pointCount - 1)? count : pointsTable->pointCount - 1; o--){
-        for(unsigned o = pointsTable->pointCount; o > count; o--){
-            double xOff = x - pointsTable->points[o - 1].x;
-            double yOff = y - pointsTable->points[o - 1].y;
-            double angle = atan(((yOff + 1.0) * 0.5) / ((xOff + 1.0) * 0.5));
-            double distance = sqrt(pow(xOff, 2) + pow(yOff, 2));
-
-            if(o == 0 || fabs(xOff) < xOffLo) xOffLo = xOff; // minimum x value
-            if(o == 0 || fabs(xOff) > xOffHi) xOffHi = xOff; // maximum x value
-            if(o == 0 || fabs(yOff) < yOffLo) yOffLo = yOff; // minimum y value
-            if(o == 0 || fabs(yOff) > yOffHi) yOffHi = yOff; // maximum y value
-            xAccum += fabs(xOff); yAccum += fabs(yOff);
-
-            /* switch(mode){
-                case 'z': *(drawImg->data + p) = blend_colors(blend_colors(color1, color_invert(color1), fabs(xAccum)), blend_colors(color2, color_invert(color2), fabs(yAccum)), fabs(xAccum / yAccum)); break;
-                case 'x': if(fabs(xOffLo) < fabs(yOffLo)) *(drawImg->data + p) = color1; else if(fabs(xOffHi) > fabs(yOffHi)) *(drawImg->data + p) = color2; break;
-                case 'c': *(drawImg->data + p) = blend_colors(color1, color2, (xAccum / yOffHi) * (xOffLo / yAccum)); break;
-                case 'v': *(drawImg->data + p) = blend_colors(color1, color2, (xOffLo * yOffLo) / (xOffHi * yOffHi)); break;
-                case 'b': *(drawImg->data + p) = fuse_colors(color1, color2, (xOffHi / yOffLo) * sin(pow(xOffLo / yOffHi, 2) + pow(yOffLo / xOffHi, 2))); break;
-                case 'n': *(drawImg->data + p) = (xOff / yOff > 0.5)? blend_colors(*(drawImg->data + p), color1, xOffHi) : blend_colors(*(drawImg->data + p), color2, yOffHi); break;
-                case 'm': *(drawImg->data + p) = (color1 / color2) * (xOffLo * xAccum) / (yOff * yAccum); break;
-                default: *(drawImg->data + p) = *(drawImg->data + p);
-            } */
-
-            switch(mode){
-                case 'z': if(o == pointsTable->pointCount) *(drawImg->data + p) = blend_colors(color1, color2, angle); break;
-                case 'x': *(drawImg->data + p) = blend_colors(*(drawImg->data + p), color2, pow(angle, count)); break;
-                case 'c': *(drawImg->data + p) = blend_colors(*(drawImg->data + p), color3, angle / distance); break;
-                case 'v': *(drawImg->data + p) = blend_colors(*(drawImg->data + p), color1, (distance - angle) / (angle + distance)); break;
-                case 'b': *(drawImg->data + p) = (angle > distance)? color1 : color2; break;
-                case 'n': *(drawImg->data + p) = fuse_colors(color1, color3, sin(angle) + cos(distance)); break;
-                case 'm': *(drawImg->data + p) = fuse_colors(blend_colors(color1, color2, angle), blend_colors(color1, color3, distance), 1.0 / (xAccum + yAccum)); break;
-            }
-        }
-    }
-
-    return drawImg;
 }

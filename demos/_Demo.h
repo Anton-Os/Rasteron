@@ -22,6 +22,8 @@
 
 // --------------------------------   Objects for Demo    -------------------------------- //
 
+extern ColorSwatch _swatch;
+
 extern Rasteron_Image* _savedImg;
 extern Rasteron_Image* _outputImg;
 
@@ -64,7 +66,9 @@ void _onKeyEvent(char key);
 void _onPressEvent(double x, double y);
 void _onTickEvent(unsigned secs);
 
-typedef void (*argCallback)(int, char**);
+typedef Rasteron_Image* (*imageCallback)(int, char**);
+
+imageCallback _outputCallback;
 
 void parseInput(char lastInput);
 
@@ -88,4 +92,4 @@ void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format);
 
 void parseArgs(int argc, char** argv);
 
-void _run(int argc, char** argv);
+void _run(int argc, char** argv, imageCallback callback);

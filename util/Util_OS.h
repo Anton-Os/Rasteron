@@ -1,5 +1,3 @@
-#define RASTERON_ENABLE_ANIM
-
 #include "Rasteron.h"
 
 #ifdef _WIN32 
@@ -34,6 +32,9 @@
 	BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data); // raw data call
 	BITMAP createWinBmap(Rasteron_Image* image); // formatted data call
 	void drawWinBmap(HWND hwnd, const BITMAP* bmap);
+#ifdef RASTERON_ENABLE_ANIM
+	void encodeQueue(Rasteron_Queue* queue);
+#endif
 #elif defined __linux__
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>
@@ -54,9 +55,4 @@
 	XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data); // raw data call
 	XImage* createUnixBmap(Platform_Context* context, Rasteron_Image* image);
 	void drawUnixBmap(Platform_Context* context, XImage* image);
-#endif // Port later to some Internal.h header
-
-
-#if defined(RASTERON_ENABLE_ANIM) && defined(_WIN32)
-	void encodeQueue(Rasteron_Queue* queue);
 #endif

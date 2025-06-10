@@ -6,8 +6,6 @@
 #define RASTERON_WIN_HEIGHT 180
 #define RASTERON_WIN_WIDTH 650
 
-#include "Rasteron.h"
-
 #include "../_Demo.h"
 
 void _onKeyEvent(char key){}
@@ -76,7 +74,7 @@ int main(int argc, char** argv) {
     }
     RASTERON_DEALLOC(backgroundImg);
 
-    _run(argc, argv); // system specific initialization and continuous loop
+    _run(argc, argv, NULL); // system specific initialization and continuous loop
 
     // Deallocation
 

@@ -2,6 +2,12 @@
 
 // --------------------------------   Objects for Demo    -------------------------------- //
 
+ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
+// ColorSwatch _swatch = { 0xFF111111, { 0xFFFF1111, 0xFF11FF11, 0xFF1111FF, 0xFF333333, 0xFFEEEEEE, 0xFF111100, 0xFF110011, 0xFF001111 }, 0xF }; // determines color oprations
+// ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88AA88, 0xFF8888AA, 0xFF333333, 0xFFEEEEEE, 0xFFAAAA00, 0xFFAA00AA, 0xFF00AAAA }, 0xF }; // determines color oprations
+// Catalouged Rules/Callbacks
+
+
 Rasteron_Image* _savedImg = NULL;
 Rasteron_Image* _outputImg = NULL;
 
@@ -164,13 +170,18 @@ void parseArgs(int argc, char** argv){
     }
 }
 
-void _run(int argc, char** argv){
+void _run(int argc, char** argv, imageCallback callback){
     parseArgs(argc, argv);
+    _outputImg = (callback != NULL)? callback(argc, argv) : errorImgOp("No callback created");
+    if(argc > 1){ 
+        // TODO: Save output to a designated location
+    } else {
 #ifdef _WIN32
-    createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
-    eventLoop(NULL);
+        createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
+        eventLoop(NULL);
 #elif defined __linux__
-    createWindow(&unixContext, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
-    eventLoop(unixContext.display, unixContext.window, unixProc);
+        createWindow(&unixContext, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
+        eventLoop(unixContext.display, unixContext.window, unixProc);
 #endif
+    }
 }

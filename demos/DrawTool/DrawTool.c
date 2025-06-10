@@ -1,5 +1,3 @@
-#include "../_Catalouge.h"
-
 #define CANVAS_COLOR 0xFF111111
 #define COLOR_POINTS 4
 #define OSCILATION 30.0
@@ -20,6 +18,8 @@ PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
 #include "Draw.c"
+
+// Overriden Functions
 
 void setup(char input){ // double (*xMod)(double), double (*yMod)(double)){
     Rasteron_Image* stagingImg = NULL;
@@ -86,14 +86,19 @@ void _onPressEvent(double x, double y){
 
 void _onTickEvent(unsigned secs){}
 
+// Generative Function
+
+Rasteron_Image* drawTool(int argc, char** argv){
+    return checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 10, 10, 0xFF333333, 0xFFEEEEEE });
+}
+
+// Executable Function
+
 int main(int argc, char** argv){
     pixelPointTable.pointCount = 0;
     colorPointTable.pointCount = 0;
 
-    if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    _outputImg = solidImgOp((ImageSize){1024, 1024}, 0xFF333333); // brushDrawImgOp((ImageSize){1024, 1024}, waveDraw); // global canvas for drawing
-
-    _run(argc, argv); // system specific initialization and continuous loop
+    _run(argc, argv, drawTool); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

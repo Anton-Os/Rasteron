@@ -1,5 +1,3 @@
-#ifndef RASTERON_EXPERIMENTAL_H
-
 #define RASTERON_ENABLE_ANIM
 #define RASTERON_ENABLE_FONT
 
@@ -52,15 +50,5 @@ Rasteron_Image* displacerImgOp(unsigned short cells, unsigned color1, unsigned c
 Rasteron_Image* bilineImgOp(unsigned color, unsigned short variant);
 Rasteron_Image* arcaneImgOp(double radius, unsigned short count);
 Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2);
-Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv);
+// Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv);
 Rasteron_Image* ditherImgOp(ref_image_t targetImg, uint8_t thresh, unsigned color1, unsigned color2);
-
-// Specialized Images
-
-Rasteron_Image* texImgOp(char mode, ColorGrid* grid);
-Rasteron_Image* drawImgOp(char mode, Rasteron_Image* targetImg, PixelPointTable* pointsTable, unsigned short count, double (*xModCallback)(double), double (*yModCallback)(double));
-Rasteron_Image* simImgOp(ref_image_t refImage, unsigned short iters, nebrCallback8 callback);
-Rasteron_Image* fieldClxImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback);
-
-#define RASTERON_EXPERIMENTAL_H
-#endif

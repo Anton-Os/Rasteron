@@ -50,8 +50,7 @@ include(externalTargets.cmake)
 
 # add_library(Rasteron STATIC ${core_src} ${ext_src} "demos/_Catalouge.c") # library only
 add_library(Rasteron STATIC 
-    ${support_src} ${loader_src} ${core_src} ${ext_src} ${util_src} 
-    "demos/_Catalouge.c"
+    ${support_src} ${loader_src} ${core_src} ${ext_src} ${util_src}
     "demos/_Demo.c"
 )
 
@@ -80,9 +79,9 @@ target_include_directories(Rasteron
 
 # Demo Applications
 
-add_executable(Playground demos/Playground.c)
-target_include_directories(Playground PUBLIC loader support core ext util demos)
-target_link_libraries(Playground Rasteron)
+add_executable(LabTool demos/LabTool/LabTool.c demos/LabTool/Lab.c)
+target_include_directories(LabTool PUBLIC loader support core ext util demos)
+target_link_libraries(LabTool Rasteron)
 
 add_executable(GUI demos/GUI/GUI.c)
 target_include_directories(GUI PUBLIC loader support core ext util demos)

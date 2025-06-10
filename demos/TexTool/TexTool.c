@@ -1,18 +1,18 @@
 #define RASTERON_ENABLE_ANIM
 
-#include "../_Catalouge.h"
-
 #define TEXTOOL_OCTAVES 2
 #define TEXTOOL_COUNT 10
 #define TEXTOOL_POWER 3
-#define TEXTOOL_PURTURB 0.25
+#define TEXTOOL_PURTURB 0.0
 
 #include "../_Demo.h"
 
 static char mode = 'a';
-static ColorGrid grid;
+static ColorGrid grid = { 1, 1, 0xFF333333, 0xFFEEEEEE };
 
 #include "Tex.c"
+
+// Overriden Functions
 
 void _onKeyEvent(char key){ 
     static unsigned mode = 0;
@@ -79,15 +79,19 @@ void _onKeyEvent(char key){
 void _onPressEvent(double x, double y){}
 void _onTickEvent(unsigned secs){}
 
+// Generative Function
+
+Rasteron_Image* texTool(int argc, char** argv){
+    // Parse the input and generate appropriate image
+    return noiseImgOp((ImageSize){ 1024, 1024 }, grid);
+}
+
+// Executable Function
+
 int main(int argc, char** argv) {
-    if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    _outputImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF333333, 0xFFEEEEEE);
+    _run(argc, argv, texTool); // system specific initialization and continuous loop
 
-    _mainQueue = RASTERON_QUEUE_ALLOC("tex", internal_create_size(1024, 1024), TEXTOOL_COUNT);
-
-    _run(argc, argv); // system specific initialization and continuous loop
-
-    RASTERON_QUEUE_DEALLOC(_mainQueue);
+    // RASTERON_QUEUE_DEALLOC(_mainQueue);
     RASTERON_DEALLOC(_outputImg);
 
     return 0;

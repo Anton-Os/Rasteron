@@ -1,4 +1,4 @@
-#include "_Catalouge.h"
+#include "LabTool.h"
 
 #define CANVAS_PRESET_MIN -1
 #define CANVAS_PRESET_MAX 2
@@ -11,13 +11,15 @@ static char keysave = 'd';
 
 #include "_Demo.h"
 
-void setup(char input){
-	if(isalnum(input)) {
+// Overriden Functions
+
+void _onKeyEvent(char key){
+	if(isalnum(key)) {
 		if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-		if(isalpha(input)) keysave = (char)tolower(input);
+		if(isalpha(key)) keysave = (char)tolower(key);
 	}
 
-	switch(input){
+	switch(key){
 		case '0': xArg = 0.0; yArg = 0.0; mode = 0; break;
 		case '1': mode++; break; case '3': mode--; break;
 		case '8': yArg += 0.05F; break; case '2': yArg -= 0.05F; break;
@@ -45,7 +47,7 @@ void setup(char input){
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
 		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
         case 'm': _outputImg = chaosImgOp(mode + 3, mode + 3); break;
-        case 'n': _outputImg = truschetImgOp(targetImg, mode + 3, mode + 3); break;
+        // case 'n': _outputImg = truschetImgOp(targetImg, mode + 3, mode + 3); break;
 		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'q': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
@@ -61,12 +63,18 @@ void setup(char input){
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 
-	RASTERON_DEALLOC(targetImg);
+	RASTERON_DEALLOC(targetImg); 
 }
-
-void _onKeyEvent(char key){ setup(key); }
 void _onPressEvent(double x, double y){ }
 void _onTickEvent(unsigned secs){}
+
+// Generative Function
+
+Rasteron_Image* playground(int argc, char** argv){
+	return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFEEEEEE);
+}
+
+// Executable Function
 
 int main(int argc, char** argv) {
 	srand(time(NULL));
@@ -77,7 +85,7 @@ int main(int argc, char** argv) {
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities");
 	puts("\nPress numbered keys 0-9 to tweak function parameters and modify the image outputs");
 
-    _run(argc, argv); // system specific initialization and continuous loop
+    _run(argc, argv, playground); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;
