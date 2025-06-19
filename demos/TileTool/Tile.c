@@ -114,15 +114,12 @@ Rasteron_Image* mosaicImgOp(ImageSize size, const ColorPointTable* colorPointTab
         pixDistances[0] = 1.0; pixDistances[1] = 1.0; pixDistances[2] = 1.0; // reset
         for (unsigned t = 0; t < colorPointTable->pointCount; t++) {
             double dist = pix_dist(p, *(colorPoints + t), fieldImage->width) * (1.0 / (double)(fieldImage->width)); // distance multiplied by pixel size
+            dist += sin(t / colorPointTable->pointCount);
             if (dist < pixDistances[0]) {
                 for(unsigned d = 0; d < 3; d++){
-                    pixDistances[d] = dist; // + (d * d1) * (d3 + d2);
-                    // pixDistances[d] = dist + (d * d1) - (d3 + d2);
-                    // pixDistances[d] = dist + pow(d * d1, d3 + d2);
+                    pixDistances[d] = dist;
                     pixPoints[d] = (PixelPoint){
-                        // (pow(x, dist * (1.0 / (1 + d))) - colorPointTable->points[t].x),
                         (x - colorPointTable->points[t].x) / ((1.0 + (d * d1) + sin(d * d2)) * ((x - 0.5) * 2)),
-                        // (pow(y, dist * (1.0 / (1 + d))) - colorPointTable->points[t].y)
                         (y - colorPointTable->points[t].y) / ((1.0 + (d * d1) + cos(d * d3)) * ((y - 0.5) * 2))
                     };
                 }
@@ -138,9 +135,6 @@ Rasteron_Image* mosaicImgOp(ImageSize size, const ColorPointTable* colorPointTab
     free(colorPoints);
     return fieldImage;
 }
-
-static double truschetX1 = 0.25; // double truschetX2 = 0.25;
-static double truschetY1 = 0.75; // double truschetY2 = 0.75;
 
 static unsigned sharpTruschetTile(double x, double y){
     return blend_colors(0xFFFF00FF, 0xFF00FFFF, asin(pow(x, y)) + acos(pow(y, x)));

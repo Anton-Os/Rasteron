@@ -68,12 +68,6 @@ void _onKeyEvent(char key){
 void _onPressEvent(double x, double y){ }
 void _onTickEvent(unsigned secs){}
 
-// Generative Function
-
-Rasteron_Image* playground(int argc, char** argv){
-	return solidImgOp((ImageSize){ 1024, 1024 }, 0xFFEEEEEE);
-}
-
 // Executable Function
 
 int main(int argc, char** argv) {
@@ -85,7 +79,7 @@ int main(int argc, char** argv) {
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities");
 	puts("\nPress numbered keys 0-9 to tweak function parameters and modify the image outputs");
 
-    _run(argc, argv, playground); // system specific initialization and continuous loop
+    _run(argc, argv, NULL); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

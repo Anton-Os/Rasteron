@@ -49,28 +49,28 @@ static unsigned fieldDraw1(unsigned colors[3], double distances[3], PixelPoint p
     return blend_colors(colors[0], colors[1], distances[0] * FIELD_PRODUCT);
 }
 static unsigned fieldDraw2(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){ 
-    return blend_colors(colors[0], colors[1], distances[0] * FIELD_PRODUCT);
+    return (distances[1] - distances[0] > 0.01)? blend_colors(colors[0], colors[1], (distances[1] - distances[0]) * 10.0) : colors[1];
 }
 static unsigned fieldDraw3(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){ 
-    return blend_colors(colors[0], colors[1], distances[0] * FIELD_PRODUCT);
+    return (distances[2] - distances[1] > 0.01)? blend_colors(colors[0], colors[1], (distances[2] - distances[1]) * 10.0) : colors[1]; // blend_colors(colors[0], colors[1], distances[2] * FIELD_PRODUCT);
 }
 static unsigned fieldDraw4(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){ 
-    return blend_colors(colors[0], colors[1], distances[0] * FIELD_PRODUCT);
+    return blend_colors(colors[0], colors[1], sin(pow(fabs(pixPoints[0].x - pixPoints[1].y), distances[0]) * FIELD_PRODUCT * 5.0));
 }
 static unsigned fieldDraw5(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){ 
-    return blend_colors(colors[0], colors[1], distances[0] * FIELD_PRODUCT);
+    return blend_colors(colors[0], colors[1], cos(pow(fabs(pixPoints[0].y + pixPoints[1].x), distances[0]) * FIELD_PRODUCT * 5.0));
 }
 static unsigned fieldDraw6(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){ 
-    return blend_colors(colors[0], colors[1], distances[0] * FIELD_PRODUCT);
+    return blend_colors(colors[0], colors[1], tan(pow(distances[2], fabs(pixPoints[0].x * pixPoints[1].y)) * FIELD_PRODUCT * 10.0));
 }
 static unsigned fieldDraw7(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){ 
-    return blend_colors(colors[0], colors[1], distances[0] * FIELD_PRODUCT);
+    return (distances[2] * 0.5 > distances[0] + distances[1])? colors[0] : colors[1];
 }
 static unsigned fieldDraw8(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){ 
-    return blend_colors(colors[0], colors[1], distances[0] * FIELD_PRODUCT);
+    return (pixPoints[0].x / pixPoints[1].y > pow(pixPoints[1].x, fabs(pixPoints[0].y)))? colors[0] : colors[1];
 }
 static unsigned fieldDraw0(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){ 
-    return blend_colors(colors[0], colors[1], distances[0] * FIELD_PRODUCT);
+    return (((distances[2] + distances[1] + distances[0]) / 3.0) > distances[1])? colors[0] : colors[1];
 }
 
 typedef unsigned (*brushCallback)(unsigned[3], double[3], double, double, double);

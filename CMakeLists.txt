@@ -103,9 +103,9 @@ add_executable(SimTool demos/SimTool/SimTool.c)
 target_include_directories(SimTool PUBLIC loader support core ext util demos)
 target_link_libraries(SimTool Rasteron)
 
-add_executable(RadTool demos/RadTool/RadTool.c)
-target_include_directories(RadTool PUBLIC loader support core ext util demos)
-target_link_libraries(RadTool Rasteron)
+add_executable(HypnoTool demos/HypnoTool/HypnoTool.c)
+target_include_directories(HypnoTool PUBLIC loader support core ext util demos)
+target_link_libraries(HypnoTool Rasteron)
 
 
 ### Installation

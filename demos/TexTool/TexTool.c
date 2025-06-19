@@ -82,7 +82,21 @@ void _onTickEvent(unsigned secs){}
 // Generative Function
 
 Rasteron_Image* texTool(int argc, char** argv){
-    // Parse the input and generate appropriate image
+    if(argc > 1)
+        for (unsigned a = 1; a < argc; a++) {
+            char* arg = argv[a];
+            if (strlen(arg) > 0) {
+                if (arg[0] != '-') _onKeyEvent(arg[0]);
+                else {
+                    printf("Parsing arg %d value: %s", a, arg);
+                    if (strstr(arg, "algo")) puts("Algorithm selected");
+                    else if (strstr(arg, "arg")) puts("Arguments selected");
+                    else if (strstr(arg, "grid")) puts("Grid selected");
+                    else if (strstr(arg, "mix")) puts("Mix selected");
+                    else perror("Invalid arg selected");
+                }
+            }
+        }
     return noiseImgOp((ImageSize){ 1024, 1024 }, grid);
 }
 

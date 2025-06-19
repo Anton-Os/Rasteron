@@ -1,5 +1,3 @@
-#include "../_Catalouge.h"
-
 #define RADIAL_SEGS 10.0
 #define RADIAL_DIST 10.0
 #define RADIAL_INVOKE 1024
@@ -13,7 +11,7 @@ unsigned color2 = 0xFF88EEEE;
 
 static char keysave = '0';
 
-#include "Rad.c"
+#include "Hypno.c"
 
 // Overriden Functions
 
@@ -57,7 +55,7 @@ void _onTickEvent(unsigned secs){}
 
 // Generative Function
 
-Rasteron_Image* radTool(int argc, char** argv){
+Rasteron_Image* hypnoTool(int argc, char** argv){
     return mandalaImgOp(mandalaMap, mandalaMix1, mandalaInterp7)
 }
 
@@ -66,7 +64,7 @@ Rasteron_Image* radTool(int argc, char** argv){
 int main(int argc, char** argv) {
 	srand(time(NULL));
 
-    _run(argc, argv, radTool); // system specific initialization and continuous loop
+    _run(argc, argv, hypnoTool); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

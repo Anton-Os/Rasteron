@@ -172,10 +172,10 @@ void parseArgs(int argc, char** argv){
 
 void _run(int argc, char** argv, imageCallback callback){
     parseArgs(argc, argv);
-    _outputImg = (callback != NULL)? callback(argc, argv) : errorImgOp("No callback created");
-    if(argc > 1){ 
+    if(callback != NULL) _outputImg = callback(argc, argv);
+    if(argc > 1){ // Parse Command LIne
         // TODO: Save output to a designated location
-    } else {
+    } else { // Open a window
 #ifdef _WIN32
         createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
         eventLoop(NULL);
