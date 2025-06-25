@@ -2,7 +2,7 @@
 #define RADIAL_DIST 10.0
 #define RADIAL_INVOKE 1024
 
-#include "../_Demo.h"
+#include "../_Prog.h"
 
 double segs = RADIAL_SEGS;
 double dist = RADIAL_DIST;
@@ -56,7 +56,7 @@ void _onTickEvent(unsigned secs){}
 // Generative Function
 
 Rasteron_Image* hypnoTool(int argc, char** argv){
-    return mandalaImgOp(mandalaMap, mandalaMix1, mandalaInterp7)
+    return mandalaImgOp(mandalaMap, mandalaMix1, mandalaInterp7);
 }
 
 // Executable Function

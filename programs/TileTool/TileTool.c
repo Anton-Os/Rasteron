@@ -7,7 +7,7 @@ static double dotDist = 0.05;
 static double c1 = 0.01, c2 = -0.01, c3 = 0.0;
 static double d1 = 0.05, d2 = 0.0, d3 = 1.0;
 
-#include "../_Demo.h"
+#include "../_Prog.h"
 
 PixelPointTable table;
 ColorPointTable colorTable;

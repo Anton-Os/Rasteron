@@ -6,7 +6,7 @@
 #define RASTERON_WIN_HEIGHT 180
 #define RASTERON_WIN_WIDTH 650
 
-#include "../_Demo.h"
+#include "../_Prog.h"
 
 void _onKeyEvent(char key){}
 void _onPressEvent(double x, double y){}

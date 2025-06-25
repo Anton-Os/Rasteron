@@ -48,10 +48,10 @@ include(externalTargets.cmake)
 
 ### Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${ext_src} "demos/_Catalouge.c") # library only
+# add_library(Rasteron STATIC ${core_src} ${ext_src} "programs/_Catalouge.c") # library only
 add_library(Rasteron STATIC 
     ${support_src} ${loader_src} ${core_src} ${ext_src} ${util_src}
-    "demos/_Demo.c"
+    "programs/_Prog.c"
 )
 
 target_include_directories(Rasteron PRIVATE loader support core ext util ${EXTERNAL_INSTALL_DIR}/include) # loader support core ext util necessary external libs
@@ -79,31 +79,31 @@ target_include_directories(Rasteron
 
 # Demo Applications
 
-add_executable(LabTool demos/LabTool/LabTool.c demos/LabTool/Lab.c)
-target_include_directories(LabTool PUBLIC loader support core ext util demos)
+add_executable(LabTool programs/LabTool/LabTool.c programs/LabTool/Lab.c)
+target_include_directories(LabTool PUBLIC loader support core ext util programs/os)
 target_link_libraries(LabTool Rasteron)
 
-add_executable(GUI demos/GUI/GUI.c)
-target_include_directories(GUI PUBLIC loader support core ext util demos)
+add_executable(GUI programs/GUI/GUI.c)
+target_include_directories(GUI PUBLIC loader support core ext util programs/os)
 target_link_libraries(GUI Rasteron)
 
-add_executable(DrawTool demos/DrawTool/DrawTool.c)
-target_include_directories(DrawTool PUBLIC loader support core ext util demos)
+add_executable(DrawTool programs/DrawTool/DrawTool.c)
+target_include_directories(DrawTool PUBLIC loader support core ext util programs/os)
 target_link_libraries(DrawTool Rasteron)
 
-add_executable(TexTool demos/TexTool/TexTool.c)
-target_include_directories(TexTool PUBLIC loader support core ext util demos)
+add_executable(TexTool programs/TexTool/TexTool.c)
+target_include_directories(TexTool PUBLIC loader support core ext util programs/os)
 target_link_libraries(TexTool Rasteron)
 
-add_executable(TileTool demos/TileTool/TileTool.c)
-target_include_directories(TileTool PUBLIC loader support core ext util demos)
+add_executable(TileTool programs/TileTool/TileTool.c)
+target_include_directories(TileTool PUBLIC loader support core ext util programs/os)
 target_link_libraries(TileTool Rasteron)
 
-add_executable(SimTool demos/SimTool/SimTool.c)
-target_include_directories(SimTool PUBLIC loader support core ext util demos)
+add_executable(SimTool programs/SimTool/SimTool.c)
+target_include_directories(SimTool PUBLIC loader support core ext util programs/os)
 target_link_libraries(SimTool Rasteron)
 
-add_executable(HypnoTool demos/HypnoTool/HypnoTool.c)
+add_executable(HypnoTool programs/HypnoTool/HypnoTool.c)
 target_include_directories(HypnoTool PUBLIC loader support core ext util demos)
 target_link_libraries(HypnoTool Rasteron)
 

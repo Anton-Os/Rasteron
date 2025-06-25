@@ -3,7 +3,7 @@
 
 int mode = -1;
 
-#include "_Demo.h"
+#include "_Prog.h"
 
 #include "Sim.c"
 

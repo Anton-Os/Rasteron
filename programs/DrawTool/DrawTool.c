@@ -12,7 +12,7 @@ static unsigned yColor = 0xFFFF00FF;
 static unsigned short mode = '1';
 static unsigned short pressCount = 0;
 
-#include "../_Demo.h"
+#include "../_Prog.h"
 
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
