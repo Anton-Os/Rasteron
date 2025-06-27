@@ -99,7 +99,7 @@ void _onTickEvent(unsigned secs){
 
 // Generative Function
 
-Rasteron_Image* simTool(int argc, char** argv){
+Rasteron_Image* simTool(char* args) {
     Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ 1024, 1024 }, _swatch.base);
     Rasteron_Image* growthImg = growImgOp(backgroundImg, 0.5, 0.1);
     Rasteron_Image* simImg = simImgOp(growthImg, 1, conwayRules);

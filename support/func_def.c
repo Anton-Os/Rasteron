@@ -2,6 +2,33 @@
 
 void seedRandGen(){ srand(time(NULL)); }
 
+char* convertCharray(unsigned count, const char** args){
+    size_t total_length = 0;
+    for (int i = 0; i < count; ++i)
+        if (args[i] != NULL)
+            total_length += strlen(args[i]);
+
+    // Add space for separators and the null terminator
+    if (count > 1) total_length += (count - 1) * strlen(" ");
+    total_length += 1; // For the null terminator
+
+    char* result = (char*)malloc(total_length);
+    if (result == NULL) {
+        perror("Memory allocation failed");
+        return NULL;
+    }
+
+    result[0] = '\0'; // Initialize as an empty string
+
+    for (int i = 0; i < count; ++i) {
+        if (args[i] != NULL)
+            strcat(result, args[i]);
+        if (i < count - 1) strcat(result, " ");
+    }
+
+    return result;
+}
+
 // --------------------------------   One Color Functions  -------------------------------- //
 
 uint32_t color_unique(){

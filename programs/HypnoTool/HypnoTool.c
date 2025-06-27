@@ -55,7 +55,7 @@ void _onTickEvent(unsigned secs){}
 
 // Generative Function
 
-Rasteron_Image* hypnoTool(int argc, char** argv){
+Rasteron_Image* hypnoTool(char* args){
     return mandalaImgOp(mandalaMap, mandalaMix1, mandalaInterp7);
 }
 

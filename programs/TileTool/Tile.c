@@ -1,43 +1,44 @@
 static unsigned eqTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return blend_colors(colors[0], blend_colors(colors[1], colors[2], fabs(distances[0] - distances[2])), fabs(distances[0] - distances[1]));
 }
-
 static unsigned softTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return blend_colors(colors[0], color_invert(colors[0]), fabs(pixPoint[0].x / pixPoint[0].y));
 }
-
 static unsigned hardTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return (distances[0] / distances[1] > pixPoint[0].x / pixPoint[1].y)? colors[0] : colors[1];
 }
-
 static unsigned dotTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return (distances[0] < dotDist)? colors[0] : colors[1];
 }
-
 static unsigned dotTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return (distances[0] / distances[1] * distances[2] < dotDist)? colors[0] : colors[1];
 }
-
 static unsigned dotTiling3(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return (distances[0] + distances[1] - distances[2] < dotDist)? colors[0] : colors[1];
 }
-
-static unsigned breakTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return (pixPoint[0].x + pixPoint[1].y > distances[0] / atan(((pixPoint[0].y + 1.0) * 0.5) / ((pixPoint[0].x + 1.0) * 0.5)))? root_colors(colors[2], colors[1]) : root_colors(colors[1], colors[2]);
+static unsigned stripeTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return ((distances[0] * 10) - floor(distances[0] * 10) < 0.5) ? colors[0] : colors[1];
+    // return (abs(pixPoint[0].x - pixPoint[0].y) > CROSSTILE_THRESH) ? colors[0] : colors[1];
+    // return blend_colors(colors[0] + colors[1], colors[2] - colors[1], atan(pixPoint[0].x / pixPoint[0].y));
 }
-
-static unsigned crossTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return blend_colors(colors[0] + colors[1], colors[2] - colors[1], atan(pixPoint[0].x / pixPoint[0].y));
+static unsigned stripeTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+    return (ceil(distances[1] * 10) - (distances[1] * 10) < 0.5) ? colors[1] : colors[0];
+    // return (abs(pixPoint[1].x - pixPoint[0].y) > CROSSTILE_THRESH) ? colors[1] : colors[2];
+    // return blend_colors(colors[0], blend_colors(colors[1], colors[2], sin(distances[0] / distances[1])), cos(distances[2] / distances[1]));
 }
-
-static unsigned crossTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
-    return blend_colors(colors[0], blend_colors(colors[1], colors[2], sin(distances[0] / distances[1])), cos(distances[2] / distances[1]));
+static unsigned stripeTiling3(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]) {
+    return (ceil(distances[2] * 10) - (distances[2] * 10) > ((distances[0] / distances[1]) * 10) - floor((distances[0] / distances[1]) * 10)) ? colors[2] : colors[1];
+    // return (pow(distances[0], pixPoint[2].x + pixPoint[2].y) > CROSSTILE_THRESH) ? colors[0] : colors[2];
 }
-
+static unsigned breakTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]) {
+    double xDiff = (pixPoint[0].x * 10) - floor(pixPoint[0].x * 10);
+    double yDiff = (pixPoint[0].y * 10) - floor(pixPoint[0].y * 10);
+    return (xDiff * yDiff * 10 - floor(xDiff * yDiff * 10) < 0.5) ? colors[0] : colors[1];
+    // return (pixPoint[0].x / pixPoint[1].y > distances[0] / atan(((pixPoint[0].y + 1.0) * 0.5) / ((pixPoint[0].x + 1.0) * 0.5)))? root_colors(colors[2], colors[1]) : root_colors(colors[1], colors[2]);
+} 
 static unsigned shineTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     return fuse_colors(colors[0], colors[1], sin(pixPoint[0].x * (1.0 / distances[0]) + pixPoint[0].y * (1.0 / distances[0])));
 }
-
 static unsigned lumenTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     if(distances[0] > c1){
         if(pixPoint[0].x / pixPoint[1].y > c2) return blend_colors(colors[1], colors[2], fabs(tan(pow(distances[0], distances[1] + distances[2]))));
@@ -45,42 +46,36 @@ static unsigned lumenTiling(unsigned colors[3], double distances[3], PixelPoint 
     }
     else return blend_colors(colors[0], colors[1], fabs(tan((distances[0] - distances[1]) * 10.0)));
 }
-
 static unsigned flashTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     double angle = atan(pixPoint[0].y / pixPoint[1].x);
     if(angle > c3) return blend_colors(colors[0], colors[1], angle - (distances[0] / c1));
     else fuse_colors(colors[0], colors[1], angle + (distances[0] / fabs(c2)));
 }
-
 static unsigned amorphTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     unsigned s = (pixPoint[0].x / pixPoint[0].y) / (distances[0] / distances[1] / distances[2]);
     if(s < 0.0) return colors[0];
     else if(s > 1.0) return colors[1];
     else return colors[2];
 }
-
 static unsigned focalTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     double xRel = (distances[0] / pixPoint[0].x) * c1 + c3;
     double yRel = (distances[0] / pixPoint[0].y) * c2 + c3;
     return fuse_colors(colors[0], colors[1], fabs(xRel - yRel));
 }
-
-static unsigned zebraTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+static unsigned linedTiling1(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     unsigned color = colors[0];
     double dist = distances[0] + distances[1] + distances[2];
-    if((dist * 10.0) - floor(dist * 10.0) > pow(c1, 1.0 - c2) + sin(c3 * dist)) color = colors[1];
-    else if(ceil(dist * 10.0) - (dist * 10.0) > pow(c2, 1.0 - c1) + sin(c3 * dist)) color = colors[2];
+    if((dist * 5.0) - floor(dist * 5.0) > pow(c1, 1.0 - c2) + sin(c3 * dist)) color = colors[1];
+    else if(ceil(dist * 5.0) - (dist * 5.0) > pow(c2, 1.0 - c1) + sin(c3 * dist)) color = colors[2];
     return color;
 }
-
-static unsigned surroundTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
+static unsigned linedTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     double stepDistance = distances[0] * 10.0;
     double subtDistance = stepDistance - floor(stepDistance);
     if(subtDistance < c1) return colors[0];
     else if(subtDistance > 1.0 - fabs(c2)) return colors[1];
     else return colors[2];
 }
-
 static unsigned complexTiling(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]){
     unsigned targetColor = blend_colors(colors[0], colors[2], tan(distances[2] * 10.0)); // atan((pixPoint[0].y * c1) / (pixPoint[1].x * c2)));
 

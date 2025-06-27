@@ -144,7 +144,7 @@ void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format){
     writeFileImageRaw(fileName, format, image->height, image->width, image->data);
 }
 
-void parseArgs(int argc, char** argv){
+char* parseArgs(int argc, char** argv){
     for(unsigned a = 1; a < argc; a++){
         char* arg = *(argv + a);
         unsigned short argSize = strlen(arg);
@@ -168,13 +168,20 @@ void parseArgs(int argc, char** argv){
             saveToFile(_outputImg, getFormat(arg));
         else for(unsigned l = 0; l < argSize; l++) _onKeyEvent(*(arg + l));
     }
+
+    char* args = convertCharray(argc, argv);
+    printf("Args are %s\n", args);
+    return args;
 }
 
-void _run(int argc, char** argv, imageCallback callback){
-    parseArgs(argc, argv);
-    if(callback != NULL) _outputImg = callback(argc, argv);
+void _run(int argc, char** argv, imageArgCallback callback){
+    char* args = parseArgs(argc, argv);
+    if(callback != NULL) _outputImg = callback(args); // pass args here
     if(argc > 1){ // Parse Command LIne
-        // TODO: Save output to a designated location
+        saveToFile(_outputImg, IMG_Png);
+        if(_mainQueue->frameCount > 0)
+            for(unsigned f = 0; f < _mainQueue->frameCount; f++)
+                saveToFile(queue_getImg(_mainQueue, f), IMG_Png);
     } else { // Open a window
 #ifdef _WIN32
         createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);

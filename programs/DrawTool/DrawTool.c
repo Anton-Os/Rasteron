@@ -88,7 +88,7 @@ void _onTickEvent(unsigned secs){}
 
 // Generative Function
 
-Rasteron_Image* drawTool(int argc, char** argv){
+Rasteron_Image* drawTool(char* args) {
     return checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 10, 10, 0xFF333333, 0xFFEEEEEE });
 }
 

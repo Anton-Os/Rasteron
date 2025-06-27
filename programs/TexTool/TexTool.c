@@ -81,8 +81,8 @@ void _onTickEvent(unsigned secs){}
 
 // Generative Function
 
-Rasteron_Image* texTool(int argc, char** argv){
-    if(argc > 1)
+Rasteron_Image* texTool(char* args) {
+    /* if (argc > 1)
         for (unsigned a = 1; a < argc; a++) {
             char* arg = argv[a];
             if (strlen(arg) > 0) {
@@ -96,7 +96,7 @@ Rasteron_Image* texTool(int argc, char** argv){
                     else perror("Invalid arg selected");
                 }
             }
-        }
+        } */
     return noiseImgOp((ImageSize){ 1024, 1024 }, grid);
 }
 

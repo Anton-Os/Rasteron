@@ -46,17 +46,17 @@ void _onKeyEvent(char key){
         case 'r': callback = &dotTiling1; break;
         case 't': callback = &dotTiling2; break;
         case 'y': callback = &dotTiling3; break;
-        case 'u': callback = &breakTiling; break;
-        case 'i': callback = &crossTiling1; break;
-        case 'o': callback = &crossTiling2; break;
-        case 'p': callback = &shineTiling; break;
+        case 'u': callback = &lumenTiling; break;
+        case 'i': callback = &flashTiling; break;
+        case 'o': callback = &amorphTiling; break;
+        case 'p': callback = &focalTiling; break; // &shineTiling; break;
         // Complex Tiling
-        case 'a': callback = &lumenTiling; break;
-        case 's': callback = &flashTiling; break;
-        case 'd': callback = &focalTiling; break;
-        case 'f': callback = &amorphTiling; break;
-        case 'g': callback = &zebraTiling; break;
-        case 'h': callback = &surroundTiling; break;
+        case 'a': callback = &stripeTiling1; break;
+        case 's': callback = &stripeTiling2; break;
+        case 'd': callback = &stripeTiling3; break;
+        case 'f': callback = &breakTiling; break;
+        case 'g': callback = &linedTiling1; break;
+        case 'h': callback = &linedTiling2; break;
         case 'j': callback = &complexTiling; c1 = 0.01; c2 = 0.01; c3 = 0.0; break;
         case 'k': callback = &complexTiling; c1 = 0.15; c2 = -0.15; c3 = 0.5; break;
         case 'l': callback = &complexTiling; c1 = 0.25; c2 = -0.25; c3 = 1.0; break;
@@ -89,7 +89,7 @@ void _onTickEvent(unsigned secs){}
 
 // Generative Function
 
-Rasteron_Image* tileTool(int argc, char** argv){
+Rasteron_Image* tileTool(char* args){
     // Parse the input and generate appropriate image
     return mosaicImgOp((ImageSize){ 1024, 1024 }, &colorTable, &eqTiling);
 }

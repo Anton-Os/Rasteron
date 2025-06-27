@@ -66,9 +66,9 @@ void _onKeyEvent(char key);
 void _onPressEvent(double x, double y);
 void _onTickEvent(unsigned secs);
 
-typedef Rasteron_Image* (*imageCallback)(int, char**);
+typedef Rasteron_Image* (*imageArgCallback)(char*);
 
-imageCallback _outputCallback;
+imageArgCallback _outputCallback;
 
 void parseInput(char lastInput);
 
@@ -90,6 +90,6 @@ void unixProc(char lastKey, double cursorPos[2]);
 
 void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format);
 
-void parseArgs(int argc, char** argv);
+char* parseArgs(int argc, char** argv);
 
-void _run(int argc, char** argv, imageCallback callback);
+void _run(int argc, char** argv, imageArgCallback callback);
