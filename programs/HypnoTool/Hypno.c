@@ -1,3 +1,5 @@
+//Spirals
+
 static unsigned spirals(double x, double y){
     double centerAngle = atan((y - 0.5) / (x - 0.5));
     double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
@@ -12,6 +14,25 @@ Rasteron_Image* spiralsImgOp(double s, double d){
 
     return mapImgOp((ImageSize){ 1024, 1024 }, spirals);
 }
+
+// Swirls
+
+double swirl = 10.0;
+
+unsigned swirly(double x, double y) {
+    double centerAngle = atan((y - 0.5) / (x - 0.5));
+    double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
+
+    if ((centerDist * swirl) - (floor(centerDist * swirl)) > (centerAngle * swirl) - (floor(centerAngle * swirl))) return 0xFF333333;
+    else return 0xFFEEEEEE;
+}
+
+Rasteron_Image* swirlyImgOp(double swirlFactor) {
+    swirl = swirlFactor;
+    return mapImgOp((ImageSize) { 1024, 1024 }, swirly);
+}
+
+// Radial
 
 static unsigned radialMix1(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c1, c4), c3 - c2); } // starting
 static unsigned radialMix2(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c2, c3), c4 + c1); } // reverse
@@ -37,6 +58,45 @@ Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback){
 
     return radialImg;
 }
+
+// Hypnosis
+
+static unsigned hypnoticMix1(unsigned color1, unsigned color2) {return root_colors(color1, color2); }
+static unsigned hypnoticMix2(unsigned color1, unsigned color2) { return mult_colors(color1, color2); }
+
+Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2, mixCallback callback) {
+    // Rasteron_Image* gradientImg1 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Left, color1, color2);
+
+    Rasteron_Image* gradientImgs[5] = {
+        gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Left, color1, color2),
+        gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Right, color1, color2),
+        gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Top, color1, color2),
+        gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Bottom, color1, color2),
+        gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Radial, color1, color2),
+    };
+
+    Rasteron_Image* mixImg1 = mixingImgOp(gradientImgs[0], gradientImgs[1], callback);
+    Rasteron_Image* mixImg2 = mixingImgOp(gradientImgs[2], gradientImgs[0], callback);
+    Rasteron_Image* mixImg3 = mixingImgOp(gradientImgs[1], gradientImgs[3], callback);
+
+    // Rasteron_Image* hypnosisImg = mixingImgOp(gradientImgs[0], gradientImgs[1], hypnoticMix);
+    Rasteron_Image* hypnosisImg; // = mixingImgOp(mixImg3, gradientImgs[4], hypnoticMix);
+    switch (pArg) {
+    case 0: hypnosisImg = mixingImgOp(mixImg1, gradientImgs[4], callback); break;
+    case 1: hypnosisImg = mixingImgOp(mixImg2, gradientImgs[4], callback); break;
+    case 2: hypnosisImg = mixingImgOp(mixImg3, gradientImgs[4], callback); break;
+    default: hypnosisImg = mixingImgOp(gradientImgs[4], gradientImgs[4], callback); break;
+    }
+
+    for (unsigned g = 0; g < 5; g++) RASTERON_DEALLOC(gradientImgs[g]);
+    RASTERON_DEALLOC(mixImg1); RASTERON_DEALLOC(mixImg2); RASTERON_DEALLOC(mixImg3);
+
+    // RASTERON_DEALLOC(gradientImg1);
+
+    return hypnosisImg;
+}
+
+// Mandala
 
 static unsigned mandalaMix1(unsigned c1, unsigned c2){ return c1 + c2; }
 static unsigned mandalaMix2(unsigned c1, unsigned c2){ return c1 * c2; }

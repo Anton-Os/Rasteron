@@ -31,31 +31,6 @@ extern Rasteron_Image* _outputImg;
 extern Rasteron_Queue* _mainQueue;
 #endif
 
-/*
-typedef struct {
-    Rasteron_Image* images[IMAGES_MAX];
-
-    ColorSwatch swatches[PRIMITIVES_MAX];
-    PixelPoint pixelPoints[PRIMITIVES_MAX];
-    PixelPointTable pixelPointTables[TABLES_MAX];
-    ColorPoint colorPoints[PRIMITIVES_MAX];
-    ColorPointTable colorPointTables[TABLES_MAX];
-    ColorGrid grids[PRIMITIVES_MAX];
-    ColorGridTable gridTables[TABLES_MAX];
-    
-    Rasteron_Sprite* sprites[512]; // unsigned short spriteIndex; // for tracking active sprites
-    Rasteron_Heightmap* heightmaps[512]; // unsigned short heightmapIndex; // for tracking active heightmaps
-
-#ifdef RASTERON_ENABLE_ANIM
-    Rasteron_Queue* queues[256]; // unsigned short queueIndex; // for tracking active queues
-#endif
-#ifdef RASTERON_ENABLE_FONT
-    Rasteron_Text textObjs[1024];
-    Rasteron_Message messageObjs[256];
-#endif
-} _catalouge;  
-*/
-
 extern unsigned elapseSecs;
 
 extern unsigned _dimens[2];

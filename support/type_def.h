@@ -126,23 +126,6 @@ enum FLIP_Type { FLIP_None = -1, FLIP_Clock = 0, FLIP_Counter = 1, FLIP_Upside =
 enum TILE_Type { TILE_Square = 0, TILE_Triangle = 1, TILE_Hexagon = 2, TILE_Diagonal = 3, TILE_Perimiter = 4 };
 enum SIDE_Type { SIDE_None = -1, SIDE_Top = 0, SIDE_Bottom = 1, SIDE_Left = 2, SIDE_Right = 3, SIDE_Radial = 4 };
 
-// --------------------------------   Callbacks    -------------------------------- //
-
-typedef unsigned (*recolorCallback)(unsigned color);
-typedef uint8_t (*remaskCallback)(CHANNEL_Type channel, uint8_t value);
-
-typedef unsigned (*mixCallback)(unsigned color1, unsigned color2);
-typedef unsigned (*mixCallback4)(unsigned color1, unsigned color2, unsigned color3, unsigned color4);
-
-typedef float (*noiseCallback)(float p);
-typedef unsigned (*coordCallback)(double x, double y);
-typedef unsigned (*fieldCallback)(unsigned color, double distance, PixelPoint pixelPoint);
-typedef unsigned (*fieldCallback3)(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]);
-
-typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // target and 2 neighbors
-typedef unsigned (*nebrCallback5)(unsigned, unsigned[5]); // target and 5 neighbors
-typedef unsigned (*nebrCallback8)(unsigned, unsigned[8]); // target and all 8 neighbors
-
 
 #define RASTERON_TYPE_H
 #endif

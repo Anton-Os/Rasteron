@@ -9,7 +9,7 @@ static double yArg = 0.0;
 
 static char keysave = 'd';
 
-#include "_Prog.h"
+#include "../_Prog.h"
 
 // Overriden Functions
 
@@ -37,7 +37,7 @@ void _onKeyEvent(char key){
 		case 'a': _outputImg = oragamiImgOp(mode, xArg, yArg); break;
 		case 'b': _outputImg = nestboxesImgOp(xArg, yArg); break;
 		case 'c': _outputImg = lensesImgOp(mode); break;
-		case 'd': _outputImg = hypnosisImgOp(mode, RAND_COLOR(), RAND_COLOR()); break;
+		// case 'd': _outputImg = hypnosisImgOp(mode, RAND_COLOR(), RAND_COLOR()); break; // Move to Hypno Demo
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
 		case 'f': _outputImg = fisheyeImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mozaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
@@ -55,7 +55,7 @@ void _onKeyEvent(char key){
 		case 's': _outputImg = oozelikeImgOp(mode); break;
 		case 't': _outputImg = recurrantImgOp(mode + 2); break;
 		case 'u': _outputImg = intersectImgOp(xArg, yArg); break;
-		case 'v': _outputImg = swirlyImgOp((mode + 2) * 5.0); break;
+		// case 'v': _outputImg = swirlyImgOp((mode + 2) * 5.0); break;
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
 		case 'y': _outputImg = arcaneImgOp(100.0, (mode + 2) * 10); break;

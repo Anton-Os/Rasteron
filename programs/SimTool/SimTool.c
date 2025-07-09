@@ -3,7 +3,7 @@
 
 int mode = -1;
 
-#include "_Prog.h"
+#include "../_Prog.h"
 
 #include "Sim.c"
 
@@ -51,7 +51,8 @@ void _onKeyEvent(char key){
             case 't': growImg = linedImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, _swatch.colors[SWATCH_Green_Add], _swatch.colors[SWATCH_Red_Add], 30 / _dimens[1], 0.0); break;
             case 'y': case 'u': case 'i': case 'o': 
                 stageImg = seedImgOp(backgroundImg, NSIM_GROW); 
-                if(key == 'y' || key == 'u') growImg = (key == 'y')? cellwiseColImgOp(stageImg, addlineRules) : cellwiseRowImgOp(stageImg, addlineRules); 
+                if (key == 'y') growImg = cellwiseColImgOp(stageImg, addlineRules);
+                else if(key == 'u') growImg = cellwiseRowImgOp(stageImg, levelineRules);
                 else growImg = (key == 'i')? cellwiseColImgOp(stageImg, serpinskyRules) : cellwiseRowImgOp(stageImg, serpinskyRules);
                 RASTERON_DEALLOC(stageImg);
             break; 

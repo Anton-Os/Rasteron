@@ -83,43 +83,6 @@ Rasteron_Image* lensesImgOp(int channel){
     return flipImg; 
 }
 
-static unsigned hypnoticMix(unsigned color1, unsigned color2){
-    // return mult_colors(color1, color2);
-    return root_colors(color1, color2);
-}
-
-Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2){ 
-    // Rasteron_Image* gradientImg1 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Left, color1, color2);
-
-    Rasteron_Image* gradientImgs[5]= { 
-        gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Left, color1, color2),
-        gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Right, color1, color2),
-        gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Top, color1, color2),
-        gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Bottom, color1, color2),
-        gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, color1, color2),
-    };
-
-    Rasteron_Image* mixImg1 = mixingImgOp(gradientImgs[0], gradientImgs[1], hypnoticMix);
-    Rasteron_Image* mixImg2 = mixingImgOp(gradientImgs[2], gradientImgs[0], hypnoticMix);
-    Rasteron_Image* mixImg3 = mixingImgOp(gradientImgs[1], gradientImgs[3], hypnoticMix);
-
-    // Rasteron_Image* hypnosisImg = mixingImgOp(gradientImgs[0], gradientImgs[1], hypnoticMix);
-    Rasteron_Image* hypnosisImg; // = mixingImgOp(mixImg3, gradientImgs[4], hypnoticMix);
-    switch(pArg){
-        case 0: hypnosisImg = mixingImgOp(mixImg1, gradientImgs[4], hypnoticMix); break;
-        case 1: hypnosisImg = mixingImgOp(mixImg2, gradientImgs[4], hypnoticMix); break;
-        case 2: hypnosisImg = mixingImgOp(mixImg3, gradientImgs[4], hypnoticMix); break;
-        default: hypnosisImg = mixingImgOp(gradientImgs[4], gradientImgs[4], hypnoticMix); break;
-    }
-    
-    for(unsigned g = 0; g < 5; g++) RASTERON_DEALLOC(gradientImgs[g]);
-    RASTERON_DEALLOC(mixImg1); RASTERON_DEALLOC(mixImg2); RASTERON_DEALLOC(mixImg3);
-
-    // RASTERON_DEALLOC(gradientImg1);
-
-    return hypnosisImg; 
-} 
-
 static unsigned fisheye(unsigned color, double distance, PixelPoint pixPoint){
     return (distance < 0.15)? color_level(color, 0.15) : (distance < 0.3)? color : color_level(color, 0.85);
 }
@@ -606,21 +569,6 @@ Rasteron_Image* intersectImgOp(double angle1, double angle2){
     RASTERON_DEALLOC(intersectImg2);
 
     return scripticImg;
-}
-
-double swirl = 10.0;
-
-unsigned swirly(double x, double y){
-    double centerAngle = atan((y - 0.5) / (x - 0.5));
-    double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
-
-    if((centerDist * swirl) - (floor(centerDist * swirl)) > (centerAngle * swirl) - (floor(centerAngle * swirl))) return 0xFF333333;
-    else return 0xFFEEEEEE;
-}
-
-Rasteron_Image* swirlyImgOp(double swirlFactor){
-    swirl = swirlFactor;
-    return mapImgOp((ImageSize){ 1024, 1024 }, swirly);
 }
 
 Rasteron_Image* displacerImgOp(unsigned short iters, unsigned color1, unsigned color2){

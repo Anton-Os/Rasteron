@@ -1,6 +1,8 @@
-unsigned antialias(unsigned target, unsigned neighbors[8]); // Defined in Cellwise.c
+// Scanline Rules
 
 unsigned addlineRules(unsigned color, unsigned neighbors[2]) { return (neighbors[0] == neighbors[1]) ? neighbors[0] + neighbors[1] : color; }
+
+unsigned levelineRules(unsigned color, unsigned neighbors[2]) { return (color_gray(color) > color_gray(neighbors[1]))? color_level(color, 0.33) : color_level(neighbors[0], 0.66); }
 
 unsigned serpinskyRules(unsigned color, unsigned neighbors[2]) {
     unsigned short s = 0;
@@ -9,6 +11,10 @@ unsigned serpinskyRules(unsigned color, unsigned neighbors[2]) {
     if (neighbors[1] == _swatch.colors[SWATCH_Green_Add] || neighbors[1] == _swatch.colors[SWATCH_Light]) s++;
     return (s == 1) ? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Red_Add];
 }
+
+// Full-Cell Rules
+
+unsigned antialias(unsigned color, unsigned neighbors[8]);
 
 unsigned conwayRules(unsigned color, unsigned neighbors[8]) {
     unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
@@ -126,11 +132,10 @@ unsigned wolframRules(unsigned color, unsigned neighbors[8]) {
     else return NO_COLOR;
 }
 
+// Image Operations
 
 static double killRate = 0.1;
 static double feedRate = 0.025; // 0.025;
-
-// Image Operations
 
 Rasteron_Image* seedImgOp(Rasteron_Image* refImg, double prob){
     Rasteron_Image* seedImg = (refImg != NULL)? copyImgOp(refImg) : solidImgOp((ImageSize){1024 / _dimens[0], 1024 / _dimens[1]}, _swatch.colors[SWATCH_Dark]);
