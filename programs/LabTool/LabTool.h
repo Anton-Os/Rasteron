@@ -27,7 +27,6 @@ unsigned flipRules(unsigned color, unsigned neighbors[8]);
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop); // Flipping, mirroring, and cropping
 Rasteron_Image* nestboxesImgOp(double x, double y); // Looped nesting of ever-smaller squares
 Rasteron_Image* lensesImgOp(int channel); // lenses image to color ranges and performing channel operations
-Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2); // Visual lense effects and enhancements to base image
 Rasteron_Image* typographyImgOp(unsigned color1, unsigned color2); // Drawing text example
 Rasteron_Image* fisheyeImgOp(unsigned short points); // Vornoi and other distance related functions
 Rasteron_Image* mozaicImgOp(double z1, double z2); // Creates a regular repeating triangular pattern
@@ -45,10 +44,11 @@ Rasteron_Image* fuzzlikeImgOp(unsigned short iters);
 Rasteron_Image* oozelikeImgOp(unsigned short colorMode);
 Rasteron_Image* recurrantImgOp(unsigned short iters);
 Rasteron_Image* intersectImgOp(double angle1, double angle2);
-Rasteron_Image* swirlyImgOp(double swirlFactor);
 Rasteron_Image* displacerImgOp(unsigned short cells, unsigned color1, unsigned color2);
 Rasteron_Image* bilineImgOp(unsigned color, unsigned short variant);
 Rasteron_Image* arcaneImgOp(double radius, unsigned short count);
 Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2);
-// Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv);
+Rasteron_Image* colorateImgOp(ColorSwatch swatch);
 Rasteron_Image* ditherImgOp(ref_image_t targetImg, uint8_t thresh, unsigned color1, unsigned color2);
+Rasteron_Image* turbulentImgOp(ref_image_t targetImg, unsigned short count);
+Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double distance); // TODO: Implement this

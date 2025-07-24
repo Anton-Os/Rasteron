@@ -63,10 +63,9 @@ Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback){
 
 static unsigned hypnoticMix1(unsigned color1, unsigned color2) {return root_colors(color1, color2); }
 static unsigned hypnoticMix2(unsigned color1, unsigned color2) { return mult_colors(color1, color2); }
+static unsigned hypnoticMix3(unsigned color1, unsigned color2) { return mult_rgb(color1, color2); }
 
-Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2, mixCallback callback) {
-    // Rasteron_Image* gradientImg1 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Left, color1, color2);
-
+Rasteron_Image* hypnosisImgOp(unsigned color1, unsigned color2, unsigned short iters, mixCallback callback) {
     Rasteron_Image* gradientImgs[5] = {
         gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Left, color1, color2),
         gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Right, color1, color2),
@@ -78,14 +77,18 @@ Rasteron_Image* hypnosisImgOp(unsigned pArg, unsigned color1, unsigned color2, m
     Rasteron_Image* mixImg1 = mixingImgOp(gradientImgs[0], gradientImgs[1], callback);
     Rasteron_Image* mixImg2 = mixingImgOp(gradientImgs[2], gradientImgs[0], callback);
     Rasteron_Image* mixImg3 = mixingImgOp(gradientImgs[1], gradientImgs[3], callback);
+    Rasteron_Image* mixImgs[3] = { mixImg1, mixImg2, mixImg3 };
 
-    // Rasteron_Image* hypnosisImg = mixingImgOp(gradientImgs[0], gradientImgs[1], hypnoticMix);
-    Rasteron_Image* hypnosisImg; // = mixingImgOp(mixImg3, gradientImgs[4], hypnoticMix);
-    switch (pArg) {
-    case 0: hypnosisImg = mixingImgOp(mixImg1, gradientImgs[4], callback); break;
-    case 1: hypnosisImg = mixingImgOp(mixImg2, gradientImgs[4], callback); break;
-    case 2: hypnosisImg = mixingImgOp(mixImg3, gradientImgs[4], callback); break;
-    default: hypnosisImg = mixingImgOp(gradientImgs[4], gradientImgs[4], callback); break;
+    Rasteron_Image* hypnosisImg = mixingImgOp(mixImgs[iters % 3], gradientImgs[4], callback);
+    if (iters > 3) {
+        unsigned m = 0;
+        for (unsigned i = 0; i < iters / 3; i++) {
+            Rasteron_Image* stagingImg = mixingImgOp(mixImgs[m % 3], hypnosisImg, callback);
+            RASTERON_DEALLOC(hypnosisImg);
+            hypnosisImg = copyImgOp(stagingImg);
+            RASTERON_DEALLOC(stagingImg);
+            m++;
+        }
     }
 
     for (unsigned g = 0; g < 5; g++) RASTERON_DEALLOC(gradientImgs[g]);

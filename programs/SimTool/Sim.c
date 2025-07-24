@@ -16,6 +16,11 @@ unsigned serpinskyRules(unsigned color, unsigned neighbors[2]) {
 
 unsigned antialias(unsigned color, unsigned neighbors[8]);
 
+unsigned basicRules(unsigned color, unsigned neighbors[8]) {
+    for (unsigned n = 0; n < 8; n++) if(neighbors[n] == color && neighbors[n] != NO_COLOR) return neighbors[n];
+    else return color;
+}
+
 unsigned conwayRules(unsigned color, unsigned neighbors[8]) {
     unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
     unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors); // countKills(neighbors);

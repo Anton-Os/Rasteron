@@ -640,3 +640,76 @@ Rasteron_Image* arcaneImgOp(double radius, unsigned short count){
 
     return arcImg;
 }
+
+ColorSwatch colorateSwatch;
+
+static unsigned colorate(unsigned color, unsigned neighbors[2]) {
+    if (color > colorateSwatch.colors[0] || color > colorateSwatch.colors[3]) return add_colors(neighbors[0], neighbors[1]);
+    else if (color < colorateSwatch.colors[2] || color < colorateSwatch.colors[4]) return diff_colors(neighbors[0], neighbors[1]);
+    else if (color > colorateSwatch.colors[6] || color < colorateSwatch.colors[5]) return mult_colors(neighbors[0], neighbors[1]);
+    else return color;
+}
+
+Rasteron_Image* colorateImgOp(ColorSwatch swatch) { 
+    Rasteron_Image* swatchImg = RASTERON_ALLOC("colorate", 256, 256);
+    unsigned randOffset = rand() % 128;
+
+    for (unsigned p = 0; p < swatchImg->width * swatchImg->height; p++) {
+        if(p % swatchImg->width == 0) randOffset = rand() % 128;
+        *(swatchImg->data + p) = swatch.colors[(p + randOffset) % 8];
+    }
+
+    Rasteron_Image* resizedImg = resizeImgOp((ImageSize){ 1024, 1024 }, swatchImg);
+
+    colorateSwatch = swatch;
+
+
+    Rasteron_Image* colorateImg = cellwiseRowImgOp(resizedImg, colorate);
+
+    RASTERON_DEALLOC(swatchImg);
+    RASTERON_DEALLOC(resizedImg);
+
+    return colorateImg;
+}
+
+double tFactor = 0.0;
+
+static unsigned turbulence(double x, double y) {
+    unsigned color1 = color_level(0xFF0000FF, sin(x * tFactor * 10));
+    unsigned color2 = color_level(0xFF00FF00, cos(x * tFactor * 10));
+    unsigned color3 = color_level(0xFFFF0000, tan((x / y) * tFactor * 10));
+    return color1 + color2 + color3;
+}
+
+Rasteron_Image* turbulentImgOp(ref_image_t targetImg, uint8_t count){
+    Rasteron_Image* recursiveImg = copyImgOp(targetImg);
+
+    for (unsigned c = 0; c < count; c++) {
+        tFactor = (double)rand() / (double)RAND_MAX;
+        Rasteron_Image* mapImg = mapImgOp((ImageSize) { targetImg->width, targetImg->height }, turbulence);
+        Rasteron_Image* stagingImg = copyImgOp(recursiveImg);
+
+        RASTERON_DEALLOC(mapImg);
+        RASTERON_DEALLOC(stagingImg);
+    }
+
+    return mapImgOp((ImageSize) { targetImg->width, targetImg->height }, turbulence);
+}
+
+unsigned vectorFunc(double x, double y, double z) {
+    return blend_colors(0xFF000000, 0xFFFFFFFF, pow(z * 0.5, 2));
+}
+
+Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double dist){ 
+    Rasteron_Image* raycast = RASTERON_ALLOC("raycast", 1024, 1024);
+
+    for (unsigned p = 0; p < raycast->width * raycast->height; p++) {
+        double x = (1.0 / (double)1024) * (p % 1024) - 0.5;
+        double y = (1.0 / (double)1024) * (p / 1024) - 0.5;
+
+        double length = sqrt(pow(x, 2.0) + pow(y, 2.0) + pow(dist, 2.0));
+        *(raycast->data + p) = vectorFunc(fabs(x / length), fabs(y / length), fabs(dist / length));
+    }
+
+    return raycast;
+}

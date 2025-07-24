@@ -37,7 +37,7 @@ void _onKeyEvent(char key){
 		case 'a': _outputImg = oragamiImgOp(mode, xArg, yArg); break;
 		case 'b': _outputImg = nestboxesImgOp(xArg, yArg); break;
 		case 'c': _outputImg = lensesImgOp(mode); break;
-		// case 'd': _outputImg = hypnosisImgOp(mode, RAND_COLOR(), RAND_COLOR()); break; // Move to Hypno Demo
+		case 'd': _outputImg = colorateImgOp(createSwatch(RAND_COLOR(), (mode + 2) * 32)); break;
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
 		case 'f': _outputImg = fisheyeImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mozaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
@@ -47,7 +47,7 @@ void _onKeyEvent(char key){
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
 		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
         case 'm': _outputImg = chaosImgOp(mode + 3, mode + 3); break;
-        // case 'n': _outputImg = truschetImgOp(targetImg, mode + 3, mode + 3); break;
+		case 'n': _outputImg = turbulentImgOp(targetImg, mode + 2); break;
 		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'q': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
@@ -55,7 +55,7 @@ void _onKeyEvent(char key){
 		case 's': _outputImg = oozelikeImgOp(mode); break;
 		case 't': _outputImg = recurrantImgOp(mode + 2); break;
 		case 'u': _outputImg = intersectImgOp(xArg, yArg); break;
-		// case 'v': _outputImg = swirlyImgOp((mode + 2) * 5.0); break;
+		case 'v': _outputImg = raycastImgOp(NULL, 0, 1.0 * (mode + 2)); break;
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
 		case 'y': _outputImg = arcaneImgOp(100.0, (mode + 2) * 10); break;

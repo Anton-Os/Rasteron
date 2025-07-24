@@ -33,7 +33,7 @@ void _onKeyEvent(char key){
     static Rasteron_Image* backgroundImg = NULL;
     static Rasteron_Image* growImg = NULL;
     static Rasteron_Image* stageImg = NULL;
-    static nebrCallback8 algorithm = &conwayRules;
+    static nebrCallback8 algorithm = &basicRules;
     static nebrCallback8 process = NULL;
 
     if(backgroundImg == NULL) backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT / _dimens[0], RASTERON_WIN_WIDTH / _dimens[1]}, _swatch.base);
