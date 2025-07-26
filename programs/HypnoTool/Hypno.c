@@ -17,18 +17,25 @@ Rasteron_Image* spiralsImgOp(double s, double d){
 
 // Swirls
 
-double swirl = 10.0;
+static double swirl = 10.0;
+static unsigned swirlColor1 = 0xFF000000;
+static unsigned swirlColor2 = 0xFFFFFFFF;
 
-unsigned swirly(double x, double y) {
+static unsigned swirly(double x, double y) {
     double centerAngle = atan((y - 0.5) / (x - 0.5));
     double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 
-    if ((centerDist * swirl) - (floor(centerDist * swirl)) > (centerAngle * swirl) - (floor(centerAngle * swirl))) return 0xFF333333;
-    else return 0xFFEEEEEE;
+    // if ((centerDist * swirl) - (floor(centerDist * swirl)) > (centerAngle * swirl) - (floor(centerAngle * swirl))) return swirlColor1;
+    // if (sin(centerDist * swirl) - sin(floor(centerDist * swirl)) > cos(centerAngle * swirl) - cos(floor(centerAngle * swirl))) return swirlColor1;
+    // if (atan(centerDist * swirl) - atan(floor(centerDist * swirl)) > tan(centerAngle * swirl) - tan(floor(centerAngle * swirl))) return swirlColor1;
+    if (pow(swirl, centerDist) - (floor(pow(swirl, centerDist))) > pow(centerAngle, swirl) - (floor(pow(centerAngle, swirl)))) return swirlColor1;
+    else return swirlColor2;
 }
 
-Rasteron_Image* swirlyImgOp(double swirlFactor) {
+Rasteron_Image* swirlyImgOp(double swirlFactor, unsigned color1, unsigned color2) {
     swirl = swirlFactor;
+    swirlColor1 = color1;
+    swirlColor2 = color2;
     return mapImgOp((ImageSize) { 1024, 1024 }, swirly);
 }
 

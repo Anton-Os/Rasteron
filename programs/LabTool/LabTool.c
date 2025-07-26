@@ -19,12 +19,13 @@ void _onKeyEvent(char key){
 		if(isalpha(key)) keysave = (char)tolower(key);
 	}
 
+	double temp;
 	switch(key){
 		case '0': xArg = 0.0; yArg = 0.0; mode = 0; break;
 		case '1': mode++; break; case '3': mode--; break;
 		case '8': yArg += 0.05F; break; case '2': yArg -= 0.05F; break;
 		case '6': xArg += 0.05F; break; case '4': xArg -= 0.05F; break;
-		case '7': double temp = xArg; xArg = yArg; yArg = temp; break; // flip arguments 1 and 2
+		case '7': temp = xArg; xArg = yArg; yArg = temp; break; // flip arguments 1 and 2
 		case '9': xArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
 				  yArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
 	}
@@ -32,6 +33,7 @@ void _onKeyEvent(char key){
 	else if(mode < CANVAS_PRESET_MIN) mode = CANVAS_PRESET_MAX;
 
 	Rasteron_Image* targetImg = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, 0xFF000000, 0xFFFFFFFF);
+	float pointData[12] = { 0.25F, -0.25F, 0.0F, -0.25F, -0.25F, 2.0F, -0.25F, 0.25F, -2.0F, 0.25F, -0.25F, (((float)rand() / (float)RAND_MAX) - 0.5) * 2 };
 
 	switch(keysave){
 		case 'a': _outputImg = oragamiImgOp(mode, xArg, yArg); break;
@@ -47,7 +49,7 @@ void _onKeyEvent(char key){
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
 		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
         case 'm': _outputImg = chaosImgOp(mode + 3, mode + 3); break;
-		case 'n': _outputImg = turbulentImgOp(targetImg, mode + 2); break;
+		case 'n': _outputImg = turbulentImgOp(targetImg, mode + 2, add_rgb); break;
 		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'q': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
@@ -55,7 +57,7 @@ void _onKeyEvent(char key){
 		case 's': _outputImg = oozelikeImgOp(mode); break;
 		case 't': _outputImg = recurrantImgOp(mode + 2); break;
 		case 'u': _outputImg = intersectImgOp(xArg, yArg); break;
-		case 'v': _outputImg = raycastImgOp(NULL, 0, 1.0 * (mode + 2)); break;
+		case 'v': _outputImg = raycastImgOp(&pointData, 4, 1.0 * (mode + 2)); break;
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
 		case 'y': _outputImg = arcaneImgOp(100.0, (mode + 2) * 10); break;

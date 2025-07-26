@@ -50,5 +50,5 @@ Rasteron_Image* arcaneImgOp(double radius, unsigned short count);
 Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2);
 Rasteron_Image* colorateImgOp(ColorSwatch swatch);
 Rasteron_Image* ditherImgOp(ref_image_t targetImg, uint8_t thresh, unsigned color1, unsigned color2);
-Rasteron_Image* turbulentImgOp(ref_image_t targetImg, unsigned short count);
+Rasteron_Image* turbulentImgOp(ref_image_t targetImg, uint8_t count, mixCallback callback);
 Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double distance); // TODO: Implement this
