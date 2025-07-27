@@ -663,7 +663,6 @@ Rasteron_Image* colorateImgOp(ColorSwatch swatch) {
 
     colorateSwatch = swatch;
 
-
     Rasteron_Image* colorateImg = cellwiseRowImgOp(resizedImg, colorate);
 
     RASTERON_DEALLOC(swatchImg);
@@ -686,7 +685,6 @@ Rasteron_Image* turbulentImgOp(ref_image_t targetImg, uint8_t count, mixCallback
         Rasteron_Image* stagingImg = copyImgOp(turbulentImg);
 
         RASTERON_DEALLOC(turbulentImg);
-
         for (unsigned p = 0; p < stagingImg->width * stagingImg->height; p++)
             *(stagingImg->data + p) = callback(*(noiseImg->data + p), *(stagingImg->data + p));
 
@@ -705,7 +703,8 @@ unsigned rayColor1 = 0xFF000000;
 unsigned rayColor2 = 0xFFFFFFFF;
 
 static unsigned vectorFunc(double x, double y, double z) {
-    return blend_colors(rayColor1, rayColor2, pow(x + y + z, x * y * z) * 0.25);
+    unsigned color = blend_colors(rayColor1, rayColor2, pow(x + y + z, x * y * z) * 0.25);
+    return color; // mult_rgb(color, color);
 }
 
 Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double dist){ 

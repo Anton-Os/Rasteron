@@ -25,11 +25,12 @@ static unsigned swirly(double x, double y) {
     double centerAngle = atan((y - 0.5) / (x - 0.5));
     double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 
-    // if ((centerDist * swirl) - (floor(centerDist * swirl)) > (centerAngle * swirl) - (floor(centerAngle * swirl))) return swirlColor1;
-    // if (sin(centerDist * swirl) - sin(floor(centerDist * swirl)) > cos(centerAngle * swirl) - cos(floor(centerAngle * swirl))) return swirlColor1;
-    // if (atan(centerDist * swirl) - atan(floor(centerDist * swirl)) > tan(centerAngle * swirl) - tan(floor(centerAngle * swirl))) return swirlColor1;
-    if (pow(swirl, centerDist) - (floor(pow(swirl, centerDist))) > pow(centerAngle, swirl) - (floor(pow(centerAngle, swirl)))) return swirlColor1;
-    else return swirlColor2;
+    // if ((centerDist * swirl) - (floor(centerDist * swirl)) > (centerAngle * swirl) - (floor(centerAngle * swirl)))
+    if (sin(centerDist * swirl) - sin(floor(centerDist * swirl)) > cos(centerAngle * swirl) - cos(floor(centerAngle * swirl)))
+    // if (atan(centerDist * swirl) - atan(floor(centerDist * swirl)) > tan(centerAngle * swirl) - tan(floor(centerAngle * swirl))) 
+    // if (pow(swirl, centerDist) - (floor(pow(swirl, centerDist))) > pow(centerAngle, swirl) - (floor(pow(centerAngle, swirl))))
+        return blend_colors(swirlColor1, swirlColor2, centerAngle); // swirlColor1
+    else return blend_colors(swirlColor1, swirlColor2, centerDist); // swirlColor2
 }
 
 Rasteron_Image* swirlyImgOp(double swirlFactor, unsigned color1, unsigned color2) {

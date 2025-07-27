@@ -32,8 +32,9 @@ void _onKeyEvent(char key){
 	if(mode > CANVAS_PRESET_MAX) mode = CANVAS_PRESET_MIN; // bounds mode to upper limit
 	else if(mode < CANVAS_PRESET_MIN) mode = CANVAS_PRESET_MAX;
 
+	float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2 * 2;
 	Rasteron_Image* targetImg = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, 0xFF000000, 0xFFFFFFFF);
-	float pointData[12] = { 0.25F, -0.25F, 0.0F, -0.25F, -0.25F, 2.0F, -0.25F, 0.25F, -2.0F, 0.25F, -0.25F, (((float)rand() / (float)RAND_MAX) - 0.5) * 2 };
+	float pointData[12] = { xArg, -yArg, (rand() % 2 == 0)? r : -r, -xArg, yArg, r, xArg, yArg, -r, -xArg, -yArg, 0.0F};
 
 	switch(keysave){
 		case 'a': _outputImg = oragamiImgOp(mode, xArg, yArg); break;
