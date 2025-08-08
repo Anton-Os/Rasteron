@@ -44,9 +44,9 @@ extern FT_Library _freetypeLib; // internal freetype library
 void initFreeType();
 void cleanupFreeType();
 
-Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size); // TODO: Needs to be optimized!
-Rasteron_Image* textPadImgOp(const Rasteron_Text* textObj, unsigned size, unsigned short padding[4]);
-Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size); // TODO: Needs to be optimized!
+DllExport Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size); // TODO: Needs to be optimized!
+DllExport Rasteron_Image* textExtImgOp(const Rasteron_Text* textObj, unsigned size, unsigned short padding[4]);
+DllExport Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size); // TODO: Needs to be optimized!
 
 #define RASTERON_FONT_H
 #endif

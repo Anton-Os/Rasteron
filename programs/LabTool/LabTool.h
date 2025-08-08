@@ -51,4 +51,7 @@ Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2);
 Rasteron_Image* colorateImgOp(ColorSwatch swatch);
 Rasteron_Image* ditherImgOp(ref_image_t targetImg, uint8_t thresh, unsigned color1, unsigned color2);
 Rasteron_Image* turbulentImgOp(ref_image_t targetImg, uint8_t count, mixCallback callback);
-Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double distance); // TODO: Implement this
+Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double distance);
+Rasteron_Image* subtImgOp(nebrCallback8 callback, unsigned color1, unsigned color2, unsigned color3, unsigned color4);
+Rasteron_Image* heightImgOp(Rasteron_Heightmap* heightmap, unsigned color1, unsigned color2);
+Rasteron_Image* remixImgOp(Rasteron_Image* image1, Rasteron_Image* image2);

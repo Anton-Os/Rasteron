@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 
     enum MENU_Size size = MENU_Medium;
 
-    Rasteron_Queue* buttons[GUI_COUNT] = {
+    Rasteron_Queue* icons[GUI_COUNT] = {
         loadUI_iconBtn(size, "paginate-filter-1"),
         loadUI_iconBtn(size, "tools-hammer"),
         loadUI_iconBtn(size, "content-pen"),
@@ -42,10 +42,6 @@ int main(int argc, char** argv) {
 
     Rasteron_Queue* sliders[GUI_COUNT] = { 
         loadUI_slider(size, 2), loadUI_slider(size, 4), loadUI_slider(size, 6), loadUI_slider(size, 8), loadUI_slider(size, 16), 
-    };
-
-    Rasteron_Queue* icons[GUI_COUNT] = {
-        loadUI_iconBtn(size, "android"), loadUI_iconBtn(size, "bench"), loadUI_iconBtn(size, "candy"), loadUI_iconBtn(size, "walkman"), loadUI_iconBtn(size, "uv-sun")
     };
 
     Rasteron_Queue* checks[GUI_COUNT] = { 

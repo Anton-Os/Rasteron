@@ -238,7 +238,12 @@ uint32_t bit_colors_or(unsigned color1, unsigned color2){ return (color1 | color
 
 uint32_t bit_colors_xor(unsigned color1, unsigned color2){ return (color1 ^ color2) | 0xFF000000; }
 
-// --------------------------------   Pixel Point Functions   -------------------------------- //
+// --------------------------------   Pixel Point & Floating Point Functions   -------------------------------- //
+
+double f_color(uint32_t refColor){
+	unsigned color = color_gray(color);
+	return (double)(color & 0xFFFFFF) / (double)0xFFFFFF;
+}
 
 double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth){
 	long int x1 = p1 % imageWidth;
@@ -348,6 +353,17 @@ void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned shor
 static void setFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target | (1 << (flagBit))); }
 
 static void clearFlagBit(nebrFlags* target, enum NEBR_CellFlag flagBit){ *target = (*target & (~(1 << (flagBit)))); }
+
+unsigned antialias(unsigned target, unsigned neighbors[8]){
+	unsigned long long finalColor = target;
+	unsigned short nCount = 1;
+
+	for(unsigned n = 0; n < 8; n++)
+		if(neighbors[n] != NO_COLOR) finalColor = blend_colors(finalColor, neighbors[n], 0.5F - (n * (1.0 / 8.0)));
+		else continue;
+
+	return finalColor / nCount;
+}
 
 nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height){
     nebrFlags flags = 0xFF;

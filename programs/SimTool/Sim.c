@@ -14,10 +14,10 @@ unsigned serpinskyRules(unsigned color, unsigned neighbors[2]) {
 
 // Full-Cell Rules
 
-unsigned antialias(unsigned color, unsigned neighbors[8]);
-
-unsigned basicRules(unsigned color, unsigned neighbors[8]) {
-    for (unsigned n = 0; n < 8; n++) if(neighbors[n] == color && neighbors[n] != NO_COLOR) return neighbors[n];
+unsigned shuffleRules(unsigned color, unsigned neighbors[8]) {
+    static unsigned r = 0;
+    r++;
+    for (unsigned n = 0; n < 8; n++) if(neighbors[n] == color && neighbors[n] != NO_COLOR) return neighbors[r % 8];
     else return color;
 }
 

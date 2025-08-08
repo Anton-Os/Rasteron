@@ -33,7 +33,7 @@ void _onKeyEvent(char key){
     static Rasteron_Image* backgroundImg = NULL;
     static Rasteron_Image* growImg = NULL;
     static Rasteron_Image* stageImg = NULL;
-    static nebrCallback8 algorithm = &basicRules;
+    static nebrCallback8 algorithm = &shuffleRules;
     static nebrCallback8 process = NULL;
 
     if(backgroundImg == NULL) backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT / _dimens[0], RASTERON_WIN_WIDTH / _dimens[1]}, _swatch.base);
@@ -68,7 +68,7 @@ void _onKeyEvent(char key){
             case 'l': algorithm = &wolframRules; break;
             case 'z': process = NULL; break;
             case 'x': process = algorithm; break;
-            case 'c': process = antialias; break;
+            case 'c': process = shuffleRules; break;
             case 'v': process = colorizeRules; break;
             case 'b': process = scatterRules; break;
             case 'n': process = recursiveRules; break;

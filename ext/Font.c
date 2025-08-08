@@ -149,7 +149,7 @@ Rasteron_Image* textImgOp(const Rasteron_Text* textObj, unsigned size){
 	return _textImgOp(textObj, size);
 }
 
-Rasteron_Image* textPadImgOp(const Rasteron_Text* textObj, unsigned size, unsigned short padding[4]){
+Rasteron_Image* textExtImgOp(const Rasteron_Text* textObj, unsigned size, unsigned short padding[4]){
 	_leftPad = padding[0];
 	_rightPad = padding[1];
 	_topPad = padding[2];
@@ -166,7 +166,7 @@ Rasteron_Image* messageImgOp(const Rasteron_Message* messageObj, unsigned size){
 	for(unsigned t = 0; t < messageObj->messageCount; t++){
 		Rasteron_Text textObj = { messageObj->fontFile, messageObj->messages[t], messageObj->bkColor, messageObj->fgColor };
 		unsigned short padding[4] = { _leftPad, _rightPad, _topPad, _botPad };
-		*(textImages + t) = textPadImgOp(&textObj, size, padding); // textImgOp(&textObj, size);
+		*(textImages + t) = textExtImgOp(&textObj, size, padding); // textImgOp(&textObj, size);
 		totalHeight += (*(textImages + t))->height;
 		if((*(textImages + t))->width > maxWidth) maxWidth = (*(textImages + t))->width;
 	}

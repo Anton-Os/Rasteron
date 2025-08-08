@@ -112,8 +112,8 @@ Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){
     textObj.fgColor = 0xFFEEEEEE;
 
     unsigned short padding[4] = { 100, 0, 0, 100 };
-    Rasteron_Image* textPadImg = textPadImgOp(&textObj, FONT_SIZE_LARGE, padding);
-    RASTERON_DEALLOC(textPadImg); */
+    Rasteron_Image* textExtImg = textExtImgOp(&textObj, FONT_SIZE_LARGE, padding);
+    RASTERON_DEALLOC(textExtImg); */
 
     Rasteron_Message messageObj;
     messageObj.fontFile = fullFilePath;
@@ -733,4 +733,16 @@ Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double dist){
     // rayColor2 = color_invert(rayColor1);
 
     return raycastImg;
+}
+
+Rasteron_Image* subtImgOp(nebrCallback8 callback, unsigned color1, unsigned color2, unsigned color3, unsigned color4) {
+    return errorImgOp("Unimplimented image");
+}
+
+Rasteron_Image* heightImgOp(Rasteron_Heightmap* heightmap, unsigned color1, unsigned color2) {
+    return errorImgOp("Unimplimented image");
+}
+
+Rasteron_Image* remixImgOp(Rasteron_Image* image1, Rasteron_Image* image2) {
+    return errorImgOp("Unimplimented image");
 }

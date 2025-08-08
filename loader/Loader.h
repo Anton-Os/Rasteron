@@ -78,10 +78,10 @@ typedef struct {
 
 // Generic Loader Functions
 
-enum IMG_FileFormat getFormat(const char* fileName);
-void loadFromFile(const char* fileName, FileImage* image);
-void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data);
-void delFileImage(FileImage* image);
+DllExport enum IMG_FileFormat getFormat(const char* fileName);
+DllExport void loadFromFile(const char* fileName, FileImage* image);
+DllExport void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data);
+DllExport void delFileImage(FileImage* image);
 
 // TIFF Loader Functions
 #ifdef USE_IMG_JPEG

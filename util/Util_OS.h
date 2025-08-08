@@ -26,14 +26,14 @@
 
 	typedef void (*eventLoopCallback)(void);
 
-	void replaceFwdSlash(char* str); // utility for replacing forward-slashes with back-slashes
-	void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height); // Window creation
-	void eventLoop(eventLoopCallback callback); // Event loop
-	BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data); // raw data call
-	BITMAP createWinBmap(Rasteron_Image* image); // formatted data call
-	void drawWinBmap(HWND hwnd, const BITMAP* bmap);
+	DllExport void replaceFwdSlash(char* str); // utility for replacing forward-slashes with back-slashes
+	DllExport void createWindow(WNDPROC wndProc, LPCTSTR name, unsigned width, unsigned height); // Window creation
+	DllExport void eventLoop(eventLoopCallback callback); // Event loop
+	DllExport BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data); // raw data call
+	DllExport BITMAP createWinBmap(Rasteron_Image* image); // formatted data call
+	DllExport void drawWinBmap(HWND hwnd, const BITMAP* bmap);
 #ifdef RASTERON_ENABLE_ANIM
-	void encodeQueue(Rasteron_Queue* queue);
+	DllExport void encodeQueue(Rasteron_Queue* queue);
 #endif
 #elif defined __linux__
 	#include <X11/Xlib.h>
@@ -49,7 +49,7 @@
 	
 	typedef void (*eventLoopCallback)(char, double[2]);
 
-	void createWindow(Platform_Context* context, const char* name, unsigned width, unsigned height); // Window creatiom
+	void creteWindow(Platform_Context* context, const char* name, unsigned width, unsigned height); // Window creatiom
 	void eventLoop(Display* display, Window window, eventLoopCallback callback); // Event loop
 	// XImage createUnixBmap(const Image* image); // formatted data call
 	XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data); // raw data call

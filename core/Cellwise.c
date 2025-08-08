@@ -142,18 +142,6 @@ Rasteron_Image* cellwiseOutImgOp(ImageSize size, unsigned color1, unsigned color
 	return cellwiseImg;	
 }
 
-
-unsigned antialias(unsigned target, unsigned neighbors[8]){
-	unsigned long long finalColor = target;
-	unsigned short nCount = 1;
-
-	for(unsigned n = 0; n < 8; n++)
-		if(neighbors[n] != NO_COLOR) finalColor = blend_colors(finalColor, neighbors[n], 0.5F - (n * (1.0 / 8.0)));
-		else continue;
-
-	return finalColor / nCount;
-}
-
 Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short times){
 	assert(refImage != NULL);
 	if(times < 1) return copyImgOp(refImage);

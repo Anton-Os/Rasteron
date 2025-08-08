@@ -1,5 +1,7 @@
 #ifndef RASTERON_TYPE_H
 
+#include "support_def.h"
+
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -24,13 +26,13 @@ typedef struct {
 
 typedef const Rasteron_Image *const ref_image_t;
 
-ImageSize internal_create_size(unsigned height, unsigned width);
+DllExport ImageSize internal_create_size(unsigned height, unsigned width);
 #define RASTERON_SIZE(height, width) (ImageSize)(internal_create_size(height, width))
 
-Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width);
+DllExport Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width);
 #define RASTERON_ALLOC(name, height, width) (Rasteron_Image*)(internal_alloc_img(name, height, width))
 
-void internal_dealloc_img(Rasteron_Image* image);
+DllExport void internal_dealloc_img(Rasteron_Image* image);
 #define RASTERON_DEALLOC(image) (internal_dealloc_img(image))
 
 // --------------------------------   Swatch    -------------------------------- //
@@ -47,7 +49,7 @@ typedef struct {
     uint8_t deviation;
 } ColorSwatch;
 
-ColorSwatch createSwatch(unsigned color, uint8_t deviation);
+DllExport ColorSwatch createSwatch(unsigned color, uint8_t deviation);
 
 // --------------------------------   PixelPoint & ColorPoint    -------------------------------- //
 
@@ -67,8 +69,8 @@ typedef struct {
 	unsigned pointCount;
 } ColorPointTable;
 
-void pixelPointToTable(PixelPointTable* table, double xFrac, double yFrac);
-void colorPointToTable(ColorPointTable* table, unsigned color, double xFrac, double yFrac);
+DllExport void pixelPointToTable(PixelPointTable* table, double xFrac, double yFrac);
+DllExport void colorPointToTable(ColorPointTable* table, unsigned color, double xFrac, double yFrac);
 
 typedef unsigned (*colorPointCallback)(double x, double y); // return NO_COLOR or color for color point
 
@@ -116,8 +118,8 @@ typedef struct {
 	NebrTable* tables;
 } NebrTable_List;
 
-NebrTable_List* loadNebrTables(ref_image_t refImage);
-void delNebrTables(NebrTable_List* nebrTables);
+DllExport NebrTable_List* loadNebrTables(ref_image_t refImage);
+DllExport void delNebrTables(NebrTable_List* nebrTables);
 
 // --------------------------------   Enums    -------------------------------- //
 

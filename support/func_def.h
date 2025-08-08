@@ -1,8 +1,5 @@
 #ifndef RASTERON_FUNC_H
 
-#include <stdint.h>
-
-#include "support_def.h"
 #include "type_def.h"
 
 typedef unsigned (*recolorCallback)(unsigned color);
@@ -17,12 +14,13 @@ typedef unsigned (*fieldCallback)(unsigned color, double distance, PixelPoint pi
 typedef unsigned (*fieldCallback3)(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]);
 
 typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // target and 2 neighbors
+typedef unsigned (*nebrCallbackP2)(unsigned, unsigned[2], double); // target, 2 neighbors, and progress
 typedef unsigned (*nebrCallback5)(unsigned, unsigned[5]); // target and 5 neighbors
 typedef unsigned (*nebrCallback8)(unsigned, unsigned[8]); // target and all 8 neighbors
 
-void seedRandGen(); // seeds the random number generator
-void genFullFilePath(const char* name, char* fullFilePath);
-char* convertCharray(unsigned count, const char** args);
+DllExport void seedRandGen(); // seeds the random number generator
+DllExport void genFullFilePath(const char* name, char* fullFilePath);
+DllExport char* convertCharray(unsigned count, const char** args);
 
 DllExport uint32_t color_unique(); // produces reusable color identifier
 DllExport uint32_t color_invert(uint32_t refColor); // inverts red, green, and blue values
@@ -60,6 +58,7 @@ DllExport uint32_t bit_colors_or(uint32_t color1, uint32_t color2); // mix color
 DllExport uint32_t bit_colors_xor(uint32_t color1, uint32_t color2); // mix colors with xor operation
 // uint32_t scramble_colors(uint32_t color1, uint32_t color2, double pVal); // scrambles per channel based on probability
 
+DllExport double f_color(uint32_t refColor);
 DllExport double pix_dist(unsigned p1, unsigned p2, unsigned imageWidth); // get s pixel distance based on2 offsets
 DllExport unsigned pixPoint_offset(PixelPoint pixPos, ref_image_t refImage); // gets pixel offset from image coordinates
 DllExport unsigned pixPoint_color(PixelPoint pixPos, ref_image_t refImage); // gets pixel color from image coordinates
@@ -69,6 +68,7 @@ DllExport unsigned pixPoint_cursorColor(PixelPoint cursorPos, ref_image_t refIma
 DllExport void pixPoionts_expand(PixelPointTable* table, unsigned short divs);
 DllExport void pixPoints_tiling(PixelPointTable* table, enum TILE_Type type, unsigned short height, unsigned short width);
 
+DllExport unsigned antialias(unsigned color, unsigned neighbors[8]);
 DllExport nebrFlags neighbor_exists(uint32_t index, uint32_t width, uint32_t height);
 DllExport uint32_t* neighbor_get(Rasteron_Image* refImage, uint32_t index, enum NEBR_CellFlag whichNebr);
 DllExport unsigned neighbor_getOffset(unsigned width, unsigned offset, enum NEBR_CellFlag whichNebr);
