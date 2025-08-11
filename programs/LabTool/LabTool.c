@@ -33,14 +33,16 @@ void _onKeyEvent(char key){
 	else if(mode < CANVAS_PRESET_MIN) mode = CANVAS_PRESET_MAX;
 
 	float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2 * 2;
-	Rasteron_Image* targetImg = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, 0xFF000000, 0xFFFFFFFF);
+	Rasteron_Image* radialImg1 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
+	Rasteron_Image* radialImg2 = gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
 	float pointData[12] = { xArg, -yArg, (rand() % 2 == 0)? r : -r, -xArg, yArg, r, xArg, yArg, -r, -xArg, -yArg, 0.0F};
+	unsigned seedColors[4] = { RAND_COLOR(), RAND_COLOR(), RAND_COLOR(), RAND_COLOR() };
 
 	switch(keysave){
 		case 'a': _outputImg = oragamiImgOp(mode, xArg, yArg); break;
 		case 'b': _outputImg = nestboxesImgOp(xArg, yArg); break;
 		case 'c': _outputImg = lensesImgOp(mode); break;
-		case 'd': _outputImg = colorateImgOp(createSwatch(RAND_COLOR(), (mode + 2) * 32)); break;
+		case 'd': _outputImg = remixImgOp(radialImg1, radialImg2); break;
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
 		case 'f': _outputImg = fisheyeImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mozaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
@@ -50,7 +52,7 @@ void _onKeyEvent(char key){
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
 		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
         case 'm': _outputImg = chaosImgOp(mode + 3, mode + 3); break;
-		case 'n': _outputImg = turbulentImgOp(targetImg, mode + 2, add_rgb); break;
+		case 'n': _outputImg = turbulentImgOp(radialImg1, mode + 2, add_rgb); break;
 		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'q': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
@@ -61,12 +63,13 @@ void _onKeyEvent(char key){
 		case 'v': _outputImg = raycastImgOp(&pointData, 4, 1.0 * (mode + 2)); break;
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
-		case 'y': _outputImg = arcaneImgOp(100.0, (mode + 2) * 10); break;
-        case 'z': _outputImg = ditherImgOp(targetImg, (mode + 2) * 0x22, 0xFF000000, 0xFFFFFFFF); break;
+		case 'y': _outputImg = subtImgOp(antialias, seedColors); break; // arcaneImgOp(100.0, (mode + 2) * 10); break;
+        case 'z': _outputImg = ditherImgOp(radialImg1, (mode + 2) * 0x22, 0xFF000000, 0xFFFFFFFF); break;
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 
-	RASTERON_DEALLOC(targetImg); 
+	RASTERON_DEALLOC(radialImg1);
+	RASTERON_DEALLOC(radialImg2);
 }
 void _onPressEvent(double x, double y){ }
 void _onTickEvent(unsigned secs){}

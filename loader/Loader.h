@@ -79,12 +79,14 @@ typedef struct {
 // Generic Loader Functions
 
 DllExport enum IMG_FileFormat getFormat(const char* fileName);
+// DllExport Rasteron_Image* loadImgOp(const char* fileName);
 DllExport void loadFromFile(const char* fileName, FileImage* image);
 DllExport void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data);
 DllExport void delFileImage(FileImage* image);
 
 // TIFF Loader Functions
 #ifdef USE_IMG_JPEG
+// Rasteron_Image* loadImgOp_jpeg(const char* fileName);
 void loadFromFile_JPEG(const char* fileName, FileImage* image);
 void writeFileImageRaw_JPEG(const char* fileName, unsigned height, unsigned width, unsigned* data);
 void delFileImage_JPEG(FileImage* image);
@@ -92,6 +94,7 @@ void delFileImage_JPEG(FileImage* image);
 
 // TIFF Loader Functions
 #ifdef USE_IMG_TIFF
+// Rasteron_Image* loadImgOp_tiff(const char* fileName);
 void loadFromFile_TIFF(const char* fileName, FileImage* image);
 void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned width, unsigned* data);
 void delFileImage_TIFF(FileImage* image);
@@ -99,6 +102,7 @@ void delFileImage_TIFF(FileImage* image);
 
 // PNG Loader Functions
 #ifdef USE_IMG_PNG
+// Rasteron_Image* loadImgOp_png(const char* fileName);
 void loadFromFile_PNG(const char* fileName, FileImage* image);
 void writeFileImageRaw_PNG(const char* fileName, unsigned height, unsigned width, unsigned* data);
 void delFileImage_PNG(FileImage* image);
@@ -106,6 +110,7 @@ void delFileImage_PNG(FileImage* image);
 
 // BMP Loader Functions
 #ifdef USE_IMG_BMP
+// Rasteron_Image* loadImgOp_bmp(const char* fileName);
 void loadFromFile_BMP(const char* fileName, FileImage* image);
 void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width, unsigned* data);
 void delFileImage_BMP(FileImage* image);

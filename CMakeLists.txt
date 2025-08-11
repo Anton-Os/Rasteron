@@ -45,6 +45,11 @@ endif()
 
 include(externalTargets.cmake)
 
+## Composite Libraries
+
+add_library(Rasterlib SHARED ${support_src})
+
+target_include_directories(Rasterlib PRIVATE support loader core ext util)
 
 ### Rasteron Library
 

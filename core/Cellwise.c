@@ -15,6 +15,7 @@ Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback){
 
 		unsigned short i = 0; // index to keep track of neighbor
 
+		// TODO: Replace NO_COLOR value with grid value
 		br = (currentTable->flags & (1 << NEBR_Bot_Right))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
 		b = (currentTable->flags & (1 << NEBR_Bot))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
 		bl = (currentTable->flags & (1 << NEBR_Bot_Left))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
@@ -23,6 +24,15 @@ Rasteron_Image* cellwiseImgOp(ref_image_t refImage, nebrCallback8 callback){
 		tr = (currentTable->flags & (1 << NEBR_Top_Right))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
 		t = (currentTable->flags & (1 << NEBR_Top))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
 		tl = (currentTable->flags & (1 << NEBR_Top_Left))? *(*(currentTable->nebrs + (++i - 1))) : NO_COLOR;
+
+		if(bl == NO_COLOR) bl = *(refImage->data + ((p + 1) % refImage->width)); // TODO: Adjust this
+		if(b == NO_COLOR) b = *(refImage->data + (p % refImage->width));
+		if(br == NO_COLOR) br = *(refImage->data + ((p - 1) % refImage->width)); // TODO: Adjust this
+		if(r == NO_COLOR) r = *(refImage->data + ((p / refImage->width) * refImage->width));
+		if(l == NO_COLOR) l = *(refImage->data + ((p / refImage->width) * refImage->width) + refImage->width - 1);
+		if(tl == NO_COLOR) tl = *(refImage->data + ((refImage->width * refImage->height) - refImage->width) + ((p + 1) % refImage->width)); // TODO: Adjust this
+		if(t == NO_COLOR) t = *(refImage->data + ((refImage->width * refImage->height) - refImage->width) + (p % refImage->width));
+		if(tr == NO_COLOR) tr = *(refImage->data + ((refImage->width * refImage->height) - refImage->width) + ((p - 1) % refImage->width)); // TODO: Adjust this
 
 		unsigned nebrs[] = { br, b, bl, r, l, tr, t, tl };
 

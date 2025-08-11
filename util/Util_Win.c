@@ -107,7 +107,7 @@ void drawWinBmap(HWND hwnd, const BITMAP* bmap){
 #ifdef RASTERON_ENABLE_ANIM
 
 void encodeQueue(Rasteron_Queue* queue){
-	// static IMFSinkWriter* sinkWriter = NULL;
+	static IMFSinkWriter* sinkWriter = NULL;
 	static IMFMediaType *mediaTypeIn = NULL, *mediaTypeOut = NULL;
 
 	const uint32_t frameWidth = queue_getImg(queue, 0)->width;
@@ -132,21 +132,41 @@ void encodeQueue(Rasteron_Queue* queue){
 		}
 	}
 
-	char mediaOutputName[1024];
-	strcpy(mediaOutputName, queue->prefix);
-	strcat(mediaOutputName, ".wmv"); // Make this file format configurable?
+	wchar_t mediaOutputName[1024];
+	unsigned nameLen = strlen(queue->prefix);
+	mbstowcs_s(&nameLen, mediaOutputName, queue->prefix, nameLen);
 
-	// if(!SUCCEEDED(MFCreateSinkWriterFromURL(mediaOutputName, NULL, NULL, &sinkWriter))) return perror("Failed to create sink writer");
+	if(!SUCCEEDED(MFCreateSinkWriterFromURL(mediaOutputName, NULL, NULL, &sinkWriter))) return perror("Failed to create sink writer"); // TODO: Update name
+
+	DWORD streamIndex;
 
 	if(!SUCCEEDED(MFCreateMediaType(&mediaTypeOut))) return perror("Failed to create media type for output");
-	// TODO: Set parameters
+	if(!SUCCEEDED(mediaTypeOut->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeOut->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_WMV3))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeOut->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeOut->SetUINT32(MF_MT_AVG_BITRATE, 800000))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(MFSetAttributeSize(mediaTypeOut, MF_MT_FRAME_SIZE, 1024, 1024))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeOut, MF_MT_FRAME_RATE, 60, 1))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeOut, MF_MT_PIXEL_ASPECT_RATIO, 1, 1))) return perror("Failed to set parameter");
+	// Add to stream
+	if(!SUCCEEDED(sinkWriter->AddStream(mediaTypeOut, &streamIndex))) return perror("Failed to add stream");
 
 	if(!SUCCEEDED(MFCreateMediaType(&mediaTypeIn))) return perror("Failed to create media type for input");
-	// TODO: Set parameters
+	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_WMV3))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeIn->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(MFSetAttributeSize(mediaTypeIn, MF_MT_FRAME_SIZE, 1024, 1024))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_FRAME_RATE, 60, 1))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_PIXEL_ASPECT_RATIO, 1, 1))) return perror("Failed to set parameter");
+	// Add to input
+	if(!SUCCEEDED(sinkWriter->SetInputMediaType(streamIndex, mediaTypeIn, NULL)))  return perror("Failed to add input");
 
-	// SafeRelease(&sinkWriter);
-	// SafeRelease(&mediaTypeOut);
-	// SafeRelease(&mediaTypeIn);
+	// Writing to Sink
+	if(!SUCCEEDED(!sinkWriter->BeginWriting())) return perror("Writing failed!");
+
+	SafeRelease(&sinkWriter);
+	SafeRelease(&mediaTypeOut);
+	SafeRelease(&mediaTypeIn);
 
 	free(data);
 }

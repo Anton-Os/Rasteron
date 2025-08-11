@@ -641,36 +641,6 @@ Rasteron_Image* arcaneImgOp(double radius, unsigned short count){
     return arcImg;
 }
 
-ColorSwatch colorateSwatch;
-
-static unsigned colorate(unsigned color, unsigned neighbors[2]) {
-    if (color > colorateSwatch.colors[0] || color > colorateSwatch.colors[3]) return add_colors(neighbors[0], neighbors[1]);
-    else if (color < colorateSwatch.colors[2] || color < colorateSwatch.colors[4]) return diff_colors(neighbors[0], neighbors[1]);
-    else if (color > colorateSwatch.colors[6] || color < colorateSwatch.colors[5]) return mult_colors(neighbors[0], neighbors[1]);
-    else return color;
-}
-
-Rasteron_Image* colorateImgOp(ColorSwatch swatch) { 
-    Rasteron_Image* swatchImg = RASTERON_ALLOC("colorate", 256, 256);
-    unsigned randOffset = rand() % 128;
-
-    for (unsigned p = 0; p < swatchImg->width * swatchImg->height; p++) {
-        if(p % swatchImg->width == 0) randOffset = rand() % 128;
-        *(swatchImg->data + p) = swatch.colors[(p + randOffset) % 8];
-    }
-
-    Rasteron_Image* resizedImg = resizeImgOp((ImageSize){ 1024, 1024 }, swatchImg);
-
-    colorateSwatch = swatch;
-
-    Rasteron_Image* colorateImg = cellwiseRowImgOp(resizedImg, colorate);
-
-    RASTERON_DEALLOC(swatchImg);
-    RASTERON_DEALLOC(resizedImg);
-
-    return colorateImg;
-}
-
 double tFactor = 0.0;
 
 float turbulence(float level) { return level; }
@@ -735,8 +705,28 @@ Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double dist){
     return raycastImg;
 }
 
-Rasteron_Image* subtImgOp(nebrCallback8 callback, unsigned color1, unsigned color2, unsigned color3, unsigned color4) {
-    return errorImgOp("Unimplimented image");
+Rasteron_Image* subtImgOp(nebrCallback8 callback, unsigned colors[4]) {
+    Rasteron_Image* subtImg = NULL;
+    
+    for (unsigned s = 0; s < 10; s++) {
+        Rasteron_Image* stageImg; 
+        if (s == 0) {
+            // stageImg = RASTERON_ALLOC("subt", (unsigned)pow(2, s + 1), (unsigned)pow(2, s + 1));
+            stageImg = RASTERON_ALLOC("subt", 2, 2);
+            for (unsigned p = 0; p < 4; p++) *(stageImg->data + p) = colors[p];
+        }
+        else {
+            Rasteron_Image* resizeImg = resizeImgOp((ImageSize) { (unsigned)pow(2, s + 1), (unsigned)pow(2, s + 1) }, subtImg);
+            stageImg = cellwiseImgOp(resizeImg, callback);
+            RASTERON_DEALLOC(resizeImg);
+        }
+
+        if(subtImg != NULL) RASTERON_DEALLOC(subtImg);
+        subtImg = cellwiseImgOp(stageImg, callback);
+        RASTERON_DEALLOC(stageImg);
+    }
+
+    return subtImg;
 }
 
 Rasteron_Image* heightImgOp(Rasteron_Heightmap* heightmap, unsigned color1, unsigned color2) {
@@ -744,5 +734,18 @@ Rasteron_Image* heightImgOp(Rasteron_Heightmap* heightmap, unsigned color1, unsi
 }
 
 Rasteron_Image* remixImgOp(Rasteron_Image* image1, Rasteron_Image* image2) {
-    return errorImgOp("Unimplimented image");
+    Rasteron_Image* remixImg = (image2->width == image1->width && image2->height == image1->height)
+        ? copyImgOp(image2)
+        : resizeImgOp((ImageSize) { image1->height, image1->width }, image1);
+
+    for (unsigned p = 0; p < image1->width * image1->height; p++) {
+        double level1 = f_color(*(image1->data + p));
+        double level2 = f_color(*(remixImg->data + p));
+        // double level3 = (level1 / level2 + level2 / level1) - floor(level1 / level2 + level2 / level1);
+        double level3 = ((level1 / level2) * (level2 / level1)) - floor((level1 / level2) * (level2 / level1));
+        // double level3 = ((level1 / level2) / (level2 / level1)) - floor((level1 / level2) / (level2 / level1));
+        *(remixImg->data + p) = blend_colors(*(image1->data + p), *(remixImg->data + p), level3 + (level1 * level2));
+    }
+
+    return remixImg;
 }

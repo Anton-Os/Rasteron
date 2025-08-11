@@ -12,7 +12,10 @@
 	#pragma comment(lib, "WindowsCodecs.lib")
 
 	#include <vfw.h>
-	// #include <mfreadwrite.h>
+	#include <mfidl.h> 
+	#include <mfreadwrite.h>
+	#include <mfapi.h>
+	#include <mftransform.h>
 	#include <mfapi.h>
 	#include <Mfidl.h>
 	#pragma comment(lib, "Vfw32")
@@ -33,6 +36,7 @@
 	DllExport BITMAP createWinBmap(Rasteron_Image* image); // formatted data call
 	DllExport void drawWinBmap(HWND hwnd, const BITMAP* bmap);
 #ifdef RASTERON_ENABLE_ANIM
+// #include "Queue.h"
 	DllExport void encodeQueue(Rasteron_Queue* queue);
 #endif
 #elif defined __linux__

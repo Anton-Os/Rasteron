@@ -241,7 +241,7 @@ uint32_t bit_colors_xor(unsigned color1, unsigned color2){ return (color1 ^ colo
 // --------------------------------   Pixel Point & Floating Point Functions   -------------------------------- //
 
 double f_color(uint32_t refColor){
-	unsigned color = color_gray(color);
+	unsigned color = color_gray(refColor);
 	return (double)(color & 0xFFFFFF) / (double)0xFFFFFF;
 }
 
