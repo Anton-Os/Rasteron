@@ -705,10 +705,31 @@ Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double dist){
     return raycastImg;
 }
 
+unsigned subtPaint(unsigned color, unsigned neighbors[8]) {
+    static unsigned p = 0;
+    switch (p % 4) {
+    case 0: color = blend_colors_eq(neighbors[NEBR_Left], neighbors[NEBR_Right]); break;
+    case 1: color = blend_colors_eq(neighbors[NEBR_Bot_Left], neighbors[NEBR_Top_Right]); break;
+    case 2: color = blend_colors_eq(neighbors[NEBR_Top], neighbors[NEBR_Bot]); break;
+    case 3: color = fuse_colors_eq(neighbors[NEBR_Top_Left], neighbors[NEBR_Bot_Right]); break;
+    }
+    p++;
+    return color;
+}
+
+unsigned subtShuffle(unsigned color, unsigned neighbors[8]) {
+    static unsigned p = 0;
+    color = blend_colors_eq(neighbors[p % 8], neighbors[(p + 1) % 8]);
+    p++;
+    return color;
+}
+
+
 Rasteron_Image* subtImgOp(nebrCallback8 callback, unsigned colors[4]) {
+    if (callback == NULL) callback = subtShuffle;
     Rasteron_Image* subtImg = NULL;
     
-    for (unsigned s = 0; s < 10; s++) {
+    for (unsigned s = 0; s < 9; s++) {
         Rasteron_Image* stageImg; 
         if (s == 0) {
             // stageImg = RASTERON_ALLOC("subt", (unsigned)pow(2, s + 1), (unsigned)pow(2, s + 1));
@@ -722,11 +743,13 @@ Rasteron_Image* subtImgOp(nebrCallback8 callback, unsigned colors[4]) {
         }
 
         if(subtImg != NULL) RASTERON_DEALLOC(subtImg);
-        subtImg = cellwiseImgOp(stageImg, callback);
+        subtImg = copyImgOp(stageImg);
         RASTERON_DEALLOC(stageImg);
     }
 
-    return subtImg;
+    Rasteron_Image* resizeImg = resizeImgOp((ImageSize) { 1024, 1024 }, subtImg);
+    RASTERON_DEALLOC(subtImg);
+    return resizeImg;
 }
 
 Rasteron_Image* heightImgOp(Rasteron_Heightmap* heightmap, unsigned color1, unsigned color2) {

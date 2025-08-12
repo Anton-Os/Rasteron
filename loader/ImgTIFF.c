@@ -2,38 +2,37 @@
 
 #ifdef USE_IMG_TIFF
 
-void loadFromFile_TIFF(const char* fileName, FileImage* image) {
-	image->fileFormat = IMG_Tiff;
-
+Rasteron_Image* loadImgOp_tiff(const char* fileName){
 	TIFF* tiffFile = TIFFOpen(fileName, "r");
-	if (!tiffFile) {
-		printf("Could not open file: %s", fileName);
-		image = NULL;
-		return;
-	}
+	if (!tiffFile) errorImgOp("Cannot open file");
 
-	TIFFGetField(tiffFile, TIFFTAG_IMAGELENGTH, &image->data.tiff.length);
-	TIFFGetField(tiffFile, TIFFTAG_IMAGEWIDTH, &image->data.tiff.width);
-	TIFFGetField(tiffFile, TIFFTAG_BITSPERSAMPLE, &image->data.tiff.bitsPerSample);
-	TIFFGetField(tiffFile, TIFFTAG_SAMPLESPERPIXEL, &image->data.tiff.samplesPerPixel);
-	TIFFGetField(tiffFile, TIFFTAG_ORIENTATION, &image->data.tiff.orientation);
+	uint16 compression, orientation;
+	uint32 width, length;
+	uint16 bitsPerSample, samplesPerPixel;
 
-	image->data.tiff.data = (uint32*)_TIFFmalloc(image->data.tiff.length * image->data.tiff.width * sizeof(uint32));
+	TIFFGetField(tiffFile, TIFFTAG_IMAGELENGTH, &length);
+	TIFFGetField(tiffFile, TIFFTAG_IMAGEWIDTH, &width);
+	TIFFGetField(tiffFile, TIFFTAG_BITSPERSAMPLE, &bitsPerSample);
+	TIFFGetField(tiffFile, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
+	TIFFGetField(tiffFile, TIFFTAG_ORIENTATION, &orientation);
+
+	Rasteron_Image* loadedImg = RASTERON_ALLOC("tiff", length, width);
+
 	TIFFReadRGBAImageOriented(
 		tiffFile,
-		image->data.tiff.width,
-		image->data.tiff.length,
-		image->data.tiff.data,
+		loadedImg->width,
+		loadedImg->height,
+		loadedImg->data,
 		ORIENTATION_TOPLEFT,
 		0
 	);
 
 	TIFFClose(tiffFile);
 
-	return;
+	return loadedImg;
 }
 
-void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned width, unsigned* data){
+void writeFileImageRaw_tiff(const char* fileName, unsigned height, unsigned width, unsigned* data){
 	TIFF* tiffFile = TIFFOpen(fileName, "w");
 	if (!tiffFile) {
 		printf("Could not open file: %s", fileName);
@@ -70,15 +69,6 @@ void writeFileImageRaw_TIFF(const char* fileName, unsigned height, unsigned widt
 	free(dataflip);
 
 	TIFFClose(tiffFile);
-}
-
-void delFileImage_TIFF(FileImage* image){
-	if (image->fileFormat != IMG_Tiff) {
-		puts("Image provided for deletion is not TIFF type");
-		return;
-	}
-	_TIFFfree(image->data.tiff.data);
-	image->fileFormat = IMG_NonValid;
 }
 
 #endif

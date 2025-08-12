@@ -112,7 +112,7 @@ endif()
 
 set(SUPPORT_FONT_BAKING true CACHE BOOL "Include font baking module" FORCE)
 if(SUPPORT_FONT_BAKING)
-ExternalProject_Add(FreeType
+ExternalProject_Add(freetype
     GIT_REPOSITORY "https://github.com/freetype/freetype.git"
     GIT_TAG "37cefe33b284d0bad4ec52bcccc1a8c2d8704340"
 
@@ -138,7 +138,7 @@ if(SUPPORT_MEDIA_EXPORT)
 # ExternalProject_Add(MLT
 #    GIT_REPOSITORY "https://github.com/mltframework/mlt.git"
 #    GIT_TAG "32abe16667692816814fd5d37676e6e4cd6c44f6"
-ExternalProject_Add(FFMPEG
+ExternalProject_Add(ffmpeg
     # GIT_REPOSITORY "https://github.com/Pawday/ffmpeg-cmake.git"
     GIT_REPOSITORY "https://github.com/FFmpeg/FFmpeg.git"
     # GIT_TAG "dea60f9dbe2f0052f4f9a6685016da9bc748e85a"

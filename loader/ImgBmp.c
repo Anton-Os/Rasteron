@@ -2,54 +2,42 @@
 
 #ifdef USE_IMG_BMP
 
-void loadFromFile_BMP(const char* fileName, FileImage* image) {
-	image->fileFormat = IMG_Bmp;
-
+Rasteron_Image* loadImgOp_bmp(const char* fileName){
 	FILE* bmpFile;
 #ifdef _WIN32
 	errno_t err = fopen_s(&bmpFile, fileName, "rb");
-	if (err) {
-		printf("Error opening %s fopen_s error code %d", fileName, err);
-		image = NULL;
-		return;
-	}
+	if (err) return errorImgOp("Cannot open file");
 #else
 	bmpFile = fopen(fileName, "rb");
-	if (bmpFile == NULL) {
-		printf("Error opening %s", fileName);
-		image = NULL;
-		return;
-	}
+	if (bmpFile == NULL) return errorImgOp("Cannot open file");
 #endif // _WIN32
+	
+	uint16_t typeCheck;
 
-	fread(&image->data.bmp.typeCheck, sizeof(uint16_t), 1, bmpFile);
-	if (image->data.bmp.typeCheck != 0x4D42) {
-		printf("%s is not a valid BMP file", fileName);
-		return;
-	}
+	fread(&typeCheck, sizeof(uint16_t), 1, bmpFile);
+	if(typeCheck != 0x4D42) return errorImgOp("Invalid file format");
 
-	// checkout https://solarianprogrammer.com/2018/11/19/cpp-reading-writing-bmp-images/
-	// Reading Meta-Data
+	uint32_t offset;
+	int32_t height, width;
 
 	fseek(bmpFile, 10, SEEK_SET);
-	fread(&image->data.bmp.offset, sizeof(uint32_t), 1, bmpFile);
-
+	fread(&offset, sizeof(uint32_t), 1, bmpFile);
 	fseek(bmpFile, 18, SEEK_SET);
-	fread(&image->data.bmp.width, sizeof(int32_t), 1, bmpFile);
+	fread(&width, sizeof(int32_t), 1, bmpFile);
 	fseek(bmpFile, 22, SEEK_SET);
-	fread(&image->data.bmp.height, sizeof(int32_t), 1, bmpFile);
+	fread(&height, sizeof(int32_t), 1, bmpFile);
 
-	// Reading Data
+	Rasteron_Image* loadedImg = RASTERON_ALLOC("bmp", abs(height), abs(width));
 
-	image->data.bmp.data = (uint32_t*)malloc(abs(image->data.bmp.width) * abs(image->data.bmp.height) * (uint32_t)sizeof(uint32_t));
-	fseek(bmpFile, image->data.bmp.offset, SEEK_SET);
-	fread((uint32_t*)image->data.bmp.data, sizeof(uint32_t), abs(image->data.bmp.width) * abs(image->data.bmp.height), bmpFile);
+	fseek(bmpFile, offset, SEEK_SET);
+	fread((uint32_t*)loadedImg->data, sizeof(uint32_t), abs(height) * abs(width), bmpFile);
 
 	fclose(bmpFile);
-	return;
+
+	return loadedImg;
 }
 
-void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width, unsigned* data){
+void writeFileImageRaw_bmp(const char* fileName, unsigned height, unsigned width, unsigned* data){
 	FILE* bmpFile;
 #ifdef _WIN32
 	errno_t err = fopen_s(&bmpFile, fileName, "wb");
@@ -109,15 +97,6 @@ void writeFileImageRaw_BMP(const char* fileName, unsigned height, unsigned width
 	
 	free(colorBytes);
 	fclose(bmpFile);
-}
-
-void delFileImage_BMP(FileImage* image) {
-	if (image->fileFormat != IMG_Bmp) {
-		puts("Image provided for deletion is not BMP type!");
-		return;
-	}
-	free(image->data.bmp.data);
-	image->fileFormat = IMG_NonValid;
 }
 
 #endif

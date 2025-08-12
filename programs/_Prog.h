@@ -2,6 +2,8 @@
 
 #include "Util_OS.h"
 
+#include "Loader.h"
+
 // --------------------------------   Directives for Demo    -------------------------------- //
 
 #ifndef RASTERON_WIN_NAME

@@ -2,10 +2,8 @@
 
 #ifdef USE_IMG_JPEG
 
-loadFromFile_JPEG(const char* fileName, FileImage* image){}
+Rasteron_Image* loadImgOp_jpeg(const char* fileName){ return errorImgOp("Unimplimented operation"); }
 
-writeFileImageRaw_JPEG(const char* fileName, unsigned height, unsigned width, unsigned* data){}
-
-delFileImage_JPEG(FileImage* image){}
+void writeFileImageRaw_jpeg(const char* fileName, unsigned height, unsigned width, unsigned* data){}
 
 #endif

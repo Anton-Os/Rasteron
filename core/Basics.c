@@ -1,6 +1,6 @@
 #include "Rasteron.h"
 
-Rasteron_Image* loadImgOp(const char* fileName){
+/* Rasteron_Image* loadImgOp(const char* fileName){
 	FileImage fileImage;
 
 	loadFromFile(fileName, &fileImage);
@@ -33,7 +33,7 @@ Rasteron_Image* loadImgOp(const char* fileName){
 
 	delFileImage(&fileImage);
 	return refImage;
-}
+} */
 
 Rasteron_Image* solidImgOp(ImageSize size, uint32_t color){
 	Rasteron_Image* solidImage = RASTERON_ALLOC("solid", size.height, size.width);

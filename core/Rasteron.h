@@ -4,7 +4,7 @@
 extern "C"{
 #endif
 
-#include "Loader.h"
+// #include "Loader.h"
 
 #include "type_def.h"
 #include "func_def.h"
@@ -14,7 +14,6 @@ extern "C"{
 //      Involves the most basic operations such as loading from files, fillin in a solid color,
 //      copying, cropping, mirroring, and flipping
 
-DllExport Rasteron_Image* loadImgOp(const char* fileName); // creates an image from a file
 DllExport Rasteron_Image* solidImgOp(ImageSize size, uint32_t color); // creates a solid color image
 DllExport Rasteron_Image* copyImgOp(ref_image_t refImage); // creates copy of imagea
 DllExport Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage); // resize image to size

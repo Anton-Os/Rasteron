@@ -63,7 +63,7 @@ void _onKeyEvent(char key){
 		case 'v': _outputImg = raycastImgOp(&pointData, 4, 1.0 * (mode + 2)); break;
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
-		case 'y': _outputImg = subtImgOp(antialias, seedColors); break; // arcaneImgOp(100.0, (mode + 2) * 10); break;
+		case 'y': _outputImg = subtImgOp(NULL, seedColors); break; // arcaneImgOp(100.0, (mode + 2) * 10); break;
         case 'z': _outputImg = ditherImgOp(radialImg1, (mode + 2) * 0x22, 0xFF000000, 0xFFFFFFFF); break;
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
@@ -79,7 +79,7 @@ void _onTickEvent(unsigned secs){}
 int main(int argc, char** argv) {
 	srand(time(NULL));
 	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    _outputImg = fisheyeImgOp((mode + 2) * 5);
+	_outputImg = lensesImgOp(0);
 
 	puts("Please refer to following commands to select images for canvas:");
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities");
