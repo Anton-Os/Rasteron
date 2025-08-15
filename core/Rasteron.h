@@ -111,8 +111,9 @@ DllExport Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short ti
 
 // --------------------------------   Extensible Types   -------------------------------- //
 
+#ifdef RASTERON_ENABLE_SPACE
 #include "Spacial.h" // enables spatial types, including sprite and heightmap
-
+#endif
 #ifdef RASTERON_ENABLE_ANIM
 #include "Queue.h" // enables sequenced image types with potential animation support
 #endif

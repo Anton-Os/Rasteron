@@ -1,40 +1,5 @@
 #include "Rasteron.h"
 
-/* Rasteron_Image* loadImgOp(const char* fileName){
-	FileImage fileImage;
-
-	loadFromFile(fileName, &fileImage);
-	if(fileImage.fileFormat == IMG_NonValid) return errorImgOp("Invalid image file");
-
-    Rasteron_Image* refImage = NULL;
-    switch(fileImage.fileFormat){
-#ifdef USE_IMG_TIFF
-	case(IMG_Tiff):
-		refImage = RASTERON_ALLOC("tiff", fileImage.data.tiff.length, fileImage.data.tiff.width);
-		for(unsigned i = 0; i < refImage->width * refImage->height; i++)
-		   *(refImage->data + i) = swap_rb(*(fileImage.data.tiff.data + i)); // copying operation
-		break;
-#endif
-#ifdef USE_IMG_BMP
-	case(IMG_Bmp):
-		refImage = RASTERON_ALLOC("bmp", abs(fileImage.data.bmp.height), abs(fileImage.data.bmp.width));
-		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
-			*(refImage->data + i) = *(fileImage.data.bmp.data + i); // copying operation
-		break;
-#endif
-#ifdef USE_IMG_PNG
-	case(IMG_Png):
-		refImage = RASTERON_ALLOC("png", fileImage.data.png.height, fileImage.data.png.width);
-		for (unsigned i = 0; i < refImage->width * refImage->height; i++)
-			*(refImage->data + i) = *(fileImage.data.png.data + i); // copying operation
-		break;
-#endif
-	}
-
-	delFileImage(&fileImage);
-	return refImage;
-} */
-
 Rasteron_Image* solidImgOp(ImageSize size, uint32_t color){
 	Rasteron_Image* solidImage = RASTERON_ALLOC("solid", size.height, size.width);
 
@@ -170,8 +135,9 @@ Rasteron_Image* cornerImgOp(ref_image_t refImage, double tl, double tr, double b
 Rasteron_Image* errorImgOp(const char* errorMsg){
 	fprintf(stderr, "ERROR! message: %s", errorMsg);
 
-	char errorFilePath[1024];
-    genFullFilePath("Error.bmp", errorFilePath);
+	// char errorFilePath[1024];
+    // genFullFilePath("Error.bmp", errorFilePath);
 
- 	return loadImgOp(errorFilePath);
+ 	// return loadImgOp(errorFilePath);
+	return solidImgOp((ImageSize){ 1024, 1024}, 0xFFFF0000);
 }

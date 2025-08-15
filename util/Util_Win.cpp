@@ -85,9 +85,7 @@ BITMAP createWinBmapRaw(uint32_t height, uint32_t width, uint32_t* data){
 	return bmap;
 }
 
-BITMAP createWinBmap(Rasteron_Image* image){
-	createWinBmapRaw(image->height, image->width, image->data);
-}
+BITMAP createWinBmap(Rasteron_Image* image){ return createWinBmapRaw(image->height, image->width, image->data); }
 
 void drawWinBmap(HWND hwnd, const BITMAP* bmap){
     HBITMAP hBmap = CreateBitmapIndirect(bmap);
@@ -107,14 +105,18 @@ void drawWinBmap(HWND hwnd, const BITMAP* bmap){
 #ifdef RASTERON_ENABLE_ANIM
 
 void encodeQueue(Rasteron_Queue* queue){
+	assert(queue->frameCount > 0);
+
 	static IMFSinkWriter* sinkWriter = NULL;
 	static IMFMediaType *mediaTypeIn = NULL, *mediaTypeOut = NULL;
 
-	const uint32_t frameWidth = queue_getImg(queue, 0)->width;
-	const uint32_t frameHeight = queue_getImg(queue, 0)->height;
+	Rasteron_Image* frameImg = *(queue->frameData + 0);
+
+	const uint32_t frameWidth = frameImg->width;
+	const uint32_t frameHeight = frameImg->height;
 	const uint32_t frameRes = frameWidth * frameHeight;
 	const uint32_t fps = 30;
-	const uint32_t frameCount = queue-frameCount * fps;
+	const uint32_t frameCount = queue->frameCount * fps;
 	const uint32_t bitrate = 800000; // is this correct?
 	const uint64_t duration = (queue->frameCount * 1000 * 1000) / fps; // is this correct?
 
@@ -125,7 +127,7 @@ void encodeQueue(Rasteron_Queue* queue){
 
 	unsigned d = 0;
 	for(unsigned f = 0; f < queue->frameCount && d < frameRes; f++){
-		Rasteron_Image* frame = queue_getImg(queue, f);
+		Rasteron_Image* frame = *(queue->frameData + f);
 		for(unsigned p = 0; p < frame->width * frame->height; p++){
 			*(data + d) = *(frame->data + p);
 			d++;
@@ -133,8 +135,8 @@ void encodeQueue(Rasteron_Queue* queue){
 	}
 
 	wchar_t mediaOutputName[1024];
-	unsigned nameLen = strlen(queue->prefix);
-	mbstowcs_s(&nameLen, mediaOutputName, queue->prefix, nameLen);
+	size_t nameLen = strlen(queue->prefix);
+	mbstowcs_s(&nameLen, mediaOutputName, nameLen, queue->prefix, nameLen);
 
 	if(!SUCCEEDED(MFCreateSinkWriterFromURL(mediaOutputName, NULL, NULL, &sinkWriter))) return perror("Failed to create sink writer"); // TODO: Update name
 
@@ -164,10 +166,22 @@ void encodeQueue(Rasteron_Queue* queue){
 	// Writing to Sink
 	if(!SUCCEEDED(!sinkWriter->BeginWriting())) return perror("Writing failed!");
 
-	SafeRelease(&sinkWriter);
-	SafeRelease(&mediaTypeOut);
-	SafeRelease(&mediaTypeIn);
+	sinkWriter->Release();
+	mediaTypeIn->Release();
+	mediaTypeOut->Release();
 
 	free(data);
 }
+
+#else
+
+/* void encodeQueue(Rasteron_Queue* queue){
+	assert(queue->frameCount > 0);
+
+	for(unsigned f = 0; f < queue->frameCount; f++){
+		Rasteron_Image* image = queue_getImg(queue, f);
+		writeFileImageRaw(image->name, IMG_Bmp, image->height, image->width, image->data);
+	}
+} */
+
 #endif

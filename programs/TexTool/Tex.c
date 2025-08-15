@@ -21,6 +21,8 @@ static unsigned invertMix(unsigned color1, unsigned color2){ return (0xFFFFFFFF 
 
 static unsigned wavyMix(unsigned color1, unsigned color2){ return fuse_colors(color1 + color2, color1 - color2, 0.5); }
 
+static unsigned powerMix(unsigned color1, unsigned color2) { return (unsigned)pow((double)color1, (double)((color2 % 8) + 1)); }
+
 static uint32_t asm_rgb(uint32_t color1, uint32_t color2){ 
 	uint8_t red = ((color1 & RED_CHANNEL) >> 16) + ((color2 & RED_CHANNEL) >> 16);
 	uint8_t green = ((color1 & GREEN_CHANNEL) >> 8) - ((color2 & GREEN_CHANNEL) >> 8);

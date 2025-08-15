@@ -64,7 +64,7 @@ void _onKeyEvent(char key){
 
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
-            case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, root_colors); break;
+            case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, powerMix); break;
             case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, mult_colors); break;
             case 'c': _outputImg = mixingImgOp(currentImg, mixerImg, asm_rgb); break;
             case 'v': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_and); break;

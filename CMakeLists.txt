@@ -33,7 +33,7 @@ set(ext_src
 )
 
 if(WIN32) # Windows Specific
-    list(APPEND util_src util/Util_Win.c)
+    list(APPEND util_src util/Util_Win.cpp)
 elseif(UNIX AND NOT APPLE) # Unix Specific
     include(FindX11)
     list(APPEND util_src util/Util_Unix.c)
@@ -45,11 +45,17 @@ endif()
 
 include(externalTargets.cmake)
 
-## Composite Libraries
+## Rasterlib Library
 
-add_library(Rasterlib SHARED ${support_src})
+add_library(Rasterlib SHARED ${support_src} ${core_src})
 
-target_include_directories(Rasterlib PRIVATE support loader core ext util)
+target_include_directories(Rasterlib PRIVATE support core)
+
+## Rasterutil Library
+
+add_library(Rasterutil SHARED ${util_src})
+
+target_include_directories(Rasterutil PUBLIC support core ext util)
 
 ### Rasteron Library
 
@@ -59,6 +65,8 @@ add_library(Rasteron STATIC
 )
 
 target_include_directories(Rasteron PRIVATE loader support core ext util ${EXTERNAL_INSTALL_DIR}/include) # loader support core ext util necessary external libs
+
+# target_link_libraries(Rasteron PUBLIC Rasterutil)
 
 if(WIN32)
     target_link_libraries(Rasteron PUBLIC tiff png ${zlibstatic})

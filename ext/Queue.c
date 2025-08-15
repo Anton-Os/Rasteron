@@ -289,15 +289,3 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
 
     return menuQueue;
 }
-
-// --------------------------------  Animation Operations  -------------------------------- //
-
-#ifdef RASTERON_ENABLE_ANIM
-
-Rasteron_Queue* loadAnim_frame30(ImageSize size){ return (Rasteron_Queue*)internal_alloc_queue("frame30", size, 30); } 
-
-Rasteron_Queue* loadAnim_frame60(ImageSize size){ return (Rasteron_Queue*)internal_alloc_queue("frame60", size, 60); } 
-
-Rasteron_Queue* loadAnim_frame120(ImageSize size){ return (Rasteron_Queue*)internal_alloc_queue("frame120", size, 120); } 
-
-#endif

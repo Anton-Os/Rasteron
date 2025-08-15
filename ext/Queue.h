@@ -54,16 +54,6 @@ DllExport Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size);
 DllExport Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short turns);
 DllExport Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels);
 
-// --------------------------------  Animation  -------------------------------- //
-
-#ifdef RASTERON_ENABLE_ANIM
-
-DllExport Rasteron_Queue* loadAnim_frame30(ImageSize size);
-DllExport Rasteron_Queue* loadAnim_frame60(ImageSize size);
-DllExport Rasteron_Queue* loadAnim_frame120(ImageSize size);
-
-#endif
-
 
 #define RASTERON_QUEUE_H
 #endif
