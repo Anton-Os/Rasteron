@@ -32,7 +32,7 @@ void internal_dealloc_sprite(Rasteron_Sprite* sprite);
 
 // --------------------------------   Heightmap    -------------------------------- //
 
-#define HEIGHTMAP_STEP 0.001 // 1 / 1000
+#define HEIGHTMAP_STEP 0.001 // (1 / 1024.0)
 
 typedef struct {
     Bounds bounds;
@@ -40,9 +40,9 @@ typedef struct {
     float* data;
 } Rasteron_Heightmap;
 
-Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth);
+struct Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth);
 #define RASTERON_HEIGHTMAP_ALLOC(height, width, minDepth, maxDepth) (internal_alloc_heightmap(height, width, minDepth, maxDepth))
-Rasteron_Heightmap* loadHeightmap(ref_image_t refImage); // create heightmap from an image file
+struct Rasteron_Heightmap* loadHeightmap(ref_image_t refImage); // create heightmap from an image file
 
 void internal_dealloc_heightmap(Rasteron_Heightmap* heightmap);
 #define RASTERON_HEIGHTMAP_DEALLOC(heightmap) (internal_dealloc_heightmap(heightmap))

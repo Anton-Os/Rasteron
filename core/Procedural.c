@@ -125,6 +125,44 @@ Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned colo
 	return gradientImg;
 }
 
+Rasteron_Image* gradientExtImgOp(ImageSize size, enum SIDE_Type side1, enum SIDE_Type side2, unsigned color1, unsigned color2){
+	if(side1 == SIDE_None || side2 == SIDE_None) return gradientImgOp(size, SIDE_None, color1, color2);
+	else if(side1 == side2) return gradientImgOp(size, side1, color1, color2);
+
+	Rasteron_Image* gradientImg = RASTERON_ALLOC("gradient", size.height, size.width);
+
+	for(unsigned p = 0; p < size.width * size.height; p++){
+		double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
+
+		if(side1 == SIDE_Radial || side2 == SIDE_Radial){
+			enum SIDE_Radial side = (side1 != SIDE_Radial)? side1 : side2;
+			double centerDist = pix_dist(p, ((size.width * size.height) / 2) + (size.width / 2), size.width) * (1.0 / (double)size.width);
+			switch(side){
+				case SIDE_Bottom: centerDist = sqrt(pow(0.5 - x, 2) + pow(1.0 - y, 2)); break;
+				case SIDE_Top: centerDist = sqrt(pow(0.5 - x, 2) + pow(y, 2)); break;
+				case SIDE_Left: centerDist = sqrt(pow(1.0 - x, 2) + pow(0.5 - y, 2)); break;
+				case SIDE_Right: centerDist = sqrt(pow(x, 2) + pow(0.5 - y, 2)); break;
+			}
+			*(gradientImg->data + p) = blend_colors(color1, color2, centerDist);
+		} else if((side1 == SIDE_Left && side2 == SIDE_Right) || (side1 == SIDE_Right && side2 == SIDE_Left))
+			*(gradientImg->data + p) = blend_colors(color1, color2, abs(0.5 - x) * 2);
+		else if((side1 == SIDE_Bottom && side2 == SIDE_Top) || (side1 == SIDE_Top && side2 == SIDE_Bottom))
+			*(gradientImg->data + p) = blend_colors(color1, color2, abs(0.5 - y) * 2);
+		else if((side1 == SIDE_Left && side2 == SIDE_Top) || (side1 == SIDE_Top && side2 == SIDE_Left))
+			*(gradientImg->data + p) = blend_colors(color1, color2, (x / 2.0) + (y / 2.0));
+		else if((side1 == SIDE_Right && side2 == SIDE_Top) || (side1 == SIDE_Top && side2 == SIDE_Right))
+			*(gradientImg->data + p) = blend_colors(color1, color2, ((1.0 - x) / 2.0) + (y / 2.0));
+		else if((side1 == SIDE_Left && side2 == SIDE_Bottom) || (side1 == SIDE_Bottom && side2 == SIDE_Left))
+			*(gradientImg->data + p) = blend_colors(color1, color2, (x / 2.0) + ((1.0 - y) / 2.0));
+		else if((side1 == SIDE_Right && side2 == SIDE_Bottom) || (side1 == SIDE_Bottom && side2 == SIDE_Right))
+			*(gradientImg->data + p) = blend_colors(color1, color2, ((1.0 - x) / 2.0) + ((1.0 - y) / 2.0));
+	}
+
+
+	return gradientImg;
+}
+
 Rasteron_Image* linedImgOp(ImageSize size, unsigned color1, unsigned color2, unsigned short divs, double rotation){
 	Rasteron_Image* linedImg = RASTERON_ALLOC("lined", size.height, size.width);
 	 

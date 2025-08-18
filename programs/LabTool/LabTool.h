@@ -1,3 +1,4 @@
+#define RASTERON_ENABLE_SPACE
 #define RASTERON_ENABLE_ANIM
 #define RASTERON_ENABLE_FONT
 
@@ -52,5 +53,5 @@ Rasteron_Image* ditherImgOp(ref_image_t targetImg, uint8_t thresh, unsigned colo
 Rasteron_Image* turbulentImgOp(ref_image_t targetImg, uint8_t count, mixCallback callback);
 Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double distance);
 Rasteron_Image* subtImgOp(nebrCallback8 callback, unsigned colors[4]);
-Rasteron_Image* heightImgOp(Rasteron_Heightmap* heightmap, unsigned color1, unsigned color2);
+Rasteron_Image* heightImgOp(Rasteron_Image* image1, Rasteron_Image* image2);
 Rasteron_Image* remixImgOp(Rasteron_Image* image1, Rasteron_Image* image2);

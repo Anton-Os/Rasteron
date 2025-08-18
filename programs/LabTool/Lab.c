@@ -1,7 +1,4 @@
-#define RASTERON_ENABLE_ANIM
-#define RASTERON_ENABLE_FONT
-
-#include "Rasteron.h"
+#include "LabTool.h"
 
 static char fullFilePath[1024];
 
@@ -752,8 +749,28 @@ Rasteron_Image* subtImgOp(nebrCallback8 callback, unsigned colors[4]) {
     return resizeImg;
 }
 
-Rasteron_Image* heightImgOp(Rasteron_Heightmap* heightmap, unsigned color1, unsigned color2) {
-    return errorImgOp("Unimplimented image");
+Rasteron_Image* heightImgOp(Rasteron_Image* image1, Rasteron_Image* image2) {
+    Rasteron_Heightmap* heightmap1 = loadHeightmap(image1);
+    Rasteron_Heightmap* heightmap2 = loadHeightmap(image2);
+
+    Rasteron_Image* heightImg = RASTERON_ALLOC("height", image1->height, image1->width);
+
+    for (unsigned p = 0; p < heightImg->width * heightImg->height; p++) {
+        unsigned color1 = *(image1->data + p);
+        unsigned color2 = *(image2->data + p);
+        // double height = *(heightmap1->data + p) / *(heightmap2->data + p);
+        double height = fabs(sin(*(heightmap1->data + p) * 5.0)) + fabs(cos(*(heightmap2->data + p) * 5.0));
+
+        *(heightImg->data + p) = color_level(
+            blend_colors_eq(color1, color2),
+            fabs(height) - floor(fabs(height))
+        );
+    } 
+
+    internal_dealloc_heightmap(heightmap1);
+    internal_dealloc_heightmap(heightmap2);
+
+    return heightImg;
 }
 
 Rasteron_Image* remixImgOp(Rasteron_Image* image1, Rasteron_Image* image2) {

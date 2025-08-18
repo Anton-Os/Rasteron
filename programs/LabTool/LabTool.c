@@ -34,7 +34,9 @@ void _onKeyEvent(char key){
 
 	float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2 * 2;
 	Rasteron_Image* radialImg1 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
-	Rasteron_Image* radialImg2 = gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
+	Rasteron_Image* radialImg2 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
+	Rasteron_Image* noiseImg1 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });
+	Rasteron_Image* noiseImg2 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });
 	float pointData[12] = { xArg, -yArg, (rand() % 2 == 0)? r : -r, -xArg, yArg, r, xArg, yArg, -r, -xArg, -yArg, 0.0F};
 	unsigned seedColors[4] = { RAND_COLOR(), RAND_COLOR(), RAND_COLOR(), RAND_COLOR() };
 
@@ -42,7 +44,7 @@ void _onKeyEvent(char key){
 		case 'a': _outputImg = oragamiImgOp(mode, xArg, yArg); break;
 		case 'b': _outputImg = nestboxesImgOp(xArg, yArg); break;
 		case 'c': _outputImg = lensesImgOp(mode); break;
-		case 'd': _outputImg = remixImgOp(radialImg1, radialImg2); break;
+		case 'd': _outputImg = remixImgOp(noiseImg1, noiseImg2); break;
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
 		case 'f': _outputImg = fisheyeImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mozaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
@@ -51,7 +53,7 @@ void _onKeyEvent(char key){
 		case 'j': _outputImg = ballingImgOp((double)(mode + 2)); break;
 		case 'k': _outputImg = stratifyImgOp(mode + 4); break;
 		case 'l': _outputImg = barkodeImgOp(mode + 4, RAND_COLOR(), RAND_COLOR()); break;
-        case 'm': _outputImg = chaosImgOp(mode + 3, mode + 3); break;
+		case 'm': _outputImg = heightImgOp(radialImg1, radialImg2); break; // chaosImgOp(mode + 3, mode + 3); break;
 		case 'n': _outputImg = turbulentImgOp(radialImg1, mode + 2, add_rgb); break;
 		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
@@ -68,8 +70,8 @@ void _onKeyEvent(char key){
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 
-	RASTERON_DEALLOC(radialImg1);
-	RASTERON_DEALLOC(radialImg2);
+	RASTERON_DEALLOC(radialImg1); RASTERON_DEALLOC(radialImg2);
+	RASTERON_DEALLOC(noiseImg1); RASTERON_DEALLOC(noiseImg2);
 }
 void _onPressEvent(double x, double y){ }
 void _onTickEvent(unsigned secs){}
@@ -78,8 +80,8 @@ void _onTickEvent(unsigned secs){}
 
 int main(int argc, char** argv) {
 	srand(time(NULL));
-	if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-	_outputImg = lensesImgOp(0);
+	// if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
+	// _outputImg = stratifyImgOp(mode + 4);
 
 	puts("Please refer to following commands to select images for canvas:");
 	puts("\nAlphabetical characters A to H output images dedicated to various Rasteron API functionalities");

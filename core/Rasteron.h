@@ -67,6 +67,7 @@ DllExport Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* c
 DllExport Rasteron_Image* vornoiImgOp(ImageSize size, const ColorPointTable* colorPointTable); // implementation of vornoi algorithm
 
 DllExport Rasteron_Image* gradientImgOp(ImageSize size, enum SIDE_Type side, unsigned color1, unsigned color2);
+DllExport Rasteron_Image* gradientExtImgOp(ImageSize size, enum SIDE_Type side1, enum SIDE_Type side2, unsigned color1, unsigned color2);
 DllExport Rasteron_Image* linedImgOp(ImageSize size, unsigned color1, unsigned color2, unsigned short divs, double rotation);
 DllExport Rasteron_Image* checkeredImgOp(ImageSize size, ColorGrid grid); // DllExport Rasteron_Image* tiledImgOp(ImageSize size, ColorGrid grid, TILE_Type)
 

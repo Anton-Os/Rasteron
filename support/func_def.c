@@ -1,6 +1,13 @@
 #include "func_def.h"
 
-void seedRandGen(){ srand(time(NULL)); }
+static int seeded = 0;
+
+void seedRandGen(){
+	if(seeded == 0){
+		srand(time(NULL));
+		seeded = 1; 
+	}
+}
 
 char* convertCharray(unsigned count, const char** args){
     size_t total_length = 0;
@@ -30,6 +37,11 @@ char* convertCharray(unsigned count, const char** args){
 }
 
 // --------------------------------   One Color Functions  -------------------------------- //
+
+uint32_t color_random(){ 
+	seedRandGen();
+	return RAND_COLOR(); 
+}
 
 uint32_t color_unique(){
 	static unsigned invoke = 0; // increases each invocation

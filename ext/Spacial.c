@@ -1,5 +1,3 @@
-#include "Rasteron.h"
-
 #include "Spacial.h"
 
 // --------------------------------   Space    -------------------------------- //
@@ -51,7 +49,7 @@ static float calcHeight(unsigned inputColor, float minDepth, float maxDepth){;
 	return heightVal + minDepth;
 }
 
-Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth){
+struct Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth){
 	Rasteron_Heightmap* heightmap = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
     
 	heightmap->bounds = createBounds(height, width);
@@ -62,7 +60,7 @@ Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, fl
 	return heightmap;
 }
 
-Rasteron_Heightmap* loadHeightmap(ref_image_t refImage){
+struct Rasteron_Heightmap* loadHeightmap(ref_image_t refImage){
 	assert(refImage != NULL);
 
     Rasteron_Heightmap* heightmap = internal_alloc_heightmap(refImage->width, refImage->height, 0.0, 1.0);

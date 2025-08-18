@@ -22,6 +22,7 @@ DllExport void seedRandGen(); // seeds the random number generator
 DllExport void genFullFilePath(const char* name, char* fullFilePath);
 DllExport char* convertCharray(unsigned count, const char** args);
 
+DllExport uint32_t color_random(); // produces random color
 DllExport uint32_t color_unique(); // produces reusable color identifier
 DllExport uint32_t color_invert(uint32_t refColor); // inverts red, green, and blue values
 DllExport uint32_t color_level(uint32_t color, double level); // levels color given brightness level
