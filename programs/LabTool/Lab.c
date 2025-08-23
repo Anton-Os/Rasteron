@@ -9,10 +9,10 @@ extern ColorSwatch _swatch;
 Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){ 
     genFullFilePath("Logroller.bmp", fullFilePath);
 
-    Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
+    Rasteron_Image* loadImg = loadImgOp(fullFilePath);
 
     enum SIDE_Type cropX = (xCrop > 0.0)? SIDE_Right : SIDE_Left;
-    Rasteron_Image* cropImgX = cropImgOp(loadedImg, cropX, xCrop);
+    Rasteron_Image* cropImgX = cropImgOp(loadImg, cropX, xCrop);
     enum SIDE_Type cropY = (yCrop > 0.0)? SIDE_Top : SIDE_Bottom;
     Rasteron_Image* cropImgY = cropImgOp(cropImgX, cropY, yCrop);
 
@@ -20,7 +20,7 @@ Rasteron_Image* oragamiImgOp(enum FLIP_Type flip, double xCrop, double yCrop){
 
     Rasteron_Image* finalImg = cornerImgOp(flipImg, 1.0, 0.75, 0.5, 0.25);
 
-    RASTERON_DEALLOC(loadedImg);
+    RASTERON_DEALLOC(loadImg);
     RASTERON_DEALLOC(cropImgX); RASTERON_DEALLOC(cropImgY);
     RASTERON_DEALLOC(flipImg);
 
@@ -70,12 +70,12 @@ static unsigned distill(unsigned color){
 Rasteron_Image* lensesImgOp(int channel){
     genFullFilePath("Gumdrops.bmp", fullFilePath);
 
-    Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
+    Rasteron_Image* loadImg = loadImgOp(fullFilePath);
     Rasteron_Image* flipImg = (channel >= 0 && channel <= 2) 
-        ? filterImgOp(loadedImg, channel) 
-        : recolorImgOp(loadedImg, distill);
+        ? filterImgOp(loadImg, channel) 
+        : recolorImgOp(loadImg, distill);
 
-    RASTERON_DEALLOC(loadedImg);
+    RASTERON_DEALLOC(loadImg);
 
     return flipImg; 
 }
@@ -225,13 +225,14 @@ Rasteron_Image* ballingImgOp(double size){
 }
 
 Rasteron_Image* stratifyImgOp(unsigned short levels){
-    genFullFilePath("Zero+.bmp", fullFilePath);
+    // genFullFilePath("Zero+.bmp", fullFilePath);
+    genFullFilePath("User.tiff", fullFilePath);
 
-    Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
-    Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ loadedImg->height / 2, loadedImg->width / 2 }, loadedImg);
+    Rasteron_Image* loadImg = loadImgOp(fullFilePath);
+    Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ 1024, 1024 }, loadImg);
     Rasteron_Image* stratifyImg = splitImgOp(resizeImg, levels);
 
-    RASTERON_DEALLOC(loadedImg);
+    RASTERON_DEALLOC(loadImg);
     RASTERON_DEALLOC(resizeImg);
 
     return stratifyImg;
@@ -459,10 +460,10 @@ static unsigned fuzzlike(unsigned color, unsigned neighbors[8]){
 Rasteron_Image* fuzzlikeImgOp(unsigned short iters){
     genFullFilePath("Starcase.bmp", fullFilePath);
 
-    Rasteron_Image* loadedImg = loadImgOp(fullFilePath);
-    Rasteron_Image* fuzzlikeImg = cellwiseExtImgOp(loadedImg, fuzzlike, iters);
+    Rasteron_Image* loadImg = loadImgOp(fullFilePath);
+    Rasteron_Image* fuzzlikeImg = cellwiseExtImgOp(loadImg, fuzzlike, iters);
 
-    RASTERON_DEALLOC(loadedImg);
+    RASTERON_DEALLOC(loadImg);
 
     return fuzzlikeImg;
 }

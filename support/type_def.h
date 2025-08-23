@@ -5,6 +5,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+// --------------------------------   Enums    -------------------------------- //
+
+typedef enum { CHANNEL_Alpha = -1, CHANNEL_Red = 0, CHANNEL_Green = 1, CHANNEL_Blue = 2 } CHANNEL_Type;
+enum FLIP_Type { FLIP_None = -1, FLIP_Clock = 0, FLIP_Counter = 1, FLIP_Upside = 2 };
+enum TILE_Type { TILE_Square = 0, TILE_Triangle = 1, TILE_Hexagon = 2, TILE_Diagonal = 3, TILE_Perimiter = 4 };
+enum SIDE_Type { SIDE_None = -1, SIDE_Top = 0, SIDE_Bottom = 1, SIDE_Left = 2, SIDE_Right = 3, SIDE_Radial = 4 };
+
 // --------------------------------   Image    -------------------------------- //
 //
 //		Most important type representing images plus helper struct for sizing
@@ -120,13 +127,6 @@ typedef struct {
 
 DllExport NebrTable_List* loadNebrTables(ref_image_t refImage);
 DllExport void delNebrTables(NebrTable_List* nebrTables);
-
-// --------------------------------   Enums    -------------------------------- //
-
-typedef enum { CHANNEL_Alpha = -1, CHANNEL_Red = 0, CHANNEL_Green = 1, CHANNEL_Blue = 2 } CHANNEL_Type;
-enum FLIP_Type { FLIP_None = -1, FLIP_Clock = 0, FLIP_Counter = 1, FLIP_Upside = 2 };
-enum TILE_Type { TILE_Square = 0, TILE_Triangle = 1, TILE_Hexagon = 2, TILE_Diagonal = 3, TILE_Perimiter = 4 };
-enum SIDE_Type { SIDE_None = -1, SIDE_Top = 0, SIDE_Bottom = 1, SIDE_Left = 2, SIDE_Right = 3, SIDE_Radial = 4 };
 
 
 #define RASTERON_TYPE_H

@@ -77,6 +77,9 @@ int main(int argc, char** argv) {
         RASTERON_DEALLOC(insertImg);
     }
     RASTERON_DEALLOC(backgroundImg);
+#ifdef _WIN32
+    encodeQueue(_mainQueue); // TODO: Test to see if works
+#endif
 
     _run(argc, argv, NULL); // system specific initialization and continuous loop
 

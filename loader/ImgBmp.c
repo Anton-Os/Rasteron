@@ -27,14 +27,17 @@ Rasteron_Image* loadImgOp_bmp(const char* fileName){
 	fseek(bmpFile, 22, SEEK_SET);
 	fread(&height, sizeof(int32_t), 1, bmpFile);
 
-	Rasteron_Image* loadedImg = RASTERON_ALLOC("bmp", abs(height), abs(width));
+	Rasteron_Image* bmpImg = RASTERON_ALLOC("bmp", (unsigned)abs(height), (unsigned)abs(width));
 
 	fseek(bmpFile, offset, SEEK_SET);
-	fread((uint32_t*)loadedImg->data, sizeof(uint32_t), abs(height) * abs(width), bmpFile);
+	uint32_t* data = (uint32_t*)malloc(abs(height) * abs(width) * sizeof(uint32_t));
+	fread(data, sizeof(uint32_t), abs(height) * abs(width), bmpFile);
+	for (unsigned p = 0; p < abs(height) * abs(width); p++) *(bmpImg->data + p) = *(data + p);
 
+	free(data);
 	fclose(bmpFile);
 
-	return loadedImg;
+	return bmpImg;
 }
 
 void writeFileImageRaw_bmp(const char* fileName, unsigned height, unsigned width, unsigned* data){

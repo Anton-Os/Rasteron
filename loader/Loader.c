@@ -22,14 +22,15 @@ enum IMG_FileFormat getFormat(const char* fileName) {
 
 Rasteron_Image* loadImgOp(const char* fileName){
     enum IMG_FileFormat format = getFormat(fileName);
+    Rasteron_Image* loadImg;
 
     switch(format){
-        case IMG_Bmp: return loadImgOp_bmp(fileName);
-        case IMG_Tiff: return loadImgOp_tiff(fileName);
-        case IMG_Png: return loadImgOp_png(fileName);
+        case IMG_Bmp: loadImg = loadImgOp_bmp(fileName); break;
+        case IMG_Tiff: loadImg = loadImgOp_tiff(fileName); break;
+        case IMG_Png: loadImg = loadImgOp_png(fileName); break;
     }
 
-    return errorImgOp("Unsuppored loader type");
+    return loadImg;
 }
 
 void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data){

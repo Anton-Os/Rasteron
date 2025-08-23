@@ -16,20 +16,20 @@ Rasteron_Image* loadImgOp_tiff(const char* fileName){
 	TIFFGetField(tiffFile, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
 	TIFFGetField(tiffFile, TIFFTAG_ORIENTATION, &orientation);
 
-	Rasteron_Image* loadedImg = RASTERON_ALLOC("tiff", length, width);
+	Rasteron_Image* tiffImg = RASTERON_ALLOC("tiff", length, width);
 
 	TIFFReadRGBAImageOriented(
 		tiffFile,
-		loadedImg->width,
-		loadedImg->height,
-		loadedImg->data,
+		tiffImg->width,
+		tiffImg->height,
+		tiffImg->data,
 		ORIENTATION_TOPLEFT,
 		0
 	);
 
 	TIFFClose(tiffFile);
 
-	return loadedImg;
+	return tiffImg;
 }
 
 void writeFileImageRaw_tiff(const char* fileName, unsigned height, unsigned width, unsigned* data){

@@ -33,10 +33,10 @@ void _onKeyEvent(char key){
 	else if(mode < CANVAS_PRESET_MIN) mode = CANVAS_PRESET_MAX;
 
 	float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2 * 2;
-	Rasteron_Image* radialImg1 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
-	Rasteron_Image* radialImg2 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
 	Rasteron_Image* noiseImg1 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });
 	Rasteron_Image* noiseImg2 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });
+	Rasteron_Image* radialImg1 = gradientExtImgOp((ImageSize) { 1024, 1024 }, SIDE_Radial, (rand() % 2 == 0)? SIDE_Top : SIDE_Bottom, RAND_COLOR(), RAND_COLOR());
+	Rasteron_Image* radialImg2 = gradientExtImgOp((ImageSize) { 1024, 1024 }, SIDE_Radial, (rand() % 2 == 0)? SIDE_Left : SIDE_Right, RAND_COLOR(), RAND_COLOR());
 	float pointData[12] = { xArg, -yArg, (rand() % 2 == 0)? r : -r, -xArg, yArg, r, xArg, yArg, -r, -xArg, -yArg, 0.0F};
 	unsigned seedColors[4] = { RAND_COLOR(), RAND_COLOR(), RAND_COLOR(), RAND_COLOR() };
 
@@ -44,7 +44,7 @@ void _onKeyEvent(char key){
 		case 'a': _outputImg = oragamiImgOp(mode, xArg, yArg); break;
 		case 'b': _outputImg = nestboxesImgOp(xArg, yArg); break;
 		case 'c': _outputImg = lensesImgOp(mode); break;
-		case 'd': _outputImg = remixImgOp(noiseImg1, noiseImg2); break;
+		case 'd': _outputImg = remixImgOp(radialImg1, radialImg2); break;
 		case 'e': _outputImg = typographyImgOp(0xFFEEEEEE, 0xFF000000); break;
 		case 'f': _outputImg = fisheyeImgOp((mode + 2) * 5); break;
 		case 'g': _outputImg = mozaicImgOp(10.0 * (xArg + 1.0), 10.0 * (yArg + 1.0)); break;
@@ -70,8 +70,8 @@ void _onKeyEvent(char key){
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 
-	RASTERON_DEALLOC(radialImg1); RASTERON_DEALLOC(radialImg2);
 	RASTERON_DEALLOC(noiseImg1); RASTERON_DEALLOC(noiseImg2);
+	RASTERON_DEALLOC(radialImg1); RASTERON_DEALLOC(radialImg2);
 }
 void _onPressEvent(double x, double y){ }
 void _onTickEvent(unsigned secs){}

@@ -36,10 +36,10 @@ Rasteron_Image* loadImgOp_png(const char* fileName){
 	rowBytesCount = png_get_rowbytes(png_ptr, info_ptr);
 	png_read_image(png_ptr, row_ptrs);
 
-	Rasteron_Image* loadedImg = RASTERON_ALLOC("png", height, width);
+	Rasteron_Image* pngImg = RASTERON_ALLOC("png", height, width);
 
 	png_byte* src_ptr;
-	uint32_t* dest_ptr = loadedImg->data;
+	uint32_t* dest_ptr = pngImg->data;
 	for (unsigned int r = 0; r < height; r++) {
 	// for (unsigned int r = 0; r < image->data.png.width; r++){
 		src_ptr = row_ptrs[r];
@@ -116,7 +116,6 @@ void writeFileImageRaw_png(const char* fileName, unsigned height, unsigned width
 	free(dataflip);
 
 	fclose(pngFile);
-
 }
 
 #endif
