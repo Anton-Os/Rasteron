@@ -58,7 +58,7 @@ extern "C"{
 	
 	typedef void (*eventLoopCallback)(char, double[2]);
 
-	void creteWindow(Platform_Context* context, const char* name, unsigned width, unsigned height); // Window creatiom
+    void createWindow(Platform_Context* context, const char* name, unsigned width, unsigned height); // Window creatiom
 	void eventLoop(Display* display, Window window, eventLoopCallback callback); // Event loop
 	// XImage createUnixBmap(const Image* image); // formatted data call
 	XImage* createUnixBmapRaw(Platform_Context* context, uint32_t height, uint32_t width, uint32_t* data); // raw data call

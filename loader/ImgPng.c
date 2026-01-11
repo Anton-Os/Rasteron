@@ -9,12 +9,12 @@ Rasteron_Image* loadImgOp_png(const char* fileName){
 		if (err) return errorImgOp("Cannot open file");
 	#else
 		pngFile = fopen(fileName, "rb");
-		if (pngFile == NULL) return errorImgOp("Cannot open file");
+                if (pngFile == NULL) return NULL; //errorImgOp("Cannot open file");
 	#endif // _WIN32
 
 	unsigned char pngSig[8];
 	fread(pngSig, 1, 8, pngFile);
-	if (!png_check_sig(pngSig, 8)) return errorImgOp("Invalid file format");
+        if (!png_check_sig(pngSig, 8)) return NULL; // errorImgOp("Invalid file format");
 
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	png_infop info_ptr = png_create_info_struct(png_ptr);
@@ -59,7 +59,7 @@ Rasteron_Image* loadImgOp_png(const char* fileName){
 
 	fclose(pngFile);
 
-	return errorImgOp("Unimplemented");
+        return pngImg; // errorImgOp("Unimplemented"); // Is this correct?
 }
 
 void writeFileImageRaw_png(const char* fileName, unsigned height, unsigned width, unsigned* data){

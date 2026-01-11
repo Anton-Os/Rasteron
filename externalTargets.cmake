@@ -5,13 +5,14 @@ set(EXTERNAL_INSTALL_DIR "${EXTERNAL_PROJ_DIR}/INSTALL")
 
 list(APPEND EXTERNAL_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_INSTALL_DIR}")
 list(APPEND EXTERNAL_ARGS "-DCMAKE_BUILD_TYPE:STRING=Debug") # Temporary fix
+list(APPEND EXTERNAL_ARGS "-DCMAKE_POLICY_VERSION_MINIMUM=3.5")
 
 # Support for ZLIB
 
 set(ZLIB_DIR "${EXTERNAL_PROJ_DIR}/zlib")
 ExternalProject_Add(zlib
     GIT_REPOSITORY "https://github.com/Anton-Os/zlib.git"
-    GIT_TAG "43b390add01360a3d4decde6edf441f920145e33"
+    GIT_TAG "9477d5100c1e4c8e8678df5e936858d229470e2f"
 
     CMAKE_ARGS ${EXTERNAL_ARGS}
 
@@ -19,7 +20,7 @@ ExternalProject_Add(zlib
     BINARY_DIR ${ZLIB_DIR}/Build
 )
 
-find_package(Zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
+# find_package(Zlib PATHS ${EXTERNAL_INSTALL_DIR}/lib)
 if(Zlib_FOUND)
     message(STATUS "Zlib located")
 else()

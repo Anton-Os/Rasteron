@@ -1,5 +1,7 @@
 #include "Rasteron.h"
 
+#include "Loader.h"
+
 #include "Queue.h"
 
 static char frameName[1024];

@@ -45,7 +45,7 @@ void _onTickEvent(unsigned secs);
 
 typedef Rasteron_Image* (*imageArgCallback)(char*);
 
-imageArgCallback _outputCallback;
+// imageArgCallback _outputCallback;
 
 void parseInput(char lastInput);
 

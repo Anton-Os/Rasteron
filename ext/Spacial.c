@@ -23,50 +23,50 @@ float bounds_getWidth(Bounds bounds){ return !(_invertImage)? bounds.topRight[0]
 // --------------------------------   Sprite    -------------------------------- //
 
 Rasteron_Sprite* loadSprite(const Rasteron_Image* refImage){
-	assert(refImage != NULL);
+    assert(refImage != NULL);
 
-	Rasteron_Sprite* sprite = (Rasteron_Sprite*)malloc(sizeof(Rasteron_Sprite));
+    Rasteron_Sprite* sprite = (Rasteron_Sprite*)malloc(sizeof(Rasteron_Sprite));
 
-	sprite->bounds = createBounds(refImage->height, refImage->width);
-	sprite->image = refImage; // store a const pointer to the image
+    sprite->bounds = createBounds(refImage->height, refImage->width);
+    sprite->image = refImage; // store a const pointer to the image
 
-	return sprite;
+    return sprite;
 }
 
 void internal_dealloc_sprite(Rasteron_Sprite* sprite){
-	if(sprite->image != NULL) RASTERON_DEALLOC(sprite->image);
-	if(sprite != NULL) free(sprite);
-	sprite = NULL;
+    if(sprite->image != NULL) RASTERON_DEALLOC(sprite->image);
+    if(sprite != NULL) free(sprite);
+    sprite = NULL;
 }
 
 // --------------------------------   Heightmap    -------------------------------- //
 
 static float calcHeight(unsigned inputColor, float minDepth, float maxDepth){;
-	uint8_t greyColorRef = channel_gray(inputColor);
-	float heightVal = (float)greyColorRef; // conversion to double
-	heightVal /= (255.0 / maxDepth);
+    uint8_t greyColorRef = channel_gray(inputColor);
+    float heightVal = (float)greyColorRef; // conversion to double
+    heightVal /= (255.0 / maxDepth);
 
-	return heightVal + minDepth;
+    return heightVal + minDepth;
 }
 
-struct Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth){
-	Rasteron_Heightmap* heightmap = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
-    
-	heightmap->bounds = createBounds(height, width);
-	heightmap->minDepth = minDepth; // default min is zero
-	heightmap->maxDepth = maxDepth; // default max is one
+Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth){
+    Rasteron_Heightmap* heightmap = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
+
+    heightmap->bounds = createBounds(height, width);
+    heightmap->minDepth = minDepth; // default min is zero
+    heightmap->maxDepth = maxDepth; // default max is one
     heightmap->data = (float*)malloc(height * width * sizeof(float));
 
-	return heightmap;
+    return heightmap;
 }
 
-struct Rasteron_Heightmap* loadHeightmap(ref_image_t refImage){
-	assert(refImage != NULL);
+Rasteron_Heightmap* loadHeightmap(ref_image_t refImage){
+    assert(refImage != NULL);
 
     Rasteron_Heightmap* heightmap = internal_alloc_heightmap(refImage->width, refImage->height, 0.0, 1.0);
 
-	for (unsigned p = 0; p < refImage->width * refImage->height; p++)
-		*(heightmap->data + p) = calcHeight(*(refImage->data + p), heightmap->minDepth, heightmap->maxDepth);
+    for (unsigned p = 0; p < refImage->width * refImage->height; p++)
+            *(heightmap->data + p) = calcHeight(*(refImage->data + p), heightmap->minDepth, heightmap->maxDepth);
 	
     return heightmap;
 }

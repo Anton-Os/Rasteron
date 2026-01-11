@@ -9,13 +9,13 @@ Rasteron_Image* loadImgOp_bmp(const char* fileName){
 	if (err) return errorImgOp("Cannot open file");
 #else
 	bmpFile = fopen(fileName, "rb");
-	if (bmpFile == NULL) return errorImgOp("Cannot open file");
+        if (bmpFile == NULL) return NULL; // errorImgOp("Cannot open file");
 #endif // _WIN32
 	
 	uint16_t typeCheck;
 
 	fread(&typeCheck, sizeof(uint16_t), 1, bmpFile);
-	if(typeCheck != 0x4D42) return errorImgOp("Invalid file format");
+        if(typeCheck != 0x4D42) return NULL; // errorImgOp("Invalid file format");
 
 	uint32_t offset;
 	int32_t height, width;

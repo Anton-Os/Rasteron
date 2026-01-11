@@ -1,6 +1,7 @@
 #ifndef RASTERON_SPACE_H
 
 #include "type_def.h"
+#include "func_def.h"
 
 // --------------------------------   Bounds    -------------------------------- //
 
@@ -40,9 +41,9 @@ typedef struct {
     float* data;
 } Rasteron_Heightmap;
 
-struct Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth);
+Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth);
 #define RASTERON_HEIGHTMAP_ALLOC(height, width, minDepth, maxDepth) (internal_alloc_heightmap(height, width, minDepth, maxDepth))
-struct Rasteron_Heightmap* loadHeightmap(ref_image_t refImage); // create heightmap from an image file
+Rasteron_Heightmap* loadHeightmap(ref_image_t refImage); // create heightmap from an image file
 
 void internal_dealloc_heightmap(Rasteron_Heightmap* heightmap);
 #define RASTERON_HEIGHTMAP_DEALLOC(heightmap) (internal_dealloc_heightmap(heightmap))

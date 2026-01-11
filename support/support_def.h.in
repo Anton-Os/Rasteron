@@ -37,6 +37,7 @@
 #elif defined(__APPLE__)
 #define DllExport __attribute__(( visibility("default") ))
 #else
+#include <unistd.h>
 #define DllExport
 #endif
 

@@ -14,7 +14,7 @@ Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t w
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	
 	char imageName[32];
-	snprintf(&imageName, 32, "%s-%d", name, id);
+        snprintf(imageName, 32, "%s-%d", name, id);
 	image->name = imageName; // copies over
 
 	image->width = (!_invertImage)? width: height;
@@ -61,6 +61,12 @@ ColorSwatch createSwatch(unsigned color, uint8_t deviation){
 	swatch.colors[SWATCH_Blue_Sub] = color - ((redSub << 16) | blueSub);
 
 	return swatch;
+}
+
+// --------------------------------   ColorGrid    -------------------------------- //
+
+ColorGrid createColorGrid(unsigned xCells, unsigned yCells, unsigned color1, unsigned color2){
+	return (ColorGrid){ xCells, yCells, color1, color2 };
 }
 
 // --------------------------------   PixelPoint & ColorPoint    -------------------------------- //

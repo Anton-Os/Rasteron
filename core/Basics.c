@@ -32,8 +32,6 @@ Rasteron_Image* resizeImgOp(ImageSize size, ref_image_t refImage){
 			*(resizeImage->data + (c * resizeImage->width) + r) = pixPoint_color(pixelPoint, refImage);
 		}
 
-	/* for(unsigned p = 0; p < resizeImage->width * resizeImage->height; p++){} */
-
 	return resizeImage;
 }
 

@@ -30,6 +30,8 @@ Rasteron_Image* loadImgOp(const char* fileName){
         case IMG_Png: loadImg = loadImgOp_png(fileName); break;
     }
 
+    assert(loadImg != NULL);
+
     return loadImg;
 }
 

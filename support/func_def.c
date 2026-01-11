@@ -9,7 +9,7 @@ void seedRandGen(){
 	}
 }
 
-char* convertCharray(unsigned count, const char** args){
+char* convertCharray(unsigned count, char** args){
     size_t total_length = 0;
     for (int i = 0; i < count; ++i)
         if (args[i] != NULL)

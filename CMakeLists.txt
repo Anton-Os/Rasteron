@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(Rasteron DESCRIPTION "Rasteron Image Library")
 
+cmake_policy(SET CMP0035 NEW)
+
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path" FORCE)
     message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
@@ -22,7 +24,7 @@ set(core_src
     core/Noise.c
 )
 
-set(loader_src 
+list(APPEND loader_src
     loader/Loader.c
     loader/ImgBmp.c # BMP does not require dependencies
 )
@@ -132,10 +134,11 @@ install(TARGETS Rasteron
     FRAMEWORK DESTINATION lib
 )
 
+add_dependencies(Rasteron zlib libpng libtiff)
+
 if(UNIX)
-    add_dependencies(Rasteron zlib libpng libtiff)
     if(SUPPORT_FONT_BAKING)
-        add_dependencies(Rasteron FreeType)
+        # add_dependencies(Rasteron FreeType)
     endif()
 endif()
 

@@ -4,6 +4,8 @@
 
 #include "Rasteron.h"
 
+#include "Loader.h"
+
 extern ColorSwatch _swatch; // = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
 
 // Rules

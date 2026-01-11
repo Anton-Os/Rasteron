@@ -136,7 +136,7 @@ Rasteron_Image* gradientExtImgOp(ImageSize size, enum SIDE_Type side1, enum SIDE
 		double y = (1.0 / (double)size.height) * (p / size.width);
 
 		if(side1 == SIDE_Radial || side2 == SIDE_Radial){
-			enum SIDE_Radial side = (side1 != SIDE_Radial)? side1 : side2;
+                        enum SIDE_Type side = (side1 != SIDE_Radial)? side1 : side2;
 			double centerDist = pix_dist(p, ((size.width * size.height) / 2) + (size.width / 2), size.width) * (1.0 / (double)size.width);
 			switch(side){
 				case SIDE_Bottom: centerDist = sqrt(pow(0.5 - x, 2) + pow(1.0 - y, 2)); break;

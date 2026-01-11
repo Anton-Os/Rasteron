@@ -4,7 +4,7 @@
 
 Rasteron_Image* loadImgOp_tiff(const char* fileName){
 	TIFF* tiffFile = TIFFOpen(fileName, "r");
-	if (!tiffFile) errorImgOp("Cannot open file");
+        if (!tiffFile) NULL; // errorImgOp("Cannot open file");
 
 	uint16 compression, orientation;
 	uint32 width, length;

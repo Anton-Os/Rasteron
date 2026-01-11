@@ -20,7 +20,7 @@ typedef unsigned (*nebrCallback8)(unsigned, unsigned[8]); // target and all 8 ne
 
 DllExport void seedRandGen(); // seeds the random number generator
 DllExport void genFullFilePath(const char* name, char* fullFilePath);
-DllExport char* convertCharray(unsigned count, const char** args);
+DllExport char* convertCharray(unsigned count, char** args);
 
 DllExport uint32_t color_random(); // produces random color
 DllExport uint32_t color_unique(); // produces reusable color identifier

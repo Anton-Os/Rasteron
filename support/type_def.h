@@ -86,9 +86,13 @@ typedef unsigned (*colorPointCallback)(double x, double y); // return NO_COLOR o
 #define MAX_GRIDS 256
 
 typedef struct {
-	unsigned xCells; unsigned yCells;
-	unsigned color1; unsigned color2;
+	unsigned xCells; 
+	unsigned yCells;
+	unsigned color1; 
+	unsigned color2;
 } ColorGrid;
+
+DllExport ColorGrid createColorGrid(unsigned xCells, unsigned yCells, unsigned color1, unsigned color2);
 
 typedef struct {
     ColorGrid grids[MAX_GRIDS];
