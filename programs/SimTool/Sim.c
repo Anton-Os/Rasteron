@@ -197,7 +197,7 @@ Rasteron_Image* simImgOp(ref_image_t refImage, unsigned short iters, nebrCallbac
             unsigned *br = NULL, *b = NULL, *bl = NULL, *r = NULL, *l = NULL, *tr = NULL, *t = NULL, *tl = NULL;
 
             neighbors_load(currentTable, br, b, bl, r, l, tr, t, tl);
-            unsigned nebrs[] = { br, b, bl, r, l, tr, t, tl };
+            unsigned nebrs[] = { *br, *b, *bl, *r, *l, *tr, *t, *tl };
             // unsigned nebrs[] = { *br, *b, *bl, *r, *l, *tr, *t, *tl };
 
             // unsigned color = callback(target, nebrs);

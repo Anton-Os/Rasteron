@@ -29,11 +29,11 @@ int main(int argc, char** argv) {
     enum MENU_Size size = MENU_Medium;
 
     Rasteron_Queue* icons[GUI_COUNT] = {
-        loadUI_iconBtn(size, "paginate-filter-1"),
-        loadUI_iconBtn(size, "tools-hammer"),
-        loadUI_iconBtn(size, "content-pen"),
-        loadUI_iconBtn(size, "add-square"),
-        loadUI_iconBtn(size, "subtract-square")
+        loadUI_checkBtn(size), // loadUI_iconBtn(size, "paginate-filter-1"),
+        loadUI_checkBtn(size), // loadUI_iconBtn(size, "tools-hammer"),
+        loadUI_checkBtn(size), // loadUI_iconBtn(size, "content-pen"),
+        loadUI_checkBtn(size), // loadUI_iconBtn(size, "add-square"),
+        loadUI_checkBtn(size), // loadUI_iconBtn(size, "subtract-square")
     };
 
     Rasteron_Queue* dials[GUI_COUNT] = { 

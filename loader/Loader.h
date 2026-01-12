@@ -1,5 +1,9 @@
 #ifndef IMAGE_LOADER_H
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+
 #include "support_def.h"
 #include "type_def.h"
 
@@ -38,6 +42,10 @@ void writeFileImageRaw_png(const char* fileName, unsigned height, unsigned width
 #ifdef USE_IMG_BMP // BMP Loader Functions
 Rasteron_Image* loadImgOp_bmp(const char* fileName);
 void writeFileImageRaw_bmp(const char* fileName, unsigned height, unsigned width, unsigned* data);
+#endif
+
+#ifdef __cplusplus
+} // }
 #endif
 
 #define IMAGE_LOADER_H

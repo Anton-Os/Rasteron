@@ -4,17 +4,17 @@
 
 Rasteron_Image* loadImgOp_png(const char* fileName){
 	FILE* pngFile;
-	#ifdef _WIN32
-		errno_t err = fopen_s(&pngFile, fileName, "rb");
-		if (err) return errorImgOp("Cannot open file");
-	#else
-		pngFile = fopen(fileName, "rb");
-                if (pngFile == NULL) return NULL; //errorImgOp("Cannot open file");
-	#endif // _WIN32
+#ifdef _WIN32
+	errno_t err = fopen_s(&pngFile, fileName, "rb");
+	if (err) return errorImgOp("Cannot open file");
+#else
+	pngFile = fopen(fileName, "rb");
+    if (pngFile == NULL) return NULL; //errorImgOp("Cannot open file");
+#endif // _WIN32
 
 	unsigned char pngSig[8];
 	fread(pngSig, 1, 8, pngFile);
-        if (!png_check_sig(pngSig, 8)) return NULL; // errorImgOp("Invalid file format");
+    if (!png_check_sig(pngSig, 8)) return NULL; // errorImgOp("Invalid file format");
 
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	png_infop info_ptr = png_create_info_struct(png_ptr);
@@ -30,10 +30,13 @@ Rasteron_Image* loadImgOp_png(const char* fileName){
 	png_uint_32 height, width;
 	int bitDepth, colorType;
 	size_t rowBytesCount;
-	png_byte** row_ptrs;
+	png_bytep* row_ptrs;
 
-	png_get_IHDR(png_ptr, info_ptr,&width, &height, &bitDepth, &colorType,NULL, NULL, NULL);
+	png_get_IHDR(png_ptr, info_ptr,&width, &height, &bitDepth, &colorType, NULL, NULL, NULL);
 	rowBytesCount = png_get_rowbytes(png_ptr, info_ptr);
+	row_ptrs = (png_bytep*)malloc(sizeof(png_bytep) * height);
+	for (unsigned int r = 0; r < height; r++)
+		*(row_ptrs + r) = (png_byte*)malloc(png_get_rowbytes(png_ptr, info_ptr));
 	png_read_image(png_ptr, row_ptrs);
 
 	Rasteron_Image* pngImg = RASTERON_ALLOC("png", height, width);
@@ -55,11 +58,14 @@ Rasteron_Image* loadImgOp_png(const char* fileName){
 		}
 	}
 
+	for (unsigned int r = 0; r < height; r++) free(*(row_ptrs + r));
+	free(row_ptrs);
+
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
 	fclose(pngFile);
 
-        return pngImg; // errorImgOp("Unimplemented"); // Is this correct?
+    return pngImg; // errorImgOp("Unimplemented"); // Is this correct?
 }
 
 void writeFileImageRaw_png(const char* fileName, unsigned height, unsigned width, unsigned* data){

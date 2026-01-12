@@ -58,15 +58,15 @@ void _onKeyEvent(char key){
 		case 'o': _outputImg = euclidTileImgOp(mode, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'p': _outputImg = nuTileImgOp(mode + 2, 10, (xArg == 0.0)? 0.01 : 0.01 + xArg, (yArg == 0.0)? 0.01 : 0.01 + yArg); break;
 		case 'q': _outputImg = graterImgOp(RAND_COLOR(), RAND_COLOR()); break;
-                case 'r': _outputImg = fuzzlikeImgOp((mode + 2) * 4); break;
+        case 'r': _outputImg = fuzzlikeImgOp((mode + 2) * 4); break;
 		case 's': _outputImg = oozelikeImgOp(mode); break;
 		case 't': _outputImg = recurrantImgOp(mode + 2); break;
 		case 'u': _outputImg = intersectImgOp(xArg, yArg); break;
-                case 'v': _outputImg = raycastImgOp(pointData, 4, 1.0 * (mode + 2)); break;
+        case 'v': _outputImg = raycastImgOp(pointData, 4, 1.0 * (mode + 2)); break;
 		case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
 		case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
 		case 'y': _outputImg = subtImgOp(NULL, seedColors); break; // arcaneImgOp(100.0, (mode + 2) * 10); break;
-                case 'z': _outputImg = ditherImgOp(radialImg1, (mode + 2) * 0x22, 0xFF000000, 0xFFFFFFFF); break;
+        case 'z': _outputImg = ditherImgOp(radialImg1, (mode + 2) * 0x22, 0xFF000000, 0xFFFFFFFF); break;
 		default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 

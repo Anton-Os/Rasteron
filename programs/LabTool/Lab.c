@@ -226,7 +226,7 @@ Rasteron_Image* ballingImgOp(double size){
 
 Rasteron_Image* stratifyImgOp(unsigned short levels){
     // genFullFilePath("Zero+.bmp", fullFilePath);
-    genFullFilePath("User.tiff", fullFilePath);
+    genFullFilePath("User.png", fullFilePath);
 
     Rasteron_Image* loadImg = loadImgOp(fullFilePath);
     Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ 1024, 1024 }, loadImg);
