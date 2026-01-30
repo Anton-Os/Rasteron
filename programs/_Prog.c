@@ -17,7 +17,7 @@ Rasteron_Queue* _mainQueue = NULL;
 
 unsigned elapseSecs = 0;
 
-unsigned _dimens[2] = { 1, 1};
+unsigned _dimens[2] = { 2, 2 };
 
 // --------------------------------  Functions for Demo    -------------------------------- //
 
@@ -175,6 +175,7 @@ char* parseArgs(int argc, char** argv){
 }
 
 void _run(int argc, char** argv, imageArgCallback callback){
+    puts("Run start");
     char* args = parseArgs(argc, argv);
     printf("Parsed ars are %s", args);
     if(callback != NULL) _outputImg = callback(args); // pass args here

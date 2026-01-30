@@ -8,9 +8,10 @@
 #include "../_Prog.h"
 
 static char mode = 'a';
-static ColorGrid grid = { 1, 1, 0xFF333333, 0xFFEEEEEE };
+static ColorGrid grid = { 2, 2, 0xFF333333, 0xFFEEEEEE };
 
 #include "Tex.c"
+#include "TexArgs.c"
 
 // Overriden Functions
 
@@ -81,49 +82,10 @@ void _onKeyEvent(char key){
 void _onPressEvent(double x, double y){}
 void _onTickEvent(unsigned secs){}
 
-// Generative Function
-
-Rasteron_Image* texTool(char* args) {
-    char buffer[256];
-    unsigned b = 0; // buffer offset
-
-    if (strlen(args) > 1) 
-        for (unsigned c = 0; c < strlen(args); c++) {
-            buffer[b] = args[c];
-            if(isspace(args[c])) {
-                for (unsigned e = 0; e < b; e++) buffer[e] = '\0'; // clears buffer
-                if (buffer[0] == '-') { // starts with --this
-                    printf("Parsing arg value: %s", buffer);
-                    if (strstr(buffer, "algo")) {
-                        puts("Algorithm selected");
-                        if (strstr(buffer, "octave")) puts("Octave noise selected");
-                        else puts("Perlin noise selected");
-                    }
-                    else if (strstr(buffer, "arg")) {
-                        puts("Arguments selected");
-                    }
-                    else if (strstr(buffer, "grid")) {
-                        puts("Grid selected");
-                    }
-                    else if (strstr(buffer, "mix")) {
-                        puts("Mix selected");
-                        if (strstr(buffer, "and")) mixer = bit_colors_and;
-                        else if (strstr(buffer, "xor")) mixer = bit_colors_xor;
-                        else if (strstr(buffer, "or")) mixer = bit_colors_or;
-                        else puts("Mixer unselected");
-                    }
-                    else perror("Invalid arg selected");
-                }
-                else _onKeyEvent(buffer[0]);
-            }
-        }
-    return noiseImgOp((ImageSize){ 1024, 1024 }, grid);
-}
-
 // Executable Function
 
 int main(int argc, char** argv) {
-    _run(argc, argv, texTool); // system specific initialization and continuous loop
+    _run(argc, argv, texArgs); // system specific initialization and continuous loop
 
     // RASTERON_QUEUE_DEALLOC(_mainQueue);
     RASTERON_DEALLOC(_outputImg);

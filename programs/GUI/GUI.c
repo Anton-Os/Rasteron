@@ -29,11 +29,11 @@ int main(int argc, char** argv) {
     enum MENU_Size size = MENU_Medium;
 
     Rasteron_Queue* icons[GUI_COUNT] = {
-        loadUI_checkBtn(size), // loadUI_iconBtn(size, "paginate-filter-1"),
-        loadUI_checkBtn(size), // loadUI_iconBtn(size, "tools-hammer"),
-        loadUI_checkBtn(size), // loadUI_iconBtn(size, "content-pen"),
-        loadUI_checkBtn(size), // loadUI_iconBtn(size, "add-square"),
-        loadUI_checkBtn(size), // loadUI_iconBtn(size, "subtract-square")
+        loadUI_iconBtn(size, "paginate-filter-1"),
+        loadUI_iconBtn(size, "tools-hammer"),
+        loadUI_iconBtn(size, "content-pen"),
+        loadUI_iconBtn(size, "add-square"),
+        loadUI_iconBtn(size, "subtract-square")
     };
 
     Rasteron_Queue* dials[GUI_COUNT] = { 
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     _mainQueue = RASTERON_QUEUE_ALLOC("gui", internal_create_size(1024, 1024), GUI_COUNT);
 
     Rasteron_Image* backgroundImg = noiseImgOp_white((ImageSize){ RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);
-    for(unsigned g = 0; g < GUI_COUNT; g++){
+    for(unsigned g = 0; g < GUI_COUNT - 1; g++){
         Rasteron_Image* guiImg = copyImgOp(queue_getImg(icons[g], 0));
         Rasteron_Image* insertImg = insertImgOp(guiImg, backgroundImg, 0.0, 0.0);
 

@@ -15,14 +15,14 @@ Rasteron_Image* noiseImgOp_white(ImageSize size, uint32_t color1, uint32_t color
     double noiseVal;
     for (unsigned p = 0; p < noiseImg->width * noiseImg->height; p++){
         noiseVal = (double)rand() / (double)RAND_MAX;
-		*(noiseImg->data + p) = fuse_colors(color1, color2, noiseVal);
+        *(noiseImg->data + p) = fuse_colors(color1, color2, noiseVal);
     }
 
     return noiseImg;
 }
 
 Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback callback){
-	assert(grid.xCells > 0 && grid.yCells > 0);
+    assert(grid.xCells > 0 && grid.yCells > 0);
 
     Rasteron_Image* noiseImg = RASTERON_ALLOC("gradient_noise", size.height, size.width);
 
@@ -30,16 +30,16 @@ Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback call
     const unsigned xCellPoints = grid.xCells + 1; // includes leftmost and rightmost vertices +1
     const unsigned yCellPoints = grid.yCells + 1; // includes topmost and bottommost vertices +1
 
-	Rasteron_Image* gridImg = RASTERON_ALLOC("grid", yCellPoints, xCellPoints);
-	for (unsigned p = 0; p < gridImg->width * gridImg->height; p++) {
-		double noiseVal = (double)rand() / (double)RAND_MAX; // random value between 0 and 1
-		*(gridImg->data + p) = blend_colors(grid.color1, grid.color2, noiseVal); // blending value between grid colors
-	}
+    Rasteron_Image* gridImg = RASTERON_ALLOC("grid", yCellPoints, xCellPoints);
+    for (unsigned p = 0; p < gridImg->width * gridImg->height; p++) {
+            double noiseVal = (double)rand() / (double)RAND_MAX; // random value between 0 and 1
+            *(gridImg->data + p) = blend_colors(grid.color1, grid.color2, noiseVal); // blending value between grid colors
+    }
 
-	// grid cell values
-	unsigned* topLeft; unsigned* topRight; unsigned* botLeft; unsigned* botRight;
-	const unsigned xSwitch = noiseImg->width / grid.xCells;
-	const unsigned ySwitch = noiseImg->height / grid.yCells;
+    // grid cell values
+    unsigned* topLeft; unsigned* topRight; unsigned* botLeft; unsigned* botRight;
+    const unsigned xSwitch = noiseImg->width / grid.xCells;
+    const unsigned ySwitch = noiseImg->height / grid.yCells;
 
     for(unsigned p = 0; p < noiseImg->width * noiseImg->height; p++){
         unsigned xOffset = p % noiseImg->width; // absolute X pixel offset
@@ -47,7 +47,7 @@ Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback call
 		
 		// setting grid cell values
 		if(xOffset == 0){ // repositions to correct row inside grid
-			unsigned short row = (yOffset / ySwitch) * gridImg->width;
+                        unsigned short row = (yOffset / ySwitch) * gridImg->width;
 
 			topLeft = gridImg->data + row;
 			topRight = gridImg->data + 1 + row;
@@ -71,7 +71,7 @@ Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback call
         *(noiseImg->data + p) = newColor;
     }
 
-	RASTERON_DEALLOC(gridImg);
+  RASTERON_DEALLOC(gridImg);
     return noiseImg;
 }
 
@@ -101,26 +101,26 @@ Rasteron_Image* noiseImgOp_stepped(ImageSize size, ColorGrid grid){
 }
 
 Rasteron_Image* noiseExtImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves, mixCallback callback){
-	assert(grid.xCells > 0 && grid.yCells > 0);
-	if(octaves > OCTAVE_MAX) octaves = OCTAVE_MAX;
+    assert(grid.xCells > 0 && grid.yCells > 0);
+    if(octaves > OCTAVE_MAX) octaves = OCTAVE_MAX;
 
-	Rasteron_Image* noiseImg = noiseImgOp(size, grid);
+    Rasteron_Image* noiseImg = noiseImgOp(size, grid);
 
-	if(octaves > 1)
-		for(unsigned o = 0; o < octaves; o++){
-			Rasteron_Image* octaveImg = resizeImgOp((ImageSize){ noiseImg->height / pow(2, o + 1), noiseImg->width / pow(2, o + 1)}, noiseImg);
-			for(unsigned p = 0; p < noiseImg->width * noiseImg->width; p++){
-				unsigned xOffset = (p % noiseImg->width) % octaveImg->width;
-				unsigned yOffset = (p / noiseImg->width) % octaveImg->height;
-				*(noiseImg->data + p) = callback(
-					*(noiseImg->data + p), 
-					*(octaveImg->data + (yOffset * octaveImg->width) + xOffset)
-				);
-			}
-			RASTERON_DEALLOC(octaveImg);
-		}
+    if(octaves > 1)
+      for(unsigned o = 0; o < octaves; o++){
+        Rasteron_Image* octaveImg = resizeImgOp((ImageSize){ noiseImg->height / pow(2, o + 1), noiseImg->width / pow(2, o + 1)}, noiseImg);
+        for(unsigned p = 0; p < noiseImg->width * noiseImg->width; p++){
+          unsigned xOffset = (p % noiseImg->width) % octaveImg->width;
+          unsigned yOffset = (p / noiseImg->width) % octaveImg->height;
+          *(noiseImg->data + p) = callback(
+            *(noiseImg->data + p),
+            *(octaveImg->data + (yOffset * octaveImg->width) + xOffset)
+          );
+        }
+        RASTERON_DEALLOC(octaveImg);
+      }
 
-	return noiseImg;
+    return noiseImg;
 }
 
 static unsigned blendOctaves(unsigned color1, unsigned color2){ return blend_colors_eq(color1, color2); } // 0.5); }
@@ -132,29 +132,29 @@ static unsigned fuseOctaves_hi(unsigned color1, unsigned color2){ return fuse_co
 static unsigned fuseOctaves_rand(unsigned color1, unsigned color2){ return fuse_colors(color1, color2, (float)rand() / (float)RAND_MAX); }
 
 Rasteron_Image* noiseImgOp_octave(ImageSize size, ColorGrid grid, unsigned short octaves){
-	return noiseExtImgOp_octave(size, grid, octaves, blendOctaves);
+    return noiseExtImgOp_octave(size, grid, octaves, blendOctaves);
 }
 
 Rasteron_Image* noiseImgOp_add(ImageSize size, ColorGrid grid, unsigned short octaves){
-	return noiseExtImgOp_octave(size, grid, octaves, addOctaves);
+    return noiseExtImgOp_octave(size, grid, octaves, addOctaves);
 }
 
 Rasteron_Image* noiseImgOp_diff(ImageSize size, ColorGrid grid, unsigned short octaves){
-	return noiseExtImgOp_octave(size, grid, octaves, subOctaves);
+    return noiseExtImgOp_octave(size, grid, octaves, subOctaves);
 }
 
 Rasteron_Image* noiseImgOp_mult(ImageSize size, ColorGrid grid, unsigned short octaves){
-	return noiseExtImgOp_octave(size, grid, octaves, multOctaves);
+    return noiseExtImgOp_octave(size, grid, octaves, multOctaves);
 }
 
 Rasteron_Image* noiseImgOp_low(ImageSize size, ColorGrid grid, unsigned short octaves){
-	return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_low);
+    return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_low);
 }
 
 Rasteron_Image* noiseImgOp_hi(ImageSize size, ColorGrid grid, unsigned short octaves){
-	return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_hi);
+    return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_hi);
 }
 
 Rasteron_Image* noiseImgOp_rand(ImageSize size, ColorGrid grid, unsigned short octaves){
-	return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_rand);
+    return noiseExtImgOp_octave(size, grid, octaves, fuseOctaves_rand);
 }

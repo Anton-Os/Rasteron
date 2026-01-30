@@ -47,6 +47,8 @@ void _onKeyEvent(char key){
         case 'b': _outputImg = mandalaImgOp(mandalaMap, mandalaMix5, mandalaInterp5); break;
         case 'n': _outputImg = mandalaImgOp(mandalaMap, mandalaMix6, mandalaInterp6); break;
         case 'm': _outputImg = mandalaImgOp(mandalaMap, mandalaMix7, mandalaInterp7); break;
+        case '[': color1 = RAND_COLOR(); break;
+        case ']': color2 = RAND_COLOR(); break;
         default: segs = 0.0; dist = 0.0; break;
     }
 }
@@ -65,7 +67,7 @@ Rasteron_Image* hypnoTool(char* args){
 // Executable Function
 
 int main(int argc, char** argv) {
-	srand(time(NULL));
+    srand(time(NULL));
 
     _run(argc, argv, hypnoTool); // system specific initialization and continuous loop
 
