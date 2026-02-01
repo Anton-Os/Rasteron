@@ -107,6 +107,9 @@ void drawWinBmap(HWND hwnd, const BITMAP* bmap){
 void encodeQueue(Rasteron_Queue* queue){
 	assert(queue->frameCount > 0);
 
+	MFStartup(MF_VERSION, MFSTARTUP_FULL);
+	CoInitialize(NULL);
+
 	static IMFSinkWriter* sinkWriter = NULL;
 	static IMFMediaType *mediaTypeIn = NULL, *mediaTypeOut = NULL;
 
@@ -135,10 +138,11 @@ void encodeQueue(Rasteron_Queue* queue){
 	}
 
 	wchar_t mediaOutputName[1024];
-	size_t nameLen = strlen(queue->prefix);
-	mbstowcs_s(&nameLen, mediaOutputName, nameLen, queue->prefix, nameLen);
+	// size_t nameLen = strlen(queue->prefix);
+	swprintf(&mediaOutputName[0], (size_t)1024, L"Test.mp4"); // mbstowcs_s(&nameLen, mediaOutputName, nameLen, queue->prefix, nameLen);
 
-	if(!SUCCEEDED(MFCreateSinkWriterFromURL(mediaOutputName, NULL, NULL, &sinkWriter))) return perror("Failed to create sink writer"); // TODO: Update name
+	auto result = MFCreateSinkWriterFromURL(mediaOutputName, NULL, NULL, &sinkWriter);
+	if(!SUCCEEDED(result)) return perror("Failed to create sink writer "); // TODO: Update name
 
 	DWORD streamIndex;
 
@@ -161,16 +165,21 @@ void encodeQueue(Rasteron_Queue* queue){
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_FRAME_RATE, 60, 1))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_PIXEL_ASPECT_RATIO, 1, 1))) return perror("Failed to set parameter");
 	// Add to input
-	if(!SUCCEEDED(sinkWriter->SetInputMediaType(streamIndex, mediaTypeIn, NULL)))  return perror("Failed to add input");
+	result = sinkWriter->SetInputMediaType(streamIndex, mediaTypeIn, NULL);
+	if(!SUCCEEDED(result)) return perror("Failed to add input");
 
 	// Writing to Sink
-	if(!SUCCEEDED(!sinkWriter->BeginWriting())) return perror("Writing failed!");
+	result = sinkWriter->BeginWriting();
+	if(!SUCCEEDED(result)) return perror("Writing failed!");
 
 	sinkWriter->Release();
 	mediaTypeIn->Release();
 	mediaTypeOut->Release();
 
 	free(data);
+
+	MFShutdown();
+	CoUninitialize();
 }
 
 #else

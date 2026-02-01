@@ -35,8 +35,7 @@ Rasteron_Image* loadImgOp_png(const char* fileName){
 	png_get_IHDR(png_ptr, info_ptr,&width, &height, &bitDepth, &colorType, NULL, NULL, NULL);
 	rowBytesCount = png_get_rowbytes(png_ptr, info_ptr);
 	row_ptrs = (png_bytep*)malloc(sizeof(png_bytep) * height);
-	for (unsigned int r = 0; r < height; r++)
-		*(row_ptrs + r) = (png_byte*)malloc(png_get_rowbytes(png_ptr, info_ptr));
+	for (unsigned int r = 0; r < height; r++) *(row_ptrs + r) = (png_byte*)malloc(png_get_rowbytes(png_ptr, info_ptr));
 	png_read_image(png_ptr, row_ptrs);
 
 	Rasteron_Image* pngImg = RASTERON_ALLOC("png", height, width);

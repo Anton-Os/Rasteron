@@ -65,7 +65,7 @@ void _onKeyEvent(char key){
 
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
-            case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, powerMix); break;
+            case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, mult_channel); break;
             case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, mult_colors); break;
             case 'c': _outputImg = mixingImgOp(currentImg, mixerImg, asm_rgb); break;
             case 'v': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_and); break;
@@ -85,6 +85,8 @@ void _onTickEvent(unsigned secs){}
 // Executable Function
 
 int main(int argc, char** argv) {
+    _outputImg = solidImgOp((ImageSize) { 1024, 1024 }, 0xFF333333);
+
     _run(argc, argv, texArgs); // system specific initialization and continuous loop
 
     // RASTERON_QUEUE_DEALLOC(_mainQueue);
