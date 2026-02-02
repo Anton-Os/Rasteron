@@ -26,6 +26,15 @@
 
 extern ColorSwatch _swatch;
 
+#define SWATCH_L _swatch.colors[SWATCH_Light]
+#define SWATCH_RA _swatch.colors[SWATCH_Red_Add]
+#define SWATCH_RS _swatch.colors[SWATCH_Red_Sub]
+#define SWATCH_GA _swatch.colors[SWATCH_Green_Add]
+#define SWATCH_GS _swatch.colors[SWATCH_Green_Sub]
+#define SWATCH_BA _swatch.colors[SWATCH_Blue_Add]
+#define SWATCH_BS _swatch.colors[SWATCH_Blue_Sub]
+#define SWATCH_D _swatch.colors[SWATCH_Dark]
+
 extern Rasteron_Image* _savedImg;
 extern Rasteron_Image* _outputImg;
 

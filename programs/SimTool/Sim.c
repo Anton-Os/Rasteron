@@ -6,10 +6,10 @@ unsigned levelineRules(unsigned color, unsigned neighbors[2]) { return (color_gr
 
 unsigned serpinskyRules(unsigned color, unsigned neighbors[2]) {
     unsigned short s = 0;
-    if (color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) s++;
-    if (neighbors[0] == _swatch.colors[SWATCH_Green_Add] || neighbors[0] == _swatch.colors[SWATCH_Light]) s++;
-    if (neighbors[1] == _swatch.colors[SWATCH_Green_Add] || neighbors[1] == _swatch.colors[SWATCH_Light]) s++;
-    return (s == 1) ? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Red_Add];
+    if (color == SWATCH_GA || color == SWATCH_L) s++;
+    if (neighbors[0] == SWATCH_GA || neighbors[0] == SWATCH_L) s++;
+    if (neighbors[1] == SWATCH_GA || neighbors[1] == SWATCH_L) s++;
+    return (s == 1) ? SWATCH_GA : SWATCH_RA;
 }
 
 // Full-Cell Rules
@@ -22,41 +22,41 @@ unsigned shuffleRules(unsigned color, unsigned neighbors[8]) {
 }
 
 unsigned conwayRules(unsigned color, unsigned neighbors[8]) {
-    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
-    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors); // countKills(neighbors);
+    unsigned short lives = neighbor_count(SWATCH_GA, neighbors) + neighbor_count(SWATCH_L, neighbors); // countLives(neighbors);
+    unsigned short kills = neighbor_count(SWATCH_RA, neighbors) + neighbor_count(SWATCH_D, neighbors); // countKills(neighbors);
     // printf("Lives is %d, %d", lives, kills);
 
-    if ((color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) && lives < 2) return _swatch.colors[SWATCH_Red_Add]; // Any live cell with fewer than two live neighbors dies, as if by underpopulation.
-    else if ((color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) && (lives == 2 || lives == 3)) return _swatch.colors[SWATCH_Green_Add]; // Any live cell with two or three live neighbors lives on to the next generation.
-    else if ((color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) && lives > 3) return _swatch.colors[SWATCH_Red_Add]; // Any live cell with more than three live neighbors dies, as if by overpopulation.
-    else if ((color == _swatch.colors[SWATCH_Red_Add] || color == _swatch.colors[SWATCH_Dark]) && lives == 3) return _swatch.colors[SWATCH_Light]; // Any kills cell with exactly three live neighbors becomes a live cell, as if by reproduction.
-    else if (color == _swatch.colors[SWATCH_Red_Add]) return _swatch.colors[SWATCH_Dark];
+    if ((color == SWATCH_GA || color == SWATCH_L) && lives < 2) return SWATCH_RA; // Any live cell with fewer than two live neighbors dies, as if by underpopulation.
+    else if ((color == SWATCH_GA || color == SWATCH_L) && (lives == 2 || lives == 3)) return SWATCH_GA; // Any live cell with two or three live neighbors lives on to the next generation.
+    else if ((color == SWATCH_GA || color == SWATCH_L) && lives > 3) return SWATCH_RA; // Any live cell with more than three live neighbors dies, as if by overpopulation.
+    else if ((color == SWATCH_RA || color == SWATCH_D) && lives == 3) return SWATCH_L; // Any kills cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+    else if (color == SWATCH_RA) return SWATCH_D;
     else return color;
 }
 
 unsigned randWalkRules(unsigned color, unsigned neighbors[8]) {
     unsigned short direction = 0;
 
-    if (color == _swatch.colors[SWATCH_Light]) return _swatch.colors[SWATCH_Green_Add];
-    else if (color == _swatch.colors[SWATCH_Red_Add]) return _swatch.colors[SWATCH_Dark];
-    else if (neighbors[direction] == _swatch.colors[SWATCH_Light] || neighbors[direction] == _swatch.colors[SWATCH_Green_Add]) {
+    if (color == SWATCH_L) return SWATCH_GA;
+    else if (color == SWATCH_RA) return SWATCH_D;
+    else if (neighbors[direction] == SWATCH_L || neighbors[direction] == SWATCH_GA) {
         direction = rand() % 8; // randomize walk direction
-        return _swatch.colors[SWATCH_Light];
+        return SWATCH_L;
     }
-    else if (neighbors[direction] == _swatch.colors[SWATCH_Dark] || neighbors[direction] == _swatch.colors[SWATCH_Red_Add]) {
+    else if (neighbors[direction] == SWATCH_D || neighbors[direction] == SWATCH_RA) {
         direction = rand() % 8; // randomize walk direction
-        return _swatch.colors[SWATCH_Red_Add];
+        return SWATCH_RA;
     }
     else return color;
 }
 
 unsigned amplifyRules(unsigned color, unsigned neighbors[8]) {
-    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
-    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors); // countKills(neighbors);
+    unsigned short lives = neighbor_count(SWATCH_GA, neighbors) + neighbor_count(SWATCH_L, neighbors); // countLives(neighbors);
+    unsigned short kills = neighbor_count(SWATCH_RA, neighbors) + neighbor_count(SWATCH_D, neighbors); // countKills(neighbors);
     // printf("Lives is %d, %d", lives, kills);
 
-    if (lives > kills) return (color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) ? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Light]; // color_level(color, 0.5 + (lives * (0.5 / 8.0)));
-    else if (kills > lives) return (color == _swatch.colors[SWATCH_Red_Add] || color == _swatch.colors[SWATCH_Dark]) ? _swatch.colors[SWATCH_Dark] : _swatch.colors[SWATCH_Red_Add]; // color_level(color, 0.5 - (lives * (0.5 / 8.0)));
+    if (lives > kills) return (color == SWATCH_GA || color == SWATCH_L) ? SWATCH_GA : SWATCH_L; // color_level(color, 0.5 + (lives * (0.5 / 8.0)));
+    else if (kills > lives) return (color == SWATCH_RA || color == SWATCH_D) ? SWATCH_D : SWATCH_RA; // color_level(color, 0.5 - (lives * (0.5 / 8.0)));
     else return color;
 }
 
@@ -68,29 +68,29 @@ unsigned recursiveRules(unsigned color, unsigned neighbors[8]) {
 }
 
 unsigned bloomRules(unsigned color, unsigned neighbors[8]) {
-    if (neighbors[NEBR_Bot] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Top] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Left] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Right] == _swatch.colors[SWATCH_Green_Add])
-        return _swatch.colors[SWATCH_Red_Add];
-    else if (neighbors[NEBR_Bot_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Right] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Bot_Right] == _swatch.colors[SWATCH_Red_Add])
-        return _swatch.colors[SWATCH_Green_Add];
+    if (neighbors[NEBR_Bot] == SWATCH_GA || neighbors[NEBR_Top] == SWATCH_GA || neighbors[NEBR_Left] == SWATCH_GA || neighbors[NEBR_Right] == SWATCH_GA)
+        return SWATCH_RA;
+    else if (neighbors[NEBR_Bot_Left] == SWATCH_RA || neighbors[NEBR_Top_Right] == SWATCH_RA || neighbors[NEBR_Top_Left] == SWATCH_RA || neighbors[NEBR_Bot_Right] == SWATCH_RA)
+        return SWATCH_GA;
     else return color;
 }
 
 unsigned unbloomRules(unsigned color, unsigned neighbors[8]) {
-    if (neighbors[NEBR_Bot_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Right] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Top_Left] == _swatch.colors[SWATCH_Red_Add] || neighbors[NEBR_Bot_Right] == _swatch.colors[SWATCH_Red_Add])
-        return _swatch.colors[SWATCH_Green_Add];
-    else if (neighbors[NEBR_Bot] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Top] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Left] == _swatch.colors[SWATCH_Green_Add] || neighbors[NEBR_Right] == _swatch.colors[SWATCH_Green_Add])
-        return _swatch.colors[SWATCH_Red_Add];
+    if (neighbors[NEBR_Bot_Left] == SWATCH_RA || neighbors[NEBR_Top_Right] == SWATCH_RA || neighbors[NEBR_Top_Left] == SWATCH_RA || neighbors[NEBR_Bot_Right] == SWATCH_RA)
+        return SWATCH_GA;
+    else if (neighbors[NEBR_Bot] == SWATCH_GA || neighbors[NEBR_Top] == SWATCH_GA || neighbors[NEBR_Left] == SWATCH_GA || neighbors[NEBR_Right] == SWATCH_GA)
+        return SWATCH_RA;
     else return color;
 }
 
 unsigned levelRules(unsigned color, unsigned neighbors[8]) {
-    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
-    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors);
+    unsigned short lives = neighbor_count(SWATCH_GA, neighbors) + neighbor_count(SWATCH_L, neighbors); // countLives(neighbors);
+    unsigned short kills = neighbor_count(SWATCH_RA, neighbors) + neighbor_count(SWATCH_D, neighbors);
     unsigned short diff = abs((short)lives - (short)kills);
 
     if (diff == 0) return color;
-    else if (diff % 2 == 1) return (diff == 1) ? _swatch.colors[SWATCH_Red_Add] : _swatch.colors[SWATCH_Light];
-    else return (diff == 2) ? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Dark];
+    else if (diff % 2 == 1) return (diff == 1) ? SWATCH_RA : SWATCH_L;
+    else return (diff == 2) ? SWATCH_GA : SWATCH_D;
 }
 
 unsigned matchRules(unsigned color, unsigned neighbors[8]) {
@@ -102,8 +102,8 @@ unsigned matchRules(unsigned color, unsigned neighbors[8]) {
 }
 
 unsigned colorizeRules(unsigned color, unsigned neighbors[8]) {
-    if (color == _swatch.colors[SWATCH_Light] || color == _swatch.colors[SWATCH_Green_Add]) return blend_colors(color, _swatch.colors[SWATCH_Green_Add], (float)rand() / RAND_MAX);
-    else if (color == _swatch.colors[SWATCH_Dark] || color == _swatch.colors[SWATCH_Red_Add]) return blend_colors(color, _swatch.colors[SWATCH_Red_Add], (float)rand() / RAND_MAX);
+    if (color == SWATCH_L || color == SWATCH_GA) return blend_colors(color, SWATCH_GA, (float)rand() / RAND_MAX);
+    else if (color == SWATCH_D || color == SWATCH_RA) return blend_colors(color, SWATCH_RA, (float)rand() / RAND_MAX);
     else return color;
 }
 
@@ -113,27 +113,27 @@ unsigned scatterRules(unsigned color, unsigned neighbors[8]) {
 }
 
 unsigned flipRules(unsigned color, unsigned neighbors[8]) {
-    if (color == _swatch.colors[SWATCH_Green_Add] || color == _swatch.colors[SWATCH_Light]) {
+    if (color == SWATCH_GA || color == SWATCH_L) {
         unsigned lifeCount = 0;
         for (unsigned d = 0; d < 8; d++)
-            if (neighbors[d] == _swatch.colors[SWATCH_Green_Add] || neighbors[d] == _swatch.colors[SWATCH_Light]) lifeCount++;
-        return (lifeCount % 2 == 0) ? _swatch.colors[SWATCH_Red_Add] : _swatch.colors[SWATCH_Dark];
+            if (neighbors[d] == SWATCH_GA || neighbors[d] == SWATCH_L) lifeCount++;
+        return (lifeCount % 2 == 0) ? SWATCH_RA : SWATCH_D;
     }
-    else if (color == _swatch.colors[SWATCH_Red_Add] || color == _swatch.colors[SWATCH_Dark]) {
+    else if (color == SWATCH_RA || color == SWATCH_D) {
         unsigned deadCount = 0;
         for (unsigned d = 0; d < 8; d++)
-            if (neighbors[d] == _swatch.colors[SWATCH_Red_Add] || neighbors[d] == _swatch.colors[SWATCH_Dark]) deadCount++;
-        return (deadCount % 2 == 0) ? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Light];
+            if (neighbors[d] == SWATCH_RA || neighbors[d] == SWATCH_D) deadCount++;
+        return (deadCount % 2 == 0) ? SWATCH_GA : SWATCH_L;
     }
     return color;
 }
 
 unsigned wolframRules(unsigned color, unsigned neighbors[8]) {
-    unsigned short lives = neighbor_count(_swatch.colors[SWATCH_Green_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Light], neighbors); // countLives(neighbors);
-    unsigned short kills = neighbor_count(_swatch.colors[SWATCH_Red_Add], neighbors) + neighbor_count(_swatch.colors[SWATCH_Dark], neighbors);
+    unsigned short lives = neighbor_count(SWATCH_GA, neighbors) + neighbor_count(SWATCH_L, neighbors); // countLives(neighbors);
+    unsigned short kills = neighbor_count(SWATCH_RA, neighbors) + neighbor_count(SWATCH_D, neighbors);
 
-    if (lives == 3 || lives == 5) return _swatch.colors[SWATCH_Green_Add];
-    if (kills == 2 || kills == 6) return _swatch.colors[SWATCH_Red_Add];
+    if (lives == 3 || lives == 5) return SWATCH_GA;
+    if (kills == 2 || kills == 6) return SWATCH_RA;
     else return NO_COLOR;
 }
 
@@ -143,11 +143,11 @@ static double killRate = 0.1;
 static double feedRate = 0.025; // 0.025;
 
 Rasteron_Image* seedImgOp(Rasteron_Image* refImg, double prob){
-    Rasteron_Image* seedImg = (refImg != NULL)? copyImgOp(refImg) : solidImgOp((ImageSize){1024 / _dimens[0], 1024 / _dimens[1]}, _swatch.colors[SWATCH_Dark]);
+    Rasteron_Image* seedImg = (refImg != NULL)? copyImgOp(refImg) : solidImgOp((ImageSize){1024 / _dimens[0], 1024 / _dimens[1]}, SWATCH_D);
 
     for(unsigned p = 0; p < seedImg->width * seedImg->height; p++)
-        if(((float)rand() / (float)RAND_MAX < prob)) *(seedImg->data + p) = (rand() % 2 == 0)? _swatch.colors[SWATCH_Green_Add] : _swatch.colors[SWATCH_Red_Add];
-        // else *(seedImg->data + p) = _swatch.colors[SWATCH_Dark];
+        if(((float)rand() / (float)RAND_MAX < prob)) *(seedImg->data + p) = (rand() % 2 == 0)? SWATCH_GA : SWATCH_RA;
+        // else *(seedImg->data + p) = SWATCH_D;
 
     return seedImg;
 }
@@ -159,10 +159,10 @@ Rasteron_Image* growImgOp(Rasteron_Image* refImg, double balance, double exFacto
         double prob = rand() / (double)RAND_MAX;
 
         unsigned color = _swatch.base;
-        if(prob > (1.0 - exFactor) * balance) color = _swatch.colors[SWATCH_Light];
-        else if(prob < exFactor * (1.0 / balance)) color = _swatch.colors[SWATCH_Dark];
-        else if(prob >= 0.5 * balance) color = _swatch.colors[SWATCH_Green_Add];
-        else if(prob <= 0.5 * (1.0 / balance)) color = _swatch.colors[SWATCH_Red_Add];
+        if(prob > (1.0 - exFactor) * balance) color = SWATCH_L;
+        else if(prob < exFactor * (1.0 / balance)) color = SWATCH_D;
+        else if(prob >= 0.5 * balance) color = SWATCH_GA;
+        else if(prob <= 0.5 * (1.0 / balance)) color = SWATCH_RA;
         else color = _swatch.base;
 
         *(growthImg->data + p) = color;
@@ -176,10 +176,10 @@ Rasteron_Image* feedImgOp(ref_image_t refImg, unsigned short iters){ // Rasteron
 
     for(unsigned short i = 0; i < iters; i++)
         for(unsigned p = 0; p < chemsImg->width * chemsImg->height; p++){
-            if(*(chemsImg->data + p) == _swatch.colors[SWATCH_Red_Add])
-                *(chemsImg->data + p) = ((float)rand() / (float)RAND_MAX < killRate)? _swatch.colors[SWATCH_Dark] : *(chemsImg->data + p); // clears or stays same
-            else if(*(chemsImg->data + p) != _swatch.colors[SWATCH_Green_Add])
-                *(chemsImg->data + p) = ((float)rand() / (float)RAND_MAX < feedRate)? _swatch.colors[SWATCH_Green_Add] : *(chemsImg->data + p); // clears or stays same */
+            if(*(chemsImg->data + p) == SWATCH_RA)
+                *(chemsImg->data + p) = ((float)rand() / (float)RAND_MAX < killRate)? SWATCH_D : *(chemsImg->data + p); // clears or stays same
+            else if(*(chemsImg->data + p) != SWATCH_GA)
+                *(chemsImg->data + p) = ((float)rand() / (float)RAND_MAX < feedRate)? SWATCH_GA : *(chemsImg->data + p); // clears or stays same */
         }
 
     return chemsImg;

@@ -43,19 +43,17 @@ void _onKeyEvent(char key){
         if(backgroundImg != NULL) RASTERON_DEALLOC(backgroundImg);
         backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT / _dimens[0], RASTERON_WIN_WIDTH / _dimens[1]}, _swatch.base);
         switch(key){ case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p': RASTERON_DEALLOC(growImg); break; } // delete old growth image
+        switch(key){ case 'y': case 'u': case 'i': case 'o': stageImg = seedImgOp(backgroundImg, NSIM_GROW); break; }
         switch(key){
             case 'q': growImg = growImgOp(backgroundImg, 1.0, 0.1); break;
             case 'w': growImg = growImgOp(backgroundImg, 1.0, 0.33); break;
             case 'e': growImg = feedImgOp(NULL, 3); break;
-            case 'r': growImg = checkeredImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, (ColorGrid){ 30 / _dimens[0], 30 / _dimens[1], _swatch.colors[SWATCH_Green_Add], _swatch.colors[SWATCH_Red_Add] }); break;
-            case 't': growImg = linedImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, _swatch.colors[SWATCH_Green_Add], _swatch.colors[SWATCH_Red_Add], 30 / _dimens[1], 0.0); break;
-            case 'y': case 'u': case 'i': case 'o': 
-                stageImg = seedImgOp(backgroundImg, NSIM_GROW); 
-                if (key == 'y') growImg = cellwiseColImgOp(stageImg, addlineRules);
-                else if(key == 'u') growImg = cellwiseRowImgOp(stageImg, levelineRules);
-                else growImg = (key == 'i')? cellwiseColImgOp(stageImg, serpinskyRules) : cellwiseRowImgOp(stageImg, serpinskyRules);
-                RASTERON_DEALLOC(stageImg);
-            break; 
+            case 'r': growImg = checkeredImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, (ColorGrid){ 30 / _dimens[0], 30 / _dimens[1], SWATCH_GA, SWATCH_RA }); break;
+            case 't': growImg = linedImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, SWATCH_GA, SWATCH_RA, 30 / _dimens[1], 0.0); break;
+            case 'y': growImg = cellwiseColImgOp(stageImg, addlineRules); break;
+            case 'u': growImg = cellwiseRowImgOp(stageImg, levelineRules); break;
+            case 'i': growImg = cellwiseColImgOp(stageImg, serpinskyRules); break;
+            case 'o': growImg = cellwiseRowImgOp(stageImg, serpinskyRules); break; 
             case 'p': growImg = seedImgOp(backgroundImg, NSIM_GROW); break;
             case 'a': algorithm = &conwayRules; break;
             case 's': algorithm = &randWalkRules; break;
@@ -74,6 +72,7 @@ void _onKeyEvent(char key){
             case 'n': process = recursiveRules; break;
             case 'm': process = flipRules; break;
         }
+        switch (key) { case 'y': case 'u': case 'i': case 'o': RASTERON_DEALLOC(stageImg); break; }
 
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
         _outputImg = resizeImgOp((ImageSize){ 1024, 1024}, growImg);
