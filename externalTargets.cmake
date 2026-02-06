@@ -3,6 +3,8 @@ include(ExternalProject)
 set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
 set(EXTERNAL_INSTALL_DIR "${EXTERNAL_PROJ_DIR}/INSTALL")
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 list(APPEND EXTERNAL_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_INSTALL_DIR}")
 list(APPEND EXTERNAL_ARGS "-DCMAKE_BUILD_TYPE:STRING=Debug") # Temporary fix
 list(APPEND EXTERNAL_ARGS "-DCMAKE_POLICY_VERSION_MINIMUM=3.5")
@@ -102,7 +104,7 @@ ExternalProject_Add(libjpeg
 
 find_package(libjpeg PATHS ${EXTERNAL_INSTALL_DIR}/lib/cmake/libjpeg)
 if(libjpeg_FOUND)
-set(JPEG_SUPPORT_STR "#define USE_IMG_JPEG")
+    set(JPEG_SUPPORT_STR "#define USE_IMG_JPEG")
     message(STATUS "Jpeg Support enabled")
 else()
     set(JPEG_SUPPORT_STR "// #define USE_IMG_JPEG")

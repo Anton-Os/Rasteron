@@ -134,7 +134,7 @@ Rasteron_Image* errorImgOp(const char* errorMsg){
 	fprintf(stderr, "ERROR! message: %s", errorMsg);
 
 	// char errorFilePath[1024];
-    // genFullFilePath("Error.bmp", errorFilePath);
+        // genFullFilePath("Error.bmp", errorFilePath);
 
  	// return loadImgOp(errorFilePath);
 	return solidImgOp((ImageSize){ 1024, 1024}, 0xFFFF0000);
