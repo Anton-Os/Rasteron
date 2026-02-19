@@ -2,7 +2,7 @@
 #define RADIAL_DIST 10.0
 #define RADIAL_INVOKE 1024
 
-#include "../_Prog.h"
+#include "../_Tool.h"
 
 double segs = RADIAL_SEGS;
 double dist = RADIAL_DIST;

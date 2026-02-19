@@ -1,12 +1,10 @@
-#include "_Prog.h"
+#include "_Tool.h"
 
 // --------------------------------   Objects for Demo    -------------------------------- //
 
 ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
 // ColorSwatch _swatch = { 0xFF111111, { 0xFFFF1111, 0xFF11FF11, 0xFF1111FF, 0xFF333333, 0xFFEEEEEE, 0xFF111100, 0xFF110011, 0xFF001111 }, 0xF }; // determines color oprations
 // ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88AA88, 0xFF8888AA, 0xFF333333, 0xFFEEEEEE, 0xFFAAAA00, 0xFFAA00AA, 0xFF00AAAA }, 0xF }; // determines color oprations
-// Catalouged Rules/Callbacks
-
 
 Rasteron_Image* _savedImg = NULL;
 Rasteron_Image* _outputImg = NULL;
@@ -175,7 +173,6 @@ char* parseArgs(int argc, char** argv){
 }
 
 void _run(int argc, char** argv, imageArgCallback callback){
-    puts("Run start");
     char* args = parseArgs(argc, argv);
     printf("Parsed ars are %s", args);
     if(callback != NULL) _outputImg = callback(args); // pass args here

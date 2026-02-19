@@ -5,7 +5,7 @@
 #define TEXTOOL_POWER 3
 #define TEXTOOL_PURTURB 0.0
 
-#include "../_Prog.h"
+#include "../_Tool.h"
 
 static char mode = 'a';
 static ColorGrid grid = { 2, 2, 0xFF333333, 0xFFEEEEEE };

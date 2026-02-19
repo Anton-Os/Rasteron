@@ -9,7 +9,7 @@ static double yArg = 0.0;
 
 static char keysave = 'd';
 
-#include "../_Prog.h"
+#include "../_Tool.h"
 
 // Overriden Functions
 

@@ -106,6 +106,33 @@ Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels){
 	return splitImg;
 }
 
+Rasteron_Image* fadeImgOp(ref_image_t refImage, uint8_t redMask, uint8_t greenMask, uint8_t blueMask){
+	Rasteron_Image* fadeImg = copyImgOp(refImage);
+
+	for(unsigned p = 0; p < fadeImg->width * fadeImg->height; p++){
+		unsigned refColor = *(fadeImg->data + p);
+
+		uint8_t red = (refColor & RED_CHANNEL) >> 16;
+		uint8_t green = (refColor & GREEN_CHANNEL) >> 8;
+		uint8_t blue = refColor & BLUE_CHANNEL;
+
+		uint8_t redDiff = (redMask > red)? redMask - red : red - redMask;
+		uint8_t greenDiff = (greenMask > green)? greenMask - green : green - greenMask;
+		uint8_t blueDiff = (blueMask > blue)? blueMask - blue : blue - blueMask;
+
+		double combination = (double)(redDiff + greenDiff + blueDiff) / 3.0;
+		uint8_t alpha = combination * 256;
+
+		*(fadeImg->data + p) = ((alpha << 24) | (red << 16) | (green << 8) | blue);
+	}
+
+	return fadeImg;
+}
+
+Rasteron_Image* fadeImgOp_white(ref_image_t refImage){ return fadeImgOp(refImage, 0xFF, 0xFF, 0xFF); }
+
+Rasteron_Image* fadeImgOp_black(ref_image_t refImage){ return fadeImgOp(refImage, 0x0, 0x0, 0x0); }
+
 Rasteron_Image* colorSwitchImgOp(ref_image_t refImage, CHANNEL_Type channel1, CHANNEL_Type channel2){
 	assert(refImage != NULL);
 	if(channel1 == channel2 || channel1 == CHANNEL_Alpha || channel2 == CHANNEL_Alpha) return copyImgOp(refImage);

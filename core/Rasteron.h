@@ -33,13 +33,15 @@ DllExport Rasteron_Image* greyImgOp(ref_image_t refImage); // creates greyscale 
 DllExport Rasteron_Image* filterImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates isolated filter image
 DllExport Rasteron_Image* channelImgOp(ref_image_t refImage, CHANNEL_Type channel); // creates averaged channel image
 DllExport Rasteron_Image* splitImgOp(ref_image_t refImage, unsigned short levels); // splits image into levels
+DllExport Rasteron_Image* fadeImgOp(ref_image_t refImage, uint8_t redMask, uint8_t greenMask, uint8_t blueMask); // applies alpha value based on masks
+DllExport Rasteron_Image* fadeImgOp_white(ref_image_t refImage); // white value becomes transparent
+DllExport Rasteron_Image* fadeImgOp_black(ref_image_t refImage); // black value becomes transparent
 
 DllExport Rasteron_Image* colorSwitchImgOp(ref_image_t refImage, CHANNEL_Type channel1, CHANNEL_Type channel2); // switches data between two channels
 DllExport Rasteron_Image* colorShiftImgOp(ref_image_t refImage, short redShift, short greenShift, short blueShift); // shifts data between all channels
 
 DllExport Rasteron_Image* recolorImgOp(ref_image_t refImage, recolorCallback callback); // callbacks from input color
 DllExport Rasteron_Image* remaskImgOp(ref_image_t refImage, remaskCallback callback); // callbacks from channel input
-
 
 // --------------------------------   Mixing Operations    -------------------------------- //
 //
@@ -112,13 +114,13 @@ DllExport Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short ti
 
 // --------------------------------   Extensible Types   -------------------------------- //
 
-#ifdef RASTERON_ENABLE_SPACE
+#if RASTERON_ENABLE_SPACE
 #include "Spacial.h" // enables spatial types, including sprite and heightmap
 #endif
-#ifdef RASTERON_ENABLE_ANIM
+#if RASTERON_ENABLE_ANIM
 #include "Queue.h" // enables sequenced image types with potential animation support
 #endif
-#ifdef RASTERON_ENABLE_FONT
+#if RASTERON_ENABLE_FONT
 #include "Font.h" // enables single line text and expanded message objects
 #endif
 

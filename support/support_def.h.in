@@ -1,8 +1,20 @@
 
 #ifndef RASTERON_SUPPORT_H
 
+#include <stdio.h>
+#include <ctype.h>
+#include <stdbool.h>
+#include <assert.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+
 #define ASSETS_DIR "${ASSETS_DIR}"
 #define MATERIAL_ICONS_FILE "${ASSETS_DIR}/material-icons-png/_MaterialIconList.txt"
+
+#define RASTERON_ENABLE_SPACE true
+#define RASTERON_ENABLE_ANIM ${SUPPORT_MEDIA_EXPORT}
+#define RASTERON_ENABLE_FONT ${SUPPORT_FONT_BAKING}
 
 #define USE_IMG_TIFF // Enable TIFF Support
 #define USE_IMG_PNG // Enable PNG Support
@@ -24,13 +36,6 @@
 
 #define TWOPOWER(x) (1 << (x))
 #define RAND_COLOR() (uint32_t)((0xFF << 24) + ((rand() % 255) << 16) + ((rand() % 255) << 8) + (rand() % 255))
-
-#include <stdio.h>
-#include <ctype.h>
-#include <assert.h>
-#include <string.h>
-#include <time.h>
-#include <math.h>
 
 #ifdef _WIN32
 #define DllExport __declspec(dllexport)

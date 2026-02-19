@@ -10,30 +10,13 @@ endif()
 
 # Sources
 
-set(support_src 
-    support/type_def.c
-    support/func_def.c
-)
+file(GLOB support_src support/*.c)
+file(GLOB core_src core/*.c)
 
-set(core_src
-    core/Basics.c
-    core/Filtering.c
-    core/Mixing.c
-    core/Procedural.c
-    core/Cellwise.c
-    core/Noise.c
-)
+list(APPEND loader_src loader/Loader.c loader/ImgBmp.c) # Other file formats have dependencies
+list(APPEND ext_src ext/Spacial.c ext/Queue.c) # Font extension has dependency
 
-list(APPEND loader_src
-    loader/Loader.c
-    loader/ImgBmp.c # BMP does not require dependencies
-)
-
-set(ext_src
-    ext/Spacial.c
-    ext/Queue.c
-)
-
+# list(APPEND util_src util/_Tool.c)
 if(WIN32) # Windows Specific
     list(APPEND util_src util/Util_Win.cpp)
 elseif(UNIX AND NOT APPLE) # Unix Specific
@@ -45,19 +28,17 @@ endif()
 
 ### External Libraries
 
-include(externalTargets.cmake)
+include(projTargets.cmake)
 
-## Rasterlib Library
+## Rasterlib Library for bindings
 
 add_library(Rasterlib SHARED ${support_src} ${core_src})
+target_include_directories(Rasterlib PRIVATE support ext core)
 
-target_include_directories(Rasterlib PRIVATE support core)
-
-## Rasterutil Library
+## Rasterutil Library for running tools
 
 add_library(Rasterutil SHARED ${util_src})
-
-target_include_directories(Rasterutil PUBLIC support core ext util)
+target_include_directories(Rasterutil PUBLIC support loader core ext util)
 
 ### Rasteron Library
 
@@ -65,10 +46,10 @@ target_include_directories(Rasterutil PUBLIC support core ext util)
 add_library(Rasteron STATIC
     ${support_src} ${loader_src} ${core_src} ${ext_src} ${util_src}
 )
-
 target_include_directories(Rasteron PRIVATE loader support core ext util ${EXTERNAL_INSTALL_DIR}/include) # loader support core ext util necessary external libs
 
-# target_link_libraries(Rasteron PUBLIC Rasterutil)
+# target_link_libraries(Rasterutil PUBLIC Rasteron)
+# target_link_libraries(Rasteron PUBLIC Rasteron)
 
 if(WIN32)
     target_link_libraries(Rasteron PUBLIC tiff png ${zlibstatic})
@@ -77,9 +58,10 @@ elseif(UNIX AND NOT APPLE) # Unix Specific
 endif()
 
 if(SUPPORT_FONT_BAKING AND NOT freetype_lib STREQUAL "freetype_lib-NOTFOUND")
-    # target_link_libraries(Rasteron PUBLIC freetype)
+    message(STATUS "Linking Freetype to Rasteron")
     target_include_directories(Rasteron PUBLIC ${freetype_h})
     target_link_libraries(Rasteron PUBLIC ${freetype_lib})
+    # target_link_libraries(Rasteron PUBLIC freetype)
 endif()
 if(X11_FOUND)
     target_link_libraries(Rasteron PUBLIC ${X11_LIBRARIES})
@@ -91,38 +73,9 @@ target_include_directories(Rasteron
     $<INSTALL_INTERFACE:include/Rasteron>
 )
 
-# Demo Applications
+# Tool Targets
 
-set(prog_src "tools/_Prog.c")
-
-add_executable(LabTool tools/LabTool/LabTool.c tools/LabTool/Lab.c ${prog_src})
-target_include_directories(LabTool PUBLIC loader support core ext util tools/os)
-target_link_libraries(LabTool Rasteron)
-
-add_executable(UITool tools/UITool/UITool.c ${prog_src})
-target_include_directories(UITool PUBLIC loader support core ext util tools/os)
-target_link_libraries(UITool Rasteron)
-
-add_executable(DrawTool tools/DrawTool/DrawTool.c ${prog_src})
-target_include_directories(DrawTool PUBLIC loader support core ext util tools/os)
-target_link_libraries(DrawTool Rasteron)
-
-add_executable(TexTool tools/TexTool/TexTool.c ${prog_src})
-target_include_directories(TexTool PUBLIC loader support core ext util tools/os)
-target_link_libraries(TexTool Rasteron)
-
-add_executable(TileTool tools/TileTool/TileTool.c ${prog_src})
-target_include_directories(TileTool PUBLIC loader support core ext util tools/os)
-target_link_libraries(TileTool Rasteron)
-
-add_executable(SimTool tools/SimTool/SimTool.c ${prog_src})
-target_include_directories(SimTool PUBLIC loader support core ext util tools/os)
-target_link_libraries(SimTool Rasteron)
-
-add_executable(HypnoTool tools/HypnoTool/HypnoTool.c ${prog_src})
-target_include_directories(HypnoTool PUBLIC loader support core ext util demos)
-target_link_libraries(HypnoTool Rasteron)
-
+# include(toolTargets.cmake)
 
 ### Installation
 
