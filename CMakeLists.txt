@@ -28,7 +28,7 @@ endif()
 
 ### External Libraries
 
-include(projTargets.cmake)
+include(extTargets.cmake)
 
 ## Rasterlib Library for bindings
 
@@ -75,7 +75,7 @@ target_include_directories(Rasteron
 
 # Tool Targets
 
-# include(toolTargets.cmake)
+include(toolTargets.cmake)
 
 ### Installation
 
