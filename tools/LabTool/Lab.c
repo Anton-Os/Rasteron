@@ -100,6 +100,7 @@ Rasteron_Image* fisheyeImgOp(unsigned short points){
 }
 
 Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){ 
+#if RASTERON_ENABLE_FONT
     genFullFilePath("Tw-Cen-MT.ttf", fullFilePath);
 
     /* Rasteron_Text textObj;
@@ -130,7 +131,10 @@ Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){
     // RASTERON_DEALLOC(textImg);
     RASTERON_DEALLOC(messageImg);
 
-    return finalImg; 
+    return finalImg;
+#else
+    return errorImgOp("Font not supported");
+#endif
 }
 
 static double zig = 10.0;
@@ -672,11 +676,14 @@ unsigned rayColor2 = 0xFFFFFFFF;
 
 static unsigned vectorFunc(double x, double y, double z) {
     unsigned color = blend_colors(rayColor1, rayColor2, pow(x + y + z, x * y * z) * 0.25);
-    return color; // mult_rgb(color, color);
+    return mult_rgb(color, color);
 }
 
 Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double dist){ 
     Rasteron_Image* raycastImg = RASTERON_ALLOC("raycast", 1024, 1024);
+
+    rayColor1 = RAND_COLOR();
+    rayColor2 = color_invert(rayColor1);
 
     for (unsigned p = 0; p < raycastImg->width * raycastImg->height; p++) {
         double x = (1.0 / (double)1024) * (p % 1024) - 0.5;
@@ -696,9 +703,6 @@ Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double dist){
             }
         else *(raycastImg->data + p) = vectorFunc(fabs(x / length), fabs(y / length), fabs(dist / length));
     }
-
-    // rayColor1 = RAND_COLOR();
-    // rayColor2 = color_invert(rayColor1);
 
     return raycastImg;
 }

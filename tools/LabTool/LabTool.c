@@ -1,8 +1,5 @@
 #include "LabTool.h"
 
-#define CANVAS_PRESET_MIN -1
-#define CANVAS_PRESET_MAX 2
-
 static int mode = -1;
 static double xArg = 0.0;
 static double yArg = 0.0;
@@ -29,9 +26,7 @@ void _onKeyEvent(char key){
 		case '9': xArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
                           yArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
                           break;
-	}
-	if(mode > CANVAS_PRESET_MAX) mode = CANVAS_PRESET_MIN; // bounds mode to upper limit
-	else if(mode < CANVAS_PRESET_MIN) mode = CANVAS_PRESET_MAX;
+        }
 
 	float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2 * 2;
 	Rasteron_Image* noiseImg1 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });

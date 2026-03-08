@@ -16,9 +16,6 @@ Rasteron_Image* texArgs(char* args) {
                         if (strstr(buffer, "octave")) puts("Octave noise selected");
                         else puts("Perlin noise selected");
                     }
-                    else if (strstr(buffer, "arg")) {
-                        puts("Arguments selected");
-                    }
                     else if (strstr(buffer, "grid")) {
                         puts("Grid selected");
                     }

@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
 
     enum MENU_Size size = MENU_Medium;
 
+    puts("Loading icons");
     Rasteron_Queue* icons[GUI_COUNT] = {
         loadUI_iconBtn(size, "paginate-filter-1"),
         loadUI_iconBtn(size, "tools-hammer"),
@@ -54,7 +55,7 @@ int main(int argc, char** argv) {
         { loadUI_iconBtn(size, "android"), loadUI_iconBtn(size, "bench"), loadUI_iconBtn(size, "candy"), loadUI_iconBtn(size, "walkman"), loadUI_iconBtn(size, "uv-sun") },
         { loadUI_checkBtn(MENU_Tiny), loadUI_checkBtn(MENU_Small), loadUI_checkBtn(MENU_Medium), loadUI_checkBtn(MENU_Large), loadUI_checkBtn(MENU_XL) }
     }; */
-
+#if RASTERON_ENABLE_FONT
     genFullFilePath("New-Tegomin.ttf", fontFilePath);
     Rasteron_Text textObjs[GUI_COUNT] = { // TODO: Add legitimate text
         { "123456789", fontFilePath, UI_COLOR_BACKGROUND, UI_COLOR_FOREGROUND },
@@ -63,7 +64,7 @@ int main(int argc, char** argv) {
         { "Option #1", fontFilePath, UI_COLOR_BACKGROUND, UI_COLOR_FOREGROUND },
         { "Welcome to GUI Land!", fontFilePath, UI_COLOR_BACKGROUND, UI_COLOR_FOREGROUND },
     };
-
+#endif
     _mainQueue = RASTERON_QUEUE_ALLOC("gui", internal_create_size(1024, 1024), GUI_COUNT);
 
     Rasteron_Image* backgroundImg = noiseImgOp_white((ImageSize){ RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);

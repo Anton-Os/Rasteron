@@ -1,5 +1,3 @@
-#define RASTERON_ENABLE_ANIM
-
 #include "Rasteron.h"
 
 #ifdef __cplusplus

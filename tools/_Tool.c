@@ -178,9 +178,10 @@ void _run(int argc, char** argv, imageArgCallback callback){
     if(callback != NULL) _outputImg = callback(args); // pass args here
     if(argc > 1){ // Parse Command LIne
         saveToFile(_outputImg, IMG_Bmp);
-        if(_mainQueue->frameCount > 0)
-            for(unsigned f = 0; f < _mainQueue->frameCount; f++)
-                saveToFile(queue_getImg(_mainQueue, f), IMG_Bmp);
+        if(_mainQueue != NULL) 
+            if(_mainQueue->frameCount > 0)
+                for(unsigned f = 0; f < _mainQueue->frameCount; f++)
+                    saveToFile(queue_getImg(_mainQueue, f), IMG_Bmp);
     } else { // Open a window
 #ifdef _WIN32
         createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
