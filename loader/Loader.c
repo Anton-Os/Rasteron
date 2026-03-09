@@ -22,7 +22,7 @@ enum IMG_FileFormat getFormat(const char* fileName) {
 
 Rasteron_Image* loadImgOp(const char* fileName){
     enum IMG_FileFormat format = getFormat(fileName);
-    Rasteron_Image* loadImg;
+    Rasteron_Image* loadImg = NULL;
 
     switch(format){
         case IMG_Bmp: loadImg = loadImgOp_bmp(fileName); break;

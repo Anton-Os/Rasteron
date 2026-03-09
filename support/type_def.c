@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "type_def.h"
 
 extern int _invertImage = INVERT_IMG_FALSE; // false for within Rasteron
@@ -9,13 +7,12 @@ extern int _invertImage = INVERT_IMG_FALSE; // false for within Rasteron
 ImageSize internal_create_size(unsigned height, unsigned width){ return (ImageSize){ height, width }; }
 
 Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width){
-	static unsigned id = 0;
+	static unsigned id = 1;
 
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	
-	char imageName[32];
-        snprintf(imageName, 32, "%s-%d", name, id);
-	image->name = imageName; // copies over
+	image->name = "";
+	snprintf(image->name, 32, "%s-%d", name, id);
 
 	image->width = (!_invertImage)? width: height;
 	image->height = (!_invertImage)? height : width;
