@@ -16,7 +16,7 @@ Rasteron_Image* loadImgOp_tiff(const char* fileName){
 	TIFFGetField(tiffFile, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
 	TIFFGetField(tiffFile, TIFFTAG_ORIENTATION, &orientation);
 
-	Rasteron_Image* tiffImg = RASTERON_ALLOC("tiff", length, width);
+	Rasteron_Image* tiffImg = RASTERON_ALLOC(fileName, length, width);
 
 	TIFFReadRGBAImageOriented(
 		tiffFile,

@@ -11,8 +11,10 @@ Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t w
 
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	
-	image->name = "";
-	snprintf(image->name, 32, "%s-%d", name, id);
+	image->name = name;
+	// char* newName[1024];
+	// snprintf(newName, 1024, "%s-%d", name, id);
+	// strcpy(image->name, newName);
 
 	image->width = (!_invertImage)? width: height;
 	image->height = (!_invertImage)? height : width;

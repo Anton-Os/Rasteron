@@ -27,7 +27,7 @@ Rasteron_Image* loadImgOp_bmp(const char* fileName){
 	fseek(bmpFile, 22, SEEK_SET);
 	fread(&height, sizeof(int32_t), 1, bmpFile);
 
-	Rasteron_Image* bmpImg = RASTERON_ALLOC("bmp", (unsigned)abs(height), (unsigned)abs(width));
+	Rasteron_Image* bmpImg = RASTERON_ALLOC(fileName, (unsigned)abs(height), (unsigned)abs(width));
 
 	fseek(bmpFile, offset, SEEK_SET);
 	uint32_t* data = (uint32_t*)malloc(abs(height) * abs(width) * sizeof(uint32_t));
