@@ -1,7 +1,3 @@
-#define RASTERON_ENABLE_SPACE
-#define RASTERON_ENABLE_ANIM
-#define RASTERON_ENABLE_FONT
-
 #include "Rasteron.h"
 
 #include "Loader.h"

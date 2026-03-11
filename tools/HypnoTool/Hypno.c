@@ -37,7 +37,13 @@ Rasteron_Image* swirlyImgOp(double swirlFactor, unsigned color1, unsigned color2
     swirl = swirlFactor;
     swirlColor1 = color1;
     swirlColor2 = color2;
-    return mapImgOp((ImageSize) { 1024, 1024 }, swirly);
+
+    Rasteron_Image* mapImg = mapImgOp((ImageSize) { 1024, 1024 }, swirly);
+    Rasteron_Image* swirlyImg = fadeImgOp_black(mapImg);
+
+    RASTERON_DEALLOC(mapImg);
+
+    return swirlyImg;
 }
 
 // Radial
@@ -93,7 +99,7 @@ Rasteron_Image* hypnosisImgOp(unsigned color1, unsigned color2, unsigned short i
         for (unsigned i = 0; i < iters / 3; i++) {
             Rasteron_Image* stagingImg = mixingImgOp(mixImgs[m % 3], hypnosisImg, callback);
             RASTERON_DEALLOC(hypnosisImg);
-            hypnosisImg = copyImgOp(stagingImg);
+            hypnosisImg = fadeImgOp_white(stagingImg); // copyImgOp(stagingImg);
             RASTERON_DEALLOC(stagingImg);
             m++;
         }

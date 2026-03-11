@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 3.5)
-project(Rasteron DESCRIPTION "Rasteron Image Library")
 
-cmake_policy(SET CMP0035 NEW)
+cmake_minimum_required(VERSION 3.5...3.10)
+project(Rasteron DESCRIPTION "Rasteron Image Library")
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path" FORCE)
@@ -90,8 +89,8 @@ install(TARGETS Rasteron
 add_dependencies(Rasteron zlib libpng libtiff)
 
 if(UNIX)
-    if(SUPPORT_FONT_BAKING)
-        # add_dependencies(Rasteron FreeType)
+    if(SUPPORT_FONT_BAKING AND freetype_found)
+        add_dependencies(Rasteron FreeType)
     endif()
 endif()
 

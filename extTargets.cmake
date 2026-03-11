@@ -113,7 +113,7 @@ endif()
 
 # Support for FreeType
 
-set(SUPPORT_FONT_BAKING false CACHE BOOL "Include font baking module" FORCE)
+set(SUPPORT_FONT_BAKING TRUE CACHE BOOL "Include font baking module")
 if(SUPPORT_FONT_BAKING)
 ExternalProject_Add(freetype
     GIT_REPOSITORY "https://github.com/freetype/freetype.git"
@@ -136,7 +136,7 @@ else()
     set(freetype_found FALSE)
 endif()
 
-set(SUPPORT_MEDIA_EXPORT true CACHE BOOL "Include animation encoding module" FORCE)
+set(SUPPORT_MEDIA_EXPORT TRUE CACHE BOOL "Include animation encoding module")
 if(SUPPORT_MEDIA_EXPORT)
 # ExternalProject_Add(MLT
 #    GIT_REPOSITORY "https://github.com/mltframework/mlt.git"
