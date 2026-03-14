@@ -113,7 +113,7 @@ Rasteron_Image* simTool(char* args) {
 // Executable Function
 
 int main(int argc, char** argv) {
-    _mainQueue = RASTERON_QUEUE_ALLOC("sim", internal_create_size(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
+    _mainQueue = RASTERON_QUEUE_ALLOC("sim", _create_size(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
  
     _run(argc, argv, simTool); // system specific initialization and continuous loop
     

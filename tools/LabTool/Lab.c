@@ -772,8 +772,8 @@ Rasteron_Image* heightImgOp(Rasteron_Image* image1, Rasteron_Image* image2) {
         );
     } 
 
-    internal_dealloc_heightmap(heightmap1);
-    internal_dealloc_heightmap(heightmap2);
+    _dealloc_heightmap(heightmap1);
+    _dealloc_heightmap(heightmap2);
 
     return heightImg;
 }

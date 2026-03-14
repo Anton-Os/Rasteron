@@ -8,7 +8,7 @@ static char frameName[1024];
 
 // --------------------------------  Queue Operations  -------------------------------- //
 
-Rasteron_Queue* internal_alloc_queue(const char* prefix, ImageSize size, unsigned frameCount){
+Rasteron_Queue* _alloc_queue(const char* prefix, ImageSize size, unsigned frameCount){
     Rasteron_Queue* queue = (Rasteron_Queue*)malloc(sizeof(Rasteron_Queue));
     queue->prefix = prefix;
     queue->index = QUEUE_STATE_DEFAULT;
@@ -51,7 +51,7 @@ Rasteron_Image* queue_getImg(Rasteron_Queue* queue, unsigned short frameIndex){
     return *(queue->frameData + frameIndex);
 }
 
-void internal_dealloc_queue(Rasteron_Queue* queue){
+void _dealloc_queue(Rasteron_Queue* queue){
     if(queue != NULL){
         for(unsigned f = 0; f < queue->frameCount; f++)
             RASTERON_DEALLOC(*(queue->frameData + f));
@@ -63,11 +63,11 @@ void internal_dealloc_queue(Rasteron_Queue* queue){
 
 // --------------------------------  UI Operations  -------------------------------- //
 
-static unsigned internal_ui_bk = UI_COLOR_BACKGROUND;
-static unsigned internal_ui_fg = UI_COLOR_FOREGROUND;
-static unsigned internal_ui_pos = UI_COLOR_ON;
-static unsigned internal_ui_def = UI_COLOR_DEFAULT;
-static unsigned internal_ui_neg = UI_COLOR_OFF;
+static unsigned _ui_bk = UI_COLOR_BACKGROUND;
+static unsigned _ui_fg = UI_COLOR_FOREGROUND;
+static unsigned _ui_pos = UI_COLOR_ON;
+static unsigned _ui_def = UI_COLOR_DEFAULT;
+static unsigned _ui_neg = UI_COLOR_OFF;
 
 static ImageSize getUI_ImageSize(enum MENU_Size size){
     switch(size){
@@ -82,11 +82,11 @@ static ImageSize getUI_ImageSize(enum MENU_Size size){
 }
 
 void setUI_colorScheme(unsigned bgColor, unsigned fgColor, unsigned contentColors[3]){
-    if(bgColor != NO_COLOR) internal_ui_bk = bgColor;
-    if(fgColor != NO_COLOR) internal_ui_fg = fgColor;
-    if(contentColors[0] != NO_COLOR) internal_ui_pos = contentColors[0];
-    if(contentColors[1] != NO_COLOR) internal_ui_def = contentColors[1];
-    if(contentColors[2] != NO_COLOR) internal_ui_neg = contentColors[2];
+    if(bgColor != NO_COLOR) _ui_bk = bgColor;
+    if(fgColor != NO_COLOR) _ui_fg = fgColor;
+    if(contentColors[0] != NO_COLOR) _ui_pos = contentColors[0];
+    if(contentColors[1] != NO_COLOR) _ui_def = contentColors[1];
+    if(contentColors[2] != NO_COLOR) _ui_neg = contentColors[2];
 }
 
 Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
@@ -101,11 +101,11 @@ Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name){
     Rasteron_Image* finalIconImg = copyImgOp(sizedIconImg); // antialiasImgOp(sizedIconImg, 1);
     
     Rasteron_Image* refImages[5] = {
-        noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, internal_ui_bk, internal_ui_bk + 0xFF111111),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_fg),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_pos),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_neg),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_def),
+        noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, _ui_bk, _ui_bk + 0xFF111111),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_fg),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_pos),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_neg),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_def),
     };
 
     Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("button", menuSize, 4);
@@ -156,11 +156,11 @@ Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size){
     ImageSize menuSize = getUI_ImageSize(size);
 
     Rasteron_Image* refImages[5] = {
-        noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, internal_ui_bk, internal_ui_bk + 0xFF111111),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_fg),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_pos),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_neg),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_def),
+        noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, _ui_bk, _ui_bk + 0xFF111111),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_fg),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_pos),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_neg),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_def),
     };
 
     Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("checkbox", menuSize, 4);
@@ -211,11 +211,11 @@ Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short turns){
     unsigned shortSide = (menuSize.height > menuSize.width)? menuSize.width : menuSize.height;
 
     Rasteron_Image* refImages[5] = {
-        noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, internal_ui_bk, internal_ui_bk + 0xFF111111),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_fg),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_pos),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_neg),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_def),
+        noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, _ui_bk, _ui_bk + 0xFF111111),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_fg),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_pos),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_neg),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_def),
     };
 
     Rasteron_Queue* menuQueue = (Rasteron_Queue*)RASTERON_QUEUE_ALLOC("dial", menuSize, turns);
@@ -255,14 +255,14 @@ Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels){
 
     ImageSize menuSize = getUI_ImageSize(size);
     // menuSize.width += (menuSize.width / 2) * (levels - 2); // scaling slider
-    Rasteron_Queue* menuQueue = (Rasteron_Queue*)internal_alloc_queue("slider", menuSize, levels);
+    Rasteron_Queue* menuQueue = (Rasteron_Queue*)_alloc_queue("slider", menuSize, levels);
 
     Rasteron_Image* refImages[5] = {
-        noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, internal_ui_bk, internal_ui_bk + 0xFF111111),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_fg),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_pos),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_neg),
-        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, internal_ui_def),
+        noiseImgOp_white((ImageSize){ menuSize.height, menuSize.width }, _ui_bk, _ui_bk + 0xFF111111),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_fg),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_pos),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_neg),
+        solidImgOp((ImageSize){ menuSize.height, menuSize.width }, _ui_def),
     };
 
     for(unsigned l = 0; l < levels; l++){

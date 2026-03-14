@@ -33,14 +33,14 @@ typedef struct {
 
 typedef const Rasteron_Image *const ref_image_t;
 
-DllExport ImageSize internal_create_size(unsigned height, unsigned width);
-#define RASTERON_SIZE(height, width) (ImageSize)(internal_create_size(height, width))
+DllExport ImageSize _create_size(unsigned height, unsigned width);
+#define RASTERON_SIZE(height, width) (ImageSize)(_create_size(height, width))
 
-DllExport Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width);
-#define RASTERON_ALLOC(name, height, width) (Rasteron_Image*)(internal_alloc_img(name, height, width))
+DllExport Rasteron_Image* _alloc_img(const char* name, uint32_t height, uint32_t width);
+#define RASTERON_ALLOC(name, height, width) (Rasteron_Image*)(_alloc_img(name, height, width))
 
-DllExport void internal_dealloc_img(Rasteron_Image* image);
-#define RASTERON_DEALLOC(image) (internal_dealloc_img(image))
+DllExport void _dealloc_img(Rasteron_Image* image);
+#define RASTERON_DEALLOC(image) (_dealloc_img(image))
 
 // --------------------------------   Swatch    -------------------------------- //
 

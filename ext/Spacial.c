@@ -33,7 +33,7 @@ Rasteron_Sprite* loadSprite(const Rasteron_Image* refImage){
     return sprite;
 }
 
-void internal_dealloc_sprite(Rasteron_Sprite* sprite){
+void _dealloc_sprite(Rasteron_Sprite* sprite){
     if(sprite->image != NULL) RASTERON_DEALLOC(sprite->image);
     if(sprite != NULL) free(sprite);
     sprite = NULL;
@@ -49,7 +49,7 @@ static float calcHeight(unsigned inputColor, float minDepth, float maxDepth){;
     return heightVal + minDepth;
 }
 
-Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth){
+Rasteron_Heightmap* _alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth){
     Rasteron_Heightmap* heightmap = (Rasteron_Heightmap*)malloc(sizeof(Rasteron_Heightmap));
 
     heightmap->bounds = createBounds(height, width);
@@ -63,7 +63,7 @@ Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, fl
 Rasteron_Heightmap* loadHeightmap(ref_image_t refImage){
     assert(refImage != NULL);
 
-    Rasteron_Heightmap* heightmap = internal_alloc_heightmap(refImage->width, refImage->height, 0.0, 1.0);
+    Rasteron_Heightmap* heightmap = _alloc_heightmap(refImage->width, refImage->height, 0.0, 1.0);
 
     for (unsigned p = 0; p < refImage->width * refImage->height; p++)
             *(heightmap->data + p) = calcHeight(*(refImage->data + p), heightmap->minDepth, heightmap->maxDepth);
@@ -71,7 +71,7 @@ Rasteron_Heightmap* loadHeightmap(ref_image_t refImage){
     return heightmap;
 }
 
-void internal_dealloc_heightmap(Rasteron_Heightmap* heightmap){
+void _dealloc_heightmap(Rasteron_Heightmap* heightmap){
 	if(heightmap->data != NULL) free(heightmap->data);
     if(heightmap != NULL) free(heightmap);
 	heightmap = NULL;

@@ -27,8 +27,8 @@ typedef struct {
 
 Rasteron_Sprite* loadSprite(const Rasteron_Image* refImage);
 
-void internal_dealloc_sprite(Rasteron_Sprite* sprite);
-#define RASTERON_SPRITE_DEALLOC(sprite) (internal_dealloc_sprite(sprite))
+void _dealloc_sprite(Rasteron_Sprite* sprite);
+#define RASTERON_SPRITE_DEALLOC(sprite) (_dealloc_sprite(sprite))
 
 
 // --------------------------------   Heightmap    -------------------------------- //
@@ -41,12 +41,12 @@ typedef struct {
     float* data;
 } Rasteron_Heightmap;
 
-Rasteron_Heightmap* internal_alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth);
-#define RASTERON_HEIGHTMAP_ALLOC(height, width, minDepth, maxDepth) (internal_alloc_heightmap(height, width, minDepth, maxDepth))
+Rasteron_Heightmap* _alloc_heightmap(uint32_t height, uint32_t width, float minDepth, float maxDepth);
+#define RASTERON_HEIGHTMAP_ALLOC(height, width, minDepth, maxDepth) (_alloc_heightmap(height, width, minDepth, maxDepth))
 Rasteron_Heightmap* loadHeightmap(ref_image_t refImage); // create heightmap from an image file
 
-void internal_dealloc_heightmap(Rasteron_Heightmap* heightmap);
-#define RASTERON_HEIGHTMAP_DEALLOC(heightmap) (internal_dealloc_heightmap(heightmap))
+void _dealloc_heightmap(Rasteron_Heightmap* heightmap);
+#define RASTERON_HEIGHTMAP_DEALLOC(heightmap) (_dealloc_heightmap(heightmap))
 
 #define RASTERON_SPACE_H
 #endif

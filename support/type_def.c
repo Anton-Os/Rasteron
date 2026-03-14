@@ -4,17 +4,15 @@ extern int _invertImage = INVERT_IMG_FALSE; // false for within Rasteron
 
 // --------------------------------   Image    -------------------------------- //
 
-ImageSize internal_create_size(unsigned height, unsigned width){ return (ImageSize){ height, width }; }
+ImageSize _create_size(unsigned height, unsigned width){ return (ImageSize){ height, width }; }
 
-Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t width){
+Rasteron_Image* _alloc_img(const char* name, uint32_t height, uint32_t width){
 	static unsigned id = 1;
 
 	Rasteron_Image* image = (Rasteron_Image*)malloc(sizeof(Rasteron_Image));
 	
-	image->name = name;
-	// char* newName[1024];
-	// snprintf(newName, 1024, "%s-%d", name, id);
-	// strcpy(image->name, newName);
+	image->name = name; // (char*)malloc(128 * sizeof(char));
+	// snprintf(image->name, 1024, "%s-%d", name, id);
 
 	image->width = (!_invertImage)? width: height;
 	image->height = (!_invertImage)? height : width;
@@ -24,7 +22,8 @@ Rasteron_Image* internal_alloc_img(const char* name, uint32_t height, uint32_t w
 	return image;
 }
 
-void internal_dealloc_img(Rasteron_Image* image){
+void _dealloc_img(Rasteron_Image* image){
+	// if(image->name != NULL) free(image->name);
 	if(image->data != NULL) free(image->data);
     if(image != NULL) free(image);
 	image = NULL; // set address to null

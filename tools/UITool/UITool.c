@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
         { "Welcome to GUI Land!", fontFilePath, UI_COLOR_BACKGROUND, UI_COLOR_FOREGROUND },
     };
 #endif
-    _mainQueue = RASTERON_QUEUE_ALLOC("gui", internal_create_size(1024, 1024), GUI_COUNT);
+    _mainQueue = RASTERON_QUEUE_ALLOC("gui", _create_size(1024, 1024), GUI_COUNT);
 
     Rasteron_Image* backgroundImg = noiseImgOp_white((ImageSize){ RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);
     for(unsigned g = 0; g < GUI_COUNT - 1; g++){
