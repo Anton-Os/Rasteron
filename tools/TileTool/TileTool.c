@@ -77,7 +77,7 @@ void _onKeyEvent(char key){
                 _outputImg = mosaicImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
             default: _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
         }
-    } else if(_outputImg != NULL && key == ';'){
+    } else if(_outputImg != NULL && key == ','){
         puts("Generating truschet image");
         Rasteron_Image* tempImg = copyImgOp(_outputImg);
         RASTERON_DEALLOC(_outputImg);

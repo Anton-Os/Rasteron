@@ -158,9 +158,9 @@ ExternalProject_Add(ffmpeg
 )
 endif()
 
-if(SUPPORT_MEDIA_EXPORT AND EXISTS "${EXTERNAL_PROJ_DIR}/FFMPEG/src/FFMPEG")
+if(SUPPORT_MEDIA_EXPORT AND EXISTS "${EXTERNAL_PROJ_DIR}/FFMPEG/src/ffmpeg")
     set(ffmpeg_found TRUE)
-    set(ffmpeg_source "${EXTERNAL_PROJ_DIR}/FFMPEG/src/FFMPEG")
+    set(ffmpeg_source "${EXTERNAL_PROJ_DIR}/FFMPEG/src/ffmpeg")
     
     # TODO: BUILD/INSTALL SOURCES MANUALLY!!!
 else()

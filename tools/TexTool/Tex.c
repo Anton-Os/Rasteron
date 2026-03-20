@@ -1,6 +1,6 @@
 static float levelsNoiseMod(float value){ return (value < 0.25)? 0.0 : (value > 0.75)? 1.0 : 0.5; }
 
-static float rangeNoiseMod(float value){ return fabs((value - 0.5F) * 2.0F); }
+static float rangeNoiseMod(float value){ return fabs((value - 0.5F) * 1.5F); }
 
 static float powerNoiseMod(float value){ return pow(value, TEXTOOL_POWER); }
 

@@ -4,6 +4,8 @@ Rasteron_Image* texArgs(char* args) {
     char buffer[256];
     unsigned b = 0; // buffer offset
 
+    unsigned octaves = 0;
+
     if (strlen(args) > 1) 
         for (unsigned c = 0; c < strlen(args); c++) {
             buffer[b] = args[c];
@@ -13,11 +15,19 @@ Rasteron_Image* texArgs(char* args) {
                     printf("Parsing arg value: %s", buffer);
                     if (strstr(buffer, "algo")) {
                         puts("Algorithm selected");
-                        if (strstr(buffer, "octave")) puts("Octave noise selected");
-                        else puts("Perlin noise selected");
+                        if (strstr(buffer, "add")) puts("Additive noise selected");
+                        else if (strstr(buffer, "diff") || strstr(buffer, "sub")) puts("Subtractive noise selected");
+                        else if (strstr(buffer, "hi") || strstr(buffer, "hifi")) puts("Hi-Fi noise selected");
+                        else if (strstr(buffer, "low") || strstr(buffer, "lowfi")) puts("Low-Fi noise selected");
+                        else puts("Default noise selected");
+                    }
+                    if (strstr(buffer, "octaves")) {
+                        puts("Octaves selected");
+                        // TODO: Determine new octaves count
                     }
                     else if (strstr(buffer, "grid")) {
                         puts("Grid selected");
+                        // TODO: Determine new grid dimensions
                     }
                     else if (strstr(buffer, "mix")) {
                         puts("Mix selected");
@@ -31,5 +41,11 @@ Rasteron_Image* texArgs(char* args) {
                 else _onKeyEvent(buffer[0]);
             }
         }
-    return noiseImgOp((ImageSize){ 1024, 1024 }, grid);
+    if (octaves <= 1) {
+        return noiseImgOp((ImageSize){ 1024, 1024 }, grid);
+    }
+    else {
+        return noiseImgOp_octave((ImageSize) { 1024, 1024 }, grid, octaves);
+    }
+    // return noiseImgOp((ImageSize){ 1024, 1024 }, grid);
 }

@@ -74,7 +74,7 @@ target_include_directories(Rasteron
 
 # Tool Targets
 
-include(toolTargets.cmake)
+# include(toolTargets.cmake)
 
 ### Installation
 
@@ -91,6 +91,9 @@ add_dependencies(Rasteron zlib libpng libtiff)
 if(UNIX)
     if(SUPPORT_FONT_BAKING AND freetype_found)
         add_dependencies(Rasteron FreeType)
+    endif()
+    if(SUPPORT_MEDIA_EXPORT)
+        # target_link_libraries(Rasteron PUBLIC ffmpeg)
     endif()
 endif()
 

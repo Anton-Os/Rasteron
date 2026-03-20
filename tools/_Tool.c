@@ -52,7 +52,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         GetClientRect(hwnd, &rect);
         InvalidateRect(hwnd, &rect, FALSE);
 
-        // TODO: Save image on special sequence
+        if (_outputImg != NULL && (char)wParam == ';' || (char)wParam == ':')
+            saveToFile(_outputImg, IMG_Bmp);
         if(_onKeyEvent != NULL){
             parseInput((char)wParam);
             _onKeyEvent(wParam);
@@ -117,7 +118,7 @@ void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format){
 
     char fileName[1024];
     char* fileExt = ".";
-    switch(format){
+    switch(format){ // should this be defined in Loader.c?
         case IMG_Bmp: fileExt = ".bmp"; break;
         case IMG_Png: fileExt = ".png"; break;
         case IMG_Tiff: fileExt = ".tiff"; break;
