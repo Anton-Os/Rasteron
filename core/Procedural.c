@@ -14,6 +14,20 @@ Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback){
 	return mappedImage;
 }
 
+Rasteron_Image* vectorImgOp(ImageSize size, double dist, coordCallback3 callback){
+	Rasteron_Image* vectorImage = RASTERON_ALLOC("vector", size.height, size.width);
+
+	for(unsigned p = 0; p < vectorImage->width * vectorImage->height; p++){
+		double x = (1.0 / (double)size.width) * (p % size.width);
+		double y = (1.0 / (double)size.height) * (p / size.width);
+		double length = sqrt(pow(x, 2.0) + pow(y, 2.0) + pow(dist, 2.0));
+
+		*(vectorImage->data + p) = callback(x / length, y / length, dist / length);
+	}
+
+	return vectorImage;
+}
+
 Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback callback) {
 	Rasteron_Image* fieldImage = RASTERON_ALLOC("field", size.height, size.width);
 

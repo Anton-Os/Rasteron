@@ -63,6 +63,7 @@ DllExport Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainI
 //      Generates images based on various callbacks with inputs as data and outputs as colors
 
 DllExport Rasteron_Image* mapImgOp(ImageSize size, coordCallback callback); // callbacks from x and y coordinates
+DllExport Rasteron_Image* vectorImgOp(ImageSize size, double dist, coordCallback3 callback); // callbacks from x, y, and z coordinates
 
 DllExport Rasteron_Image* fieldImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback callback); // callbacks to nearest point w distance
 DllExport Rasteron_Image* fieldExtImgOp(ImageSize size, const ColorPointTable* colorPointTable, fieldCallback3 callback); // callbacks to 3 nearest points w distance

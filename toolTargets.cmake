@@ -27,3 +27,7 @@ target_link_libraries(SimTool Rasteron)
 add_executable(HypnoTool tools/HypnoTool/HypnoTool.c ${prog_src})
 target_include_directories(HypnoTool PUBLIC loader support core ext util demos)
 target_link_libraries(HypnoTool Rasteron)
+
+add_executable(RayTool tools/RayTool/RayTool.c ${prog_src})
+target_include_directories(RayTool PUBLIC loader support core ext util demos)
+target_link_libraries(RayTool Rasteron)

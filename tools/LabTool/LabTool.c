@@ -58,12 +58,11 @@ void _onKeyEvent(char key){
           case 's': _outputImg = oozelikeImgOp(mode); break;
           case 't': _outputImg = recurrantImgOp(mode + 2); break;
           case 'u': _outputImg = intersectImgOp(xArg, yArg); break;
-          case 'v': _outputImg = raycastImgOp(pointData, 4, 1.0 * (mode + 2)); break;
+          case 'v': _outputImg = hourglassesImgOp(RAND_COLOR(), RAND_COLOR()); break;
           case 'w': _outputImg = displacerImgOp(mode + 2, 0xFFFF0088, 0xFF00FF88); break;
           case 'x': _outputImg = bilineImgOp(0xFF000000 + (rand() % 0xFF), 0x88 * (mode + 2)); break;
           case 'y': _outputImg = subtImgOp(NULL, seedColors); break; // arcaneImgOp(100.0, (mode + 2) * 10); break;
           case 'z': _outputImg = ditherImgOp(radialImg1, (mode + 2) * 0x22, 0xFF000000, 0xFFFFFFFF); break;
-          default: _outputImg = hourglassesImgOp(0xFFAAFFFF, 0xFF0000AA); break;
 	}
 
 	RASTERON_DEALLOC(noiseImg1); RASTERON_DEALLOC(noiseImg2);

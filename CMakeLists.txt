@@ -74,7 +74,7 @@ target_include_directories(Rasteron
 
 # Tool Targets
 
-# include(toolTargets.cmake)
+include(toolTargets.cmake)
 
 ### Installation
 
