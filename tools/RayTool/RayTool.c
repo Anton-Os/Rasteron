@@ -8,6 +8,9 @@ static double yArg = 0.0;
 unsigned rayColor1 = 0xFF000000;
 unsigned rayColor2 = 0xFFFFFFFF;
 
+static double xArg = 0.0;
+static double yArg = 0.0;
+
 static unsigned vectorFunc(double x, double y, double z) {
     unsigned color = blend_colors(rayColor1, rayColor2, pow(x + y + z, x * y * z) * 0.25);
     return mult_rgb(color, color);
@@ -42,6 +45,8 @@ Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double dist){
 }
 
 void _onKeyEvent(char key){
+    float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2 * 2;
+    float pointData[12] = { xArg, -yArg, (rand() % 2 == 0) ? r : -r, -xArg, yArg, r, xArg, yArg, -r, -xArg, -yArg, 0.0F };
     // TODO: Parse key events
 }
 void _onPressEvent(double x, double y){ }
@@ -49,8 +54,10 @@ void _onTickEvent(unsigned secs){}
 
 int main(int argc, char** argv) {
     srand(time(NULL));
-    // if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    // _outputImg = stratifyImgOp(mode + 4);
+    
+    rayColor1 = RAND_COLOR();
+    rayColor2 = RAND_COLOR();
+
     _outputImg = vectorImgOp((ImageSize){ 1024, 1024 }, 1.0, vectorFunc);
 
     _run(argc, argv, NULL); // system specific initialization and continuous loop

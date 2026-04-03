@@ -65,6 +65,8 @@ void _onKeyEvent(char key){
           case 'z': _outputImg = ditherImgOp(radialImg1, (mode + 2) * 0x22, 0xFF000000, 0xFFFFFFFF); break;
 	}
 
+    // TODO: Include fadeImgOp here!
+
 	RASTERON_DEALLOC(noiseImg1); RASTERON_DEALLOC(noiseImg2);
 	RASTERON_DEALLOC(radialImg1); RASTERON_DEALLOC(radialImg2);
 }
