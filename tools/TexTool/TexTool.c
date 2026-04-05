@@ -8,7 +8,6 @@
 #include "../_Tool.h"
 
 static char mode = 'a';
-static ColorGrid grid = { 2, 2, 0xFF333333, 0xFFEEEEEE };
 
 #include "Tex.c"
 #include "TexArgs.c"

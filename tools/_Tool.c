@@ -9,7 +9,7 @@ ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF33
 Rasteron_Image* _savedImg = NULL;
 Rasteron_Image* _outputImg = NULL;
 
-#ifdef RASTERON_ENABLE_ANIM
+#if RASTERON_ENABLE_ANIM
 Rasteron_Queue* _mainQueue = NULL;
 #endif
 
@@ -165,7 +165,7 @@ char* parseArgs(int argc, char** argv){
         }
         else if(isupper(*(arg + 0)) && getFormat(arg) != IMG_NonValid && _outputImg != NULL)
             saveToFile(_outputImg, getFormat(arg));
-        else for(unsigned l = 0; l < argSize; l++) _onKeyEvent(*(arg + l));
+        // else for(unsigned l = 0; l < argSize; l++) _onKeyEvent(*(arg + l));
     }
 
     char* args = convertCharray(argc, argv);
@@ -179,10 +179,12 @@ void _run(int argc, char** argv, imageArgCallback callback){
     if(callback != NULL) _outputImg = callback(args); // pass args here
     if(argc > 1){ // Parse Command LIne
         saveToFile(_outputImg, IMG_Bmp);
+#if RASTERON_ENABLE_ANIM
         if(_mainQueue != NULL) 
             if(_mainQueue->frameCount > 0)
                 for(unsigned f = 0; f < _mainQueue->frameCount; f++)
                     saveToFile(queue_getImg(_mainQueue, f), IMG_Bmp);
+#endif
     } else { // Open a window
 #ifdef _WIN32
         createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);

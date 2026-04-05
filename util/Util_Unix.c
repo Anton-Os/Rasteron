@@ -40,8 +40,6 @@ void createWindow(Platform_Context* context, const char* name, unsigned width, u
     XFlushGC(context->display, *context->gc);
 }
 
-#include <stdio.h>
-
 void eventLoop(Display* display, Window window, eventLoopCallback callback){
     static char lastKey = ' ';
     static double cursorPos[2] = { 0.0, 0.0 };

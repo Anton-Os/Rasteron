@@ -1,6 +1,3 @@
-static double xArg = 0.0;
-static double yArg = 0.0;
-
 #include "../_Tool.h"
 
 // Overriden Functions
@@ -12,8 +9,10 @@ static double xArg = 0.0;
 static double yArg = 0.0;
 
 static unsigned vectorFunc(double x, double y, double z) {
-    unsigned color = blend_colors(rayColor1, rayColor2, pow(x + y + z, x * y * z) * 0.25);
-    return mult_rgb(color, color);
+    x -= 0.5F; y -= 0.5F; // center the coordinate system
+    unsigned color = blend_colors(rayColor1, rayColor2, pow(x + y + z, x * y * z) * 0.5);
+    return mult_colors(color, color);
+    // return blend_colors(blend_colors_eq(rayColor1, rayColor2), color, pow(x + y + z, x * y * z));
 }
 
 Rasteron_Image* raycastImgOp(float* points, unsigned pointCount, double dist){ 

@@ -36,7 +36,7 @@ extern ColorSwatch _swatch;
 extern Rasteron_Image* _savedImg;
 extern Rasteron_Image* _outputImg;
 
-#ifdef RASTERON_ENABLE_ANIM
+#if RASTERON_ENABLE_ANIM
 extern Rasteron_Queue* _mainQueue;
 #endif
 
