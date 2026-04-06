@@ -17,12 +17,26 @@ unsigned elapseSecs = 0;
 
 unsigned _dimens[2] = { 2, 2 };
 
+static int mode = -1;
+static double xArg = 0.0;
+static double yArg = 0.0;
+
 // --------------------------------  Functions for Demo    -------------------------------- //
 
 void parseInput(char lastInput){
     if(isdigit(lastInput)){
         printf("Parsing numeric input for %d", lastInput);
-        // TODO: Change Properties
+        double temp;
+        switch (lastInput) {
+        case '0': xArg = 0.0; yArg = 0.0; mode = 0; break;
+        case '1': mode++; break; case '3': mode--; break;
+        case '8': yArg += 0.05F; break; case '2': yArg -= 0.05F; break;
+        case '6': xArg += 0.05F; break; case '4': xArg -= 0.05F; break;
+        case '7': temp = xArg; xArg = yArg; yArg = temp; break; // flip arguments 1 and 2
+        case '9': xArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
+            yArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
+            break;
+        }
     }
     else if(lastInput == '-'){ if(_dimens[0] > 0) _dimens[0]--; if(_dimens[1] > 0) _dimens[1]--; }
     else if(lastInput == '='){ if(_dimens[0] < 20) _dimens[0]++; if(_dimens[1] < 20) _dimens[1]++; }

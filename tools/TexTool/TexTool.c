@@ -3,11 +3,10 @@
 #define TEXTOOL_OCTAVES 3
 #define TEXTOOL_COUNT 10
 #define TEXTOOL_POWER 3
-#define TEXTOOL_PURTURB 0.0
+#define TEXTOOL_PURTURB_X 0.0 // replace with variable
+#define TEXTOOL_PURTURB_Y 0.0 // replace with variable
 
 #include "../_Tool.h"
-
-static char mode = 'a';
 
 #include "Tex.c"
 #include "TexArgs.c"
@@ -44,9 +43,9 @@ void _onKeyEvent(char key){
         case 'a': _outputImg = noiseImgOp((ImageSize){ 1024, 1024 }, grid); break;
         // case 's': _outputImg = noiseImgOp_crossed((ImageSize){ 1024, 1024 }, *grid); break;
         // case 'd': _outputImg = noiseImgOp_stepped((ImageSize){ 1024, 1024 }, *grid); break;
-        case 's': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, powerNoiseMod, TEXTOOL_PURTURB, TEXTOOL_PURTURB); break;
-        case 'd': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, trigNoiseMod, TEXTOOL_PURTURB, TEXTOOL_PURTURB); break;
-        case 'f': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, rangeNoiseMod, TEXTOOL_PURTURB, TEXTOOL_PURTURB); break;
+        case 's': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, powerNoiseMod, TEXTOOL_PURTURB_X, TEXTOOL_PURTURB_Y); break;
+        case 'd': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, trigNoiseMod, TEXTOOL_PURTURB_X, TEXTOOL_PURTURB_Y); break;
+        case 'f': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, rangeNoiseMod, TEXTOOL_PURTURB_X, TEXTOOL_PURTURB_Y); break;
         case 'g': _outputImg = noiseImgOp_add((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
         case 'h': _outputImg = noiseImgOp_diff((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
         case 'j': _outputImg = noiseImgOp_low((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;

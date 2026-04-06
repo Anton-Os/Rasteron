@@ -1,9 +1,5 @@
 #include "LabTool.h"
 
-static int mode = -1;
-static double xArg = 0.0;
-static double yArg = 0.0;
-
 static char keysave = 'd';
 
 #include "../_Tool.h"
@@ -15,18 +11,6 @@ void _onKeyEvent(char key){
 		if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
 		if(isalpha(key)) keysave = (char)tolower(key);
 	}
-
-	double temp;
-	switch(key){
-		case '0': xArg = 0.0; yArg = 0.0; mode = 0; break;
-		case '1': mode++; break; case '3': mode--; break;
-		case '8': yArg += 0.05F; break; case '2': yArg -= 0.05F; break;
-		case '6': xArg += 0.05F; break; case '4': xArg -= 0.05F; break;
-		case '7': temp = xArg; xArg = yArg; yArg = temp; break; // flip arguments 1 and 2
-		case '9': xArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
-                          yArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
-                          break;
-        }
 
 	float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2 * 2;
 	Rasteron_Image* noiseImg1 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });
