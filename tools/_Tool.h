@@ -7,11 +7,9 @@
 #ifndef RASTERON_WIN_NAME
 #define RASTERON_WIN_NAME "Rasteron"
 #endif
-
 #ifndef RASTERON_WIN_WIDTH
 #define RASTERON_WIN_WIDTH 1024
 #endif
-
 #ifndef RASTERON_WIN_HEIGHT
 #define RASTERON_WIN_HEIGHT 1024
 #endif
@@ -35,6 +33,10 @@ extern ColorSwatch _swatch;
 
 extern Rasteron_Image* _savedImg;
 extern Rasteron_Image* _outputImg;
+
+extern int mode;
+extern double xArg;
+extern double yArg;
 
 #if RASTERON_ENABLE_ANIM
 extern Rasteron_Queue* _mainQueue;

@@ -17,9 +17,9 @@ unsigned elapseSecs = 0;
 
 unsigned _dimens[2] = { 2, 2 };
 
-static int mode = -1;
-static double xArg = 0.0;
-static double yArg = 0.0;
+int mode = 1;
+double xArg = 0.0;
+double yArg = 0.0;
 
 // --------------------------------  Functions for Demo    -------------------------------- //
 
@@ -29,10 +29,14 @@ void parseInput(char lastInput){
         double temp;
         switch (lastInput) {
         case '0': xArg = 0.0; yArg = 0.0; mode = 0; break;
-        case '1': mode++; break; case '3': mode--; break;
-        case '8': yArg += 0.05F; break; case '2': yArg -= 0.05F; break;
-        case '6': xArg += 0.05F; break; case '4': xArg -= 0.05F; break;
+        case '1': mode++; break;
+        case '2': mode--; break;
+        case '3': xArg += 0.05F; break;
+        case '4': xArg -= 0.05F; break;
+        case '5': yArg += 0.05F; break; 
+        case '6': yArg -= 0.05F; break;
         case '7': temp = xArg; xArg = yArg; yArg = temp; break; // flip arguments 1 and 2
+        case '8': xArg *= -1.0; yArg *= -1.0; break;  // invert arguments
         case '9': xArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
             yArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
             break;
@@ -189,7 +193,7 @@ char* parseArgs(int argc, char** argv){
 
 void _run(int argc, char** argv, imageArgCallback callback){
     char* args = parseArgs(argc, argv);
-    printf("Parsed ars are %s", args);
+
     if(callback != NULL) _outputImg = callback(args); // pass args here
     if(argc > 1){ // Parse Command LIne
         saveToFile(_outputImg, IMG_Bmp);
@@ -201,6 +205,9 @@ void _run(int argc, char** argv, imageArgCallback callback){
 #endif
     } else { // Open a window
 #ifdef _WIN32
+        puts("\nUse alphabetical characters A to Z to produce images from Tool");
+        puts("\nPress numbered keys 0-9 to tweak function parameters");
+
         createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
         eventLoop(NULL);
 #elif defined __linux__

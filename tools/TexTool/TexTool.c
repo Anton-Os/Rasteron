@@ -16,7 +16,7 @@
 mixCallback mixer = NULL;
 
 void _onKeyEvent(char key){ 
-    static unsigned mode = 0;
+    static char keysave = 0;
     grid = (ColorGrid){ pow(2, _dimens[0]), pow(2, _dimens[1]),  _swatch.colors[SWATCH_Light],  _swatch.colors[SWATCH_Dark] };
 
     if(isspace(key) && _outputImg != NULL) saveToFile(_outputImg, IMG_Bmp);
@@ -36,21 +36,21 @@ void _onKeyEvent(char key){
     }
 
     if(tolower(key) == 'a' || tolower(key) == 's' || tolower(key) == 'd' || tolower(key) == 'f' || tolower(key) == 'g' || tolower(key) == 'h' || tolower(key) == 'j' || tolower(key) == 'k' || tolower(key) == 'l' || tolower(key) == 'p')
-        mode = tolower(key);
+        keysave = tolower(key);
         
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    switch(tolower(mode)){
+    switch(tolower(keysave)){
         case 'a': _outputImg = noiseImgOp((ImageSize){ 1024, 1024 }, grid); break;
         // case 's': _outputImg = noiseImgOp_crossed((ImageSize){ 1024, 1024 }, *grid); break;
         // case 'd': _outputImg = noiseImgOp_stepped((ImageSize){ 1024, 1024 }, *grid); break;
-        case 's': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, powerNoiseMod, TEXTOOL_PURTURB_X, TEXTOOL_PURTURB_Y); break;
-        case 'd': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, trigNoiseMod, TEXTOOL_PURTURB_X, TEXTOOL_PURTURB_Y); break;
-        case 'f': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, rangeNoiseMod, TEXTOOL_PURTURB_X, TEXTOOL_PURTURB_Y); break;
-        case 'g': _outputImg = noiseImgOp_add((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
-        case 'h': _outputImg = noiseImgOp_diff((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
-        case 'j': _outputImg = noiseImgOp_low((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
-        case 'k': _outputImg = noiseImgOp_hi((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES); break;
-        case 'l': _outputImg = noiseExtImgOp_octave((ImageSize){ 1024, 1024 }, grid, TEXTOOL_OCTAVES, asm_rgb); break;
+        case 's': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, powerNoiseMod, xArg, yArg); break;
+        case 'd': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, trigNoiseMod, xArg, yArg); break;
+        case 'f': _outputImg = purturbNoiseImgOp((ImageSize){ 1024, 1024 }, grid, rangeNoiseMod, xArg, yArg); break;
+        case 'g': _outputImg = noiseImgOp_add((ImageSize){ 1024, 1024 }, grid, mode); break;
+        case 'h': _outputImg = noiseImgOp_diff((ImageSize){ 1024, 1024 }, grid, mode); break;
+        case 'j': _outputImg = noiseImgOp_low((ImageSize){ 1024, 1024 }, grid, mode); break;
+        case 'k': _outputImg = noiseImgOp_hi((ImageSize){ 1024, 1024 }, grid, mode); break;
+        case 'l': _outputImg = noiseExtImgOp_octave((ImageSize){ 1024, 1024 }, grid, mode, asm_rgb); break;
         //case 'j': _outputImg = noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, levelsNoiseMod); break;
         //case 'k': _outputImg = noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, cosMod); break;
         //case 'l': _outputImg = noiseExtImgOp((ImageSize){ 1024, 1024 }, *grid, tanMod); break;
@@ -64,7 +64,7 @@ void _onKeyEvent(char key){
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
             case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, mult_rgb); break;
-            case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, mult_colors); break;
+            case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, root_colors); break;
             case 'c': _outputImg = mixingImgOp(currentImg, mixerImg, asm_rgb); break;
             case 'v': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_and); break;
             case 'b': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_or); break;

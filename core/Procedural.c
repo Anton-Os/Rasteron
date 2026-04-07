@@ -18,8 +18,8 @@ Rasteron_Image* vectorImgOp(ImageSize size, double dist, coordCallback3 callback
 	Rasteron_Image* vectorImage = RASTERON_ALLOC("vector", size.height, size.width);
 
 	for(unsigned p = 0; p < vectorImage->width * vectorImage->height; p++){
-		double x = (1.0 / (double)size.width) * (p % size.width);
-		double y = (1.0 / (double)size.height) * (p / size.width);
+		double x = (1.0 / (double)size.width) * (p % size.width) - 0.5;
+		double y = (1.0 / (double)size.height) * (p / size.width) - 0.5;
 		double length = sqrt(pow(x, 2.0) + pow(y, 2.0) + pow(dist, 2.0));
 
 		*(vectorImage->data + p) = callback(x / length, y / length, dist / length);
