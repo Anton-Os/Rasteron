@@ -20,7 +20,9 @@ enum SIDE_Type { SIDE_None = -1, SIDE_Top = 0, SIDE_Bottom = 1, SIDE_Left = 2, S
 #define INVERT_IMG_FALSE 0
 #define INVERT_IMG_TRUE 1
 
-extern int _invertImage; // invertImage needed in allocation
+#define BAD_NAME "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+extern int _invertImage; // invertImage needed in allocation // TODO: Remove this
 
 typedef struct { uint32_t height; uint32_t width; } ImageSize;
 

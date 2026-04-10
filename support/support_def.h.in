@@ -12,7 +12,12 @@
 #define ASSETS_DIR "${ASSETS_DIR}"
 #define MATERIAL_ICONS_FILE "${ASSETS_DIR}/material-icons-png/_MaterialIconList.txt"
 
-#define RASTERON_ENABLE_SPACE true
+#define TRUE 1
+#define FALSE 0
+#define ON 1
+#define OFF 0
+
+#define RASTERON_ENABLE_SPACE TRUE
 #define RASTERON_ENABLE_ANIM ${SUPPORT_MEDIA_EXPORT}
 #define RASTERON_ENABLE_FONT ${SUPPORT_FONT_BAKING}
 

@@ -9,12 +9,17 @@
 #include <time.h>
 #include <math.h>
 
-#define ASSETS_DIR "D:/Codex/PROJECT/Rasteron/master/assets"
-#define MATERIAL_ICONS_FILE "D:/Codex/PROJECT/Rasteron/master/assets/material-icons-png/_MaterialIconList.txt"
+#define ASSETS_DIR "Z:/PROJECT/Rasteron/master/assets"
+#define MATERIAL_ICONS_FILE "Z:/PROJECT/Rasteron/master/assets/material-icons-png/_MaterialIconList.txt"
 
-#define RASTERON_ENABLE_SPACE true
-#define RASTERON_ENABLE_ANIM true
-#define RASTERON_ENABLE_FONT false
+#define TRUE 1
+#define FALSE 0
+#define ON 1
+#define OFF 0
+
+#define RASTERON_ENABLE_SPACE TRUE
+#define RASTERON_ENABLE_ANIM TRUE
+#define RASTERON_ENABLE_FONT TRUE
 
 #define USE_IMG_TIFF // Enable TIFF Support
 #define USE_IMG_PNG // Enable PNG Support
