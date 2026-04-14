@@ -206,7 +206,7 @@ void _run(int argc, char** argv, imageArgCallback callback){
     } else { // Open a window
 #ifdef _WIN32
         puts("\nUse alphabetical characters A to Z to produce images from Tool");
-        puts("\nPress numbered keys 0-9 to tweak function parameters");
+        puts("\nPress numbered keys 0-9 to tweak function parameters and ; to take a screenshot");
 
         createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
         eventLoop(NULL);

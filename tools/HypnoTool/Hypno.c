@@ -70,7 +70,7 @@ Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback){
 
 // Hypnosis
 
-static unsigned hypnoticMix1(unsigned color1, unsigned color2) {return root_colors(color1, color2); }
+static unsigned hypnoticMix1(unsigned color1, unsigned color2) {return sqroot_colors(color1, color2); }
 static unsigned hypnoticMix2(unsigned color1, unsigned color2) { return mult_colors(color1, color2); }
 static unsigned hypnoticMix3(unsigned color1, unsigned color2) { return mult_rgb(color1, color2); }
 
@@ -112,7 +112,7 @@ Rasteron_Image* hypnosisImgOp(unsigned color1, unsigned color2, unsigned short i
 
 static unsigned mandalaMix1(unsigned c1, unsigned c2){ return c1 + c2; }
 static unsigned mandalaMix2(unsigned c1, unsigned c2){ return c1 * c2; }
-static unsigned mandalaMix3(unsigned c1, unsigned c2){ return root_colors(c1, c2); }
+static unsigned mandalaMix3(unsigned c1, unsigned c2){ return sqroot_colors(c1, c2); }
 static unsigned mandalaMix4(unsigned c1, unsigned c2){ return (c1 * 2) - (c2 / 2); }
 static unsigned mandalaMix5(unsigned c1, unsigned c2){ return (c1 > c2)? color_invert(c1) : color_invert(c2); }
 static unsigned mandalaMix6(unsigned c1, unsigned c2){ return (c1 * color_invert(c2) > color_invert(c1) * c2)? c1 : c2; }

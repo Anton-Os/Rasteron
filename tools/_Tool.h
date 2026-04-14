@@ -48,6 +48,10 @@ extern unsigned _dimens[2];
 
 // --------------------------------  Functions for Demo    -------------------------------- //
 
+#define KEYS_TOP_ROW(key) key == 'q' || key == 'w' || key == 'e' || key == 'r' || key == 't' || key == 'y' || key == 'u' || key == 'i' || key == 'o' || key == 'p'
+#define KEYS_MID_ROW(key) key == 'a' || key == 's' || key == 'd' || key == 'f' || key == 'g' || key == 'h' || key == 'j' || key == 'k' || key == 'l'
+#define KEYS_BOT_ROW(key) key == 'z' || key == 'x' || key == 'c' || key == 'v' || key == 'b' || key == 'n' || key == 'm'
+
 void _onKeyEvent(char key);
 void _onPressEvent(double x, double y);
 void _onTickEvent(unsigned secs);

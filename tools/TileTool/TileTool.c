@@ -18,20 +18,9 @@ ColorPointTable colorTable;
 
 void _onKeyEvent(char key){ 
     static fieldCallback3 callback = &eqTiling;
+    static coordCallback coordCallback = NULL;
 
-    if(isdigit(key))
-        switch(key - '0'){
-            case 1: pixPoints_tiling(&table, TILE_Square, _dimens[0], _dimens[1]); break;
-            case 2: pixPoints_tiling(&table, TILE_Triangle, _dimens[0], _dimens[1]); break;
-            case 3: pixPoints_tiling(&table, TILE_Hexagon, _dimens[0], _dimens[1]); break;
-            case 4: pixPoints_tiling(&table, TILE_Diagonal, _dimens[0], _dimens[1]); break;
-            case 5: pixPoints_tiling(&table, TILE_Perimiter, _dimens[0], _dimens[1]); break;
-            case 6: pixPoints_tiling(&table, -1, _dimens[0], _dimens[1]); break;
-            case 7: pixPoionts_expand(&table, 1); break;
-            case 8: pixPoionts_expand(&table, 4); break;
-            case 9: pixPoionts_expand(&table, 12); break;
-        }
-    else if(isalpha(key)) keysave = (char)tolower(key);
+    if(isalpha(key)) keysave = (char)tolower(key);
 
     // colorTable.pointCount = table.pointCount;
     colorTable.pointCount = table.pointCount;
@@ -39,44 +28,44 @@ void _onKeyEvent(char key){
         colorTable.points[t] = (ColorPoint){ RAND_COLOR(), table.points[t].x, table.points[t].y };
 
     switch(keysave){
+        case 'q': pixPoints_tiling(&table, TILE_Square, _dimens[0], _dimens[1]); break;
+        case 'w': pixPoints_tiling(&table, TILE_Triangle, _dimens[0], _dimens[1]); break;
+        case 'e': pixPoints_tiling(&table, TILE_Hexagon, _dimens[0], _dimens[1]); break;
+        case 'r': pixPoints_tiling(&table, TILE_Diagonal, _dimens[0], _dimens[1]); break;
+        case 't': pixPoints_tiling(&table, TILE_Perimiter, _dimens[0], _dimens[1]); break;
+        case 'y': pixPoints_tiling(&table, -1, _dimens[0], _dimens[1]); break;
+        case 'u': pixPoionts_expand(&table, 1); break;
+        case 'i': pixPoionts_expand(&table, 2); break;
+        case 'o': pixPoionts_expand(&table, 4); break;
+        case 'p': pixPoionts_expand(&table, 8); break;
         // Basic Tiling
-        case 'q': callback = &eqTiling; break;
-        case 'w': callback = &softTiling; break;
-        case 'e': callback = &hardTiling; break;
-        case 'r': callback = &dotTiling1; break;
-        case 't': callback = &dotTiling2; break;
-        case 'y': callback = &dotTiling3; break;
-        case 'u': callback = &lumenTiling; break;
-        case 'i': callback = &flashTiling; break;
-        case 'o': callback = &amorphTiling; break;
-        case 'p': callback = &focalTiling; break; // &shineTiling; break;
+        case 'a': callback = &eqTiling; break;
+        case 's': callback = &softTiling; break;
+        case 'd': callback = &hardTiling; break;
+        case 'f': callback = &dotTiling1; break;
+        // case 't': callback = &dotTiling2; break;
+        case 'g': callback = &dotTiling3; break;
+        case 'h': callback = &lumenTiling; break;
+        case 'j': callback = &flashTiling; break;
+        case 'k': callback = &amorphTiling; break;
+        case 'l': callback = &focalTiling; break; // &shineTiling; break;
         // Complex Tiling
-        case 'a': callback = &stripeTiling1; break;
-        case 's': callback = &stripeTiling2; break;
-        case 'd': callback = &stripeTiling3; break;
-        case 'f': callback = &breakTiling; break;
-        case 'g': callback = &linedTiling1; break;
-        case 'h': callback = &linedTiling2; break;
-        case 'j': callback = &complexTiling; c1 = 0.01; c2 = 0.01; c3 = 0.0; break;
-        case 'k': callback = &complexTiling; c1 = 0.15; c2 = -0.15; c3 = 0.5; break;
-        case 'l': callback = &complexTiling; c1 = 0.25; c2 = -0.25; c3 = 1.0; break;
-        // Deviated Tiling
-        case 'z': d1 = 0.05; d2 = 0.0; d3 = 1.0; break;
-        case 'x': d1 = 0.01; d2 = 0.01; d3 = 0.99; break;
-        case 'c': d1 = -0.1; d2 = -0.01; d3 = 1.01; break;
-        case 'v': d1 = 0.05; d2 = 0.1; d3 = 1.1; break;
-        case 'b': d1 = 0.005; d2 = -0.1; d3 = 0.9; break;
-        case 'n': d1 = -0.25; d2 = 0.5; d3 = 1.5; break;
-        case 'm': d1 = -0.05; d2 = -0.5; d3 = 0.5; break;
+        case 'z': callback = &stripeTiling1; break;
+        case 'x': callback = &stripeTiling2; break;
+        // case 'c': callback = &stripeTiling3; break;
+        case 'c': callback = &breakTiling; break;
+        case 'v': callback = &linedTiling1; break;
+        case 'b': callback = &linedTiling2; break;
+        // case 'j': callback = &complexTiling; c1 = 0.01; c2 = 0.01; c3 = 0.0; break;
+        case 'n': callback = &complexTiling1; break;
+        case 'm': callback = &complexTiling2; break;
     }
 
     if(isalnum(key) && colorTable.pointCount >= 1) {
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-        switch(keysave){
-            case 'z': case 'x': case 'c': case 'v': case 'b': case 'n': case 'm':
-                _outputImg = mosaicImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
-            default: _outputImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorTable, callback); break;
-        }
+
+        if(KEYS_BOT_ROW(key)) _outputImg = mosaicImgOp((ImageSize) { 1024, 1024 }, &colorTable, callback);
+        else _outputImg = fieldExtImgOp((ImageSize) { 1024, 1024 }, & colorTable, callback);
     } else if(_outputImg != NULL && key == ','){
         puts("Generating truschet image");
         Rasteron_Image* tempImg = copyImgOp(_outputImg);

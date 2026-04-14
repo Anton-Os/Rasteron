@@ -236,13 +236,14 @@ uint32_t mult_rgb(uint32_t color1, uint32_t color2){
     return result;
 }
 
-uint32_t root_colors(uint32_t color1, uint32_t color2){ // enum CHANNEL_Type type){
+uint32_t root_colors(uint32_t color1, uint32_t color2, double e) {
 	unsigned product = (0xFFFFFF & color1) * (0xFFFFFF & color2); // power
-	unsigned color = ((unsigned)(pow((double)product, 0.5)) * 1) | 0xFF000000; // root
+	unsigned color = ((unsigned)(pow((double)product, e)) * 0xFF) | 0xFF000000; // root
 
-	// return color;
-	return color * 0xFF; // test
+	return color;
 }
+
+uint32_t sqroot_colors(uint32_t color1, uint32_t color2){ return root_colors(color1, color2, 0.66); }
 
 uint32_t bit_colors_and(unsigned color1, unsigned color2){ return (color1 & color2) | 0xFF000000; }
 

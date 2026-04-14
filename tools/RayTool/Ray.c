@@ -16,9 +16,6 @@ static unsigned vectorFunc3(double x, double y, double z) {
 Rasteron_Image* raycastImgOp(ImageSize size, float* points, unsigned pointCount, double dist){ 
     Rasteron_Image* raycastImg = RASTERON_ALLOC("raycast", size.height, size.width);
 
-    rayColor1 = RAND_COLOR();
-    rayColor2 = color_invert(rayColor1);
-
     for (unsigned p = 0; p < raycastImg->width * raycastImg->height; p++) {
         double x = (1.0 / (double)1024) * (p % 1024) - 0.5;
         double y = (1.0 / (double)1024) * (p / 1024) - 0.5;
