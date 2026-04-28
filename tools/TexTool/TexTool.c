@@ -42,11 +42,11 @@ void _onKeyEvent(char key){
         case 's': _outputImg = purturbNoiseImgOp(imgSize, grid, powerNoiseMod, xArg, yArg); break;
         case 'd': _outputImg = purturbNoiseImgOp(imgSize, grid, trigNoiseMod, xArg, yArg); break;
         case 'f': _outputImg = purturbNoiseImgOp(imgSize, grid, rangeNoiseMod, xArg, yArg); break;
-        case 'g': _outputImg = (mode != 1)? noiseImgOp_add(imgSize, grid, mode) : noiseImgOp_crossed(imgSize, grid); break;
-        case 'h': _outputImg = (mode != 1)? noiseImgOp_diff(imgSize, grid, mode) :noiseImgOp_stepped(imgSize, grid); break; break;
-        case 'j': _outputImg = (mode != 1)? noiseImgOp_low(imgSize, grid, mode) : noiseExtImgOp(imgSize, grid, rangeNoiseMod); break;
-        case 'k': _outputImg = (mode != 1)? noiseImgOp_hi(imgSize, grid, mode) : noiseExtImgOp(imgSize, grid, powerNoiseMod); break;
-        case 'l': _outputImg = (mode != 1)? noiseExtImgOp_octave(imgSize, grid, mode, sqroot_colors) : noiseExtImgOp(imgSize, grid, quiltNoiseMod); break;
+        case 'g': _outputImg = noiseExtImgOp(imgSize, grid, quiltNoiseMod); break;
+        case 'h': _outputImg = (mode != 0)? noiseImgOp_add(imgSize, grid, mode) : noiseImgOp_crossed(imgSize, grid); break;
+        case 'j': _outputImg = (mode != 0)? noiseImgOp_diff(imgSize, grid, mode) : noiseImgOp_stepped(imgSize, grid); break; break;
+        case 'k': _outputImg = (mode != 0)? noiseImgOp_low(imgSize, grid, mode) : noiseExtImgOp(imgSize, grid, rangeNoiseMod); break;
+        case 'l': _outputImg = (mode != 0)? noiseImgOp_hi(imgSize, grid, mode) : noiseExtImgOp(imgSize, grid, powerNoiseMod); break;
     }
 
     if(_outputImg != NULL){
@@ -56,7 +56,7 @@ void _onKeyEvent(char key){
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
             case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, mult_rgb); break;
-            case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, sqroot_colors); break;
+            case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, qdroot_colors); break;
             case 'c': _outputImg = mixingImgOp(currentImg, mixerImg, asm_rgb); break;
             case 'v': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_and); break;
             case 'b': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_or); break;

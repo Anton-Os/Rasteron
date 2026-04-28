@@ -243,7 +243,9 @@ uint32_t root_colors(uint32_t color1, uint32_t color2, double e) {
 	return color;
 }
 
-uint32_t sqroot_colors(uint32_t color1, uint32_t color2){ return root_colors(color1, color2, 0.66); }
+uint32_t sqroot_colors(uint32_t color1, uint32_t color2){ return root_colors(color1, color2, 0.5); }
+
+uint32_t qdroot_colors(uint32_t color1, uint32_t color2) { return root_colors(color1, color2, 0.25); }
 
 uint32_t bit_colors_and(unsigned color1, unsigned color2){ return (color1 & color2) | 0xFF000000; }
 

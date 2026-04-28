@@ -55,7 +55,8 @@ DllExport uint32_t blend_colors_eq(uint32_t color1, uint32_t color2); // blends 
 DllExport uint32_t fuse_colors(uint32_t color1, uint32_t color2, double iVal); // fuse between hi and low colors
 DllExport uint32_t fuse_colors_eq(uint32_t color1, uint32_t color2); // fuse equally between hi and low colors
 DllExport uint32_t root_colors(uint32_t color1, uint32_t color2, double rVal);
-DllExport uint32_t sqroot_colors(uint32_t color1, uint32_t color2); // enum CHANNEL_Type type); // multiplies colors and then takes the root
+DllExport uint32_t sqroot_colors(uint32_t color1, uint32_t color2); // multiplies colors and then takes the root
+DllExport uint32_t qdroot_colors(uint32_t color1, uint32_t color2); // multiplies colors and then takes the root
 DllExport uint32_t bit_colors_and(uint32_t color1, uint32_t color2); // mix colors with and operation
 DllExport uint32_t bit_colors_or(uint32_t color1, uint32_t color2); // mix colors with or operation
 DllExport uint32_t bit_colors_xor(uint32_t color1, uint32_t color2); // mix colors with xor operation

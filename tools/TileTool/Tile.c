@@ -83,20 +83,16 @@ static unsigned complexTiling1(unsigned colors[3], double distances[3], PixelPoi
         targetColor = color_level(targetColor, pow((distances[0] * xArg) / (distances[1] * fabs(yArg)), 1.0 + (mode * 0.5)));
     else if(pixPoint[1].x - pixPoint[1].y < distances[1] + (1.0 / yArg))
         targetColor = fuse_colors(targetColor, colors[1], atan((pixPoint[0].y * xArg) / (pixPoint[1].x * yArg)));
-    else if(distances[2] - (mode * 0.5) > sin(pixPoint[2].y * 10.0) / cos(pixPoint[2].x * 10.0))
-        targetColor = blend_colors(targetColor, colors[2], (double)targetColor / (double)colors[2]);
 
     return targetColor;
 }
 static unsigned complexTiling2(unsigned colors[3], double distances[3], PixelPoint pixPoint[3]) {
-    unsigned targetColor = blend_colors(colors[0], colors[2], tan(distances[2] * 10.0)); // atan((pixPoint[0].y * xArg) / (pixPoint[1].x * yArg)));
+    unsigned targetColor = blend_colors(colors[0], colors[2], tan(distances[1] * 10.0)); // atan((pixPoint[0].y * xArg) / (pixPoint[1].x * yArg)));
 
-    if (pow(distances[0], pixPoint[0].x + pixPoint[0].y) > xArg)
-        targetColor = color_frac(targetColor, pow((distances[0] * xArg) / (distances[1] * fabs(yArg)), 1.0 + (mode * 0.5)));
-    else if (pixPoint[1].x - pixPoint[1].y < distances[1] + (1.0 / yArg))
-        targetColor = root_colors(targetColor, colors[1], atan((pixPoint[0].y * xArg) / (pixPoint[1].x * yArg)));
-    else if (distances[2] - (mode * 0.5) > sin(pixPoint[2].y * 10.0) / cos(pixPoint[2].x * 10.0))
-        targetColor = bit_colors_xor(targetColor, colors[2]);
+    if (pow(distances[1], pixPoint[1].x + pixPoint[1].y) > xArg)
+        targetColor = color_level(targetColor, pow((distances[0] * xArg) / (distances[1] * fabs(yArg)), 1.0 + (mode * 0.5)));
+    else if (pixPoint[2].x - pixPoint[2].y < distances[0] + (1.0 / yArg))
+        targetColor = fuse_colors(targetColor, colors[1], atan((pixPoint[0].y * xArg) / (pixPoint[1].x * yArg)));
 
     return targetColor;
 }
@@ -107,8 +103,8 @@ Rasteron_Image* mosaicImgOp(ImageSize size, const ColorPointTable* colorPointTab
 
     unsigned* colorPoints = malloc(colorPointTable->pointCount * sizeof(unsigned));
     for (unsigned t = 0; t < colorPointTable->pointCount; t++)
-        *(colorPoints + t) = pixPoint_offset((PixelPoint){ colorPointTable->points[t].x + sin(d2 * t), colorPointTable->points[t].y - sin(d2 * t) }, mosaicImage);
-        // *(colorPoints + t) = pixPoint_offset((PixelPoint){ pow(colorPointTable->points[t].x + sin(d2 * t), d3), pow(colorPointTable->points[t].y - sin(d2 * t), d3) }, mosaicImage);
+        *(colorPoints + t) = pixPoint_offset((PixelPoint){ colorPointTable->points[t].x + sin(xArg * t), colorPointTable->points[t].y - sin(yArg * t) }, mosaicImage);
+        // *(colorPoints + t) = pixPoint_offset((PixelPoint){ pow(colorPointTable->points[t].x + sin(yArg * t), (double)mode), pow(colorPointTable->points[t].y - sin(yArg * t), (double)mode) }, mosaicImage);
 
     unsigned pixColors[3] = { NO_COLOR, NO_COLOR, NO_COLOR };
     double pixDistances[3] = { 1.0, 1.0, 1.0 };

@@ -42,7 +42,7 @@ void _onKeyEvent(char key){
     if(isalpha(key)){
         if(backgroundImg != NULL) RASTERON_DEALLOC(backgroundImg);
         backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT / _dimens[0], RASTERON_WIN_WIDTH / _dimens[1]}, _swatch.base);
-        switch(key){ case 'q': case 'w': case 'e': case 'r': case 't': case 'y': case 'u': case 'i': case 'o': case 'p': RASTERON_DEALLOC(growImg); break; } // delete old growth image
+        if(KEYS_TOP_ROW(key)) RASTERON_DEALLOC(growImg); // delete old growth image
         switch(key){ case 'y': case 'u': case 'i': case 'o': stageImg = seedImgOp(backgroundImg, NSIM_GROW); break; }
         switch(key){
             case 'q': growImg = growImgOp(backgroundImg, 1.0, 0.1); break;
@@ -78,7 +78,7 @@ void _onKeyEvent(char key){
         _outputImg = resizeImgOp((ImageSize){ 1024, 1024}, growImg);
     }
     // else if(key == '\r'){
-    else if(isspace(key)){
+    else if(key == ',') {
         createSimSequence(growImg, algorithm, process);
         mode *= -1; // indicating resume
     }
