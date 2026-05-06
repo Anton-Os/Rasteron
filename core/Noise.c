@@ -47,7 +47,7 @@ Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback call
 		
 		// setting grid cell values
 		if(xOffset == 0){ // repositions to correct row inside grid
-                        unsigned short row = (yOffset / ySwitch) * gridImg->width;
+            unsigned short row = (yOffset / ySwitch) * gridImg->width;
 
 			topLeft = gridImg->data + row;
 			topRight = gridImg->data + 1 + row;
