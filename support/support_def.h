@@ -18,8 +18,8 @@
 #define OFF 0
 
 #define RASTERON_ENABLE_SPACE TRUE
-#define RASTERON_ENABLE_ANIM TRUE
-#define RASTERON_ENABLE_FONT TRUE
+#define RASTERON_ENABLE_ANIM ON
+#define RASTERON_ENABLE_FONT ON
 
 #define USE_IMG_TIFF // Enable TIFF Support
 #define USE_IMG_PNG // Enable PNG Support

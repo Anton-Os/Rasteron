@@ -9,7 +9,6 @@ static unsigned dotSize = 1.0;
 static unsigned isCoords = CANVAS_COLOR;
 static unsigned xColor = 0xFFFFFF00;
 static unsigned yColor = 0xFFFF00FF;
-static unsigned short mode = '1';
 static unsigned short pressCount = 0;
 
 #include "../_Tool.h"

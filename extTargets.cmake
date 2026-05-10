@@ -1,6 +1,6 @@
 include(ExternalProject)
 
-set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/Projects")
+set(EXTERNAL_PROJ_DIR "${CMAKE_BINARY_DIR}/PROJECTS")
 set(EXTERNAL_INSTALL_DIR "${EXTERNAL_PROJ_DIR}/INSTALL")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -115,54 +115,60 @@ endif()
 
 set(SUPPORT_FONT_BAKING TRUE CACHE BOOL "Include font baking module")
 if(SUPPORT_FONT_BAKING)
-ExternalProject_Add(freetype
-    GIT_REPOSITORY "https://github.com/freetype/freetype.git"
-    GIT_TAG "37cefe33b284d0bad4ec52bcccc1a8c2d8704340"
+    ExternalProject_Add(FreeType
+        GIT_REPOSITORY "https://github.com/freetype/freetype.git"
+        GIT_TAG "37cefe33b284d0bad4ec52bcccc1a8c2d8704340"
 
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
 
-    PREFIX ${EXTERNAL_PROJ_DIR}/FreeType
-    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-)
-endif()
+        PREFIX ${EXTERNAL_PROJ_DIR}/FreeType
+        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    )
 
-if(SUPPORT_FONT_BAKING AND EXISTS "${CMAKE_INSTALL_PREFIX}/include/freetype2")
-    set(freetype_found TRUE)
-    set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
-    find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
-    message(STATUS "freetype_h is ${freetype_h}, freetype_lib is ${freetype_lib}")
-    list(APPEND ext_src ext/Font.c)
-else()
-    set(freetype_found FALSE)
+    if(EXISTS "${CMAKE_INSTALL_PREFIX}/include/freetype2")
+        set(freetype_found TRUE)
+        set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
+        find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
+        message(STATUS "freetype_h is ${freetype_h}, freetype_lib is ${freetype_lib}")
+        list(APPEND ext_src ext/Font.c)
+    else()
+        set(freetype_found FALSE)
+    endif()
 endif()
 
 set(SUPPORT_MEDIA_EXPORT TRUE CACHE BOOL "Include animation encoding module")
-if(SUPPORT_MEDIA_EXPORT)
-# ExternalProject_Add(MLT
-#    GIT_REPOSITORY "https://github.com/mltframework/mlt.git"
-#    GIT_TAG "32abe16667692816814fd5d37676e6e4cd6c44f6"
-ExternalProject_Add(ffmpeg
-    # GIT_REPOSITORY "https://github.com/Pawday/ffmpeg-cmake.git"
-    GIT_REPOSITORY "https://github.com/FFmpeg/FFmpeg.git"
-    # GIT_TAG "dea60f9dbe2f0052f4f9a6685016da9bc748e85a"
-    GIT_TAG "19a2d261771171cf338ab1822734b7cc4839a075"
+# if(SUPPORT_MEDIA_EXPORT)
+if(SUPPORT_MEDIA_EXPORT AND NOT WIN32)
+if(MSVC)
+    set(FFMPEG_C_FLAGS "/experimental:c11atomics /std:c11")
+else()
+    set(FFMPEG_C_FLAGS "")
+endif()
+ExternalProject_Add(FFMPEG
+    GIT_REPOSITORY "https://github.com/Anton-Os/ffmpeg-cmake.git"
+    # GIT_REPOSITORY "https://github.com/FFmpeg/FFmpeg.git"
+    GIT_TAG "3853cb5db9f91c7977d649c5bbf66a215a1190d6"
 
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} 
+        -DCMAKE_C_STANDARD=11 
+        -DCMAKE_C_STANDARD_REQUIRED=ON 
+        -DCMAKE_C_EXTENSIONS=OFF
+        -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} ${FFMPEG_C_FLAGS}" # should be handled within library?
 
     PREFIX ${EXTERNAL_PROJ_DIR}/FFMPEG
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
 
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND "" # Manual Build?
+    # CONFIGURE_COMMAND ""
+    # BUILD_COMMAND "" # Manual Build?
     INSTALL_COMMAND "" # Manual Install?
 )
 endif()
 
-if(SUPPORT_MEDIA_EXPORT AND EXISTS "${EXTERNAL_PROJ_DIR}/FFMPEG/src/ffmpeg")
-    set(ffmpeg_found TRUE)
-    set(ffmpeg_source "${EXTERNAL_PROJ_DIR}/FFMPEG/src/ffmpeg")
-    
-    # TODO: BUILD/INSTALL SOURCES MANUALLY!!!
-else()
-    set(ffmpeg_found FALSE)
-endif()
+#if(SUPPORT_MEDIA_EXPORT AND EXISTS "${EXTERNAL_PROJ_DIR}/FFMPEG/src/ffmpeg")
+#    set(ffmpeg_found TRUE)
+#    set(ffmpeg_source "${EXTERNAL_PROJ_DIR}/FFMPEG/src/ffmpeg")
+#
+#    # TODO: BUILD/INSTALL SOURCES MANUALLY!!!
+#else()
+#    set(ffmpeg_found FALSE)
+#endif()

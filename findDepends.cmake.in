@@ -7,10 +7,12 @@ if(libpng_FOUND)
         find_file(debugDll "libpng16d.dll" PATHS @EXTERNAL_INSTALL_DIR@/bin)
         if(NOT ${debugDll} EQUAL "debugDll-NOTFOUND")
             file(COPY ${debugDll} DESTINATION "${CMAKE_BINARY_DIR}/Debug")
+            file(COPY ${debugDll} DESTINATION "${CMAKE_BINARY_DIR}/Release") # just in case it's required
         endif()
         find_file(releaseDll "libpng16.dll" PATHS @EXTERNAL_INSTALL_DIR@/bin)
         if(NOT ${releaseDll} EQUAL "releaseDll-NOTFOUND")
             file(COPY ${releaseDll} DESTINATION "${CMAKE_BINARY_DIR}/Release")
+            file(COPY ${releaseDll} DESTINATION "${CMAKE_BINARY_DIR}/Debug") # just in case it's required
         endif()
     endif()
 endif()
