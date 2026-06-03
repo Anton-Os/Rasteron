@@ -172,3 +172,11 @@ endif()
 #else()
 #    set(ffmpeg_found FALSE)
 #endif()
+
+find_package(CUDAToolkit)
+if(CUDAToolkit_FOUND)
+    set(SUPPORT_CUDA_TOOLKIT TRUE CACHE BOOL "CUDA Libraries found" FORCE)
+else()
+    set(SUPPORT_CUDA_TOOLKIT FALSE CACHE BOOL "CUDA Libraries found" FORCE)
+endif()
+

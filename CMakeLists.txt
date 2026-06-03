@@ -96,9 +96,9 @@ if(UNIX)
     if(SUPPORT_FONT_BAKING AND freetype_found)
         add_dependencies(Rasteron FreeType)
     endif()
-    if(SUPPORT_MEDIA_EXPORT)
+    # if(SUPPORT_MEDIA_EXPORT)
         # target_link_libraries(Rasteron PUBLIC ffmpeg)
-    endif()
+    # endif()
 endif()
 
 file(GLOB interfaceHeaders 

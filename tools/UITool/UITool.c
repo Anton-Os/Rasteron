@@ -67,16 +67,9 @@ int main(int argc, char** argv) {
 #endif
     _mainQueue = RASTERON_QUEUE_ALLOC("gui", _create_size(1024, 1024), GUI_COUNT);
 
-    Rasteron_Image* backgroundImg = noiseImgOp_white((ImageSize){ RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);
-    for(unsigned g = 0; g < GUI_COUNT - 1; g++){
-        Rasteron_Image* guiImg = copyImgOp(queue_getImg(icons[g], 0));
-        Rasteron_Image* insertImg = insertImgOp(guiImg, backgroundImg, 0.0, 0.0);
-
-        queue_addImg(_mainQueue, insertImg, g);
-
-        RASTERON_DEALLOC(guiImg);
-        RASTERON_DEALLOC(insertImg);
-    }
+    Rasteron_Image* backgroundImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);
+    for(unsigned g = 0; g < GUI_COUNT - 1; g++)
+        queue_addImg(_mainQueue, backgroundImg, g);
     RASTERON_DEALLOC(backgroundImg);
 #ifdef _WIN32
     encodeQueue(_mainQueue); // TODO: Test to see if works

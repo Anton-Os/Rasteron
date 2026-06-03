@@ -118,18 +118,18 @@ void encodeQueue(Rasteron_Queue* queue){
 	const uint32_t frameWidth = frameImg->width;
 	const uint32_t frameHeight = frameImg->height;
 	const uint32_t frameRes = frameWidth * frameHeight;
-	const uint32_t fps = 30;
+	const uint32_t fps = 60;
 	const uint32_t frameCount = queue->frameCount * fps;
 	const uint32_t bitrate = 800000; // is this correct?
-	const uint64_t duration = (queue->frameCount * 1000 * 1000) / fps; // is this correct?
+	const uint64_t duration = (queue->frameCount * 10000) / fps; // is this correct?
 
-	const GUID encodeFrmt = MFVideoFormat_WMV3;
+	const GUID encodeFrmt = MFVideoFormat_H264;
 	const GUID inputFrmt = MFVideoFormat_RGB32;
 
 	DWORD* data = (DWORD*)malloc(sizeof(DWORD) * frameRes * queue->frameCount);
 
 	unsigned d = 0;
-	for(unsigned f = 0; f < queue->frameCount && d < frameRes; f++){
+	for(unsigned f = 0; f < queue->frameCount && d < (frameRes * queue->frameCount); f++){
 		Rasteron_Image* frame = *(queue->frameData + f);
 		for(unsigned p = 0; p < frame->width * frame->height; p++){
 			*(data + d) = *(frame->data + p);
@@ -148,10 +148,10 @@ void encodeQueue(Rasteron_Queue* queue){
 
 	if(!SUCCEEDED(MFCreateMediaType(&mediaTypeOut))) return perror("Failed to create media type for output");
 	if(!SUCCEEDED(mediaTypeOut->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video))) return perror("Failed to set parameter");
-	if(!SUCCEEDED(mediaTypeOut->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_WMV3))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeOut->SetGUID(MF_MT_SUBTYPE, encodeFrmt))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(mediaTypeOut->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(mediaTypeOut->SetUINT32(MF_MT_AVG_BITRATE, 800000))) return perror("Failed to set parameter");
-	if(!SUCCEEDED(MFSetAttributeSize(mediaTypeOut, MF_MT_FRAME_SIZE, 1024, 1024))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(MFSetAttributeSize(mediaTypeOut, MF_MT_FRAME_SIZE, frameWidth, frameHeight))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeOut, MF_MT_FRAME_RATE, 60, 1))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeOut, MF_MT_PIXEL_ASPECT_RATIO, 1, 1))) return perror("Failed to set parameter");
 	// Add to stream
@@ -159,9 +159,9 @@ void encodeQueue(Rasteron_Queue* queue){
 
 	if(!SUCCEEDED(MFCreateMediaType(&mediaTypeIn))) return perror("Failed to create media type for input");
 	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video))) return perror("Failed to set parameter");
-	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_WMV3))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_SUBTYPE, encodeFrmt))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(mediaTypeIn->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive))) return perror("Failed to set parameter");
-	if(!SUCCEEDED(MFSetAttributeSize(mediaTypeIn, MF_MT_FRAME_SIZE, 1024, 1024))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(MFSetAttributeSize(mediaTypeIn, MF_MT_FRAME_SIZE, frameWidth, frameHeight))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_FRAME_RATE, 60, 1))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_PIXEL_ASPECT_RATIO, 1, 1))) return perror("Failed to set parameter");
 	// Add to input
