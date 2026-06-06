@@ -1,6 +1,13 @@
+#include "HypnoTool.h"
+
+extern double segs;
+extern double dist;
+extern unsigned color1;
+extern unsigned color2;
+
 //Spirals
 
-static unsigned spirals(double x, double y){
+unsigned spirals(double x, double y){
     double centerAngle = atan((y - 0.5) / (x - 0.5));
     double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 
@@ -21,7 +28,7 @@ static double swirl = 10.0;
 static unsigned swirlColor1 = 0xFF000000;
 static unsigned swirlColor2 = 0xFFFFFFFF;
 
-static unsigned swirly(double x, double y) {
+unsigned swirly(double x, double y) {
     double centerAngle = atan((y - 0.5) / (x - 0.5));
     double centerDist = sqrt(pow(x - 0.5, 2) + pow(y - 0.5, 2));
 
@@ -43,16 +50,6 @@ Rasteron_Image* swirlyImgOp(double swirlFactor, unsigned color1, unsigned color2
 
 // Radial
 
-static unsigned radialMix1(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c1, c4), c3 - c2); } // starting
-static unsigned radialMix2(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c2, c3), c4 + c1); } // reverse
-static unsigned radialMix3(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c3, c1), c2 * c4); } // odds and evens
-static unsigned radialMix4(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(diff_colors(c4, c2), pow(c1, 1.0 / (double)(c3 & 0xFF))); } // evens and odds
-static unsigned radialMix5(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(c3 - c2, diff_colors(c1, c4)); } // starting alt
-static unsigned radialMix6(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(c4 + c1, diff_colors(c2, c3)); } // reverse alt
-static unsigned radialMix7(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(c2 * c4, diff_colors(c3, c1)); } // odds and evens alt
-static unsigned radialMix8(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return diff_colors(pow(c1, 1.0 / (double)(c3 & 0xFF)), diff_colors(c4, c2)); } // evens and odds alt
-static unsigned radialMix9(unsigned c1, unsigned c2, unsigned c3, unsigned c4){ return (c1 + c2 > c3 + c4)? blend_colors(c1, c2, 0.5) : fuse_colors(c3, c4, 0.5); } // inbetween
-
 Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback){
     Rasteron_Image* radialImgs[4] = {
         gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, colors[0], colors[1]),
@@ -69,10 +66,6 @@ Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback){
 }
 
 // Hypnosis
-
-static unsigned hypnoticMix1(unsigned color1, unsigned color2) {return sqroot_colors(color1, color2); }
-static unsigned hypnoticMix2(unsigned color1, unsigned color2) { return mult_colors(color1, color2); }
-static unsigned hypnoticMix3(unsigned color1, unsigned color2) { return mult_rgb(color1, color2); }
 
 Rasteron_Image* hypnosisImgOp(unsigned color1, unsigned color2, unsigned short iters, mixCallback callback) {
     Rasteron_Image* gradientImgs[5] = {
@@ -110,32 +103,9 @@ Rasteron_Image* hypnosisImgOp(unsigned color1, unsigned color2, unsigned short i
 
 // Mandala
 
-static unsigned mandalaMix1(unsigned c1, unsigned c2){ return c1 + c2; }
-static unsigned mandalaMix2(unsigned c1, unsigned c2){ return c1 * c2; }
-static unsigned mandalaMix3(unsigned c1, unsigned c2){ return sqroot_colors(c1, c2); }
-static unsigned mandalaMix4(unsigned c1, unsigned c2){ return (c1 * 2) - (c2 / 2); }
-static unsigned mandalaMix5(unsigned c1, unsigned c2){ return (c1 > c2)? color_invert(c1) : color_invert(c2); }
-static unsigned mandalaMix6(unsigned c1, unsigned c2){ return (c1 * color_invert(c2) > color_invert(c1) * c2)? c1 : c2; }
-static unsigned mandalaMix7(unsigned c1, unsigned c2){ return (fuse_colors(c1, c2, 0.5F) > blend_colors(c1, c2, 0.5F))? c1 : c2; }
+float (*interpolate)(unsigned, float[2], float, float) = &mandalaInterp7; // from HypnoTool.h
 
-static unsigned restoreMix(unsigned c1, unsigned c2){
-    static unsigned lastColor;
-    unsigned newColor = (c1 == 0xFF000000 || c1 == NO_COLOR || c1 == lastColor)? c2 : c1;
-    lastColor = c1;
-    return newColor;
-}
-
-float mandalaInterp1(unsigned i, float coords[2], float a, float d){ return tan((coords[0] + coords[1]) / (i * RADIAL_INVOKE)) * pow(a, d); }
-float mandalaInterp2(unsigned i, float coords[2], float a, float d){ return tan((coords[0] + coords[1]) / (i * RADIAL_INVOKE)) * pow(d, a); }
-float mandalaInterp3(unsigned i, float coords[2], float a, float d){ return sin((coords[0] - coords[1]) / (i * RADIAL_INVOKE)) * pow(a, d); }
-float mandalaInterp4(unsigned i, float coords[2], float a, float d){ return cos((coords[0] - coords[1]) / (i * RADIAL_INVOKE)) * pow(d, a); }
-float mandalaInterp5(unsigned i, float coords[2], float a, float d){ return tan((coords[0] * coords[1]) / (i * RADIAL_INVOKE)) * pow(d, a); }
-float mandalaInterp6(unsigned i, float coords[2], float a, float d){ return sin((coords[0] / coords[1]) / (i * RADIAL_INVOKE)) * pow(a, d); }
-float mandalaInterp7(unsigned i, float coords[2], float a, float d){ return cos((pow(coords[0], coords[1])) / (i * RADIAL_INVOKE)) * pow(d, a); }
-
-float (*interpolate)(unsigned, float[2], float, float) = &mandalaInterp7;
-
-static unsigned mandalaMap(double x, double y){
+unsigned mandalaMap(double x, double y){
     static unsigned invocation = 0;
 
     float coords[2] = { x, y };

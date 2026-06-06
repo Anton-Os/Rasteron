@@ -1,22 +1,10 @@
-#define CANVAS_COLOR 0xFF111111
-#define COLOR_POINTS 4
-#define OSCILATION 30.0
-#define DOT_RADIUS 0.05
-#define FIELD_PRODUCT 5.0
-#define STROKE_MOD 5.0
+#include "DrawTool.h"
 
-static unsigned dotSize = 1.0;
-static unsigned isCoords = CANVAS_COLOR;
-static unsigned xColor = 0xFFFFFF00;
-static unsigned yColor = 0xFFFF00FF;
-static unsigned short pressCount = 0;
-
-#include "../_Tool.h"
 
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
-#include "Draw.c"
+#include "../_Tool.h"
 
 // Overriden Functions
 

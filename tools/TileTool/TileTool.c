@@ -1,15 +1,13 @@
-static int mode = -1;
+#include "TileTool.h"
+// static int mode = -1;
 
 static char keysave = 'a';
-
 static double dotDist = 0.05;
-
-#include "../_Tool.h"
 
 PixelPointTable table;
 ColorPointTable colorTable;
 
-#include "Tile.c"
+#include "../_Tool.h"
 
 // Overriden Functions
 

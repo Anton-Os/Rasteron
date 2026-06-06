@@ -1,8 +1,4 @@
-#define RADIAL_SEGS 10.0
-#define RADIAL_DIST 10.0
-#define RADIAL_INVOKE 1024
-
-#include "../_Tool.h"
+#include "HypnoTool.h"
 
 double segs = RADIAL_SEGS;
 double dist = RADIAL_DIST;
@@ -11,7 +7,7 @@ unsigned color2 = 0xFFFFFFFF; // 0xFF88EEEE;
 
 static char keysave = '0';
 
-#include "Hypno.c"
+#include "../_Tool.h"
 
 // Overriden Functions
 

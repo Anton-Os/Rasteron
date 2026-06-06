@@ -1,9 +1,9 @@
-#define NSIM_GROW 0.1
-#define NSIM_COUNT 12
+#include "SimTool.h"
+
+double killRate = 0.1;
+double feedRate = 0.025; // 0.025;
 
 #include "../_Tool.h"
-
-#include "Sim.c"
 
 // Overriden Functions
 

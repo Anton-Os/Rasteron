@@ -1,6 +1,4 @@
-#include "../_Tool.h"
-
-// Overriden Functions
+#include "RayTool.h"
 
 unsigned rayColor1 = 0xFF000000;
 unsigned rayColor2 = 0xFFFFFFFF;
@@ -12,7 +10,7 @@ coordCallback3 rayFunc = NULL;
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
-#include "Ray.c"
+#include "../_Tool.h"
 
 // float pData[12] = { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F };
 
@@ -31,7 +29,6 @@ void _onKeyEvent(char key){
         case 'i': rayFunc = rayFunc8; break;
         case 'o': rayFunc = rayFunc9; break;
         case 'p': rayFunc = rayFunc10; break;
-        // TODO: Include other vector functions
         case 'a': rayMixFunc = bit_colors_or; break;
         case 's': rayMixFunc = bit_colors_xor; break;
         case 'd': rayMixFunc = add_rgb; break;
@@ -41,7 +38,6 @@ void _onKeyEvent(char key){
         case 'j': rayMixFunc = invertMix1; break;
         case 'k': rayMixFunc = invertMix2; break;
         case 'l': rayMixFunc = invertMix3; break;
-        // TODO: Include more variance functions
         case 'z': vecMixFunc = mult_colors; break;
         case 'x': vecMixFunc = mult_rgb; break;
         case 'c': vecMixFunc = add_colors; break;

@@ -1,19 +1,8 @@
-#define RASTERON_ENABLE_ANIM
-
-#define TEXTOOL_OCTAVES 3
-#define TEXTOOL_COUNT 10
-#define TEXTOOL_POWER 3
-#define TEXTOOL_PURTURB_X 0.0 // replace with variable
-#define TEXTOOL_PURTURB_Y 0.0 // replace with variable
-
-#include "../_Tool.h"
-
-#include "Tex.c"
-#include "TexArgs.c"
-
-// Overriden Functions
+#include "TexTool.h"
 
 mixCallback mixer = NULL;
+
+#include "../_Tool.h"
 
 void _onKeyEvent(char key){ 
     static char keysave = 'a';
@@ -57,7 +46,7 @@ void _onKeyEvent(char key){
         switch(tolower(key)){
             case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, mult_rgb); break;
             case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, qdroot_colors); break;
-            case 'c': _outputImg = mixingImgOp(currentImg, mixerImg, asm_rgb); break;
+            case 'c': _outputImg = mixingImgOp(currentImg, mixerImg, assimMix_rgb); break;
             case 'v': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_and); break;
             case 'b': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_or); break;
             case 'n': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_xor); break;

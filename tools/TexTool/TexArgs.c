@@ -1,3 +1,5 @@
+#include "TexTool.h"
+
 extern mixCallback mixer;
 
 static ColorGrid grid = { 2, 2, 0xFF111111, 0xFFEEEEEE };
