@@ -15,7 +15,7 @@ static unsigned xColor = 0xFFFFFF00;
 static unsigned yColor = 0xFFFF00FF;
 static unsigned short pressCount = 0;
 
-typedef unsigned (*brushCallback)(unsigned[3], double[3], double, double, double);
+typedef unsigned (*brushCallback)(unsigned, double[3], double, double, double);
 
 // Line Draw Callback Functions
 

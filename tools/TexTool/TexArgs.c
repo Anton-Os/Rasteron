@@ -1,6 +1,7 @@
 #include "TexTool.h"
 
 extern mixCallback mixer;
+extern void _onKeyEvent(char key);
 
 static ColorGrid grid = { 2, 2, 0xFF111111, 0xFFEEEEEE };
 unsigned octaves = 0;

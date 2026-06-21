@@ -16,6 +16,7 @@ Rasteron_Image* raycastImgOp(ImageSize size, float* points, unsigned pointCount,
                   fabs(y / length) + *(points + (c * 3) + 1),
                   fabs(dist / length) + *(points + (c * 3) + 2)
                 );
+                color = vecMixFunc(color, color);
                 *(raycastImg->data + p) = (c == 0)? color : rayMixFunc(color, *(raycastImg->data + p));
             }
         else *(raycastImg->data + p) = rayFunc(fabs(x / length), fabs(y / length), fabs(dist / length));
@@ -24,4 +25,17 @@ Rasteron_Image* raycastImgOp(ImageSize size, float* points, unsigned pointCount,
     return raycastImg;
 }
 
-// TODO: Include more ray image functions
+Rasteron_Image* raycastImgOp2(ImageSize size, float* points, unsigned pointCount, double dist) {
+    Rasteron_Image* raycastImg = RASTERON_ALLOC("raycast", size.height, size.width);
+
+    for (unsigned p = 0; p < raycastImg->width * raycastImg->height; p++) {
+        double x = (1.0 / (double)1024) * (p % 1024) - 0.5;
+        double y = (1.0 / (double)1024) * (p / 1024) - 0.5;
+
+        double length = sqrt(pow(x, 2.0) + pow(y, 2.0) + pow(dist, 2.0));
+
+        *(raycastImg->data + p) = rayFunc(fabs(x / length), fabs(y / length), fabs(dist / length));
+    }
+
+    return raycastImg;
+}

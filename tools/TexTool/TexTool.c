@@ -1,6 +1,7 @@
 #include "TexTool.h"
 
 mixCallback mixer = NULL;
+ColorGrid grid;
 
 #include "../_Tool.h"
 

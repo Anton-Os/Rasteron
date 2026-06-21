@@ -5,19 +5,26 @@ unsigned rayColor2 = 0xFFFFFFFF;
 
 mixCallback vecMixFunc = mult_colors;
 mixCallback rayMixFunc = bit_colors_xor;
-coordCallback3 rayFunc = NULL;
+coordCallback3 rayFunc = rayFunc1;
 
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
 #include "../_Tool.h"
 
-// float pData[12] = { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F };
 
 void _onKeyEvent(char key){
-    float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2 * 2;
-    float pointData[12] = { xArg, -yArg, (rand() % 2 == 0)? r : -r, -xArg, yArg, r, xArg, yArg, -r, -xArg, -yArg, 0.0F };
-    
+    float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2;
+    float pointData[POINTARRAY_COUNT] = { xArg, -yArg, (rand() % 2 == 0)? r : -r, -xArg, yArg, r, xArg, yArg, -r, -xArg, -yArg, 0.0F };
+    if (pixelPointTable.pointCount > 0) { // filling points from 
+        unsigned i = (pixelPointTable.pointCount > POINTARRAY_COUNT) ? pixelPointTable.pointCount - 12 : 0;
+        for (unsigned p = 0; p < POINTARRAY_COUNT && p < pixelPointTable.pointCount; p++) {
+            PixelPoint pixelPoint = pixelPointTable.points[i];
+            pointData[p] = (p % 2 == 0)? pixelPoint.x : pixelPoint.y;
+            i++;
+        }
+    }
+
     switch (key) {
         case 'q': rayFunc = rayFunc1; break;
         case 'w': rayFunc = rayFunc2; break;
@@ -53,19 +60,8 @@ void _onKeyEvent(char key){
     }
 
     if (_outputImg != NULL && isalpha(key)) RASTERON_DEALLOC(_outputImg);
-    // if (KEYS_TOP_ROW(key)) _outputImg = vectorImgOp((ImageSize) { 1024, 1024 }, 1.0 * (mode + 1), rayFunc);
-    // else if(KEYS_MID_ROW(key)) 
-        _outputImg = raycastImgOp((ImageSize) { 1024, 1024 }, pointData, 12, abs((double)mode + 1));
-    /* else {
-        float* ptData = (float*)malloc(pixelPointTable.pointCount * sizeof(float) * 2);
-        for (unsigned p = 0; p < pixelPointTable.pointCount; p++) {
-            *(ptData + (p * 2)) = pixelPointTable.points[p].x;
-            *(ptData + (p * 2) + 1) = pixelPointTable.points[p].y;
-        }
-        _outputImg = raycastImgOp((ImageSize) { 1024, 1024 }, ptData, pixelPointTable.pointCount, 1.0 * (mode + 1));
-        free(ptData);
-    } */
-    // else raycastImgOp((ImageSize) { 1024, 1024 }, pixelPointTable.points, pixelPointTable.pointCount, 1.0 * (mode + 1));
+    // if (KEYS_TOP_ROW(key)) _outputImg = vectorImgOp((ImageSize) { 1024, 1024 }, 1.0 * (mode + 1), rayFunc); 
+    _outputImg = raycastImgOp((ImageSize) { 1024, 1024 }, pointData, 12, abs((double)mode + 1));
 }
 void _onPressEvent(double x, double y){ 
     pixelPointToTable(&pixelPointTable, x, y);

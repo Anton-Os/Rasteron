@@ -144,24 +144,24 @@ if(MSVC)
 else()
     set(FFMPEG_C_FLAGS "")
 endif()
-ExternalProject_Add(FFMPEG
-    GIT_REPOSITORY "https://github.com/Anton-Os/ffmpeg-cmake.git"
+#ExternalProject_Add(FFMPEG
+#    GIT_REPOSITORY "https://github.com/Anton-Os/ffmpeg-cmake.git"
     # GIT_REPOSITORY "https://github.com/FFmpeg/FFmpeg.git"
-    GIT_TAG "3853cb5db9f91c7977d649c5bbf66a215a1190d6"
+#    GIT_TAG "3853cb5db9f91c7977d649c5bbf66a215a1190d6"
 
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} 
-        -DCMAKE_C_STANDARD=11 
-        -DCMAKE_C_STANDARD_REQUIRED=ON 
-        -DCMAKE_C_EXTENSIONS=OFF
-        -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} ${FFMPEG_C_FLAGS}" # should be handled within library?
+#    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+#        -DCMAKE_C_STANDARD=11
+#        -DCMAKE_C_STANDARD_REQUIRED=ON
+#        -DCMAKE_C_EXTENSIONS=OFF
+#        -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} ${FFMPEG_C_FLAGS}" # should be handled within library?
 
-    PREFIX ${EXTERNAL_PROJ_DIR}/FFMPEG
-    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+#    PREFIX ${EXTERNAL_PROJ_DIR}/FFMPEG
+#    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
 
     # CONFIGURE_COMMAND ""
-    # BUILD_COMMAND "" # Manual Build?
-    INSTALL_COMMAND "" # Manual Install?
-)
+#    BUILD_COMMAND "" # Manual Build?
+#    INSTALL_COMMAND "" # Manual Install?
+#)
 endif()
 
 #if(SUPPORT_MEDIA_EXPORT AND EXISTS "${EXTERNAL_PROJ_DIR}/FFMPEG/src/ffmpeg")
@@ -175,8 +175,8 @@ endif()
 
 find_package(CUDAToolkit)
 if(CUDAToolkit_FOUND)
-    set(SUPPORT_CUDA_TOOLKIT TRUE CACHE BOOL "CUDA Libraries found" FORCE)
+    set(SUPPORT_CUDA TRUE CACHE BOOL "CUDA Libraries found" FORCE)
 else()
-    set(SUPPORT_CUDA_TOOLKIT FALSE CACHE BOOL "CUDA Libraries found" FORCE)
+    set(SUPPORT_CUDA FALSE CACHE BOOL "CUDA Libraries found" FORCE)
 endif()
 
