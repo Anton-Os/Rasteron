@@ -161,6 +161,7 @@ void encodeQueue(Rasteron_Queue* queue){
 	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_SUBTYPE, encodeFrmt))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(mediaTypeIn->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive))) return perror("Failed to set parameter");
+	if (!SUCCEEDED(mediaTypeIn->SetUINT32(MF_MT_AVG_BITRATE, 800000))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeSize(mediaTypeIn, MF_MT_FRAME_SIZE, frameWidth, frameHeight))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_FRAME_RATE, 60, 1))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_PIXEL_ASPECT_RATIO, 1, 1))) return perror("Failed to set parameter");
