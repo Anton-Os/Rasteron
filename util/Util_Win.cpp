@@ -117,25 +117,10 @@ void encodeQueue(Rasteron_Queue* queue){
 
 	const uint32_t frameWidth = frameImg->width;
 	const uint32_t frameHeight = frameImg->height;
-	const uint32_t frameRes = frameWidth * frameHeight;
-	const uint32_t fps = 60;
-	const uint32_t frameCount = queue->frameCount * fps;
-	const uint32_t bitrate = 800000; // is this correct?
-	const uint64_t duration = (queue->frameCount * 10000) / fps; // is this correct?
+	const uint32_t bitrate = 5000000;
 
 	const GUID encodeFrmt = MFVideoFormat_H264;
 	const GUID inputFrmt = MFVideoFormat_RGB32;
-
-	DWORD* data = (DWORD*)malloc(sizeof(DWORD) * frameRes * queue->frameCount);
-
-	unsigned d = 0;
-	for(unsigned f = 0; f < queue->frameCount && d < (frameRes * queue->frameCount); f++){
-		Rasteron_Image* frame = *(queue->frameData + f);
-		for(unsigned p = 0; p < frame->width * frame->height; p++){
-			*(data + d) = *(frame->data + p);
-			d++;
-		}
-	}
 
 	wchar_t mediaOutputName[1024];
 	// size_t nameLen = strlen(queue->prefix);
@@ -150,7 +135,7 @@ void encodeQueue(Rasteron_Queue* queue){
 	if(!SUCCEEDED(mediaTypeOut->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(mediaTypeOut->SetGUID(MF_MT_SUBTYPE, encodeFrmt))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(mediaTypeOut->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive))) return perror("Failed to set parameter");
-	if(!SUCCEEDED(mediaTypeOut->SetUINT32(MF_MT_AVG_BITRATE, 800000))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeOut->SetUINT32(MF_MT_AVG_BITRATE, bitrate))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeSize(mediaTypeOut, MF_MT_FRAME_SIZE, frameWidth, frameHeight))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeOut, MF_MT_FRAME_RATE, 60, 1))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeOut, MF_MT_PIXEL_ASPECT_RATIO, 1, 1))) return perror("Failed to set parameter");
@@ -159,9 +144,9 @@ void encodeQueue(Rasteron_Queue* queue){
 
 	if(!SUCCEEDED(MFCreateMediaType(&mediaTypeIn))) return perror("Failed to create media type for input");
 	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video))) return perror("Failed to set parameter");
-	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_SUBTYPE, encodeFrmt))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeIn->SetGUID(MF_MT_SUBTYPE, inputFrmt))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(mediaTypeIn->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive))) return perror("Failed to set parameter");
-	if (!SUCCEEDED(mediaTypeIn->SetUINT32(MF_MT_AVG_BITRATE, 800000))) return perror("Failed to set parameter");
+	if(!SUCCEEDED(mediaTypeIn->SetUINT32(MF_MT_AVG_BITRATE, bitrate))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeSize(mediaTypeIn, MF_MT_FRAME_SIZE, frameWidth, frameHeight))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_FRAME_RATE, 60, 1))) return perror("Failed to set parameter");
 	if(!SUCCEEDED(MFSetAttributeRatio(mediaTypeIn, MF_MT_PIXEL_ASPECT_RATIO, 1, 1))) return perror("Failed to set parameter");
@@ -173,11 +158,45 @@ void encodeQueue(Rasteron_Queue* queue){
 	result = sinkWriter->BeginWriting();
 	if(!SUCCEEDED(result)) return perror("Writing failed!");
 
+	// Writing frames
+	const LONGLONG frameDuration = 10000000 / 60; // 1 second = 10M hns
+	LONGLONG timestamp = 0;
+	for (unsigned f = 0; f < queue->frameCount; f++) {
+		Rasteron_Image* frame = *(queue->frameData + f);
+		
+		// Creating Buffer
+		IMFMediaBuffer* mediaBuffer = nullptr;
+		DWORD buffSize = frame->width * frame->height * 4;
+		MFCreateMemoryBuffer(buffSize, &mediaBuffer);
+
+		// Copying Pixels
+		BYTE* pixels = nullptr;
+		DWORD maxLen = 0, curLen = 0;
+		mediaBuffer->Lock(&pixels, &maxLen, &curLen);
+		memcpy(pixels, frame->data, buffSize); // copying to destination
+		mediaBuffer->Unlock();
+		mediaBuffer->SetCurrentLength(buffSize);
+
+		// Creating Sample
+		IMFSample* mediaSample = NULL;
+		MFCreateSample(&mediaSample);
+		mediaSample->AddBuffer(mediaBuffer);
+		mediaSample->SetSampleTime(timestamp);
+		mediaSample->SetSampleDuration(frameDuration);
+
+		sinkWriter->WriteSample(streamIndex, mediaSample); // Writing Sample
+
+		mediaBuffer->Release();
+		mediaSample->Release();
+		timestamp += frameDuration;
+	}
+
+	sinkWriter->Finalize();
 	sinkWriter->Release();
 	mediaTypeIn->Release();
 	mediaTypeOut->Release();
 
-	free(data);
+	// free(data);
 
 	MFShutdown();
 	CoUninitialize();
