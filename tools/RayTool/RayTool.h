@@ -33,4 +33,4 @@ static unsigned invertMix3(unsigned color1, unsigned color2) { return (0xFFFFFFF
 // Image Generation Functions
 
 Rasteron_Image* raycastImgOp(ImageSize size, float* points, unsigned pointCount, double dist); // See Ray.c
-Rasteron_Image* raycastImgOp2(ImageSize size, float* points, unsigned pointCount, double dist);
+Rasteron_Image* rayblendImgOp(ImageSize size, float* points, unsigned pointCount, double dist); // See Ray.c

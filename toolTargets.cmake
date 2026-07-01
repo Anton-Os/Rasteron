@@ -12,11 +12,11 @@ add_executable(TexTool tools/TexTool/TexTool.c tools/TexTool/Tex.c tools/TexTool
 target_include_directories(TexTool PUBLIC loader support core ext util)
 target_link_libraries(TexTool Rasteron)
 
-add_executable(TileTool tools/TileTool/TileTool.c tools/TileTool/Tile.c ${prog_src})
+add_executable(TileTool tools/TileTool/TileTool.c tools/TileTool/TileRules.c tools/TileTool/Tile.c ${prog_src})
 target_include_directories(TileTool PUBLIC loader support core ext util)
 target_link_libraries(TileTool Rasteron)
 
-add_executable(SimTool tools/SimTool/SimTool.c tools/SimTool/Sim.c ${prog_src}) # TODO: add Sim.c when implemented
+add_executable(SimTool tools/SimTool/SimTool.c tools/SimTool/SimRules.c tools/SimTool/Sim.c ${prog_src}) # TODO: add Sim.c when implemented
 target_include_directories(SimTool PUBLIC loader support core ext util)
 target_link_libraries(SimTool Rasteron)
 

@@ -50,7 +50,7 @@ Rasteron_Image* feedImgOp(ref_image_t refImg, unsigned short iters){ // Rasteron
     return chemsImg;
 }
 
-Rasteron_Image* simImgOp(ref_image_t refImage, unsigned short iters, nebrCallback8 callback){
+Rasteron_Image* simulationImgOp(ref_image_t refImage, unsigned short iters, nebrCallback8 callback){
 	Rasteron_Image* cellwiseImg = copyImgOp(refImage);
 
     for(unsigned i = 0; i < iters; i++){
