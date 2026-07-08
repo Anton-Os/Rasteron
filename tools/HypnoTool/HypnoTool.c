@@ -15,7 +15,7 @@ void _onKeyEvent(char key){
     if(isalpha(key)) RASTERON_DEALLOC(_outputImg);
 
     // color1 = RAND_COLOR(); color2 = RAND_COLOR();
-    unsigned radialColors[4] = { color1, color2, color_invert(color1), color_invert(color2) };
+    unsigned radialColors[3] = { color1, color2, blend_colors_eq(color1, color2) };
     switch(tolower(key)){
         case 'q': _outputImg = swirlyImgOp(3.0, color1, color2); break;
         case 'w': _outputImg = swirlyImgOp(6.0, color1, color2); break;
@@ -32,10 +32,10 @@ void _onKeyEvent(char key){
         case 'd': _outputImg = hypnosisImgOp(color1, color2, 2, hypnoticMix1); break;
         case 'f': _outputImg = hypnosisImgOp(color1, color2, 3, hypnoticMix2); break;
         case 'g': _outputImg = hypnosisImgOp(color1, color2, 4, hypnoticMix3); break;
-        case 'h': _outputImg = radialImgOp(radialColors, radialMix6); break;
-        case 'j': _outputImg = radialImgOp(radialColors, radialMix7); break;
-        case 'k': _outputImg = radialImgOp(radialColors, radialMix8); break;
-        case 'l': _outputImg = radialImgOp(radialColors, radialMix9); break;
+        case 'h': _outputImg = radialImgOp(radialColors, radialMix3); break;
+        case 'j': _outputImg = radialImgOp(radialColors, radialMix4); break;
+        case 'k': _outputImg = radialImgOp(radialColors, radialMix5); break;
+        case 'l': _outputImg = radialImgOp(radialColors, radialMix7); break;
         case 'z': _outputImg = mandalaImgOp(mandalaMap, mandalaMix1, mandalaInterp1); break;
         case 'x': _outputImg = mandalaImgOp(mandalaMap, mandalaMix2, mandalaInterp2); break;
         case 'c': _outputImg = mandalaImgOp(mandalaMap, mandalaMix3, mandalaInterp3); break;

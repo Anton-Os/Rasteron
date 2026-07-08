@@ -3,15 +3,14 @@
 unsigned rayColor1 = 0xFF000000;
 unsigned rayColor2 = 0xFFFFFFFF;
 
-mixCallback vecMixFunc = mult_colors;
-mixCallback rayMixFunc = bit_colors_xor;
 coordCallback3 rayFunc = rayFunc1;
+mixCallback rayMixFunc = bit_colors_xor;
+mixCallback mixFunc = NULL;
 
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
 #include "../_Tool.h"
-
 
 void _onKeyEvent(char key){
     float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2;
@@ -45,23 +44,28 @@ void _onKeyEvent(char key){
         case 'j': rayMixFunc = invertMix1; break;
         case 'k': rayMixFunc = invertMix2; break;
         case 'l': rayMixFunc = invertMix3; break;
-        case 'z': vecMixFunc = mult_colors; break;
-        case 'x': vecMixFunc = mult_rgb; break;
-        case 'c': vecMixFunc = add_colors; break;
-        case 'v': vecMixFunc = add_rgb; break;
-        case 'b': vecMixFunc = bit_colors_and; break;
-        case 'n': vecMixFunc = bit_colors_or; break;
-        case 'm': vecMixFunc = sqroot_colors; break;
+        case 'z': mixFunc = mult_colors; break;
+        case 'x': mixFunc = mult_rgb; break;
+        case 'c': mixFunc = add_colors; break;
+        case 'v': mixFunc = add_rgb; break;
+        case 'b': mixFunc = bit_colors_and; break;
+        case 'n': mixFunc = bit_colors_or; break;
+        case 'm': mixFunc = sqroot_colors; break;
     }
     if (key == ',') {
-        // vecMixFunc = rayMixFunc;
+        // mixFunc = rayMixFunc;
         rayColor1 = RAND_COLOR();
         rayColor2 = color_invert(rayColor1);
+        // TODO: Change between rayMixFunc and mixFunc
     }
 
     if (_outputImg != NULL && isalpha(key)) RASTERON_DEALLOC(_outputImg);
     // if (KEYS_TOP_ROW(key)) _outputImg = vectorImgOp((ImageSize) { 1024, 1024 }, 1.0 * (mode + 1), rayFunc); 
-    _outputImg = raycastImgOp((ImageSize) { 1024, 1024 }, pointData, 12, abs((double)mode + 1));
+    Rasteron_Image* raycastImg = raycastImgOp((ImageSize) { 1024, 1024 }, pointData, 12, abs((double)mode + 1));
+    if (mixFunc != NULL && _savedImg != NULL)
+        _outputImg = mixingImgOp(raycastImg, _savedImg, mixFunc);
+    else _outputImg = copyImgOp(raycastImg);
+    RASTERON_DEALLOC(raycastImg);
 }
 void _onPressEvent(double x, double y){ 
     pixelPointToTable(&pixelPointTable, x, y);

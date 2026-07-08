@@ -7,7 +7,7 @@ extern int mode;
 extern unsigned rayColor1;
 extern unsigned rayColor2;
 
-extern mixCallback vecMixFunc;
+extern mixCallback mixFunc;
 extern mixCallback rayMixFunc;
 extern coordCallback3 rayFunc;
 

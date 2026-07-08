@@ -2,7 +2,7 @@
 #define RADIAL_DIST 10.0
 #define RADIAL_INVOKE 1024
 #define AB_ARGS unsigned a, unsigned b
-#define ABCD_ARGS unsigned a, unsigned b, unsigned c, unsigned d
+#define ABC_ARGS unsigned a, unsigned b, unsigned c
 
 #include "Rasteron.h"
 
@@ -18,17 +18,18 @@ Rasteron_Image* swirlyImgOp(double swirlFactor, unsigned color1, unsigned color2
 
 // Radial
 
-static unsigned radialMix1(ABCD_ARGS){ return diff_colors(diff_colors(a, d), c - b); } // starting
-static unsigned radialMix2(ABCD_ARGS){ return diff_colors(diff_colors(b, c), d + a); } // reverse
-static unsigned radialMix3(ABCD_ARGS){ return diff_colors(diff_colors(c, a), b * d); } // odds and evens
-static unsigned radialMix4(ABCD_ARGS){ return diff_colors(diff_colors(d, b), pow(a, 1.0 / (double)(c & 0xFF))); } // evens and odds
-static unsigned radialMix5(ABCD_ARGS){ return diff_colors(c - b, diff_colors(a, d)); } // starting alt
-static unsigned radialMix6(ABCD_ARGS){ return diff_colors(d + a, diff_colors(b, c)); } // reverse alt
-static unsigned radialMix7(ABCD_ARGS){ return diff_colors(b * d, diff_colors(c, a)); } // odds and evens alt
-static unsigned radialMix8(ABCD_ARGS){ return diff_colors(pow(a, 1.0 / (double)(c & 0xFF)), diff_colors(d, b)); } // evens and odds alt
-static unsigned radialMix9(ABCD_ARGS){ return (a + b > c + d)? blend_colors(a, b, 0.5) : fuse_colors(c, d, 0.5); } // inbetween
+static unsigned d = 0xFF666666;
+static unsigned radialMix1(ABC_ARGS){ return diff_colors(diff_colors(a, d), c - b); } // starting
+static unsigned radialMix2(ABC_ARGS){ return diff_colors(diff_colors(b, c), d + a); } // reverse
+static unsigned radialMix3(ABC_ARGS){ return diff_colors(diff_colors(c, a), b * d); } // odds and evens
+static unsigned radialMix4(ABC_ARGS){ return diff_colors(diff_colors(d, b), pow(a, 1.0 / (double)(c & 0xFF))); } // evens and odds
+static unsigned radialMix5(ABC_ARGS){ return diff_colors(c - b, diff_colors(a, d)); } // starting alt
+static unsigned radialMix6(ABC_ARGS){ return diff_colors(d + a, diff_colors(b, c)); } // reverse alt
+static unsigned radialMix7(ABC_ARGS){ return diff_colors(b * d, diff_colors(c, a)); } // odds and evens alt
+static unsigned radialMix8(ABC_ARGS){ return diff_colors(pow(a, 1.0 / (double)(c & 0xFF)), diff_colors(d, b)); } // evens and odds alt
+static unsigned radialMix9(ABC_ARGS){ return (a + b > c + d)? blend_colors(a, b, 0.5) : fuse_colors(c, d, 0.5); } // inbetween
 
-Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback); // See Hypno.c
+Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback3 mix_callback); // See Hypno.c
 
 // Hypnosis
 

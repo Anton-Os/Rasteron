@@ -6,7 +6,8 @@ typedef unsigned (*recolorCallback)(unsigned color);
 typedef uint8_t (*remaskCallback)(CHANNEL_Type channel, uint8_t value);
 
 typedef unsigned (*mixCallback)(unsigned color1, unsigned color2);
-typedef unsigned (*mixCallback4)(unsigned color1, unsigned color2, unsigned color3, unsigned color4);
+typedef unsigned (*mixCallback3)(unsigned color1, unsigned color2, unsigned color3);
+// typedef unsigned (*mixCallback4)(unsigned color1, unsigned color2, unsigned color3, unsigned color4);
 
 typedef float (*noiseCallback)(float p);
 typedef unsigned (*coordCallback)(double x, double y);

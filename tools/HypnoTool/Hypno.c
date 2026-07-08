@@ -50,17 +50,17 @@ Rasteron_Image* swirlyImgOp(double swirlFactor, unsigned color1, unsigned color2
 
 // Radial
 
-Rasteron_Image* radialImgOp(unsigned colors[4], mixCallback4 mix_callback){
-    Rasteron_Image* radialImgs[4] = {
+Rasteron_Image* radialImgOp(unsigned colors[3], mixCallback3 mix_callback){
+    Rasteron_Image* radialImgs[3] = {
         gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, colors[0], colors[1]),
         gradientImgOp((ImageSize){ 1024 / 2, 1024 / 2 }, SIDE_Radial, colors[1], colors[2]),
-        gradientImgOp((ImageSize){ 1024 / 4, 1024 / 4 }, SIDE_Radial, colors[2], colors[3]),
-        gradientImgOp((ImageSize){ 1024 / 6, 1024 / 6 }, SIDE_Radial, colors[3], colors[0])
+        gradientImgOp((ImageSize){ 1024 / 4, 1024 / 4 }, SIDE_Radial, colors[0], colors[2]),
     };
 
-    Rasteron_Image* radialImg = mixingExtImgOp(radialImgs[0], radialImgs[1], radialImgs[2], radialImgs[3], mix_callback);
+    d = RAND_COLOR(); // for callback functions
+    Rasteron_Image* radialImg = mixingExtImgOp(radialImgs[0], radialImgs[1], radialImgs[2], mix_callback);
 
-    for(unsigned i = 0; i < 4; i++) RASTERON_DEALLOC(radialImgs[i]);
+    for(unsigned i = 0; i < 3; i++) RASTERON_DEALLOC(radialImgs[i]);
 
     return radialImg;
 }

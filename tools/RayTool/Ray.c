@@ -40,7 +40,7 @@ Rasteron_Image* rayblendImgOp(ImageSize size, float* points, unsigned pointCount
                   fabs(y / length) + *(points + (c * 3) + 1),
                   fabs(dist / length) + *(points + (c * 3) + 2)
                 );
-                color = vecMixFunc(color, color);
+                color = mixFunc(color, color);
                 *(raycastImg->data + p) = (c == 0)? color : rayMixFunc(color, *(raycastImg->data + p));
             }
         else *(raycastImg->data + p) = rayFunc(fabs(x / length), fabs(y / length), fabs(dist / length));

@@ -20,11 +20,11 @@
 #define RASTERON_ENABLE_SPACE TRUE
 #define RASTERON_ENABLE_ANIM ${SUPPORT_MEDIA_EXPORT}
 #define RASTERON_ENABLE_FONT ${SUPPORT_FONT_BAKING}
-#define RASTERON_ENABLE_FONT ${SUPPORT_CUDA}
 
 #define USE_IMG_TIFF // Enable TIFF Support
 #define USE_IMG_PNG // Enable PNG Support
 #define USE_IMG_BMP // Enable BMP Support
+#define USE_CUDA_LIBS ${SUPPORT_CUDA} // TODO: See if carries over to Topl engine
 
 #define NO_COLOR 0x00000000
 

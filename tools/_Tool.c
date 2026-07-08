@@ -192,6 +192,9 @@ char* parseArgs(int argc, char** argv){
 }
 
 void _run(int argc, char** argv, imageArgCallback callback){
+#if USE_CUDA_LIBS
+    puts("CUDA acceleration enabled!\n");
+#endif
     char* args = parseArgs(argc, argv);
 
     if(callback != NULL) _outputImg = callback(args); // pass args here
