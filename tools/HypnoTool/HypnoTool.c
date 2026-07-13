@@ -34,8 +34,8 @@ void _onKeyEvent(char key){
         case 'g': _outputImg = hypnosisImgOp(color1, color2, 4, hypnoticMix3); break;
         case 'h': _outputImg = radialImgOp(radialColors, radialMix3); break;
         case 'j': _outputImg = radialImgOp(radialColors, radialMix4); break;
-        case 'k': _outputImg = radialImgOp(radialColors, radialMix5); break;
-        case 'l': _outputImg = radialImgOp(radialColors, radialMix7); break;
+        case 'k': _outputImg = radialImgOp(radialColors, radialMix7); break;
+        case 'l': _outputImg = radialImgOp(radialColors, radialMix5); break;
         case 'z': _outputImg = mandalaImgOp(mandalaMap, mandalaMix1, mandalaInterp1); break;
         case 'x': _outputImg = mandalaImgOp(mandalaMap, mandalaMix2, mandalaInterp2); break;
         case 'c': _outputImg = mandalaImgOp(mandalaMap, mandalaMix3, mandalaInterp3); break;

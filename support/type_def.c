@@ -30,6 +30,11 @@ void _dealloc_img(Rasteron_Image* image){
 	image = NULL; // set address to null
 }
 
+Rasteron_Image* _named_img(Rasteron_Image* image, const char* name){
+	if(image != NULL) image->name = name;
+	return image;
+}
+
 // --------------------------------   Swatch    -------------------------------- //
 
 ColorSwatch createSwatch(unsigned color, uint8_t deviation){

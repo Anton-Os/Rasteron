@@ -42,10 +42,10 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 		} else *(insertImg->data + op) = *(outerImg->data + op);
 	}
 
-	return insertImg;
+	return RASTERON_NAMED(insertImg, "insert");
 }
 
-Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback){
+Rasteron_Image* mixImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback){
 	assert(image1 != NULL && image2 != NULL);
 
 	Rasteron_Image* sizedImg1 = (image1->width * image1->height > image2->width * image2->height)? resizeImgOp((ImageSize){image2->height, image2->width}, image1) : copyImgOp(image1);
@@ -58,46 +58,44 @@ Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback 
 	RASTERON_DEALLOC(sizedImg1);
 	RASTERON_DEALLOC(sizedImg2);
 
-	return mixImage;
+	return RASTERON_NAMED(mixImage, "mix");
 }
 
-Rasteron_Image* mixingExtImgOp(ref_image_t image1, ref_image_t image2, ref_image_t image3, mixCallback3 callback){
+Rasteron_Image* mixExtImgOp(ref_image_t image1, ref_image_t image2, ref_image_t image3, mixCallback3 callback){
 	assert(image1 != NULL && image2 != NULL && image3 != NULL);
 
-    unsigned maxWidth = 0;
-    unsigned maxHeight = 0;
+    unsigned maxWidth = 0, maxHeight = 0;
     if(image1->width > maxWidth) maxWidth = image1->width; if(image1->height > maxHeight) maxHeight = image1->height;
     if(image2->width > maxWidth) maxWidth = image2->width; if(image2->height > maxHeight) maxHeight = image2->height;
     if(image3->width > maxWidth) maxWidth = image3->width; if(image3->height > maxHeight) maxHeight = image3->height;
  
-    Rasteron_Image* sizedImg1 = (image1->width == maxWidth && image1->height == maxHeight)? copyImgOp(image1) : resizeImgOp((ImageSize){ maxHeight, maxWidth }, image1);
-    Rasteron_Image* sizedImg2 = (image2->width == maxWidth && image2->height == maxHeight)? copyImgOp(image2) : resizeImgOp((ImageSize){ maxHeight, maxWidth }, image2);
-    Rasteron_Image* sizedImg3 = (image3->width == maxWidth && image3->height == maxHeight)? copyImgOp(image3) : resizeImgOp((ImageSize){ maxHeight, maxWidth }, image3);
+	Rasteron_Image* sizedImages[3] = {
+		resizeImgOp((ImageSize){ maxHeight, maxWidth }, image1), 
+		resizeImgOp((ImageSize){ maxHeight, maxWidth }, image2),
+		resizeImgOp((ImageSize){ maxHeight, maxWidth }, image3)
+	};
+	
+	Rasteron_Image* mixImage = RASTERON_ALLOC("mixing", sizedImages[0]->height, sizedImages[0]->width);
+	for(unsigned p = 0; p < sizedImages[0]->width * sizedImages[0]->height; p++)
+		*(mixImage->data + p) = callback(*(sizedImages[0]->data + p), *(sizedImages[1]->data + p), *(sizedImages[2]->data + p));
 
-	Rasteron_Image* mixImage = RASTERON_ALLOC("mixing", sizedImg1->height, sizedImg1->width);
-	for(unsigned p = 0; p < sizedImg1->width * sizedImg1->height; p++)
-		*(mixImage->data + p) = callback(*(sizedImg1->data + p), *(sizedImg2->data + p), *(sizedImg3->data + p));
-
-	RASTERON_DEALLOC(sizedImg1);
-	RASTERON_DEALLOC(sizedImg2);
-	RASTERON_DEALLOC(sizedImg3);
+	for(unsigned i = 0; i < 3; i++) RASTERON_DEALLOC(sizedImages[i]);
 
     return mixImage;
 }
 
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2){
-	return mixingImgOp(image1, image2, blend_colors_eq);
+	return RASTERON_NAMED(mixImgOp(image1, image2, blend_colors_eq), "blend");
 }
 
-Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2){
-	return mixingImgOp(image1, image2, fuse_colors_eq);
+Rasteron_Image* fuseImgOp(ref_image_t image1, ref_image_t image2){
+	return RASTERON_NAMED(mixImgOp(image1, image2, fuse_colors_eq), "fuse");
 }
 
 Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage){
 	Rasteron_Image* sizedDomainImg = (domainImage->width * domainImage->height != refImage->width * refImage->height) 
 		? resizeImgOp((ImageSize){ refImage->height, refImage->width }, domainImage) : copyImgOp(domainImage);
 	Rasteron_Image* warpImage = copyImgOp(refImage);
-
 
 	for(unsigned p = 0; p < warpImage->width * warpImage->height; p++){
         unsigned refColor = *(sizedDomainImg->data + p);
@@ -113,5 +111,5 @@ Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage){
 
 	RASTERON_DEALLOC(sizedDomainImg);
 
-	return warpImage;
+	return RASTERON_NAMED(warpImage, "warp");
 }

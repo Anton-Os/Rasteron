@@ -45,12 +45,12 @@ void _onKeyEvent(char key){
 
         RASTERON_DEALLOC(_outputImg);
         switch(tolower(key)){
-            case 'z': _outputImg = mixingImgOp(currentImg, mixerImg, mult_rgb); break;
-            case 'x': _outputImg = mixingImgOp(currentImg, mixerImg, qdroot_colors); break;
-            case 'c': _outputImg = mixingImgOp(currentImg, mixerImg, assimMix_rgb); break;
-            case 'v': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_and); break;
-            case 'b': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_or); break;
-            case 'n': _outputImg = mixingImgOp(currentImg, mixerImg, bit_colors_xor); break;
+            case 'z': _outputImg = mixImgOp(currentImg, mixerImg, mult_rgb); break;
+            case 'x': _outputImg = mixImgOp(currentImg, mixerImg, qdroot_colors); break;
+            case 'c': _outputImg = mixImgOp(currentImg, mixerImg, assimMix_rgb); break;
+            case 'v': _outputImg = mixImgOp(currentImg, mixerImg, bit_colors_and); break;
+            case 'b': _outputImg = mixImgOp(currentImg, mixerImg, bit_colors_or); break;
+            case 'n': _outputImg = mixImgOp(currentImg, mixerImg, bit_colors_xor); break;
             case 'm': _outputImg = warpingImgOp(currentImg, mixerImg); break;
             default: _outputImg = copyImgOp(currentImg); break;
         }

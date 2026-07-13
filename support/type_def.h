@@ -44,6 +44,9 @@ DllExport Rasteron_Image* _alloc_img(const char* name, uint32_t height, uint32_t
 DllExport void _dealloc_img(Rasteron_Image* image);
 #define RASTERON_DEALLOC(image) (_dealloc_img(image))
 
+DllExport Rasteron_Image* _named_img(Rasteron_Image* image, const char* name);
+#define RASTERON_NAMED(name, image) (_named_img(image, name))
+
 // --------------------------------   Swatch    -------------------------------- //
 
 enum SWATCH_Colors {

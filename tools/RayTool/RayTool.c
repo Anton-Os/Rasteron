@@ -63,7 +63,7 @@ void _onKeyEvent(char key){
     // if (KEYS_TOP_ROW(key)) _outputImg = vectorImgOp((ImageSize) { 1024, 1024 }, 1.0 * (mode + 1), rayFunc); 
     Rasteron_Image* raycastImg = raycastImgOp((ImageSize) { 1024, 1024 }, pointData, 12, abs((double)mode + 1));
     if (mixFunc != NULL && _savedImg != NULL)
-        _outputImg = mixingImgOp(raycastImg, _savedImg, mixFunc);
+        _outputImg = mixImgOp(raycastImg, _savedImg, mixFunc);
     else _outputImg = copyImgOp(raycastImg);
     RASTERON_DEALLOC(raycastImg);
 }

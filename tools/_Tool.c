@@ -153,7 +153,7 @@ void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format){
         strncpy(tempFileName, fileName, strlen(fileName) - ((iters > 1)? 6 : 4));
 
         char newFileName[1024];
-        sprintf(newFileName, "%s-%d", tempFileName, iters);
+        sprintf(newFileName, "%s%d", tempFileName, iters);
         strcat(newFileName, fileExt);
 
         strcpy(fileName, newFileName);

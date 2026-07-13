@@ -50,11 +50,11 @@ DllExport Rasteron_Image* remaskImgOp(ref_image_t refImage, remaskCallback callb
 
 DllExport Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coordX, double coordY); // insert image at a given offset
 
-DllExport Rasteron_Image* mixingImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback); // creates mix per pixel from 2 images
-DllExport Rasteron_Image* mixingExtImgOp(ref_image_t image1, ref_image_t image2, ref_image_t image3, mixCallback3 callback); // creates mix per pixel from 4 images
+DllExport Rasteron_Image* mixImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback); // creates mix per pixel from 2 images
+DllExport Rasteron_Image* mixExtImgOp(ref_image_t image1, ref_image_t image2, ref_image_t image3, mixCallback3 callback); // creates mix per pixel from 4 images
 
 DllExport Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2); // creates blended image
-DllExport Rasteron_Image* fusionImgOp(ref_image_t image1, ref_image_t image2); // creates fused image
+DllExport Rasteron_Image* fuseImgOp(ref_image_t image1, ref_image_t image2); // creates fused image
 DllExport Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage); // creates domain warped image
 
 

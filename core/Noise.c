@@ -71,7 +71,7 @@ Rasteron_Image* noiseExtImgOp(ImageSize size, ColorGrid grid, noiseCallback call
         *(noiseImg->data + p) = newColor;
     }
 
-  RASTERON_DEALLOC(gridImg);
+    RASTERON_DEALLOC(gridImg);
     return noiseImg;
 }
 

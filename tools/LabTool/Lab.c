@@ -523,7 +523,7 @@ Rasteron_Image* recurrantImgOp(unsigned short iters){
     Rasteron_Image* recurrantImg = noiseImgOp((ImageSize){ 1024, 1024 }, colorGrid);
 
     for(unsigned i = 0; i < iters; i++){
-        Rasteron_Image* tempImg = mixingImgOp(noiseImg, recurrantImg, recurrantMix);
+        Rasteron_Image* tempImg = mixImgOp(noiseImg, recurrantImg, recurrantMix);
         RASTERON_DEALLOC(recurrantImg);
         recurrantImg = copyImgOp(tempImg);
         RASTERON_DEALLOC(tempImg);
@@ -565,7 +565,7 @@ Rasteron_Image* intersectImgOp(double angle1, double angle2){
     intersectAngle = angle2;
     Rasteron_Image* intersectImg2 = mapImgOp((ImageSize){ 1024, 1024 }, intersect);
 
-    Rasteron_Image* scripticImg = mixingImgOp(intersectImg1, intersectImg2, intersectMix);
+    Rasteron_Image* scripticImg = mixImgOp(intersectImg1, intersectImg2, intersectMix);
 
     RASTERON_DEALLOC(intersectImg1);
     RASTERON_DEALLOC(intersectImg2);

@@ -52,13 +52,14 @@ Rasteron_Image* swirlyImgOp(double swirlFactor, unsigned color1, unsigned color2
 
 Rasteron_Image* radialImgOp(unsigned colors[3], mixCallback3 mix_callback){
     Rasteron_Image* radialImgs[3] = {
-        gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, colors[0], colors[1]),
-        gradientImgOp((ImageSize){ 1024 / 2, 1024 / 2 }, SIDE_Radial, colors[1], colors[2]),
-        gradientImgOp((ImageSize){ 1024 / 4, 1024 / 4 }, SIDE_Radial, colors[0], colors[2]),
+        gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Radial, colors[0] + colors[2], colors[1]),
+        gradientImgOp((ImageSize){ 1024 / 2, 1024 / 2 }, SIDE_Radial, colors[1] * colors[0], colors[2]),
+        gradientImgOp((ImageSize){ 1024 / 3, 1024 / 3 }, SIDE_Radial, colors[2] - colors[1], colors[0]),
     };
+    // for(unsigned i = 0; i < 3; i++) // TODO: Filter or modify images
 
     d = RAND_COLOR(); // for callback functions
-    Rasteron_Image* radialImg = mixingExtImgOp(radialImgs[0], radialImgs[1], radialImgs[2], mix_callback);
+    Rasteron_Image* radialImg = mixExtImgOp(radialImgs[0], radialImgs[1], radialImgs[2], mix_callback);
 
     for(unsigned i = 0; i < 3; i++) RASTERON_DEALLOC(radialImgs[i]);
 
@@ -76,16 +77,16 @@ Rasteron_Image* hypnosisImgOp(unsigned color1, unsigned color2, unsigned short i
         gradientImgOp((ImageSize) { 1024, 1024 }, SIDE_Radial, color1, color2),
     };
 
-    Rasteron_Image* mixImg1 = mixingImgOp(gradientImgs[0], gradientImgs[1], callback);
-    Rasteron_Image* mixImg2 = mixingImgOp(gradientImgs[2], gradientImgs[0], callback);
-    Rasteron_Image* mixImg3 = mixingImgOp(gradientImgs[1], gradientImgs[3], callback);
+    Rasteron_Image* mixImg1 = mixImgOp(gradientImgs[0], gradientImgs[1], callback);
+    Rasteron_Image* mixImg2 = mixImgOp(gradientImgs[2], gradientImgs[0], callback);
+    Rasteron_Image* mixImg3 = mixImgOp(gradientImgs[1], gradientImgs[3], callback);
     Rasteron_Image* mixImgs[3] = { mixImg1, mixImg2, mixImg3 };
 
-    Rasteron_Image* hypnosisImg = mixingImgOp(mixImgs[iters % 3], gradientImgs[4], callback);
+    Rasteron_Image* hypnosisImg = mixImgOp(mixImgs[iters % 3], gradientImgs[4], callback);
     if (iters > 3) {
         unsigned m = 0;
         for (unsigned i = 0; i < iters / 3; i++) {
-            Rasteron_Image* stagingImg = mixingImgOp(mixImgs[m % 3], hypnosisImg, callback);
+            Rasteron_Image* stagingImg = mixImgOp(mixImgs[m % 3], hypnosisImg, callback);
             RASTERON_DEALLOC(hypnosisImg);
             hypnosisImg = copyImgOp(stagingImg);
             RASTERON_DEALLOC(stagingImg);
@@ -128,10 +129,10 @@ Rasteron_Image* mandalaImgOp(coordCallback coord_callback, mixCallback mix_callb
     Rasteron_Image* mapImg1 = mapImgOp((ImageSize){ 1024, 1024 }, coord_callback);
     Rasteron_Image* mapImg2 = mapImgOp((ImageSize){ 1024, 1024 }, coord_callback);
 
-    Rasteron_Image* symetricImg1 = mixingImgOp(mapImg1, mapImg2, mix_callback);
+    Rasteron_Image* symetricImg1 = mixImgOp(mapImg1, mapImg2, mix_callback);
     Rasteron_Image* symetricImg2 = flipImgOp(symetricImg1, FLIP_Clock);
 
-    Rasteron_Image* mandalaImg = mixingImgOp(symetricImg1, symetricImg2, restoreMix); // TODO: Find a way to simply copy
+    Rasteron_Image* mandalaImg = mixImgOp(symetricImg1, symetricImg2, restoreMix); // TODO: Find a way to simply copy
 
     RASTERON_DEALLOC(mapImg1); RASTERON_DEALLOC(mapImg2);
     RASTERON_DEALLOC(symetricImg1); RASTERON_DEALLOC(symetricImg2);
