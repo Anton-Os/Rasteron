@@ -8,7 +8,7 @@ extern unsigned _dimens[2];
 // Image Operations
 
 Rasteron_Image* seedImgOp(Rasteron_Image* refImg, double prob){
-    Rasteron_Image* seedImg = (refImg != NULL)? copyImgOp(refImg) : solidImgOp((ImageSize){1024 / _dimens[0], 1024 / _dimens[1]}, SWATCH_D);
+    Rasteron_Image* seedImg = (refImg != NULL)? copyImgOp(refImg) : solidImgOp((ImageSize){1300 / _dimens[0], 1300 / _dimens[1]}, SWATCH_D);
 
     for(unsigned p = 0; p < seedImg->width * seedImg->height; p++)
         if(((float)rand() / (float)RAND_MAX < prob)) *(seedImg->data + p) = (rand() % 2 == 0)? SWATCH_GA : SWATCH_RA;
@@ -54,7 +54,7 @@ Rasteron_Image* simulationImgOp(ref_image_t refImage, unsigned short iters, nebr
 	Rasteron_Image* cellwiseImg = copyImgOp(refImage);
 
     for(unsigned i = 0; i < iters; i++){
-        Rasteron_Image* tempImg = resizeImgOp((ImageSize){ 1024 / (iters - i), 1024 / (iters - i) }, cellwiseImg);
+        Rasteron_Image* tempImg = resizeImgOp((ImageSize){ 1300 / (iters - i), 1300 / (iters - i) }, cellwiseImg);
         NebrTable_List* nebrTables = loadNebrTables(tempImg);
         for (unsigned p = 0; p < tempImg->height * tempImg->width; p++) {
             NebrTable* currentTable = nebrTables->tables + p;

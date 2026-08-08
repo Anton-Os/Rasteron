@@ -33,7 +33,7 @@ void _dealloc_sprite(Rasteron_Sprite* sprite);
 
 // --------------------------------   Heightmap    -------------------------------- //
 
-#define HEIGHTMAP_STEP 0.001 // (1 / 1024.0)
+#define HEIGHTMAP_STEP 0.001 // (1 / 1300.0)
 
 typedef struct {
     Bounds bounds;

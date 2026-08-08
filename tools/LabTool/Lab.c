@@ -1,6 +1,6 @@
 #include "LabTool.h"
 
-static char fullFilePath[1024];
+static char fullFilePath[1300];
 
 extern ColorSwatch _swatch;
 
@@ -45,7 +45,7 @@ Rasteron_Image* nestboxesImgOp(double x, double y){
     for(unsigned i = 1; i < 8; i++) 
         combineImgs[i] = insertImgOp(combineImgs[i - 1], nestedImgs[8 - i - 1], x, y);
 
-    Rasteron_Image* outerImg = solidImgOp((ImageSize){ 1024, 1024 }, 0xFFFFFF00);
+    Rasteron_Image* outerImg = solidImgOp((ImageSize){ 1300, 1300 }, 0xFFFFFF00);
     Rasteron_Image* flipImg = insertImgOp(combineImgs[7], outerImg, x, y);
 
     for(unsigned i = 0; i < 9; i++) RASTERON_DEALLOC(nestedImgs[i]);
@@ -96,7 +96,7 @@ Rasteron_Image* fisheyeImgOp(unsigned short points){
         };
     }
 
-    return fieldImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fisheye); 
+    return fieldImgOp((ImageSize){ 1300, 1300 }, &colorPointTable, fisheye); 
 }
 
 Rasteron_Image* typographyImgOp(unsigned bgColor, unsigned textColor){ 
@@ -154,7 +154,7 @@ static unsigned zigzag(double x, double y){
 
 Rasteron_Image* mozaicImgOp(double z1, double z2){
     zig = z1; zag = z2;
-    Rasteron_Image* zigzagImg = mapImgOp((ImageSize){ 1024, 1024, }, zigzag);
+    Rasteron_Image* zigzagImg = mapImgOp((ImageSize){ 1300, 1300, }, zigzag);
 
     return zigzagImg;
 }
@@ -172,7 +172,7 @@ Rasteron_Image* interferenceImgOp(unsigned short inc, unsigned short dec){
     interfere_inc = inc;
     interfere_dec = dec;
 
-    Rasteron_Image* patternImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF000000, 0xFFEEEE00); // solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
+    Rasteron_Image* patternImg = noiseImgOp_white((ImageSize){ 1300, 1300 }, 0xFF000000, 0xFFEEEE00); // solidImgOp((ImageSize){ 1300, 1300 }, RAND_COLOR());
 
     Rasteron_Image* interferenceImg1 = cellwiseRowImgOp(patternImg, interference);
     Rasteron_Image* interferenceImg2 = cellwiseColImgOp(interferenceImg1, interference);
@@ -194,8 +194,8 @@ static unsigned perturb(double x, double y){
 Rasteron_Image* perturbImgOp(double xCenter, double yCenter){
     ColorGrid grid = { 9, 9, 0xFFFF0000, 0xFF00FF00 };
 
-    Rasteron_Image* coordImg = mapImgOp((ImageSize){ 1024, 1024 }, perturb);
-    Rasteron_Image* checkerImg = checkeredImgOp((ImageSize){ 1024, 1024 }, grid);
+    Rasteron_Image* coordImg = mapImgOp((ImageSize){ 1300, 1300 }, perturb);
+    Rasteron_Image* checkerImg = checkeredImgOp((ImageSize){ 1300, 1300 }, grid);
 
     Rasteron_Image* perturbImg = warpingImgOp(checkerImg, coordImg);
 
@@ -210,12 +210,12 @@ Rasteron_Image* ballingImgOp(double size){
     double blobX1 = (double)rand() / RAND_MAX; double blobY1 = (double)rand() / RAND_MAX;
     double blobX2 = (double)rand() / RAND_MAX; double blobY2 = (double)rand() / RAND_MAX;
 
-    Rasteron_Image* ballingImg = solidImgOp((ImageSize){ 1024, 1024 }, 0xFF333333);
+    Rasteron_Image* ballingImg = solidImgOp((ImageSize){ 1300, 1300 }, 0xFF333333);
 
-    for(unsigned p = 0; p < 1024 * 1024; p++){
-        double torusDist = pix_dist(p, pixPoint_offset((PixelPoint){ torusX, torusY }, ballingImg), 1024);
-        double blobDist1 = pix_dist(p, pixPoint_offset((PixelPoint){ blobX1, blobY1 }, ballingImg), 1024);
-        double blobDist2 = pix_dist(p, pixPoint_offset((PixelPoint){ blobX2, blobY2 }, ballingImg), 1024);
+    for(unsigned p = 0; p < 1300 * 1300; p++){
+        double torusDist = pix_dist(p, pixPoint_offset((PixelPoint){ torusX, torusY }, ballingImg), 1300);
+        double blobDist1 = pix_dist(p, pixPoint_offset((PixelPoint){ blobX1, blobY1 }, ballingImg), 1300);
+        double blobDist2 = pix_dist(p, pixPoint_offset((PixelPoint){ blobX2, blobY2 }, ballingImg), 1300);
 
         if(sin(torusDist) * size < (300.0 * size)) 
             *(ballingImg->data + p) = blend_colors(0xFF333333, 0xFFEEEEEE, (torusDist - 150.0) / (300.00 * size));
@@ -233,7 +233,7 @@ Rasteron_Image* stratifyImgOp(unsigned short levels){
     genFullFilePath("User.png", fullFilePath);
 
     Rasteron_Image* loadImg = loadImgOp(fullFilePath);
-    Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ 1024, 1024 }, loadImg);
+    Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ 1300, 1300 }, loadImg);
     Rasteron_Image* stratifyImg = splitImgOp(resizeImg, levels);
 
     RASTERON_DEALLOC(loadImg);
@@ -256,7 +256,7 @@ unsigned bark(unsigned color, unsigned neighbors[2]){ return (rand() % 2 == 0)? 
 Rasteron_Image* barkodeImgOp(unsigned short iters, unsigned color1, unsigned color2){
     barcode1 = color1; barcode2 = color2;
 
-    Rasteron_Image* seedImg = solidImgOp((ImageSize){ 1024, 1024 }, color1);
+    Rasteron_Image* seedImg = solidImgOp((ImageSize){ 1300, 1300 }, color1);
     for(unsigned i = 0; i < iters; i++){
         Rasteron_Image* tempImg = copyImgOp(seedImg);
         RASTERON_DEALLOC(seedImg);
@@ -272,26 +272,26 @@ Rasteron_Image* barkodeImgOp(unsigned short iters, unsigned color1, unsigned col
 }
 
 Rasteron_Image* chaosImgOp(unsigned short rows, unsigned short cols){
-    Rasteron_Image* img1 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Bottom, 0xFFFF0000, 0xFF0000FF);
-    Rasteron_Image* img2 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Top, 0xFF00FFFF, 0xFFFFFF00);
-    Rasteron_Image* img3 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Right, 0xFF00FF00, 0xFFFF00FF);
-    Rasteron_Image* img4 = gradientImgOp((ImageSize){ 1024 / rows, 1024 / cols }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
-    // Rasteron_Image* img1 = noiseImgOp((ImageSize){ 1024 / rows, 1024 / cols }, (ColorGrid){ 0xFFFF0000, 0xFF0000FF, rows, cols });
+    Rasteron_Image* img1 = gradientImgOp((ImageSize){ 1300 / rows, 1300 / cols }, SIDE_Bottom, 0xFFFF0000, 0xFF0000FF);
+    Rasteron_Image* img2 = gradientImgOp((ImageSize){ 1300 / rows, 1300 / cols }, SIDE_Top, 0xFF00FFFF, 0xFFFFFF00);
+    Rasteron_Image* img3 = gradientImgOp((ImageSize){ 1300 / rows, 1300 / cols }, SIDE_Right, 0xFF00FF00, 0xFFFF00FF);
+    Rasteron_Image* img4 = gradientImgOp((ImageSize){ 1300 / rows, 1300 / cols }, SIDE_Radial, RAND_COLOR(), RAND_COLOR());
+    // Rasteron_Image* img1 = noiseImgOp((ImageSize){ 1300 / rows, 1300 / cols }, (ColorGrid){ 0xFFFF0000, 0xFF0000FF, rows, cols });
 
     Rasteron_Image* chaosoImgs[4] = {
         flipImgOp(img1, FLIP_Counter), flipImgOp(img2, FLIP_Upside), flipImgOp(img3, FLIP_None), flipImgOp(img4, FLIP_Clock)
     };
 
-    Rasteron_Image* chaosImg = RASTERON_ALLOC("chaos", 1024, 1024);
+    Rasteron_Image* chaosImg = RASTERON_ALLOC("chaos", 1300, 1300);
 
     for(unsigned p = 0; p < chaosImg->width * chaosImg->height; p++){
-        double x = (1.0 / (double)1024) * (p % 1024);
-		double y = (1.0 / (double)1024) * (p / 1024);
+        double x = (1.0 / (double)1300) * (p % 1300);
+		double y = (1.0 / (double)1300) * (p / 1300);
 
         unsigned c = x * rows;
         unsigned r = y * cols;
 
-        *(chaosImg->data + p) = fuse_colors(*(chaosoImgs[c % 3]->data + (p % (1024 / rows))), *(chaosoImgs[r % 3]->data + (p % (1024 / rows))), atan(x + y));
+        *(chaosImg->data + p) = fuse_colors(*(chaosoImgs[c % 3]->data + (p % (1300 / rows))), *(chaosoImgs[r % 3]->data + (p % (1300 / rows))), atan(x + y));
         *(chaosImg->data + p) = diff_colors(*(chaosImg->data + p), *(chaosoImgs[(c + 3) % 3]->data + p));
     }
 
@@ -304,13 +304,13 @@ Rasteron_Image* chaosImgOp(unsigned short rows, unsigned short cols){
 // Placeholder Images
 
 Rasteron_Image* hourglassesImgOp(unsigned color1, unsigned color2){
-    Rasteron_Image* paintImg = solidImgOp((ImageSize){ 1024, 1024 }, RAND_COLOR());
+    Rasteron_Image* paintImg = solidImgOp((ImageSize){ 1300, 1300 }, RAND_COLOR());
 
     int direction = 1; // positive
 
     unsigned color = 0xFF000000 | RAND_COLOR();
 
-    for(unsigned p = 0; p < 1024 * 1024; p++){
+    for(unsigned p = 0; p < 1300 * 1300; p++){
         *(paintImg->data + p) = 0xFF000000 | color;
 
         if(direction == 1 && color > color1) direction = 0;
@@ -386,7 +386,7 @@ Rasteron_Image* euclidTileImgOp(int mode, unsigned short density, double xFactor
         }
     }
 
-    return fieldImgOp((ImageSize){ 1024, 1024 }, &tilingTable, euclidTile);
+    return fieldImgOp((ImageSize){ 1300, 1300 }, &tilingTable, euclidTile);
 }
 
 static unsigned nuTile(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]){
@@ -430,7 +430,7 @@ Rasteron_Image* nuTileImgOp(int mode, unsigned short density, double xFactor, do
         }
     }
 
-    return fieldExtImgOp((ImageSize){ 1024, 1024 }, &tilingTable, nuTile);
+    return fieldExtImgOp((ImageSize){ 1300, 1300 }, &tilingTable, nuTile);
 }
 
 unsigned graterColor1 = 0xFF333333;
@@ -449,7 +449,7 @@ Rasteron_Image* graterImgOp(unsigned color1, unsigned color2){
     graterColor1 = color1;
     graterColor2 = color2;
 
-    return mapImgOp((ImageSize){ 1024, 1024 }, grater);
+    return mapImgOp((ImageSize){ 1300, 1300 }, grater);
 }
 
 static unsigned fuzzlike(unsigned color, unsigned neighbors[8]){
@@ -473,11 +473,11 @@ Rasteron_Image* fuzzlikeImgOp(unsigned short iters){
 }
 
 Rasteron_Image* oozelikeImgOp(unsigned short colorMode){
-    Rasteron_Image* noiseImg = noiseImgOp_hi((ImageSize){ 1024, 1024 }, (ColorGrid){ 16, 16, 0xFF330088, 0xFF003388}, 1);
+    Rasteron_Image* noiseImg = noiseImgOp_hi((ImageSize){ 1300, 1300 }, (ColorGrid){ 16, 16, 0xFF330088, 0xFF003388}, 1);
 
-    Rasteron_Image* redNoiseImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF11EE88, 0xFFEE0088);
-    Rasteron_Image* greenNoiseImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF001188, 0xFF00EE88);
-    Rasteron_Image* blueNoiseImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, 0xFF443311, 0xFF9900EE);
+    Rasteron_Image* redNoiseImg = noiseImgOp_white((ImageSize){ 1300, 1300 }, 0xFF11EE88, 0xFFEE0088);
+    Rasteron_Image* greenNoiseImg = noiseImgOp_white((ImageSize){ 1300, 1300 }, 0xFF001188, 0xFF00EE88);
+    Rasteron_Image* blueNoiseImg = noiseImgOp_white((ImageSize){ 1300, 1300 }, 0xFF443311, 0xFF9900EE);
 
     Rasteron_Image* perturbImg1 = warpingImgOp(redNoiseImg, noiseImg);
     Rasteron_Image* perturbImg2 = warpingImgOp(blueNoiseImg, noiseImg);
@@ -519,8 +519,8 @@ unsigned recurrantMix(unsigned color1, unsigned color2){
 Rasteron_Image* recurrantImgOp(unsigned short iters){
     ColorGrid colorGrid = { 2, 2, 0xFF333333, 0xFFEEEEEE };
 
-    Rasteron_Image* noiseImg = noiseImgOp_octave((ImageSize){ 1024, 1024 }, colorGrid, iters);
-    Rasteron_Image* recurrantImg = noiseImgOp((ImageSize){ 1024, 1024 }, colorGrid);
+    Rasteron_Image* noiseImg = noiseImgOp_octave((ImageSize){ 1300, 1300 }, colorGrid, iters);
+    Rasteron_Image* recurrantImg = noiseImgOp((ImageSize){ 1300, 1300 }, colorGrid);
 
     for(unsigned i = 0; i < iters; i++){
         Rasteron_Image* tempImg = mixImgOp(noiseImg, recurrantImg, recurrantMix);
@@ -561,9 +561,9 @@ unsigned intersectMix(unsigned color1, unsigned color2){
 
 Rasteron_Image* intersectImgOp(double angle1, double angle2){
     intersectAngle = angle1;
-    Rasteron_Image* intersectImg1 = mapImgOp((ImageSize){ 1024, 1024 }, intersect);
+    Rasteron_Image* intersectImg1 = mapImgOp((ImageSize){ 1300, 1300 }, intersect);
     intersectAngle = angle2;
-    Rasteron_Image* intersectImg2 = mapImgOp((ImageSize){ 1024, 1024 }, intersect);
+    Rasteron_Image* intersectImg2 = mapImgOp((ImageSize){ 1300, 1300 }, intersect);
 
     Rasteron_Image* scripticImg = mixImgOp(intersectImg1, intersectImg2, intersectMix);
 
@@ -574,11 +574,11 @@ Rasteron_Image* intersectImgOp(double angle1, double angle2){
 }
 
 Rasteron_Image* displacerImgOp(unsigned short iters, unsigned color1, unsigned color2){
-    Rasteron_Image* noiseTileImg1 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ iters * 5, iters, color1, color2 });
-    Rasteron_Image* noiseTileImg2 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ iters, iters * 5, color1, color2 });
-    Rasteron_Image* gradientImg1 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Left, color1, color2);
-    Rasteron_Image* gradientImg2 = gradientImgOp((ImageSize){ 1024, 1024 }, SIDE_Right, color_invert(color1), color_invert(color2));
-    // Rasteron_Image* warpTileImg = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ cells, cells, 0xFF666666, 0xFFAAAAAA });
+    Rasteron_Image* noiseTileImg1 = noiseImgOp((ImageSize){ 1300, 1300 }, (ColorGrid){ iters * 5, iters, color1, color2 });
+    Rasteron_Image* noiseTileImg2 = noiseImgOp((ImageSize){ 1300, 1300 }, (ColorGrid){ iters, iters * 5, color1, color2 });
+    Rasteron_Image* gradientImg1 = gradientImgOp((ImageSize){ 1300, 1300 }, SIDE_Left, color1, color2);
+    Rasteron_Image* gradientImg2 = gradientImgOp((ImageSize){ 1300, 1300 }, SIDE_Right, color_invert(color1), color_invert(color2));
+    // Rasteron_Image* warpTileImg = noiseImgOp((ImageSize){ 1300, 1300 }, (ColorGrid){ cells, cells, 0xFF666666, 0xFFAAAAAA });
 
     Rasteron_Image* displacerImg = warpingImgOp(gradientImg1, noiseTileImg2);
     for(int i = 0; i < iters; i++){
@@ -598,14 +598,14 @@ Rasteron_Image* displacerImgOp(unsigned short iters, unsigned color1, unsigned c
 unsigned biline(unsigned color, unsigned neighbors[2]){ return (neighbors[0] < color)? neighbors[1] : neighbors[0]; }
 
 Rasteron_Image* bilineImgOp(unsigned color, unsigned short variant){
-    unsigned colorLine[1024];
+    unsigned colorLine[1300];
 
-    for(unsigned p = 0; p < 1024; p++) colorLine[p] = blend_colors(color, color_invert(color), (p % 256) / 256.0); // color + (rand() % variant) - (variant / 2);
+    for(unsigned p = 0; p < 1300; p++) colorLine[p] = blend_colors(color, color_invert(color), (p % 256) / 256.0); // color + (rand() % variant) - (variant / 2);
 
-    Rasteron_Image* lineImg = RASTERON_ALLOC("biline", 1024, 1024);
-    for(unsigned l = 0; l < 1024; l++){
+    Rasteron_Image* lineImg = RASTERON_ALLOC("biline", 1300, 1300);
+    for(unsigned l = 0; l < 1300; l++){
         int v = (rand() % variant) - (variant / 2);
-        for(unsigned p = 0; p < 1024; p++) *(lineImg->data + (l * 1024) + p) = colorLine[(p + abs(v)) % 1024];
+        for(unsigned p = 0; p < 1300; p++) *(lineImg->data + (l * 1300) + p) = colorLine[(p + abs(v)) % 1300];
     }
 
     Rasteron_Image* bilineImg = cellwiseColImgOp(lineImg, biline);
@@ -625,13 +625,13 @@ Rasteron_Image* arcaneImgOp(double radius, unsigned short count){
     for(unsigned a = 0; a < count; a++)
        colorPointToTable(&arcTable, RAND_COLOR(), (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX);
 
-    Rasteron_Image* arcImg = RASTERON_ALLOC("arc", 1024, 1024);
+    Rasteron_Image* arcImg = RASTERON_ALLOC("arc", 1300, 1300);
     for(unsigned a = 0; a < count; a++)
-        for(unsigned p = 0; p < 1024 * 1024; p++){
-            double x = (1.0 / (double)1024) * (p % 1024);
-		    double y = (1.0 / (double)1024) * (p / 1024);
+        for(unsigned p = 0; p < 1300 * 1300; p++){
+            double x = (1.0 / (double)1300) * (p % 1300);
+		    double y = (1.0 / (double)1300) * (p / 1300);
 
-            double dist = pix_dist(p, pixPoint_offset((PixelPoint){ arcTable.points[a].x, arcTable.points[a].y}, arcImg), 1024);
+            double dist = pix_dist(p, pixPoint_offset((PixelPoint){ arcTable.points[a].x, arcTable.points[a].y}, arcImg), 1300);
             if(dist < radius * sin(x * radius) * cos(y * radius)){
                 if(a == 0) *(arcImg->data + p) = arcTable.points[a].color;
                 else if(*(arcImg->data + p) == arcDefColor) *(arcImg->data + p) = arcTable.points[a].color;
@@ -713,7 +713,7 @@ Rasteron_Image* subtImgOp(nebrCallback8 callback, unsigned colors[4]) {
         RASTERON_DEALLOC(stageImg);
     }
 
-    Rasteron_Image* resizeImg = resizeImgOp((ImageSize) { 1024, 1024 }, subtImg);
+    Rasteron_Image* resizeImg = resizeImgOp((ImageSize) { 1300, 1300 }, subtImg);
     RASTERON_DEALLOC(subtImg);
     return resizeImg;
 }

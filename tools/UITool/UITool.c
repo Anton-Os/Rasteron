@@ -3,8 +3,8 @@
 
 #define GUI_COUNT 5
 
-#define RASTERON_WIN_HEIGHT 180
-#define RASTERON_WIN_WIDTH 650
+#define RASTERON_HEIGHT 180
+#define RASTERON_WIDTH 650
 
 #include "../_Tool.h"
 
@@ -20,11 +20,11 @@ void _onTickEvent(unsigned secs){ // WHY THIS DOESNT WORK?
 // Rasteron_Image* controlPanelImgOp(enum MENU_Size size){}
 
 int main(int argc, char** argv) {
-    char fontFilePath[1024];
+    char fontFilePath[1300];
     // Image Creation // TODO: Create images that create control panel
 
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-    _outputImg = noiseImgOp_white((ImageSize){ RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);
+    _outputImg = noiseImgOp_white((ImageSize){ RASTERON_HEIGHT, RASTERON_WIDTH }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);
 
     enum MENU_Size size = MENU_Medium;
 
@@ -65,9 +65,9 @@ int main(int argc, char** argv) {
         { "Welcome to GUI Land!", fontFilePath, UI_COLOR_BACKGROUND, UI_COLOR_FOREGROUND },
     };
 #endif
-    _mainQueue = RASTERON_QUEUE_ALLOC("gui", _create_size(1024, 1024), GUI_COUNT);
+    _mainQueue = RASTERON_QUEUE_ALLOC("gui", _create_size(1300, 1300), GUI_COUNT);
 
-    Rasteron_Image* backgroundImg = noiseImgOp_white((ImageSize){ 1024, 1024 }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);
+    Rasteron_Image* backgroundImg = noiseImgOp_white((ImageSize){ 1300, 1300 }, UI_COLOR_BACKGROUND, UI_COLOR_BACKGROUND + 0xFF111111);
     for(unsigned g = 0; g < GUI_COUNT - 1; g++)
         queue_addImg(_mainQueue, backgroundImg, g);
     RASTERON_DEALLOC(backgroundImg);

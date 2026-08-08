@@ -7,7 +7,7 @@ static ColorGrid grid = { 2, 2, 0xFF111111, 0xFFEEEEEE };
 unsigned octaves = 0;
 
 Rasteron_Image* texArgs(char* args) {
-    char buffer[1024];
+    char buffer[1300];
     unsigned b = 0; // buffer offset
 
     for (unsigned c = 0; c < strlen(args); c++) {
@@ -55,10 +55,10 @@ Rasteron_Image* texArgs(char* args) {
     }
 
     if (octaves <= 1) {
-        return noiseImgOp((ImageSize){ 1024, 1024 }, grid);
+        return noiseImgOp((ImageSize){ 1300, 1300 }, grid);
     }
     else {
-        return noiseImgOp_octave((ImageSize) { 1024, 1024 }, grid, octaves);
+        return noiseImgOp_octave((ImageSize) { 1300, 1300 }, grid, octaves);
     }
-    // return noiseImgOp((ImageSize){ 1024, 1024 }, grid);
+    // return noiseImgOp((ImageSize){ 1300, 1300 }, grid);
 }

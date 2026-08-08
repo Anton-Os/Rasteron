@@ -60,8 +60,8 @@ void _onKeyEvent(char key){
     }
 
     if (_outputImg != NULL && isalpha(key)) RASTERON_DEALLOC(_outputImg);
-    // if (KEYS_TOP_ROW(key)) _outputImg = vectorImgOp((ImageSize) { 1024, 1024 }, 1.0 * (mode + 1), rayFunc); 
-    Rasteron_Image* raycastImg = raycastImgOp((ImageSize) { 1024, 1024 }, pointData, 12, abs((double)mode + 1));
+    // if (KEYS_TOP_ROW(key)) _outputImg = vectorImgOp((ImageSize) { 1300, 1300 }, 1.0 * (mode + 1), rayFunc); 
+    Rasteron_Image* raycastImg = raycastImgOp((ImageSize) { 1300, 1300 }, pointData, 12, abs((double)mode + 1));
     if (mixFunc != NULL && _savedImg != NULL)
         _outputImg = mixImgOp(raycastImg, _savedImg, mixFunc);
     else _outputImg = copyImgOp(raycastImg);
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
     rayColor2 = RAND_COLOR();
 
     rayFunc = rayFunc1;
-    _outputImg = vectorImgOp((ImageSize){ 1024, 1024 }, 1.0, rayFunc);
+    _outputImg = vectorImgOp((ImageSize){ 1300, 1300 }, 1.0, rayFunc);
 
     _run(argc, argv, NULL); // system specific initialization and continuous loop
 

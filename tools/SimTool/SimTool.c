@@ -13,7 +13,7 @@ static void createSimSequence(Rasteron_Image* targetImg, nebrCallback8 algorithm
     for(unsigned f = 0; f < NSIM_COUNT; f++){
         if(simImg != NULL) RASTERON_DEALLOC(simImg);
         simImg = cellwiseExtImgOp(targetImg, algorithm, f + 1);
-        Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ 1024, 1024}, simImg);
+        Rasteron_Image* resizeImg = resizeImgOp((ImageSize){ 1300, 1300}, simImg);
         if(process == NULL) queue_addImg(_mainQueue, resizeImg, f);
         else {
             // TODO: Resize recursively!!!
@@ -34,20 +34,20 @@ void _onKeyEvent(char key){
     static nebrCallback8 algorithm = &shuffleRules;
     static nebrCallback8 process = NULL;
 
-    if(backgroundImg == NULL) backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT / _dimens[0], RASTERON_WIN_WIDTH / _dimens[1]}, _swatch.base);
+    if(backgroundImg == NULL) backgroundImg = solidImgOp((ImageSize){ RASTERON_HEIGHT / _dimens[0], RASTERON_WIDTH / _dimens[1]}, _swatch.base);
     if(growImg == NULL) growImg = growImgOp(backgroundImg, 1.0, 0.1);
 
     if(isalpha(key)){
         if(backgroundImg != NULL) RASTERON_DEALLOC(backgroundImg);
-        backgroundImg = solidImgOp((ImageSize){ RASTERON_WIN_HEIGHT / _dimens[0], RASTERON_WIN_WIDTH / _dimens[1]}, _swatch.base);
+        backgroundImg = solidImgOp((ImageSize){ RASTERON_HEIGHT / _dimens[0], RASTERON_WIDTH / _dimens[1]}, _swatch.base);
         if(KEYS_TOP_ROW(key)) RASTERON_DEALLOC(growImg); // delete old growth image
         switch(key){ case 'y': case 'u': case 'i': case 'o': stageImg = seedImgOp(backgroundImg, NSIM_GROW); break; }
         switch(key){
             case 'q': growImg = growImgOp(backgroundImg, 1.0, 0.1); break;
             case 'w': growImg = growImgOp(backgroundImg, 1.0, 0.33); break;
             case 'e': growImg = feedImgOp(NULL, 3); break;
-            case 'r': growImg = checkeredImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, (ColorGrid){ 30 / _dimens[0], 30 / _dimens[1], SWATCH_GA, SWATCH_RA }); break;
-            case 't': growImg = linedImgOp((ImageSize){ 1024 / _dimens[0], 1024 / _dimens[1] }, SWATCH_GA, SWATCH_RA, 30 / _dimens[1], 0.0); break;
+            case 'r': growImg = checkeredImgOp((ImageSize){ 1300 / _dimens[0], 1300 / _dimens[1] }, (ColorGrid){ 30 / _dimens[0], 30 / _dimens[1], SWATCH_GA, SWATCH_RA }); break;
+            case 't': growImg = linedImgOp((ImageSize){ 1300 / _dimens[0], 1300 / _dimens[1] }, SWATCH_GA, SWATCH_RA, 30 / _dimens[1], 0.0); break;
             case 'y': growImg = cellwiseColImgOp(stageImg, addlineRules); break;
             case 'u': growImg = cellwiseRowImgOp(stageImg, levelineRules); break;
             case 'i': growImg = cellwiseColImgOp(stageImg, serpinskyRules); break;
@@ -73,7 +73,7 @@ void _onKeyEvent(char key){
         switch (key) { case 'y': case 'u': case 'i': case 'o': RASTERON_DEALLOC(stageImg); break; }
 
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
-        _outputImg = resizeImgOp((ImageSize){ 1024, 1024}, growImg);
+        _outputImg = resizeImgOp((ImageSize){ 1300, 1300}, growImg);
     }
     // else if(key == '\r'){
     else if(key == ',') {
@@ -98,7 +98,7 @@ void _onTickEvent(unsigned secs){
 // Generative Function
 
 Rasteron_Image* simTool(char* args) {
-    Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ 1024, 1024 }, _swatch.base);
+    Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ 1300, 1300 }, _swatch.base);
     Rasteron_Image* growthImg = growImgOp(backgroundImg, 0.5, 0.1);
     Rasteron_Image* simImg = simulationImgOp(growthImg, 1, conwayRules);
 
@@ -112,7 +112,7 @@ Rasteron_Image* simTool(char* args) {
 
 int main(int argc, char** argv) {
     mode = -1;
-    _mainQueue = RASTERON_QUEUE_ALLOC("sim", _create_size(RASTERON_WIN_HEIGHT, RASTERON_WIN_WIDTH), NSIM_COUNT);
+    _mainQueue = RASTERON_QUEUE_ALLOC("sim", _create_size(RASTERON_HEIGHT, RASTERON_WIDTH), NSIM_COUNT);
  
     _run(argc, argv, simTool); // system specific initialization and continuous loop
     

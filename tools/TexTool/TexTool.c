@@ -25,7 +25,7 @@ void _onKeyEvent(char key){
 
     if(KEYS_MID_ROW(key)) keysave = tolower(key);
         
-    ImageSize imgSize = (ImageSize){ 1024, 1024 };
+    ImageSize imgSize = (ImageSize){ 1300, 1300 };
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
     switch(tolower(keysave)){
         case 'a': _outputImg = noiseImgOp(imgSize, grid); break;
@@ -65,7 +65,7 @@ void _onTickEvent(unsigned secs){}
 // Executable Function
 
 int main(int argc, char** argv) {
-    _outputImg = solidImgOp((ImageSize) { 1024, 1024 }, 0xFF333333);
+    _outputImg = solidImgOp((ImageSize) { 1300, 1300 }, 0xFF333333);
 
     _run(argc, argv, texArgs); // system specific initialization and continuous loop
 

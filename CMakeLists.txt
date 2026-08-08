@@ -27,7 +27,7 @@ endif()
 
 ### External Libraries
 
-include(extTargets.cmake)
+include(scripts/extTargets.cmake)
 
 ## Rasterlib Library for bindings
 
@@ -83,7 +83,7 @@ target_include_directories(Rasteron
 
 # Tool Targets
 
-include(toolTargets.cmake)
+include(scripts/toolTargets.cmake)
 
 ### Installation
 
@@ -117,7 +117,7 @@ install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)
 install(EXPORT Rasteron DESTINATION lib/Rasteron FILE RasteronConfig.cmake)
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/findDepends.cmake.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/findDepends.cmake.in
     ${CMAKE_INSTALL_PREFIX}/lib/Rasteron/findDepends.cmake
     @ONLY
 )

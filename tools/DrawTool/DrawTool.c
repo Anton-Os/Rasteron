@@ -12,31 +12,31 @@ void setup(char input){ // double (*xMod)(double), double (*yMod)(double)){
     if (_savedImg != NULL) RASTERON_DEALLOC(_savedImg);
 
     switch(input){
-    case 'q': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw1); break;
-    case 'w': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw2); break;
-    case 'e': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw3); break;
-    case 'r': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw4); break;
-    case 't': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw5); break;
-    case 'y': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw6); break;
-    case 'u': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw7); break;
-    case 'i': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw8); break;
-    case 'o': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw9); break;
-    case 'p': _savedImg = fieldImgOp((ImageSize){1024, 1024}, &colorPointTable, dotDraw0); break;
-    case 'a': _savedImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw1); break;
-    case 's': _savedImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw2); break;
-    case 'd': _savedImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw3); break;
-    case 'f': _savedImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw4); break;
-    case 'g': _savedImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw5); break;
-    case 'h': _savedImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw6); break;
-    case 'j': _savedImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw7); break;
-    case 'k': _savedImg = brushDrawImgOp((ImageSize){1024, 1024}, brushDraw8); break;
-    case 'z': _savedImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw1); break;
-    case 'x': _savedImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw2); break;
-    case 'c': _savedImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw3); break;
-    case 'v': _savedImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw4); break;
-    case 'b': _savedImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw5); break;
-    case 'n': _savedImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw6); break;
-    case 'm': _savedImg = fieldExtImgOp((ImageSize){ 1024, 1024 }, &colorPointTable, fieldDraw7); break;
+    case 'q': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw1); break;
+    case 'w': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw2); break;
+    case 'e': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw3); break;
+    case 'r': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw4); break;
+    case 't': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw5); break;
+    case 'y': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw6); break;
+    case 'u': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw7); break;
+    case 'i': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw8); break;
+    case 'o': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw9); break;
+    case 'p': _savedImg = fieldImgOp((ImageSize){1300, 1300}, &colorPointTable, dotDraw0); break;
+    case 'a': _savedImg = brushDrawImgOp((ImageSize){1300, 1300}, brushDraw1); break;
+    case 's': _savedImg = brushDrawImgOp((ImageSize){1300, 1300}, brushDraw2); break;
+    case 'd': _savedImg = brushDrawImgOp((ImageSize){1300, 1300}, brushDraw3); break;
+    case 'f': _savedImg = brushDrawImgOp((ImageSize){1300, 1300}, brushDraw4); break;
+    case 'g': _savedImg = brushDrawImgOp((ImageSize){1300, 1300}, brushDraw5); break;
+    case 'h': _savedImg = brushDrawImgOp((ImageSize){1300, 1300}, brushDraw6); break;
+    case 'j': _savedImg = brushDrawImgOp((ImageSize){1300, 1300}, brushDraw7); break;
+    case 'k': _savedImg = brushDrawImgOp((ImageSize){1300, 1300}, brushDraw8); break;
+    case 'z': _savedImg = fieldExtImgOp((ImageSize){ 1300, 1300 }, &colorPointTable, fieldDraw1); break;
+    case 'x': _savedImg = fieldExtImgOp((ImageSize){ 1300, 1300 }, &colorPointTable, fieldDraw2); break;
+    case 'c': _savedImg = fieldExtImgOp((ImageSize){ 1300, 1300 }, &colorPointTable, fieldDraw3); break;
+    case 'v': _savedImg = fieldExtImgOp((ImageSize){ 1300, 1300 }, &colorPointTable, fieldDraw4); break;
+    case 'b': _savedImg = fieldExtImgOp((ImageSize){ 1300, 1300 }, &colorPointTable, fieldDraw5); break;
+    case 'n': _savedImg = fieldExtImgOp((ImageSize){ 1300, 1300 }, &colorPointTable, fieldDraw6); break;
+    case 'm': _savedImg = fieldExtImgOp((ImageSize){ 1300, 1300 }, &colorPointTable, fieldDraw7); break;
     }
 
     if(_savedImg != NULL)
@@ -76,7 +76,7 @@ void _onTickEvent(unsigned secs){}
 // Generative Function
 
 Rasteron_Image* drawTool(char* args) {
-    return checkeredImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 10, 10, 0xFF333333, 0xFFEEEEEE });
+    return checkeredImgOp((ImageSize){ 1300, 1300 }, (ColorGrid){ 10, 10, 0xFF333333, 0xFFEEEEEE });
 }
 
 // Executable Function

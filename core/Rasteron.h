@@ -125,8 +125,6 @@ DllExport Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short ti
 #include "Font.h" // enables single line text and expanded message objects
 #endif
 
-// TODO: Include Rasteron_Factory
-
 #ifdef __cplusplus
 } // }
 #endif

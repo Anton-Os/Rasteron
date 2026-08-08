@@ -59,9 +59,9 @@ static float mandalaInterp1(unsigned i, float coords[2], float a, float d){ retu
 static float mandalaInterp2(unsigned i, float coords[2], float a, float d){ return tan((coords[0] + coords[1]) / (i * RADIAL_INVOKE)) * pow(d, a); }
 static float mandalaInterp3(unsigned i, float coords[2], float a, float d){ return sin((coords[0] - coords[1]) / (i * RADIAL_INVOKE)) * pow(a, d); }
 static float mandalaInterp4(unsigned i, float coords[2], float a, float d){ return cos((coords[0] - coords[1]) / (i * RADIAL_INVOKE)) * pow(d, a); }
-static float mandalaInterp5(unsigned i, float coords[2], float a, float d){ return tan((coords[0] * coords[1]) / (i * RADIAL_INVOKE)) * pow(d, a); }
-static float mandalaInterp6(unsigned i, float coords[2], float a, float d){ return sin((coords[0] / coords[1]) / (i * RADIAL_INVOKE)) * pow(a, d); }
-static float mandalaInterp7(unsigned i, float coords[2], float a, float d){ return cos((pow(coords[0], coords[1])) / (i * RADIAL_INVOKE)) * pow(d, a); }
+static float mandalaInterp5(unsigned i, float coords[2], float a, float d) { return (float)abs(a / d) - abs(coords[0] / coords[1]); }
+static float mandalaInterp6(unsigned i, float coords[2], float a, float d) { return (float)abs(a / d) + abs(coords[0] / coords[1]); }
+static float mandalaInterp7(unsigned i, float coords[2], float a, float d) { return (float)abs(a / d) * abs(coords[0] / coords[1]); }
 
 unsigned mandalaMap(double x, double y); // See Hypno.c
 

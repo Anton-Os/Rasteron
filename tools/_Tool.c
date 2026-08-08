@@ -62,7 +62,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
     switch (message) {
     case (WM_CREATE): {
-        if(_outputImg == NULL) _outputImg = solidImgOp((ImageSize){ 1024, 1024}, 0xFFFFFF00);
+        if(_outputImg == NULL) _outputImg = solidImgOp((ImageSize){ 1300, 1300}, 0xFFFFFF00);
         if(_onTickEvent != NULL) SetTimer(hwnd, 0, 1000, &wndTimerCallback);
         bmap = createWinBmap(_outputImg);
     }
@@ -92,10 +92,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         if(_outputImg != NULL && _onTickEvent != NULL) bmap = createWinBmap(_outputImg);
     }
     case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN && _onPressEvent != NULL){
-        _onPressEvent((double)GET_X_LPARAM(lParam) / RASTERON_WIN_WIDTH, (double)GET_Y_LPARAM(lParam) / RASTERON_WIN_HEIGHT);
+        _onPressEvent((double)GET_X_LPARAM(lParam) / RASTERON_WIDTH, (double)GET_Y_LPARAM(lParam) / RASTERON_HEIGHT);
     }}
     case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN && _onPressEvent != NULL){
-        _onPressEvent((double)GET_X_LPARAM(lParam) / RASTERON_WIN_WIDTH, (double)GET_Y_LPARAM(lParam) / RASTERON_WIN_HEIGHT);
+        _onPressEvent((double)GET_X_LPARAM(lParam) / RASTERON_WIDTH, (double)GET_Y_LPARAM(lParam) / RASTERON_HEIGHT);
     }}
     case (WM_CLOSE): {}
     default: return DefWindowProc(hwnd, message, wParam, lParam);
@@ -117,7 +117,7 @@ void unixProc(char lastKey, double cursorPos[2]){
             _savedImg = copyImgOp(_outputImg);
         }
     }
-    if(_onPressEvent != NULL) _onPressEvent(cursorPos[0] / RASTERON_WIN_WIDTH, cursorPos[1] / RASTERON_WIN_HEIGHT);
+    if(_onPressEvent != NULL) _onPressEvent(cursorPos[0] / RASTERON_WIDTH, cursorPos[1] / RASTERON_HEIGHT);
     // if(_onTickEvent != NULL) // TODO: Track timer and perform updates
 
     if(_outputImg != NULL){
@@ -211,10 +211,10 @@ void _run(int argc, char** argv, imageArgCallback callback){
         puts("\nUse alphabetical characters A to Z to produce images from Tool");
         puts("\nPress numbered keys 0-9 to tweak function parameters and ; to take a screenshot");
 
-        createWindow(wndProc, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
+        createWindow(wndProc, RASTERON_NAME, RASTERON_WIDTH, RASTERON_HEIGHT);
         eventLoop(NULL);
 #elif defined __linux__
-        createWindow(&unixContext, RASTERON_WIN_NAME, RASTERON_WIN_WIDTH, RASTERON_WIN_HEIGHT);
+        createWindow(&unixContext, RASTERON_NAME, RASTERON_WIDTH, RASTERON_HEIGHT);
         eventLoop(unixContext.display, unixContext.window, unixProc);
 #endif
     }

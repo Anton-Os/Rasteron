@@ -4,14 +4,14 @@
 
 // --------------------------------   Directives for Demo    -------------------------------- //
 
-#ifndef RASTERON_WIN_NAME
-#define RASTERON_WIN_NAME "Rasteron"
+#ifndef RASTERON_NAME
+#define RASTERON_NAME "Rasteron"
 #endif
-#ifndef RASTERON_WIN_WIDTH
-#define RASTERON_WIN_WIDTH 1024
+#ifndef RASTERON_WIDTH
+#define RASTERON_WIDTH 1300
 #endif
-#ifndef RASTERON_WIN_HEIGHT
-#define RASTERON_WIN_HEIGHT 1024
+#ifndef RASTERON_HEIGHT
+#define RASTERON_HEIGHT 1300
 #endif
 
 #define PRIMITIVES_MAX 1024

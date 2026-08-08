@@ -4,8 +4,8 @@
 
 // --------------------------------  Queue  -------------------------------- //
 
-// #define QUEUE_IMAGE_HEIGHT 1024
-// #define QUEUE_IMAGE_WIDTH 1024
+// #define QUEUE_IMAGE_HEIGHT 1300
+// #define QUEUE_IMAGE_WIDTH 1300
 #define QUEUE_IMAGE_BACKGROUND 0xFFFFFF00 // yellow color
 #define QUEUE_STATE_DEFAULT 0 // default state
 

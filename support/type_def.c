@@ -31,7 +31,7 @@ void _dealloc_img(Rasteron_Image* image){
 }
 
 Rasteron_Image* _named_img(Rasteron_Image* image, const char* name){
-	if(image != NULL) image->name = name;
+	if(image != NULL) strcpy(image->name, name); // TODO: Ensure renaming works
 	return image;
 }
 

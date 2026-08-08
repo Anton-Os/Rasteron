@@ -9,6 +9,13 @@ list(APPEND EXTERNAL_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_INSTALL_DIR}")
 list(APPEND EXTERNAL_ARGS "-DCMAKE_BUILD_TYPE:STRING=Debug") # Temporary fix
 list(APPEND EXTERNAL_ARGS "-DCMAKE_POLICY_VERSION_MINIMUM=3.5")
 
+find_package(CUDAToolkit)
+if(CUDAToolkit_FOUND)
+    set(SUPPORT_CUDA TRUE CACHE BOOL "CUDA Libraries found" FORCE)
+else()
+    set(SUPPORT_CUDA FALSE CACHE BOOL "CUDA Libraries found" FORCE)
+endif()
+
 # Support for ZLIB
 
 set(ZLIB_DIR "${EXTERNAL_PROJ_DIR}/zlib")
@@ -172,11 +179,3 @@ endif()
 #else()
 #    set(ffmpeg_found FALSE)
 #endif()
-
-find_package(CUDAToolkit)
-if(CUDAToolkit_FOUND)
-    set(SUPPORT_CUDA TRUE CACHE BOOL "CUDA Libraries found" FORCE)
-else()
-    set(SUPPORT_CUDA FALSE CACHE BOOL "CUDA Libraries found" FORCE)
-endif()
-

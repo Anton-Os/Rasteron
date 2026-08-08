@@ -13,10 +13,10 @@ void _onKeyEvent(char key){
 	}
 
 	float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2 * 2;
-	Rasteron_Image* noiseImg1 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });
-	Rasteron_Image* noiseImg2 = noiseImgOp((ImageSize){ 1024, 1024 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });
-	Rasteron_Image* radialImg1 = gradientExtImgOp((ImageSize) { 1024, 1024 }, SIDE_Radial, (rand() % 2 == 0)? SIDE_Top : SIDE_Bottom, RAND_COLOR(), RAND_COLOR());
-	Rasteron_Image* radialImg2 = gradientExtImgOp((ImageSize) { 1024, 1024 }, SIDE_Radial, (rand() % 2 == 0)? SIDE_Left : SIDE_Right, RAND_COLOR(), RAND_COLOR());
+	Rasteron_Image* noiseImg1 = noiseImgOp((ImageSize){ 1300, 1300 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });
+	Rasteron_Image* noiseImg2 = noiseImgOp((ImageSize){ 1300, 1300 }, (ColorGrid){ 256, 256, RAND_COLOR(), RAND_COLOR() });
+	Rasteron_Image* radialImg1 = gradientExtImgOp((ImageSize) { 1300, 1300 }, SIDE_Radial, (rand() % 2 == 0)? SIDE_Top : SIDE_Bottom, RAND_COLOR(), RAND_COLOR());
+	Rasteron_Image* radialImg2 = gradientExtImgOp((ImageSize) { 1300, 1300 }, SIDE_Radial, (rand() % 2 == 0)? SIDE_Left : SIDE_Right, RAND_COLOR(), RAND_COLOR());
 	float pointData[12] = { xArg, -yArg, (rand() % 2 == 0)? r : -r, -xArg, yArg, r, xArg, yArg, -r, -xArg, -yArg, 0.0F};
 	unsigned seedColors[4] = { RAND_COLOR(), RAND_COLOR(), RAND_COLOR(), RAND_COLOR() };
 

@@ -45,16 +45,16 @@ Rasteron_Image* mosaicImgOp(ImageSize size, const ColorPointTable* colorPointTab
 }
 
 Rasteron_Image* truschetImgOp(ref_image_t truschetImg, unsigned short wDiv, unsigned short hDiv){
-    // Rasteron_Image* truchetTile = RASTERON_ALLOC("truschet_tile", 1024 / hDiv, 1024 / wDiv);
-    Rasteron_Image* truschetTile = (truschetImg == NULL)? mapImgOp((ImageSize){ 1024 / hDiv, 1024 / wDiv }, sharpTruschetTile) : copyImgOp(truschetImg);
+    // Rasteron_Image* truchetTile = RASTERON_ALLOC("truschet_tile", 1300 / hDiv, 1300 / wDiv);
+    Rasteron_Image* truschetTile = (truschetImg == NULL)? mapImgOp((ImageSize){ 1300 / hDiv, 1300 / wDiv }, sharpTruschetTile) : copyImgOp(truschetImg);
     Rasteron_Image* truschetTile2 = flipImgOp(truschetTile, FLIP_Upside);
     Rasteron_Image* truschetTile3 = flipImgOp(truschetTile, FLIP_Clock);
     Rasteron_Image* truschetTile4 = flipImgOp(truschetTile, FLIP_Counter);
 
-    Rasteron_Image* finalImg = RASTERON_ALLOC("truschet", 1024, 1024);
-    for(unsigned p = 0; p < 1024 * 1024; p++){
-        double x = (1.0 / (double)1024) * (p % 1024);
-		double y = (1.0 / (double)1024) * (p / 1024);
+    Rasteron_Image* finalImg = RASTERON_ALLOC("truschet", 1300, 1300);
+    for(unsigned p = 0; p < 1300 * 1300; p++){
+        double x = (1.0 / (double)1300) * (p % 1300);
+		double y = (1.0 / (double)1300) * (p / 1300);
 
         unsigned c = x * wDiv;
         unsigned r = y * hDiv;

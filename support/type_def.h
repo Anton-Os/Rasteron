@@ -107,7 +107,7 @@ typedef struct {
 
 // --------------------------------   Cellwise    -------------------------------- //
 
-#define MAX_LINELEN 1024 * 32
+#define MAX_LINELEN 1300 * 32
 
 typedef struct { // Can be used in cellwise generation
 	unsigned length;

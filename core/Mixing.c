@@ -42,7 +42,7 @@ Rasteron_Image* insertImgOp(ref_image_t image1, ref_image_t image2, double coord
 		} else *(insertImg->data + op) = *(outerImg->data + op);
 	}
 
-	return RASTERON_NAMED(insertImg, "insert");
+	return insertImg;
 }
 
 Rasteron_Image* mixImgOp(ref_image_t image1, ref_image_t image2, mixCallback callback){
@@ -58,7 +58,7 @@ Rasteron_Image* mixImgOp(ref_image_t image1, ref_image_t image2, mixCallback cal
 	RASTERON_DEALLOC(sizedImg1);
 	RASTERON_DEALLOC(sizedImg2);
 
-	return RASTERON_NAMED(mixImage, "mix");
+	return mixImage;
 }
 
 Rasteron_Image* mixExtImgOp(ref_image_t image1, ref_image_t image2, ref_image_t image3, mixCallback3 callback){
@@ -85,11 +85,11 @@ Rasteron_Image* mixExtImgOp(ref_image_t image1, ref_image_t image2, ref_image_t 
 }
 
 Rasteron_Image* blendImgOp(ref_image_t image1, ref_image_t image2){
-	return RASTERON_NAMED(mixImgOp(image1, image2, blend_colors_eq), "blend");
+	return mixImgOp(image1, image2, blend_colors_eq);
 }
 
 Rasteron_Image* fuseImgOp(ref_image_t image1, ref_image_t image2){
-	return RASTERON_NAMED(mixImgOp(image1, image2, fuse_colors_eq), "fuse");
+	return mixImgOp(image1, image2, fuse_colors_eq);
 }
 
 Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage){
@@ -111,5 +111,5 @@ Rasteron_Image* warpingImgOp(ref_image_t refImage, ref_image_t domainImage){
 
 	RASTERON_DEALLOC(sizedDomainImg);
 
-	return RASTERON_NAMED(warpImage, "warp");
+	return warpImage;
 }

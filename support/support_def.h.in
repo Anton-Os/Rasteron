@@ -17,17 +17,23 @@
 #define ON 1
 #define OFF 0
 
+#define USE_IMG_TIFF // Enable TIFF Support
+#define USE_IMG_PNG // Enable PNG Support
+#define USE_IMG_BMP // Enable BMP Support
+
+#define USE_CUDA_LIBS ${SUPPORT_CUDA} // TODO: See if carries over to Topl engine
+
+#if USE_CUDA_LIBS
+#define RASTERON_CALLBACK __device__ // for converting functions to device functions for CUDA
+#else
+#define RASTERON_CALLBACK // for non-cuda builds, this is a no-op
+#endif
+
 #define RASTERON_ENABLE_SPACE TRUE
 #define RASTERON_ENABLE_ANIM ${SUPPORT_MEDIA_EXPORT}
 #define RASTERON_ENABLE_FONT ${SUPPORT_FONT_BAKING}
 
-#define USE_IMG_TIFF // Enable TIFF Support
-#define USE_IMG_PNG // Enable PNG Support
-#define USE_IMG_BMP // Enable BMP Support
-#define USE_CUDA_LIBS ${SUPPORT_CUDA} // TODO: See if carries over to Topl engine
-
 #define NO_COLOR 0x00000000
-
 #define BLACK_COLOR 0xFF000000 // level 0
 #define DARK_COLOR 0xFF333333 // level 1
 #define MID_LO_COLOR 0xFF666666 // level 2

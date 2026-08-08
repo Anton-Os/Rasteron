@@ -4,8 +4,8 @@ Rasteron_Image* raycastImgOp(ImageSize size, float* points, unsigned pointCount,
     Rasteron_Image* raycastImg = RASTERON_ALLOC("raycast", size.height, size.width);
 
     for (unsigned p = 0; p < raycastImg->width * raycastImg->height; p++) {
-        double x = (1.0 / (double)1024) * (p % 1024) - 0.5;
-        double y = (1.0 / (double)1024) * (p / 1024) - 0.5;
+        double x = (1.0 / (double)1300) * (p % 1300) - 0.5;
+        double y = (1.0 / (double)1300) * (p / 1300) - 0.5;
 
         double length = sqrt(pow(x, 2.0) + pow(y, 2.0) + pow(dist, 2.0));
 
@@ -28,8 +28,8 @@ Rasteron_Image* rayblendImgOp(ImageSize size, float* points, unsigned pointCount
     Rasteron_Image* raycastImg = RASTERON_ALLOC("raycast", size.height, size.width);
 
     for (unsigned p = 0; p < raycastImg->width * raycastImg->height; p++) {
-        double x = (1.0 / (double)1024) * (p % 1024) - 0.5;
-        double y = (1.0 / (double)1024) * (p / 1024) - 0.5;
+        double x = (1.0 / (double)1300) * (p % 1300) - 0.5;
+        double y = (1.0 / (double)1300) * (p / 1300) - 0.5;
 
         double length = sqrt(pow(x, 2.0) + pow(y, 2.0) + pow(dist, 2.0));
         

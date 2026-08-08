@@ -59,8 +59,8 @@ void _onKeyEvent(char key){
     if(isalnum(key) && colorTable.pointCount >= 1) {
         if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);
 
-        if(KEYS_BOT_ROW(key)) _outputImg = mosaicImgOp((ImageSize) { 1024, 1024 }, &colorTable, callback);
-        else _outputImg = fieldExtImgOp((ImageSize) { 1024, 1024 }, & colorTable, callback);
+        if(KEYS_BOT_ROW(key)) _outputImg = mosaicImgOp((ImageSize) { 1300, 1300 }, &colorTable, callback);
+        else _outputImg = fieldExtImgOp((ImageSize) { 1300, 1300 }, & colorTable, callback);
     } else if(_outputImg != NULL && key == ','){
         puts("Generating truschet image");
         Rasteron_Image* tempImg = copyImgOp(_outputImg);
@@ -75,7 +75,7 @@ void _onTickEvent(unsigned secs){}
 
 Rasteron_Image* tileTool(char* args){
     // Parse the input and generate appropriate image
-    return mosaicImgOp((ImageSize){ 1024, 1024 }, &colorTable, &eqTiling);
+    return mosaicImgOp((ImageSize){ 1300, 1300 }, &colorTable, &eqTiling);
 }
 
 // Executable Function
