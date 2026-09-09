@@ -1,10 +1,10 @@
-#include "DrawTool.h"
+#include "DrawTest.h"
 
 
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
-#include "../_Tool.h"
+#include "../_Test.h"
 
 // Overriden Functions
 
@@ -75,7 +75,7 @@ void _onTickEvent(unsigned secs){}
 
 // Generative Function
 
-Rasteron_Image* drawTool(char* args) {
+Rasteron_Image* drawTest(char* args) {
     return checkeredImgOp((ImageSize){ 1300, 1300 }, (ColorGrid){ 10, 10, 0xFF333333, 0xFFEEEEEE });
 }
 
@@ -85,7 +85,7 @@ int main(int argc, char** argv){
     pixelPointTable.pointCount = 0;
     colorPointTable.pointCount = 0;
 
-    _run(argc, argv, drawTool); // system specific initialization and continuous loop
+    _run(argc, argv, drawTest); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

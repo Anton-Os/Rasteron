@@ -2,14 +2,14 @@
 #define NSIM_GROW 0.1
 #define NSIM_COUNT 12
 
-#define SWATCH_L _swatch.colors[SWATCH_Light] // from Tool.h, but used here for ease of use
-#define SWATCH_RA _swatch.colors[SWATCH_Red_Add] // from Tool.h, but used here for ease of use
-#define SWATCH_RS _swatch.colors[SWATCH_Red_Sub] // from Tool.h, but used here for ease of use
-#define SWATCH_GA _swatch.colors[SWATCH_Green_Add] // from Tool.h, but used here for ease of use
-#define SWATCH_GS _swatch.colors[SWATCH_Green_Sub] // from Tool.h, but used here for ease of use
-#define SWATCH_BA _swatch.colors[SWATCH_Blue_Add] // from Tool.h, but used here for ease of use
-#define SWATCH_BS _swatch.colors[SWATCH_Blue_Sub] // from Tool.h, but used here for ease of use
-#define SWATCH_D _swatch.colors[SWATCH_Dark] // from Tool.h, but used here for ease of use
+#define SWATCH_L _swatch.colors[SWATCH_Light] // from Test.h, but used here for ease of use
+#define SWATCH_RA _swatch.colors[SWATCH_Red_Add] // from Test.h, but used here for ease of use
+#define SWATCH_RS _swatch.colors[SWATCH_Red_Sub] // from Test.h, but used here for ease of use
+#define SWATCH_GA _swatch.colors[SWATCH_Green_Add] // from Test.h, but used here for ease of use
+#define SWATCH_GS _swatch.colors[SWATCH_Green_Sub] // from Test.h, but used here for ease of use
+#define SWATCH_BA _swatch.colors[SWATCH_Blue_Add] // from Test.h, but used here for ease of use
+#define SWATCH_BS _swatch.colors[SWATCH_Blue_Sub] // from Test.h, but used here for ease of use
+#define SWATCH_D _swatch.colors[SWATCH_Dark] // from Test.h, but used here for ease of use
 
 #include "Rasteron.h"
 

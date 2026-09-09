@@ -1,4 +1,4 @@
-#include "_Tool.h"
+#include "_Test.h"
 
 // --------------------------------   Objects for Demo    -------------------------------- //
 
@@ -208,7 +208,7 @@ void _run(int argc, char** argv, imageArgCallback callback){
 #endif
     } else { // Open a window
 #ifdef _WIN32
-        puts("\nUse alphabetical characters A to Z to produce images from Tool");
+        puts("\nUse alphabetical characters A to Z to produce images from Test");
         puts("\nPress numbered keys 0-9 to tweak function parameters and ; to take a screenshot");
 
         createWindow(wndProc, RASTERON_NAME, RASTERON_WIDTH, RASTERON_HEIGHT);

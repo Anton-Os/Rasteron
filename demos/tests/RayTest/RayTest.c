@@ -1,4 +1,4 @@
-#include "RayTool.h"
+#include "RayTest.h"
 
 unsigned rayColor1 = 0xFF000000;
 unsigned rayColor2 = 0xFFFFFFFF;
@@ -10,7 +10,7 @@ mixCallback mixFunc = NULL;
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
-#include "../_Tool.h"
+#include "../_Test.h"
 
 void _onKeyEvent(char key){
     float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2;

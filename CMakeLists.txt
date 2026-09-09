@@ -15,7 +15,7 @@ file(GLOB core_src core/*.c)
 list(APPEND loader_src loader/Loader.c loader/ImgBmp.c) # Other file formats have dependencies
 list(APPEND ext_src ext/Spacial.c ext/Queue.c) # Font extension has dependency
 
-# list(APPEND util_src util/_Tool.c)
+# list(APPEND util_src util/_Test.c)
 if(WIN32) # Windows Specific
     list(APPEND util_src util/Util_Win.cpp)
 elseif(UNIX AND NOT APPLE) # Unix Specific
@@ -34,14 +34,14 @@ include(scripts/extTargets.cmake)
 add_library(Rasterlib SHARED ${support_src} ${core_src})
 target_include_directories(Rasterlib PRIVATE support ext core)
 
-## Rasterutil Library for running tools
+## Rasterutil Library for running tests
 
 add_library(Rasterutil SHARED ${util_src})
 target_include_directories(Rasterutil PUBLIC support loader core ext util)
 
 ### Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${ext_src} "tools/_Catalouge.c") # library only
+# add_library(Rasteron STATIC ${core_src} ${ext_src} "demos/tests/_Catalouge.c") # library only
 add_library(Rasteron STATIC
     ${support_src} ${loader_src} ${core_src} ${ext_src} ${util_src}
 )
@@ -81,9 +81,9 @@ target_include_directories(Rasteron
     $<INSTALL_INTERFACE:include/Rasteron>
 )
 
-# Tool Targets
+# Demos and Tests
 
-include(scripts/toolTargets.cmake)
+include(scripts/demoTargets.cmake)
 
 ### Installation
 

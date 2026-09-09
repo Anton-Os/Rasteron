@@ -1,4 +1,4 @@
-#include "HypnoTool.h"
+#include "HypnoTest.h"
 
 extern double segs;
 extern double dist;
@@ -102,7 +102,7 @@ Rasteron_Image* hypnosisImgOp(unsigned color1, unsigned color2, unsigned short i
 
 // Mandala
 
-float (*interpolate)(unsigned, float[2], float, float) = &mandalaInterp7; // from HypnoTool.h
+float (*interpolate)(unsigned, float[2], float, float) = &mandalaInterp7; // from HypnoTest.h
 
 unsigned mandalaMap(double x, double y){
     static unsigned invocation = 0;

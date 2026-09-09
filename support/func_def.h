@@ -14,6 +14,11 @@ typedef unsigned (*coordCallback)(double x, double y);
 typedef unsigned (*coordCallback3)(double x, double y, double z);
 typedef unsigned (*fieldCallback)(unsigned color, double distance, PixelPoint pixelPoint);
 typedef unsigned (*fieldCallback3)(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]);
+/*typedef RASTERON_CALLBACK float (*noiseCallback)(float p);
+typedef RASTERON_CALLBACK unsigned (*coordCallback)(double x, double y);
+typedef RASTERON_CALLBACK unsigned (*coordCallback3)(double x, double y, double z);
+typedef RASTERON_CALLBACK unsigned (*fieldCallback)(unsigned color, double distance, PixelPoint pixelPoint);
+typedef RASTERON_CALLBACK unsigned (*fieldCallback3)(unsigned colors[3], double distances[3], PixelPoint pixPoints[3]); */
 
 typedef unsigned (*nebrCallback2)(unsigned, unsigned[2]); // target and 2 neighbors
 typedef unsigned (*nebrCallbackP2)(unsigned, unsigned[2], double); // target, 2 neighbors, and progress

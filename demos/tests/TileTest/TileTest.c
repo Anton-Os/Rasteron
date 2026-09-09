@@ -1,4 +1,4 @@
-#include "TileTool.h"
+#include "TileTest.h"
 // static int mode = -1;
 
 static char keysave = 'a';
@@ -7,7 +7,7 @@ static double dotDist = 0.05;
 PixelPointTable table;
 ColorPointTable colorTable;
 
-#include "../_Tool.h"
+#include "../_Test.h"
 
 // Overriden Functions
 
@@ -73,7 +73,7 @@ void _onTickEvent(unsigned secs){}
 
 // Generative Function
 
-Rasteron_Image* tileTool(char* args){
+Rasteron_Image* tileTest(char* args){
     // Parse the input and generate appropriate image
     return mosaicImgOp((ImageSize){ 1300, 1300 }, &colorTable, &eqTiling);
 }
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
     colorTable.pointCount = 1;
     colorTable.points[0] = (ColorPoint){ RAND_COLOR(), 0.0, 0.0 };
 
-    _run(argc, argv, tileTool); // system specific initialization and continuous loop
+    _run(argc, argv, tileTest); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

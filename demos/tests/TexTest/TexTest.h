@@ -47,7 +47,3 @@ static uint32_t assimMix_rgb(uint32_t color1, uint32_t color2){
 // Image Generation Functions
 
 Rasteron_Image* purturbNoiseImgOp(ImageSize size, ColorGrid grid, noiseCallback callback, double xOff, double yOff);
-
-// Tool Argment Image Funcions
-
-Rasteron_Image* texArgs(char* args);

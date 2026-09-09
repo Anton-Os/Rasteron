@@ -33,11 +33,11 @@
 #define RASTERON_ENABLE_ANIM TRUE
 #define RASTERON_ENABLE_FONT TRUE
 
-#define NO_COLOR 0x00000000
+#define NO_COLOR 0x00000000 // no-op color value
 #define BLACK_COLOR 0xFF000000 // level 0
 #define DARK_COLOR 0xFF333333 // level 1
-#define MID_LO_COLOR 0xFF666666 // level 2
-#define MID_HI_COLOR 0xFF999999 // level 3
+#define GREY_LO_COLOR 0xFF666666 // level 2
+#define GREY_HI_COLOR 0xFF999999 // level 3
 #define LIGHT_COLOR 0xFFCCCCCC // level 4
 #define WHITE_COLOR 0xFFFFFFFF // level 5
 

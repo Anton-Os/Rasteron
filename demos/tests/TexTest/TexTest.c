@@ -1,9 +1,9 @@
-#include "TexTool.h"
+#include "TexTest.h"
 
 mixCallback mixer = NULL;
 ColorGrid grid;
 
-#include "../_Tool.h"
+#include "../_Test.h"
 
 void _onKeyEvent(char key){ 
     static char keysave = 'a';
@@ -67,7 +67,7 @@ void _onTickEvent(unsigned secs){}
 int main(int argc, char** argv) {
     _outputImg = solidImgOp((ImageSize) { 1300, 1300 }, 0xFF333333);
 
-    _run(argc, argv, texArgs); // system specific initialization and continuous loop
+    _run(argc, argv, NULL); // system specific initialization and continuous loop
 
     // RASTERON_QUEUE_DEALLOC(_mainQueue);
     RASTERON_DEALLOC(_outputImg);

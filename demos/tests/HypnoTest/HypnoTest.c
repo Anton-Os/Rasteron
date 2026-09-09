@@ -1,4 +1,4 @@
-#include "HypnoTool.h"
+#include "HypnoTest.h"
 
 double segs = RADIAL_SEGS;
 double dist = RADIAL_DIST;
@@ -7,7 +7,7 @@ unsigned color2 = 0xFFFFFFFF; // 0xFF88EEEE;
 
 static char keysave = '0';
 
-#include "../_Tool.h"
+#include "../_Test.h"
 
 // Overriden Functions
 
@@ -53,7 +53,7 @@ void _onTickEvent(unsigned secs){}
 
 // Generative Function
 
-Rasteron_Image* hypnoTool(char* args){
+Rasteron_Image* hypnoTest(char* args){
     color1 = RAND_COLOR();
     color2 = RAND_COLOR();
     printf("\nRandom colors are %x and %x", color1, color2);
@@ -65,7 +65,7 @@ Rasteron_Image* hypnoTool(char* args){
 int main(int argc, char** argv) {
     srand(time(NULL));
 
-    _run(argc, argv, hypnoTool); // system specific initialization and continuous loop
+    _run(argc, argv, hypnoTest); // system specific initialization and continuous loop
 
     RASTERON_DEALLOC(_outputImg); // cleanup
     return 0;

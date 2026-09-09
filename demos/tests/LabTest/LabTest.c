@@ -1,8 +1,8 @@
-#include "LabTool.h"
+#include "LabTest.h"
 
 static char keysave = 'd';
 
-#include "../_Tool.h"
+#include "../_Test.h"
 
 // Overriden Functions
 

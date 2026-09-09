@@ -1,9 +1,9 @@
-#include "SimTool.h"
+#include "SimTest.h"
 
 double killRate = 0.1;
 double feedRate = 0.025; // 0.025;
 
-#include "../_Tool.h"
+#include "../_Test.h"
 
 // Overriden Functions
 
@@ -97,7 +97,7 @@ void _onTickEvent(unsigned secs){
 
 // Generative Function
 
-Rasteron_Image* simTool(char* args) {
+Rasteron_Image* simTest(char* args) {
     Rasteron_Image* backgroundImg = solidImgOp((ImageSize){ 1300, 1300 }, _swatch.base);
     Rasteron_Image* growthImg = growImgOp(backgroundImg, 0.5, 0.1);
     Rasteron_Image* simImg = simulationImgOp(growthImg, 1, conwayRules);
@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
     mode = -1;
     _mainQueue = RASTERON_QUEUE_ALLOC("sim", _create_size(RASTERON_HEIGHT, RASTERON_WIDTH), NSIM_COUNT);
  
-    _run(argc, argv, simTool); // system specific initialization and continuous loop
+    _run(argc, argv, simTest); // system specific initialization and continuous loop
     
     RASTERON_DEALLOC(_outputImg);
     RASTERON_QUEUE_DEALLOC(_mainQueue);

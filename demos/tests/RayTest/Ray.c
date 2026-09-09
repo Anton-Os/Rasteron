@@ -1,4 +1,4 @@
-#include "RayTool.h"
+#include "RayTest.h"
 
 Rasteron_Image* raycastImgOp(ImageSize size, float* points, unsigned pointCount, double dist) {
     Rasteron_Image* raycastImg = RASTERON_ALLOC("raycast", size.height, size.width);
