@@ -5,7 +5,7 @@
 // --------------------------------   Directives for Demo    -------------------------------- //
 
 #ifndef RASTERON_NAME
-#define RASTERON_NAME "Rasteron"
+#define RASTERON_NAME "Rasteron Test"
 #endif
 #ifndef RASTERON_WIDTH
 #define RASTERON_WIDTH 1300

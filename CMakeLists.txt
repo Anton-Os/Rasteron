@@ -13,7 +13,7 @@ file(GLOB support_src support/*.c)
 file(GLOB core_src core/*.c)
 
 list(APPEND loader_src loader/Loader.c loader/ImgBmp.c) # Other file formats have dependencies
-list(APPEND ext_src ext/Spacial.c ext/Queue.c) # Font extension has dependency
+list(APPEND module_targets modules/Spacial.c modules/Queue.c) # Font extension has dependency
 
 # list(APPEND util_src util/_Test.c)
 if(WIN32) # Windows Specific
@@ -21,7 +21,7 @@ if(WIN32) # Windows Specific
 elseif(UNIX AND NOT APPLE) # Unix Specific
     include(FindX11)
     list(APPEND util_src util/Util_Unix.c)
-    SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -lm")
+    # SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -lm")
 endif()
 
 
@@ -32,20 +32,20 @@ include(scripts/extTargets.cmake)
 ## Rasterlib Library for bindings
 
 add_library(Rasterlib SHARED ${support_src} ${core_src})
-target_include_directories(Rasterlib PRIVATE support ext core)
+target_include_directories(Rasterlib PRIVATE support modules core)
 
 ## Rasterutil Library for running tests
 
 add_library(Rasterutil SHARED ${util_src})
-target_include_directories(Rasterutil PUBLIC support loader core ext util)
+target_include_directories(Rasterutil PUBLIC support loader core modules util)
 
 ### Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${ext_src} "demos/tests/_Catalouge.c") # library only
+# add_library(Rasteron STATIC ${core_src} ${module_targets} "demos/tests/_Catalouge.c") # library only
 add_library(Rasteron STATIC
-    ${support_src} ${loader_src} ${core_src} ${ext_src} ${util_src}
+    ${support_src} ${loader_src} ${core_src} ${module_targets} ${util_src}
 )
-target_include_directories(Rasteron PRIVATE loader support core ext util ${EXTERNAL_INSTALL_DIR}/include) # loader support core ext util necessary external libs
+target_include_directories(Rasteron PRIVATE loader support core modules util ${EXTERNAL_INSTALL_DIR}/include) # loader support core modules util necessary external libs
 
 # target_link_libraries(Rasterutil PUBLIC Rasteron)
 # target_link_libraries(Rasteron PUBLIC Rasteron)
@@ -110,7 +110,7 @@ file(GLOB interfaceHeaders
     ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/support/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/loader/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ext/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/modules/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/util/*.h
 )
 install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)
