@@ -1,5 +1,5 @@
-#define RASTERON_ENABLE_ANIM
-#define RASTERON_ENABLE_FONT
+#define RASTERON_ENABLE_QUEUE 1
+#define RASTERON_ENABLE_FONT 1
 
 #define GUI_COUNT 5
 
@@ -38,15 +38,27 @@ int main(int argc, char** argv) {
     };
 
     Rasteron_Queue* dials[GUI_COUNT] = { 
-        loadUI_dial(size, 2), loadUI_dial(size, 4), loadUI_dial(size, 6), loadUI_dial(size, 8), loadUI_dial(size, 16), 
+        loadUI_dial(size, 2), 
+        loadUI_dial(size, 4), 
+        loadUI_dial(size, 6), 
+        loadUI_dial(size, 8), 
+        loadUI_dial(size, 16), 
     };
 
     Rasteron_Queue* sliders[GUI_COUNT] = { 
-        loadUI_slider(size, 2), loadUI_slider(size, 4), loadUI_slider(size, 6), loadUI_slider(size, 8), loadUI_slider(size, 16), 
+        loadUI_slider(size, 2), 
+        loadUI_slider(size, 4), 
+        loadUI_slider(size, 6), 
+        loadUI_slider(size, 8), 
+        loadUI_slider(size, 16), 
     };
 
     Rasteron_Queue* checks[GUI_COUNT] = { 
-        loadUI_checkBtn(MENU_Tiny), loadUI_checkBtn(MENU_Small), loadUI_checkBtn(MENU_Medium), loadUI_checkBtn(MENU_Large), loadUI_checkBtn(MENU_XL),
+        loadUI_checkBtn(MENU_Tiny), 
+        loadUI_checkBtn(MENU_Small), 
+        loadUI_checkBtn(MENU_Medium), 
+        loadUI_checkBtn(MENU_Large), 
+        loadUI_checkBtn(MENU_XL),
     };
 
     /* Rasteron_Queue* guiItems[4][GUI_COUNT] = {

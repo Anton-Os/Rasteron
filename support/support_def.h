@@ -9,8 +9,8 @@
 #include <time.h>
 #include <math.h>
 
-#define ASSETS_DIR "Z:/PROJECT/Rasteron/develop/assets"
-#define MATERIAL_ICONS_FILE "Z:/PROJECT/Rasteron/develop/assets/material-icons-png/_MaterialIconList.txt"
+#define ASSETS_DIR "Z:/PROJECT/Rasteron/master/assets"
+#define MATERIAL_ICONS_FILE "Z:/PROJECT/Rasteron/master/assets/material-icons-png/_MaterialIconList.txt"
 
 #define TRUE 1
 #define FALSE 0
@@ -24,6 +24,8 @@
 #define USE_CUDA_LIBS TRUE // TODO: See if carries over to Topl engine
 
 #if USE_CUDA_LIBS
+// #include <cuda_runtime.h> // see if this include works
+
 #define RASTERON_CALLBACK __device__ // for converting functions to device functions for CUDA
 #else
 #define RASTERON_CALLBACK // for non-cuda builds, this is a no-op

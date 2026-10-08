@@ -9,9 +9,15 @@ add_executable(TileTest demos/tests/TileTest/TileTest.c demos/tests/TileTest/Til
 add_executable(SimTest demos/tests/SimTest/SimTest.c demos/tests/SimTest/Sim.c ${test})
 add_executable(HypnoTest demos/tests/HypnoTest/HypnoTest.c demos/tests/HypnoTest/Hypno.c ${test})
 add_executable(RayTest demos/tests/RayTest/RayTest.c demos/tests/RayTest/Ray.c ${test})
-add_executable(UITest demos/tests/UITest/UITest.c ${test})
+# add_executable(UITest demos/tests/UITest/UITest.c ${test})
+if(SUPPORT_CUDA)
+    # add_executable(CUDATest demos/tests/CUDATest/CUDATest.cu ${test})
+endif()
 
-list(APPEND test_targets LabTest DrawTest TexTest TileTest SimTest HypnoTest RayTest UITest)
+list(APPEND test_targets LabTest DrawTest TexTest TileTest SimTest HypnoTest RayTest) # UITest)
+if(SUPPORT_CUDA)
+    # list(APPEND test_targets CUDATest)
+endif()
 foreach(test_target IN LISTS test_targets)
     set_target_properties(${test_target} PROPERTIES FOLDER "Tests")
     target_include_directories(${test_target} PUBLIC loader support core modules util)
@@ -19,12 +25,5 @@ foreach(test_target IN LISTS test_targets)
 endforeach()
 
 ### Tools 
-
-if(SUPPORT_CUDA)
-    add_executable(CUDAExample demos/CUDAExample.cu)
-    set_target_properties(CUDAExample PROPERTIES FOLDER "Tools")
-    target_include_directories(CUDAExample PUBLIC loader support core modules util)
-    target_link_libraries(CUDAExample Rasteron)
-endif()
 
 # TODO: add tools for testing and debugging that accept command line arguments

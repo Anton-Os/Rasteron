@@ -38,7 +38,7 @@ extern int mode;
 extern double xArg;
 extern double yArg;
 
-#if RASTERON_ENABLE_ANIM
+#if RASTERON_ENABLE_QUEUE
 extern Rasteron_Queue* _mainQueue;
 #endif
 

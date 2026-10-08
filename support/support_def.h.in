@@ -24,6 +24,8 @@
 #define USE_CUDA_LIBS ${SUPPORT_CUDA} // TODO: See if carries over to Topl engine
 
 #if USE_CUDA_LIBS
+// #include <cuda_runtime.h> // see if this include works
+
 #define RASTERON_CALLBACK __device__ // for converting functions to device functions for CUDA
 #else
 #define RASTERON_CALLBACK // for non-cuda builds, this is a no-op

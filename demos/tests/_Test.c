@@ -9,7 +9,7 @@ ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF33
 Rasteron_Image* _savedImg = NULL;
 Rasteron_Image* _outputImg = NULL;
 
-#if RASTERON_ENABLE_ANIM
+#if RASTERON_ENABLE_QUEUE
 Rasteron_Queue* _mainQueue = NULL;
 #endif
 
@@ -197,10 +197,13 @@ void _run(int argc, char** argv, imageArgCallback callback){
 #endif
     char* args = parseArgs(argc, argv);
 
+    puts("\nUse alphabetical characters A to Z to produce images from Test");
+    puts("\nPress numbered keys 0-9 to tweak function parameters and ; to take a screenshot");
+
     if(callback != NULL) _outputImg = callback(args); // pass args here
     if(argc > 1){ // Parse Command LIne
         saveToFile(_outputImg, IMG_Bmp);
-#if RASTERON_ENABLE_ANIM
+#if RASTERON_ENABLE_QUEUE
         if(_mainQueue != NULL) 
             if(_mainQueue->frameCount > 0)
                 for(unsigned f = 0; f < _mainQueue->frameCount; f++)
@@ -208,9 +211,6 @@ void _run(int argc, char** argv, imageArgCallback callback){
 #endif
     } else { // Open a window
 #ifdef _WIN32
-        puts("\nUse alphabetical characters A to Z to produce images from Test");
-        puts("\nPress numbered keys 0-9 to tweak function parameters and ; to take a screenshot");
-
         createWindow(wndProc, RASTERON_NAME, RASTERON_WIDTH, RASTERON_HEIGHT);
         eventLoop(NULL);
 #elif defined __linux__
