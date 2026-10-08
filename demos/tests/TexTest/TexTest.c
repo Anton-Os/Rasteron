@@ -3,7 +3,7 @@
 mixCallback mixer = NULL;
 ColorGrid grid;
 
-#include "../_Test.h"
+#include "../Test.h"
 
 void _onKeyEvent(char key){ 
     static char keysave = 'a';

@@ -10,7 +10,7 @@ mixCallback mixFunc = NULL;
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
-#include "../_Test.h"
+#include "../Test.h"
 
 void _onKeyEvent(char key){
     float r = (((float)rand() / (float)RAND_MAX) - 0.5) * 2;

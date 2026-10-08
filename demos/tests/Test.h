@@ -2,10 +2,14 @@
 
 #include "Loader.h"
 
+#define RASTERON_ENABLE_QUEUE TRUE
+#define RASTERON_ENABLE_SPACE TRUE
+#define RASTERON_ENABLE_FONT TRUE
+
 // --------------------------------   Directives for Demo    -------------------------------- //
 
 #ifndef RASTERON_NAME
-#define RASTERON_NAME "Rasteron Test"
+#define RASTERON_NAME "Test"
 #endif
 #ifndef RASTERON_WIDTH
 #define RASTERON_WIDTH 1300
@@ -52,9 +56,9 @@ extern unsigned _dimens[2];
 #define KEYS_MID_ROW(key) key == 'a' || key == 's' || key == 'd' || key == 'f' || key == 'g' || key == 'h' || key == 'j' || key == 'k' || key == 'l'
 #define KEYS_BOT_ROW(key) key == 'z' || key == 'x' || key == 'c' || key == 'v' || key == 'b' || key == 'n' || key == 'm'
 
-void _onKeyEvent(char key);
-void _onPressEvent(double x, double y);
-void _onTickEvent(unsigned secs);
+extern void _onKeyEvent(char key);
+extern void _onPressEvent(double x, double y);
+extern void _onTickEvent(unsigned secs);
 
 typedef Rasteron_Image* (*imageArgCallback)(char*);
 

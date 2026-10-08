@@ -1,12 +1,12 @@
-#include "Rasteron.h"
-
-#include "../_Test.h"
+#include "../Test.h"
 
 void _onKeyEvent(char key){}
 void _onPressEvent(double x, double y){}
 void _onTickEvent(unsigned secs){}
 
-Rasteron_Image* testImgOp(ImageSize size, coordCallback callback){
+// CUDA
+
+Rasteron_Image* cudaImgOp(ImageSize size, coordCallback callback){
 #if USE_CUDA_LIBS
     return solidImgOp(size, 0xFF00FF00); // green image for success
 #else
@@ -14,14 +14,14 @@ Rasteron_Image* testImgOp(ImageSize size, coordCallback callback){
 #endif
 }
 
-int main(int argc, char** argv) {
-    // Initialize CUDA device
-    cudaSetDevice(0);
+// Main
 
+int main(int argc, char** argv) {
+    cudaInit();
+    
     // Running 
 
-    _outputImg = testImgOp((ImageSize){512, 512}, NULL);
-
+    _outputImg = cudaImgOp((ImageSize){512, 512}, NULL);
     _run(argc, argv, NULL); // system specific initialization and continuous loop
 
     // Deallocation

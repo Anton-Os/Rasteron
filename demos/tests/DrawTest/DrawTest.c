@@ -4,7 +4,7 @@
 PixelPointTable pixelPointTable;
 ColorPointTable colorPointTable;
 
-#include "../_Test.h"
+#include "../Test.h"
 
 // Overriden Functions
 

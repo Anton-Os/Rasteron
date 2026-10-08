@@ -1,16 +1,13 @@
-#define RASTERON_ENABLE_QUEUE 1
-#define RASTERON_ENABLE_FONT 1
-
 #define GUI_COUNT 5
 
 #define RASTERON_HEIGHT 180
 #define RASTERON_WIDTH 650
 
-#include "../_Test.h"
+#include "../Test.h"
 
 void _onKeyEvent(char key){}
 void _onPressEvent(double x, double y){}
-void _onTickEvent(unsigned secs){ // WHY THIS DOESNT WORK?
+void _onTickEvent(unsigned secs){
     unsigned short index = secs % 5;
 
     if(_outputImg != NULL) RASTERON_DEALLOC(_outputImg);

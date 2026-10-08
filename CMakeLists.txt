@@ -1,6 +1,11 @@
 
 cmake_minimum_required(VERSION 3.5...3.10)
-project(Rasteron DESCRIPTION "Rasteron Image Library")
+
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    set(CMAKE_CUDA_ARCHITECTURES 86) # Replace 86 with your target (e.g., 75, 80, 89, 90)
+endif()
+
+project(Rasteron DESCRIPTION "Rasteron Image Library" LANGUAGES C CXX CUDA)
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path" FORCE)
@@ -15,7 +20,7 @@ file(GLOB core_src core/*.c)
 list(APPEND loader_src loader/Loader.c loader/ImgBmp.c) # Other file formats have dependencies
 list(APPEND module_targets modules/Spacial.c modules/Queue.c) # Font extension has dependency
 
-# list(APPEND util_src util/_Test.c)
+# list(APPEND util_src util/Test.c)
 if(WIN32) # Windows Specific
     list(APPEND util_src util/Util_Win.cpp)
 elseif(UNIX AND NOT APPLE) # Unix Specific
@@ -81,19 +86,15 @@ target_include_directories(Rasteron
     $<INSTALL_INTERFACE:include/Rasteron>
 )
 
-# Demos and Tests
+### Demos and Tests
 
 include(scripts/demoTargets.cmake)
 
 ### Installation
 
-install(TARGETS Rasteron
-    EXPORT Rasteron
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    FRAMEWORK DESTINATION lib
-)
+include(scripts/installTargets.cmake)
+
+### Dependencies
 
 add_dependencies(Rasteron zlib libpng libtiff)
 
@@ -105,16 +106,6 @@ if(UNIX)
         # target_link_libraries(Rasteron PUBLIC ffmpeg)
     # endif()
 endif()
-
-file(GLOB interfaceHeaders 
-    ${CMAKE_CURRENT_SOURCE_DIR}/core/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/support/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/loader/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/modules/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/*.h
-)
-install(FILES ${interfaceHeaders} DESTINATION include/Rasteron)
-install(EXPORT Rasteron DESTINATION lib/Rasteron FILE RasteronConfig.cmake)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/findDepends.cmake.in

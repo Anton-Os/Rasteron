@@ -7,7 +7,7 @@ static double dotDist = 0.05;
 PixelPointTable table;
 ColorPointTable colorTable;
 
-#include "../_Test.h"
+#include "../Test.h"
 
 // Overriden Functions
 
