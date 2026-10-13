@@ -102,7 +102,7 @@ void drawWinBmap(HWND hwnd, const BITMAP* bmap){
 }
 
 
-#ifdef RASTERON_ENABLE_ANIM
+#ifdef RASTERON_ENABLE_QUEUE
 
 void encodeQueue(Rasteron_Queue* queue){
 	assert(queue->frameCount > 0);

@@ -1,5 +1,7 @@
 #include "../Test.h"
 
+#include <cuda_runtime.h> // see if this include works
+
 void _onKeyEvent(char key){}
 void _onPressEvent(double x, double y){}
 void _onTickEvent(unsigned secs){}
@@ -17,11 +19,11 @@ Rasteron_Image* cudaImgOp(ImageSize size, coordCallback callback){
 // Main
 
 int main(int argc, char** argv) {
-    cudaInit();
+    auto result = cudaInitDevice(0, 0, 0);
     
     // Running 
 
-    _outputImg = cudaImgOp((ImageSize){512, 512}, NULL);
+    _outputImg = cudaImgOp({ RASTERON_HEIGHT, RASTERON_WIDTH }, NULL);
     _run(argc, argv, NULL); // system specific initialization and continuous loop
 
     // Deallocation

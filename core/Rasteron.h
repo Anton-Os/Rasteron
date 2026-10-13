@@ -6,7 +6,7 @@ extern "C"{
 
 // #include "Loader.h"
 
-#include "type_def.h"
+// #include "type_def.h"
 #include "func_def.h"
 
 // --------------------------------   Basic Operations    -------------------------------- //
@@ -116,9 +116,9 @@ DllExport Rasteron_Image* antialiasImgOp(ref_image_t refImage, unsigned short ti
 // --------------------------------   Extensible Types   -------------------------------- //
 
 #if RASTERON_ENABLE_SPACE
-#include "Spacial.h" // enables spatial types, including sprite and heightmap
+#include "Spacial.h" // enables spacial types, including sprite and heightmap
 #endif
-#if RASTERON_ENABLE_ANIM
+#if RASTERON_ENABLE_QUEUE
 #include "Queue.h" // enables sequenced image types with potential animation support
 #endif
 #if RASTERON_ENABLE_FONT

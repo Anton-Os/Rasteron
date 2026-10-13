@@ -62,8 +62,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
     switch (message) {
     case (WM_CREATE): {
-        if(_outputImg == NULL) _outputImg = solidImgOp((ImageSize){ 1300, 1300}, 0xFFFFFF00);
-        if(_onTickEvent != NULL) SetTimer(hwnd, 0, 1000, &wndTimerCallback);
+        if(_outputImg == NULL) _outputImg = solidImgOp({ 1300, 1300}, 0xFFFFFF00);
+        // if(_onTickEvent != NULL) SetTimer(hwnd, 0, 1000, &wndTimerCallback);
         bmap = createWinBmap(_outputImg);
     }
     case (WM_CHAR): { if(wParam != 0){

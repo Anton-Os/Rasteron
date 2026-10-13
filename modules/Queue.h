@@ -1,5 +1,6 @@
 #ifndef RASTERON_QUEUE_H
 
+
 #include "type_def.h"
 
 // --------------------------------  Queue  -------------------------------- //
@@ -53,7 +54,6 @@ DllExport Rasteron_Queue* loadUI_iconBtn(enum MENU_Size size, char* name);
 DllExport Rasteron_Queue* loadUI_checkBtn(enum MENU_Size size);
 DllExport Rasteron_Queue* loadUI_dial(enum MENU_Size size, unsigned short turns);
 DllExport Rasteron_Queue* loadUI_slider(enum MENU_Size size, unsigned short levels);
-
 
 #define RASTERON_QUEUE_H
 #endif
