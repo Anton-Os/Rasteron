@@ -1,0 +1,221 @@
+#include "Test.h"
+
+// --------------------------------   Objects for Demo    -------------------------------- //
+
+ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88FF88, 0xFF8888FF, 0xFF333333, 0xFFEEEEEE, 0xFF888800, 0xFF880088, 0xFF008888 }, 0xF }; // determines color oprations
+// ColorSwatch _swatch = { 0xFF111111, { 0xFFFF1111, 0xFF11FF11, 0xFF1111FF, 0xFF333333, 0xFFEEEEEE, 0xFF111100, 0xFF110011, 0xFF001111 }, 0xF }; // determines color oprations
+// ColorSwatch _swatch = { 0xFF888888, { 0xFFFF8888, 0xFF88AA88, 0xFF8888AA, 0xFF333333, 0xFFEEEEEE, 0xFFAAAA00, 0xFFAA00AA, 0xFF00AAAA }, 0xF }; // determines color oprations
+
+Rasteron_Image* _savedImg = NULL;
+Rasteron_Image* _outputImg = NULL;
+
+#if RASTERON_ENABLE_QUEUE
+Rasteron_Queue* _mainQueue = NULL;
+#endif
+
+unsigned elapseSecs = 0;
+
+unsigned _dimens[2] = { 2, 2 };
+
+int mode = 1;
+double xArg = 0.0;
+double yArg = 0.0;
+
+// --------------------------------  Functions for Demo    -------------------------------- //
+
+void parseInput(char lastInput){
+    if(isdigit(lastInput)){
+        printf("Parsing numeric input for %d", lastInput);
+        double temp;
+        switch (lastInput) {
+        case '0': xArg = 0.0; yArg = 0.0; mode = 0; break;
+        case '1': mode++; break;
+        case '2': mode--; break;
+        case '3': xArg += 0.05F; break;
+        case '4': xArg -= 0.05F; break;
+        case '5': yArg += 0.05F; break; 
+        case '6': yArg -= 0.05F; break;
+        case '7': temp = xArg; xArg = yArg; yArg = temp; break; // flip arguments 1 and 2
+        case '8': xArg *= -1.0; yArg *= -1.0; break;  // invert arguments
+        case '9': xArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
+            yArg = ((double)rand() / (RAND_MAX / 2.0)) - 1.0;
+            break;
+        }
+    }
+    else if(lastInput == '-'){ if(_dimens[0] > 0) _dimens[0]--; if(_dimens[1] > 0) _dimens[1]--; }
+    else if(lastInput == '='){ if(_dimens[0] < 20) _dimens[0]++; if(_dimens[1] < 20) _dimens[1]++; }
+}
+
+// --------------------------------   Porting layer for Demo    -------------------------------- //
+
+#ifdef _WIN32
+
+BITMAP bmap;
+
+void CALLBACK wndTimerCallback(HWND hwnd, UINT uMsg, UINT timerId, DWORD dwTime){
+    elapseSecs++;
+    if(_onTickEvent != NULL) _onTickEvent(elapseSecs);
+}
+
+LRESULT CALLBACK wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    RECT rect;
+
+    switch (message) {
+    case (WM_CREATE): {
+        if(_outputImg == NULL) _outputImg = solidImgOp((ImageSize){ 1300, 1300}, 0xFFFFFF00);
+        if(_onTickEvent != NULL) SetTimer(hwnd, 0, 1000, &wndTimerCallback);
+        bmap = createWinBmap(_outputImg);
+    }
+    case (WM_CHAR): { if(wParam != 0){
+        GetClientRect(hwnd, &rect);
+        InvalidateRect(hwnd, &rect, FALSE);
+
+        if (_outputImg != NULL && (char)wParam == ';' || (char)wParam == ':')
+            saveToFile(_outputImg, IMG_Bmp);
+        if(_onKeyEvent != NULL){
+            parseInput((char)wParam);
+            _onKeyEvent(wParam);
+            if(_outputImg != NULL){
+                if(_savedImg != NULL) RASTERON_DEALLOC(_savedImg);
+                _savedImg = copyImgOp(_outputImg);
+            }
+            bmap = createWinBmap(_outputImg);
+        }
+    }
+    case (WM_PAINT): {
+        InvalidateRect(hwnd, &rect, TRUE);
+        drawWinBmap(hwnd, &bmap);
+    }
+    case (WM_TIMER): {
+        GetClientRect(hwnd, &rect);
+        InvalidateRect(hwnd, &rect, FALSE);
+        if(_outputImg != NULL && _onTickEvent != NULL) bmap = createWinBmap(_outputImg);
+    }
+    case (WM_LBUTTONDOWN): { if(message == WM_LBUTTONDOWN && _onPressEvent != NULL){
+        _onPressEvent((double)GET_X_LPARAM(lParam) / RASTERON_WIDTH, (double)GET_Y_LPARAM(lParam) / RASTERON_HEIGHT);
+    }}
+    case (WM_RBUTTONDOWN): { if(message == WM_RBUTTONDOWN && _onPressEvent != NULL){
+        _onPressEvent((double)GET_X_LPARAM(lParam) / RASTERON_WIDTH, (double)GET_Y_LPARAM(lParam) / RASTERON_HEIGHT);
+    }}
+    case (WM_CLOSE): {}
+    default: return DefWindowProc(hwnd, message, wParam, lParam);
+    }
+    return 0;
+    }
+}
+
+#elif defined __linux__
+
+Platform_Context unixContext;
+
+void unixProc(char lastKey, double cursorPos[2]){
+    if(_onKeyEvent != NULL){
+        parseInput(lastKey);
+        _onKeyEvent(lastKey);
+        if(_outputImg != NULL){
+            if(_savedImg != NULL) RASTERON_DEALLOC(_savedImg);
+            _savedImg = copyImgOp(_outputImg);
+        }
+    }
+    if(_onPressEvent != NULL) _onPressEvent(cursorPos[0] / RASTERON_WIDTH, cursorPos[1] / RASTERON_HEIGHT);
+    // if(_onTickEvent != NULL) // TODO: Track timer and perform updates
+
+    if(_outputImg != NULL){
+        XImage* bmap = createUnixBmap(&unixContext, _outputImg);
+        drawUnixBmap(&unixContext, bmap);
+        // XDestroyImage(bmap); // destroy after creation
+    }
+}
+
+#endif
+
+// --------------------------------   Callable Methods for Demo    -------------------------------- //
+
+void saveToFile(const Rasteron_Image* image, enum IMG_FileFormat format){
+    assert(image != NULL);
+
+    char fileName[1024];
+    char* fileExt = ".";
+    switch(format){ // should this be defined in Loader.c?
+        case IMG_Bmp: fileExt = ".bmp"; break;
+        case IMG_Png: fileExt = ".png"; break;
+        case IMG_Tiff: fileExt = ".tiff"; break;
+    }
+
+    strcpy(fileName, image->name);
+    strcat(fileName, fileExt);
+
+    unsigned short iters = 0;
+    while(access(fileName, F_OK) == 0){
+        iters++;
+
+        char* tempFileName = "";
+        strncpy(tempFileName, fileName, strlen(fileName) - ((iters > 1)? 6 : 4));
+
+        char newFileName[1024];
+        sprintf(newFileName, "%s%d", tempFileName, iters);
+        strcat(newFileName, fileExt);
+
+        strcpy(fileName, newFileName);
+    }
+    writeFileImageRaw(fileName, format, image->height, image->width, image->data);
+}
+
+char* parseArgs(int argc, char** argv){
+    for(unsigned a = 1; a < argc; a++){
+        char* arg = *(argv + a);
+        unsigned short argSize = strlen(arg);
+        printf("Arg %d with size %d: %s, start is %c\n", a, argSize, arg, *(arg + 0));
+
+        if(*(arg + 0) == (char)'['){ // Key Event
+            char cursorTxt[2][256];
+            unsigned short cursorIdx = 0, cursorTxtIdx = 0;
+            for(unsigned l = 1; l < argSize && *(arg + l) != ']'; l++)
+                if((*(arg + l) == ';' || *(arg + l) == ',') && cursorIdx < 1){
+                    cursorIdx++;
+                    cursorTxtIdx = 0; // reset for new value
+                }
+                else if(cursorTxtIdx < 256){
+                    cursorTxt[cursorIdx][cursorTxtIdx] = *(arg + l);
+                    cursorTxtIdx++;
+                }
+            _onPressEvent(atof(cursorTxt[0]), atof(cursorTxt[1]));
+        }
+        else if(isupper(*(arg + 0)) && getFormat(arg) != IMG_NonValid && _outputImg != NULL)
+            saveToFile(_outputImg, getFormat(arg));
+        // else for(unsigned l = 0; l < argSize; l++) _onKeyEvent(*(arg + l));
+    }
+
+    char* args = convertCharray(argc, argv);
+    printf("Args are %s\n", args);
+    return args;
+}
+
+void _run(int argc, char** argv, imageArgCallback callback){
+#if USE_CUDA_LIBS
+    puts("CUDA acceleration enabled!\n");
+#endif
+    char* args = parseArgs(argc, argv);
+
+    puts("\nUse alphabetical characters A to Z to produce images from Test");
+    puts("\nPress numbered keys 0-9 to tweak function parameters and ; to take a screenshot");
+
+    if(callback != NULL) _outputImg = callback(args); // pass args here
+    if(argc > 1){ // Parse Command LIne
+        saveToFile(_outputImg, IMG_Bmp);
+#if RASTERON_ENABLE_QUEUE
+        if(_mainQueue != NULL) 
+            if(_mainQueue->frameCount > 0)
+                for(unsigned f = 0; f < _mainQueue->frameCount; f++)
+                    saveToFile(queue_getImg(_mainQueue, f), IMG_Bmp);
+#endif
+    } else { // Open a window
+#ifdef _WIN32
+        createWindow(wndProc, RASTERON_NAME, RASTERON_WIDTH, RASTERON_HEIGHT);
+        eventLoop(NULL);
+#elif defined __linux__
+        createWindow(&unixContext, RASTERON_NAME, RASTERON_WIDTH, RASTERON_HEIGHT);
+        eventLoop(unixContext.display, unixContext.window, unixProc);
+#endif
+    }
+}
