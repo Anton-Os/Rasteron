@@ -18,7 +18,7 @@ file(GLOB support_src support/*.c)
 file(GLOB core_src core/*.c)
 
 list(APPEND loader_src loader/Loader.c loader/ImgBmp.c) # Other file formats have dependencies
-list(APPEND module_targets modules/Spacial.c modules/Queue.c) # Font extension has dependency
+list(APPEND plugin_targets plugin/Spacial.c plugin/Queue.c) # Font extension has dependency
 
 # list(APPEND util_src util/Test.c)
 if(WIN32) # Windows Specific
@@ -37,20 +37,20 @@ include(scripts/extTargets.cmake)
 ## Rasterlib Library for bindings
 
 add_library(Rasterlib SHARED ${support_src} ${core_src})
-target_include_directories(Rasterlib PRIVATE support modules core)
+target_include_directories(Rasterlib PRIVATE support plugin core)
 
 ## Rasterutil Library for running tests
 
 add_library(Rasterutil SHARED ${util_src})
-target_include_directories(Rasterutil PUBLIC support loader core modules util)
+target_include_directories(Rasterutil PUBLIC support loader core plugin util)
 
 ### Rasteron Library
 
-# add_library(Rasteron STATIC ${core_src} ${module_targets} "demos/tests/_Catalouge.c") # library only
+# add_library(Rasteron STATIC ${core_src} ${plugin_targets} "tests/_Catalouge.c") # library only
 add_library(Rasteron STATIC
-    ${support_src} ${loader_src} ${core_src} ${module_targets} ${util_src}
+    ${support_src} ${loader_src} ${core_src} ${plugin_targets} ${util_src}
 )
-target_include_directories(Rasteron PRIVATE loader support core modules util ${EXTERNAL_INSTALL_DIR}/include) # loader support core modules util necessary external libs
+target_include_directories(Rasteron PRIVATE loader support core plugin util ${EXTERNAL_INSTALL_DIR}/include) # loader support core plugin util necessary external libs
 
 # target_link_libraries(Rasterutil PUBLIC Rasteron)
 # target_link_libraries(Rasteron PUBLIC Rasteron)

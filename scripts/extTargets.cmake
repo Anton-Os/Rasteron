@@ -120,7 +120,7 @@ endif()
 
 # Support for FreeType
 
-set(SUPPORT_FONT_BAKING TRUE CACHE BOOL "Include font baking module")
+set(SUPPORT_FONT_BAKING TRUE CACHE BOOL "Include font baking plugin")
 if(SUPPORT_FONT_BAKING)
     ExternalProject_Add(FreeType
         GIT_REPOSITORY "https://github.com/freetype/freetype.git"
@@ -137,13 +137,13 @@ if(SUPPORT_FONT_BAKING)
         set(freetype_h "${CMAKE_INSTALL_PREFIX}/include/freetype2")
         find_library(freetype_lib NAMES freetype freetyped PATHS ${CMAKE_INSTALL_PREFIX}/lib)
         message(STATUS "freetype_h is ${freetype_h}, freetype_lib is ${freetype_lib}")
-        list(APPEND module_targets modules/Font.c)
+        list(APPEND plugin_targets plugin/Font.c)
     else()
         set(freetype_found FALSE)
     endif()
 endif()
 
-set(SUPPORT_MEDIA_EXPORT TRUE CACHE BOOL "Include animation encoding module")
+set(SUPPORT_MEDIA_EXPORT TRUE CACHE BOOL "Include animation encoding plugin")
 # if(SUPPORT_MEDIA_EXPORT)
 if(SUPPORT_MEDIA_EXPORT AND NOT WIN32)
 if(MSVC)
