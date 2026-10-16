@@ -12,10 +12,11 @@ The external dependencies being built are mainly included to deal with various c
 ###  Project Structure:
 
 1. **core** contains core functionality to work with image types
-2. **ext** contains extensible type support for image queues, fonts, and heightmaps
+2. **plugin* contains extensible type support for image queues, fonts, and heightmaps
 3. **loader** contains functionality to read/write from PNG, TIFF, and BMP, and optional file formats
-4. **tests** contains executable tests and visualizers for various algorithms
-5. **support** contains helper functions, types, and definitions
-6. **util** contains util files for Windows and Unix specific functionality
-7. **assets** contains fonts, images, and other resources
-8. **scripts** contains build scripts used in the project
+4. **tests** contains executable tests for various algorithms
+5. **tools** contains command line tools for producing 2D raster effects
+6. **support** contains helper functions, types, and definitions
+7. **util** contains util files for Windows and Unix specific functionality
+8. **assets** contains fonts, images, and other resources
+9. **scripts** contains build scripts used in the project

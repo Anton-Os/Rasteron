@@ -25,6 +25,23 @@ foreach(test_target IN LISTS test_targets)
     target_link_libraries(${test_target} Rasteron)
 endforeach()
 
-### Tools 
+### Tools
 
-# TODO: add tools for testing and debugging that accept command line arguments
+set(tool "tools/Tool.c" "tools/ToolArgs.c")
+
+add_executable(FilterTool tools/filters/FilterTool.c tools/filters/Filter.c ${tool})
+add_executable(RadialTool tools/radial/RadialTool.c tools/radial/Radial.c ${tool})
+add_executable(NoiseTool tools/noise/NoiseTool.c tools/noise/Noise.c ${tool})
+add_executable(TileTool tools/tiling/TileTool.c tools/tiling/Tile.c ${tool})
+add_executable(RayTool tools/rays/RayTool.c tools/rays/Ray.c ${tool})
+add_executable(SimTool tools/simulation/SimTool.c tools/simulation/Sim.c ${tool})
+
+list(APPEND tool_targets FilterTool RadialTool NoiseTool TileTool RayTool SimTool)
+foreach(tool_target IN LISTS tool_targets)
+    set_target_properties(${tool_target} PROPERTIES FOLDER "Tools")
+    target_include_directories(${tool_target} PUBLIC loader support core plugin util tools)
+    target_link_libraries(${tool_target} Rasteron)
+    if(UNIX)
+        target_link_libraries(${tool_target} m)
+    endif()
+endforeach()
