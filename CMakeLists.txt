@@ -1,16 +1,22 @@
 
 cmake_minimum_required(VERSION 3.5...3.10)
 
-if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-    set(CMAKE_CUDA_ARCHITECTURES 86) # Replace 86 with your target (e.g., 75, 80, 89, 90)
+find_package(CUDAToolkit)
+if(CUDAToolkit_FOUND)
+    set(SUPPORT_CUDA TRUE CACHE BOOL "CUDA Libraries found" FORCE)
+else()
+    set(SUPPORT_CUDA FALSE CACHE BOOL "CUDA Libraries found" FORCE)
 endif()
 
-project(Rasteron DESCRIPTION "Rasteron Image Library" LANGUAGES C CXX CUDA)
-
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path" FORCE)
-    message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
+list(APPEND langs C) # Language Support
+if(SUPPORT_CUDA)
+	if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    	set(CMAKE_CUDA_ARCHITECTURES 86) # Replace 86 with your target (e.g., 75, 80, 89, 90)
+	endif()
+	list(APPEND support_langs CXX CUDA)
 endif()
+
+project(Rasteron DESCRIPTION "Rasteron Image Library" LANGUAGES ${langs})
 
 # Sources
 
@@ -71,6 +77,7 @@ if(SUPPORT_FONT_BAKING AND NOT freetype_lib STREQUAL "freetype_lib-NOTFOUND")
     endforeach()
 endif()
 if(X11_FOUND)
+    message(STATUS "Linking libraries to X11 for Linux")
     foreach(lib_target IN LISTS library_targets)
         target_include_directories(${lib_target} PUBLIC ${X11_INCLUDE_DIR})
         target_link_libraries(${lib_target} PUBLIC ${X11_LIBRARIES})

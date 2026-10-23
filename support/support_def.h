@@ -9,8 +9,8 @@
 #include <time.h>
 #include <math.h>
 
-#define ASSETS_DIR "Z:/PROJECT/Rasteron/master/assets"
-#define MATERIAL_ICONS_FILE "Z:/PROJECT/Rasteron/master/assets/material-icons-png/_MaterialIconList.txt"
+#define ASSETS_DIR "/home/antonos/Documents/Codex/PROJECT/Rasteron/master/assets"
+#define MATERIAL_ICONS_FILE "/home/antonos/Documents/Codex/PROJECT/Rasteron/master/assets/material-icons-png/_MaterialIconList.txt"
 
 #define TRUE 1
 #define FALSE 0
@@ -21,7 +21,7 @@
 #define USE_IMG_PNG // Enable PNG Support
 #define USE_IMG_BMP // Enable BMP Support
 
-#define USE_CUDA_LIBS TRUE // TODO: See if carries over to Topl engine
+#define USE_CUDA_LIBS FALSE // TODO: See if carries over to Topl engine
 
 #if USE_CUDA_LIBS
 // #include <cuda_runtime.h> // see if this include works
@@ -32,8 +32,8 @@
 #endif
 
 #define RASTERON_ENABLE_SPACE TRUE
-#define RASTERON_ENABLE_QUEUE ON
-#define RASTERON_ENABLE_FONT ON
+#define RASTERON_ENABLE_QUEUE TRUE
+#define RASTERON_ENABLE_FONT FALSE
 
 #define NO_COLOR 0x00000000 // no-op color value
 #define BLACK_COLOR 0xFF000000 // level 0
