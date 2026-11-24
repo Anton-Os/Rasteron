@@ -13,6 +13,7 @@ add_executable(UITest tests/UITest/UITest.c ${test})
 if(SUPPORT_CUDA)
     set(test_cuda "tests/Test.cu")
     add_executable(CUDATest tests/CUDATest/CUDATest.cu ${test_cuda})
+    set_target_properties(CUDATest PROPERTIES CUDA_RUNTIME_LIBRARY Static) # links cudart_static once, Rasteron is linked below
 endif()
 
 list(APPEND test_targets LabTest DrawTest TexTest TileTest SimTest HypnoTest RayTest UITest)

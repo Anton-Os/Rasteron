@@ -1,22 +1,51 @@
 
 cmake_minimum_required(VERSION 3.5...3.10)
 
-find_package(CUDAToolkit)
-if(CUDAToolkit_FOUND)
-    set(SUPPORT_CUDA TRUE CACHE BOOL "CUDA Libraries found" FORCE)
-else()
-    set(SUPPORT_CUDA FALSE CACHE BOOL "CUDA Libraries found" FORCE)
+if(POLICY CMP0104)
+    cmake_policy(SET CMP0104 NEW) # CMAKE_CUDA_ARCHITECTURES sets the architectures of CUDA targets
 endif()
 
-list(APPEND langs C) # Language Support
+project(Rasteron DESCRIPTION "Rasteron Image Library" LANGUAGES C)
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/INSTALL" CACHE PATH "Install Path" FORCE)
+    message("Install Prefix ${CMAKE_INSTALL_PREFIX}")
+endif()
+
+### Language Support
+
+if(WIN32)
+    enable_language(CXX) # util/Util_Win.cpp is C++, without it the window and video functions are never compiled
+endif()
+
+# CUDA is switched on only when a working CUDA compiler is found, it must be detected after project()
+option(RASTERON_USE_CUDA "Build CUDA support when a CUDA compiler is detected" ON)
+set(cuda_detected FALSE)
+if(RASTERON_USE_CUDA)
+    if(CMAKE_VERSION VERSION_LESS 3.18)
+        message(STATUS "CUDA support needs CMake 3.18 or newer")
+    else()
+        include(CheckLanguage)
+        check_language(CUDA)
+        if(CMAKE_CUDA_COMPILER)
+            if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+                set(CMAKE_CUDA_ARCHITECTURES 86) # Replace 86 with your target (e.g., 75, 80, 89, 90)
+            endif()
+            enable_language(CXX) # host compiler used by nvcc
+            enable_language(CUDA)
+            find_package(CUDAToolkit)
+            if(CUDAToolkit_FOUND)
+                set(cuda_detected TRUE)
+            endif()
+        endif()
+    endif()
+endif()
+set(SUPPORT_CUDA ${cuda_detected} CACHE BOOL "CUDA compiler and toolkit detected, set RASTERON_USE_CUDA OFF to build without CUDA" FORCE)
 if(SUPPORT_CUDA)
-	if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-    	set(CMAKE_CUDA_ARCHITECTURES 86) # Replace 86 with your target (e.g., 75, 80, 89, 90)
-	endif()
-	list(APPEND support_langs CXX CUDA)
+    message(STATUS "CUDA support enabled with toolkit ${CUDAToolkit_VERSION} for architectures ${CMAKE_CUDA_ARCHITECTURES}")
+else()
+    message(STATUS "CUDA support disabled")
 endif()
-
-project(Rasteron DESCRIPTION "Rasteron Image Library" LANGUAGES ${langs})
 
 # Sources
 
@@ -44,6 +73,9 @@ include(scripts/extTargets.cmake)
 
 add_library(Rasterlib SHARED ${support_src} ${core_src})
 target_include_directories(Rasterlib PRIVATE support plugin core)
+if(UNIX)
+    target_link_libraries(Rasterlib PUBLIC m) # core uses the math library
+endif()
 
 ## Rasterutil Library for running tests
 
@@ -57,6 +89,10 @@ add_library(Rasteron STATIC
     ${support_src} ${loader_src} ${core_src} ${plugin_targets} ${util_src}
 )
 target_include_directories(Rasteron PRIVATE loader support core plugin util ${EXTERNAL_INSTALL_DIR}/include) # loader support core plugin util necessary external libs
+set_target_properties(Rasteron PROPERTIES POSITION_INDEPENDENT_CODE ON) # also linked into the Rasterutil shared library
+
+# Rasterutil calls queue, loader, and core functions, a shared library needs them resolved when it links
+target_link_libraries(Rasterutil PRIVATE Rasteron)
 
 # target_link_libraries(Rasterutil PUBLIC Rasteron)
 # target_link_libraries(Rasteron PUBLIC Rasteron)
@@ -64,7 +100,7 @@ target_include_directories(Rasteron PRIVATE loader support core plugin util ${EX
 if(WIN32)
     target_link_libraries(Rasteron PUBLIC tiff png ${zlibstatic})
 elseif(UNIX AND NOT APPLE) # Unix Specific
-    target_link_libraries(Rasteron PUBLIC tiff png ${zlib})
+    target_link_libraries(Rasteron PUBLIC tiff png ${zlib} m)
 endif()
 
 list(APPEND library_targets Rasteron Rasterlib Rasterutil)

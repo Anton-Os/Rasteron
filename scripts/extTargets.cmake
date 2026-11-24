@@ -9,12 +9,7 @@ list(APPEND EXTERNAL_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_INSTALL_DIR}")
 list(APPEND EXTERNAL_ARGS "-DCMAKE_BUILD_TYPE:STRING=Debug") # Temporary fix
 list(APPEND EXTERNAL_ARGS "-DCMAKE_POLICY_VERSION_MINIMUM=3.5")
 
-find_package(CUDAToolkit)
-if(CUDAToolkit_FOUND)
-    set(SUPPORT_CUDA TRUE CACHE BOOL "CUDA Libraries found" FORCE)
-else()
-    set(SUPPORT_CUDA FALSE CACHE BOOL "CUDA Libraries found" FORCE)
-endif()
+# CUDA is detected in CMakeLists.txt, which sets SUPPORT_CUDA before this script runs
 
 # Support for ZLIB
 
@@ -95,6 +90,10 @@ else(NOT libtiff_FOUND)
     set(TIFF_SUPPORT_STR "// #define USE_IMG_TIFF")
     message(STATUS "TIFF Support Disabled, build tiff")
 endif(libtiff_FOUND)
+
+if(NOT libpng_FOUND OR NOT libtiff_FOUND)
+    message(WARNING "libpng or libtiff is not built yet, so Rasteron will not link. Build the zlib, libpng, and libtiff targets, then run CMake again")
+endif()
 
 #TODO: Add support for JPEG
 
