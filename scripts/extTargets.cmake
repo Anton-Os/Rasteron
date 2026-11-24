@@ -120,7 +120,7 @@ endif()
 
 # Support for FreeType
 
-set(SUPPORT_FONT_BAKING TRUE CACHE BOOL "Include font baking plugin")
+set(SUPPORT_FONT_BAKING FALSE CACHE BOOL "Include font baking plugin")
 if(SUPPORT_FONT_BAKING)
     ExternalProject_Add(FreeType
         GIT_REPOSITORY "https://github.com/freetype/freetype.git"

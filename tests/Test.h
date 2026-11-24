@@ -2,9 +2,9 @@
 
 #include "Loader.h"
 
-#define RASTERON_ENABLE_QUEUE TRUE
-#define RASTERON_ENABLE_SPACE TRUE
-#define RASTERON_ENABLE_FONT TRUE
+// #define RASTERON_ENABLE_QUEUE TRUE
+// #define RASTERON_ENABLE_SPACE TRUE
+// #define RASTERON_ENABLE_FONT TRUE
 
 // --------------------------------   Directives for Demo    -------------------------------- //
 
