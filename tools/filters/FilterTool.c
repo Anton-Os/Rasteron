@@ -54,7 +54,7 @@ static const Tool_Param _filterParams[] = {
 
 static Rasteron_Image* filterGenerate(ImageSize size, const Rasteron_Image* baseImg){
     if(baseImg == NULL){
-        printf("No reference image, use: load <file.bmp|png|tiff>\n");
+        printf("No reference image, use: load <file.bmp|png|tiff|jpg>\n");
         return solidImgOp(size, 0xFF333333);
     }
     return filterChainImgOp(baseImg, &_filter);
@@ -90,7 +90,7 @@ static int loadReference(const char* fileName){
     FILE* file = fopen(fileName, "rb");
     if(file == NULL){ printf("Cannot open '%s'\n", fileName); return FALSE; }
     fclose(file);
-    if(strlen(fileName) < 5 || getFormat(fileName) == IMG_NonValid){ printf("'%s' is not a bmp, png, or tiff file\n", fileName); return FALSE; }
+    if(strlen(fileName) < 5 || getFormat(fileName) == IMG_NonValid){ printf("'%s' is not a bmp, png, tiff, or jpg file\n", fileName); return FALSE; }
 
     Rasteron_Image* image = loadImgOp(fileName);
     if(image == NULL || image->width == 0 || image->height == 0){ printf("Failed to read '%s'\n", fileName); return FALSE; }

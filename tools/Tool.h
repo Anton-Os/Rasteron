@@ -28,10 +28,14 @@
 #define TOOL_SIZE_MAX 8192 // upper bound for generated image dimensions
 
 #if defined(_WIN32) && USE_CUDA_LIBS
-#define TOOL_ENCODE_ENABLED 1 // encode command available on Windows CUDA builds
+#define TOOL_ENCODE_ENABLED 1 // encode command and --encode argument available on Windows CUDA builds
 #else
 #define TOOL_ENCODE_ENABLED 0
 #endif
+
+#define TOOL_ENCODE_FPS 30 // default frame rate for --encode
+#define TOOL_ENCODE_INTERVAL 1.0 // default seconds between frames for --encode
+#define TOOL_ENCODE_INTERVAL_MAX 600 // longest interval accepted by --encode
 
 // --------------------------------   Parameters    -------------------------------- //
 
@@ -145,6 +149,9 @@ int toolArgs_setParam(void* state, const Tool_Param* param, int argc, char** arg
 void toolArgs_printValue(const void* state, const Tool_Param* param, FILE* stream);
 void toolArgs_printParam(const void* state, const Tool_Param* param); // one help line with current value
 void toolArgs_printCommand(const Tool_Command* command); // one help line
+
+int toolArgs_isEncode(const char* arg); // TRUE for -e and --encode
+int toolArgs_encode(const char* toolName, const char* toolTitle, int argc, char** argv); // encodes saved images with timed intervals, returns the exit code
 
 extern const char* const _toolSideNames[]; // none top bottom left right radial, matches SIDE_Type + 1
 extern const char* const _toolFlipNames[]; // none clock counter upside, matches FLIP_Type + 1

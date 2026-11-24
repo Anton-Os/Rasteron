@@ -12,6 +12,7 @@ enum IMG_FileFormat {
 	IMG_Tiff = 1, 
 	IMG_Png = 2, 
 	IMG_Bmp = 3, 
+	IMG_Jpeg = 4,
 };
 
 // Generic Loader Functions
@@ -21,8 +22,12 @@ DllExport Rasteron_Image* loadImgOp(const char* fileName); // creates an image f
 DllExport void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigned height, unsigned width, unsigned* data);
 
 #ifdef USE_IMG_JPEG // JPEG Loader Functions
-Rasteron_Image* loadImgOp_jpeg(const char* fileName)
+#ifndef JPEG_QUALITY
+#define JPEG_QUALITY 90 // quality from 1 to 100 used by writeFileImageRaw_jpeg
+#endif
+Rasteron_Image* loadImgOp_jpeg(const char* fileName);
 void writeFileImageRaw_jpeg(const char* fileName, unsigned height, unsigned width, unsigned* data);
+void writeFileImageRaw_jpegExt(const char* fileName, unsigned height, unsigned width, unsigned* data, unsigned quality); // custom quality
 #endif
 
 #ifdef USE_IMG_TIFF

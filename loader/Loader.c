@@ -17,6 +17,8 @@ enum IMG_FileFormat getFormat(const char* fileName) {
         return IMG_Png;
     else if(! strcmp(extension, "iff") || ! strcmp(extension, "tif")) // tiff file check
         return IMG_Tiff;
+    else if(! strcmp(extension, "jpg") || ! strcmp(extension, "peg")) // jpeg file check
+        return IMG_Jpeg;
     else return IMG_NonValid;
 }
 
@@ -28,6 +30,9 @@ Rasteron_Image* loadImgOp(const char* fileName){
         case IMG_Bmp: loadImg = loadImgOp_bmp(fileName); break;
         case IMG_Tiff: loadImg = loadImgOp_tiff(fileName); break;
         case IMG_Png: loadImg = loadImgOp_png(fileName); break;
+#ifdef USE_IMG_JPEG
+        case IMG_Jpeg: loadImg = loadImgOp_jpeg(fileName); break;
+#endif
     }
 
     assert(loadImg != NULL);
@@ -53,6 +58,11 @@ void writeFileImageRaw(const char* fileName, enum IMG_FileFormat format, unsigne
 	case IMG_Bmp:
         // if(!strcmp(fileName, "bmp")) strcat(fileName, ".bmp");
         writeFileImageRaw_bmp(fileName, height, width, data);
+        break;
+#endif
+#ifdef USE_IMG_JPEG
+	case IMG_Jpeg:
+        writeFileImageRaw_jpeg(fileName, height, width, data);
         break;
 #endif
 	default: perror("Image Format not supported!"); break;

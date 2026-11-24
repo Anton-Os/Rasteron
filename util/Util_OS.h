@@ -41,7 +41,8 @@ extern "C"{
 	DllExport BITMAP createWinBmap(Rasteron_Image* image); // formatted data call
 	DllExport void drawWinBmap(HWND hwnd, const BITMAP* bmap);
 	// Video
-	DllExport void encodeQueue(Rasteron_Queue* queue);
+	DllExport void encodeQueue(Rasteron_Queue* queue); // writes Test.mp4 with one frame per image at 60 fps
+	DllExport int encodeQueueExt(Rasteron_Queue* queue, const char* fileName, unsigned fps, const double* intervals); // seconds each image is shown, NULL for one frame each
 #elif defined __linux__
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>

@@ -6,14 +6,14 @@ An image loader, manipulation, and synthesis project written in C, with CUDA amd
 
 The external dependencies being built are mainly included to deal with various codecs.
 
-1. zlib, libpng, libtiff and libjpeg for working with common image file formats
+1. zlib, libpng, and libtiff for working with common image file formats (JPEG is built in, see loader/ImgJpeg.c)
 2. FreeType for rasterization of common font file formats
 
 ###  Project Structure:
 
 1. **core** contains core functionality to work with image types
 2. **plugin* contains extensible type support for image queues, fonts, and heightmaps
-3. **loader** contains functionality to read/write from PNG, TIFF, and BMP, and optional file formats
+3. **loader** contains functionality to read/write from PNG, TIFF, BMP, and JPEG, and optional file formats
 4. **tests** contains executable tests for various algorithms
 5. **tools** contains command line tools for producing 2D raster effects
 6. **support** contains helper functions, types, and definitions

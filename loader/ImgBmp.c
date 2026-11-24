@@ -12,13 +12,17 @@ Rasteron_Image* loadImgOp_bmp(const char* fileName){
         if (bmpFile == NULL) return NULL; // errorImgOp("Cannot open file");
 #endif // _WIN32
 	
-	uint16_t typeCheck;
+	uint16_t typeCheck = 0;
 
 	fread(&typeCheck, sizeof(uint16_t), 1, bmpFile);
-        if(typeCheck != 0x4D42) return NULL; // errorImgOp("Invalid file format");
+	if(typeCheck != 0x4D42){ // errorImgOp("Invalid file format");
+		fclose(bmpFile);
+		return NULL;
+	}
 
-	uint32_t offset;
-	int32_t height, width;
+	uint32_t offset = 0, compression = 0;
+	int32_t height = 0, width = 0;
+	uint16_t bitCount = 0;
 
 	fseek(bmpFile, 10, SEEK_SET);
 	fread(&offset, sizeof(uint32_t), 1, bmpFile);
@@ -26,15 +30,35 @@ Rasteron_Image* loadImgOp_bmp(const char* fileName){
 	fread(&width, sizeof(int32_t), 1, bmpFile);
 	fseek(bmpFile, 22, SEEK_SET);
 	fread(&height, sizeof(int32_t), 1, bmpFile);
+	fseek(bmpFile, 28, SEEK_SET);
+	fread(&bitCount, sizeof(uint16_t), 1, bmpFile);
+	fseek(bmpFile, 30, SEEK_SET);
+	fread(&compression, sizeof(uint32_t), 1, bmpFile);
 
-	Rasteron_Image* bmpImg = RASTERON_ALLOC(fileName, (unsigned)abs(height), (unsigned)abs(width));
+	if(width <= 0 || height == 0 || (bitCount != 24 && bitCount != 32) || (compression != 0 && compression != 3)){
+		fclose(bmpFile);
+		return NULL; // only uncompressed 24 and 32 bit files are supported
+	}
+
+	unsigned rows = (unsigned)abs(height), cols = (unsigned)width;
+	unsigned pixelBytes = bitCount / 8;
+	size_t rowBytes = ((((size_t)cols * bitCount) + 31) / 32) * 4; // rows are padded to a multiple of 4 bytes
+
+	Rasteron_Image* bmpImg = RASTERON_ALLOC(fileName, rows, cols);
 
 	fseek(bmpFile, offset, SEEK_SET);
-	uint32_t* data = (uint32_t*)malloc(abs(height) * abs(width) * sizeof(uint32_t));
-	fread(data, sizeof(uint32_t), abs(height) * abs(width), bmpFile);
-	for (unsigned p = 0; p < abs(height) * abs(width); p++) *(bmpImg->data + p) = *(data + p);
+	unsigned char* rowData = (unsigned char*)malloc(rowBytes);
+	for(unsigned r = 0; r < rows; r++){
+		if(fread(rowData, 1, rowBytes, bmpFile) != rowBytes) memset(rowData, 0, rowBytes); // file is cut short
+		uint32_t* dest = bmpImg->data + ((size_t)((height > 0)? rows - 1 - r : r) * cols); // rows are stored bottom to top unless height is negative
+		for(unsigned c = 0; c < cols; c++){
+			const unsigned char* pixel = rowData + ((size_t)c * pixelBytes); // blue, green, red, alpha
+			uint32_t alpha = (pixelBytes == 4)? pixel[3] : 0xFF;
+			*(dest + c) = (alpha << 24) | ((uint32_t)pixel[2] << 16) | ((uint32_t)pixel[1] << 8) | pixel[0];
+		}
+	}
 
-	free(data);
+	free(rowData);
 	fclose(bmpFile);
 
 	return bmpImg;
@@ -60,7 +84,8 @@ void writeFileImageRaw_bmp(const char* fileName, unsigned height, unsigned width
 	// Writing Meta-Data
 
 	// int filesize = 54 + (width * height * 3);
-	int filesize = 54 + (4 * width * height);
+	unsigned rowPad = (4 - ((width * 3) % 4)) % 4; // rows are padded to a multiple of 4 bytes
+	int filesize = 54 + (((width * 3) + rowPad) * height);
 
 	unsigned char bmpFileHeader[14] = { 'B','M', 0,0,0,0, 0,0, 0,0, 54,0,0,0 };
 	unsigned char bmpInfoHeader[40] = { 40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0, 24,0 };
@@ -94,9 +119,10 @@ void writeFileImageRaw_bmp(const char* fileName, unsigned height, unsigned width
 			*(colorBytes + (destOffset * 3) + 2) = *(data + srcOffset) >> 16;
 		}
 
-	for (int r = 0; r < height; r++)
+	for (int r = 0; r < height; r++){
 		fwrite(colorBytes + (r * width * 3), 3, width, bmpFile);
-		// fwrite(padding, 1, (4 - (width * 3) % 4) % 4, bmpFile);
+		fwrite(padding, 1, rowPad, bmpFile);
+	}
 	
 	free(colorBytes);
 	fclose(bmpFile);

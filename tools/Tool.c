@@ -200,6 +200,7 @@ static const char* formatExt(enum IMG_FileFormat format){
     switch(format){
         case IMG_Png: return ".png";
         case IMG_Tiff: return ".tiff";
+        case IMG_Jpeg: return ".jpg";
         default: return ".bmp";
     }
 }
@@ -323,6 +324,7 @@ static int cmd_save(int argc, char** argv){
         if(toolArgs_equals(argv[a], "bmp")) format = IMG_Bmp;
         else if(toolArgs_equals(argv[a], "png")) format = IMG_Png;
         else if(toolArgs_equals(argv[a], "tiff") || toolArgs_equals(argv[a], "tif")) format = IMG_Tiff;
+        else if(toolArgs_equals(argv[a], "jpg") || toolArgs_equals(argv[a], "jpeg")) format = IMG_Jpeg;
         else {
             snprintf(stem, sizeof(stem), "%s", argv[a]);
             enum IMG_FileFormat nameFormat = (strlen(stem) > 3)? getFormat(stem) : IMG_NonValid;
@@ -413,7 +415,7 @@ static const Tool_Command _builtins[] = {
     { "apply", "", "commit the current image (filters stack on it, generators mix with it)", cmd_apply },
     { "revert", "[steps|all]", "undo the last set, apply, or tool command", cmd_revert },
     { "reset", "[all]", "restore default parameters ('all' also drops the applied image)", cmd_reset },
-    { "save", "[bmp|png|tiff] [name]", "write the current image to a file", cmd_save },
+    { "save", "[bmp|png|tiff|jpg] [name]", "write the current image to a file", cmd_save },
     { "frames", "[count]", "write an animation sequence as numbered bmp files", cmd_frames },
 #if TOOL_ENCODE_ENABLED
     { "encode", "[count]", "encode an animation sequence to mp4 (Windows, CUDA builds)", cmd_encode },
@@ -789,8 +791,10 @@ static void runConsole(void){ // headless interactive mode
 
 static void printUsage(void){
     printf("Usage: %s [-n|--headless] [-b|--batch] [commands separated by ';']\n", _desc->title);
+    printf("       %s -e|--encode [-o name.mp4] [--fps n] <image|seconds>...\n", _desc->title);
     printf("  -n, --headless   no preview window, commands are read from the console\n");
     printf("  -b, --batch      run the given commands, save if nothing was saved, then exit\n");
+    printf("  -e, --encode     encode saved images to a video with timed intervals (Windows, CUDA builds), -e -h for details\n");
     printf("Example: %s -b \"set seed 42; save png\"\n", _desc->title);
 }
 
@@ -801,7 +805,8 @@ int tool_run(const Tool_Desc* desc, int argc, char** argv){
     int firstCommand = 1;
     for(; firstCommand < argc; firstCommand++){
         const char* arg = argv[firstCommand];
-        if(!strcmp(arg, "-n") || !strcmp(arg, "--headless")) _headless = TRUE;
+        if(toolArgs_isEncode(arg)) return toolArgs_encode(desc->name, desc->title, argc - firstCommand - 1, argv + firstCommand + 1); // see ToolArgs.c
+        else if(!strcmp(arg, "-n") || !strcmp(arg, "--headless")) _headless = TRUE;
         else if(!strcmp(arg, "-b") || !strcmp(arg, "--batch")){ batch = TRUE; _headless = TRUE; }
         else if(!strcmp(arg, "-h") || !strcmp(arg, "--help")){
             printUsage();

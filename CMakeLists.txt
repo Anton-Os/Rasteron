@@ -17,7 +17,7 @@ endif()
 file(GLOB support_src support/*.c)
 file(GLOB core_src core/*.c)
 
-list(APPEND loader_src loader/Loader.c loader/ImgBmp.c) # Other file formats have dependencies
+list(APPEND loader_src loader/Loader.c loader/ImgBmp.c loader/ImgJpeg.c) # Other file formats have dependencies
 list(APPEND plugin_targets plugin/Spacial.c plugin/Queue.c) # Font extension has dependency
 
 # list(APPEND util_src util/Test.c)

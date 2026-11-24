@@ -327,3 +327,206 @@ void toolArgs_printCommand(const Tool_Command* command){
     snprintf(usage, sizeof(usage), "%s %s", command->name, (command->usage != NULL)? command->usage : "");
     printf("  %-30s %s\n", usage, command->desc);
 }
+
+// --------------------------------   Encoding    -------------------------------- //
+//
+//      <Tool> --encode [-o name.mp4] [--fps n] <image|seconds>...
+//
+//      Loads saved images into a queue in the order given and encodes them to a video. A number is an
+//      interval in seconds: before the first image it applies to every image, after an image (or a
+//      wildcard) it is how long that image stays on screen before the next one. Compiled in only for
+//      Windows builds configured with CUDA, see TOOL_ENCODE_ENABLED.
+
+int toolArgs_isEncode(const char* arg){ return arg != NULL && (!strcmp(arg, "-e") || !strcmp(arg, "--encode")); }
+
+static void printEncodeUsage(const char* toolTitle){
+    printf("Usage: %s --encode [-o name.mp4] [--fps n] <image|seconds>...\n", toolTitle);
+    printf("  image     bmp, png, tiff, or jpg file saved earlier, wildcards such as frame*.bmp are expanded in name order\n");
+    printf("  seconds   interval between frames: before the first image it sets the interval for every image (default %g),\n", (double)TOOL_ENCODE_INTERVAL);
+    printf("            after an image or wildcard it is how long those images stay on screen\n");
+    printf("  -o        output file, defaults to the tool name, existing files are never overwritten\n");
+    printf("  --fps     frame rate of the video from 1 to 120 (default %d), intervals are rounded to whole frames\n", TOOL_ENCODE_FPS);
+    printf("Example: %s --encode -o intro.mp4 0.5 title.png 3 frame*.bmp 0.04 credits.png 2\n", toolTitle);
+}
+
+#if TOOL_ENCODE_ENABLED
+
+typedef struct { char path[1024]; double interval; } Encode_Entry; // interval below zero means the default
+
+static int isImageName(const char* name){ return strlen(name) > 4 && getFormat(name) != IMG_NonValid; }
+
+static Rasteron_Image* loadEncodeImage(const char* fileName){ // like loadImgOp, but unreadable files come back as NULL
+    switch(getFormat(fileName)){
+#ifdef USE_IMG_BMP
+        case IMG_Bmp: return loadImgOp_bmp(fileName);
+#endif
+#ifdef USE_IMG_PNG
+        case IMG_Png: return loadImgOp_png(fileName);
+#endif
+#ifdef USE_IMG_TIFF
+        case IMG_Tiff: return loadImgOp_tiff(fileName);
+#endif
+#ifdef USE_IMG_JPEG
+        case IMG_Jpeg: return loadImgOp_jpeg(fileName);
+#endif
+        default: return NULL;
+    }
+}
+
+static int naturalCompare(const void* entry1, const void* entry2){ // name order where frame9 sorts before frame10
+    const unsigned char* str1 = (const unsigned char*)((const Encode_Entry*)entry1)->path;
+    const unsigned char* str2 = (const unsigned char*)((const Encode_Entry*)entry2)->path;
+    while(*str1 != '\0' && *str2 != '\0'){
+        if(isdigit(*str1) && isdigit(*str2)){
+            unsigned long number1 = 0, number2 = 0;
+            for(; isdigit(*str1); str1++) number1 = (number1 * 10) + (unsigned long)(*str1 - '0');
+            for(; isdigit(*str2); str2++) number2 = (number2 * 10) + (unsigned long)(*str2 - '0');
+            if(number1 != number2) return (number1 < number2)? -1 : 1;
+        }
+        else {
+            int char1 = tolower(*str1), char2 = tolower(*str2);
+            if(char1 != char2) return (char1 < char2)? -1 : 1;
+            str1++; str2++;
+        }
+    }
+    return (int)*str1 - (int)*str2;
+}
+
+static unsigned addEncodeFiles(Encode_Entry* entries, unsigned count, const char* name){ // returns the new count, wildcards add every match
+#ifdef _WIN32
+    if(strchr(name, '*') != NULL || strchr(name, '?') != NULL){ // the Windows console passes wildcards on unexpanded
+        unsigned first = count;
+        char folder[1024];
+        snprintf(folder, sizeof(folder), "%s", name);
+        size_t folderLength = strlen(folder);
+        while(folderLength > 0 && folder[folderLength - 1] != '\\' && folder[folderLength - 1] != '/') folderLength--;
+        folder[folderLength] = '\0'; // keeps the folder part of the pattern
+
+        WIN32_FIND_DATAA found;
+        HANDLE search = FindFirstFileA(name, &found);
+        if(search != INVALID_HANDLE_VALUE){
+            do {
+                if(!(found.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && isImageName(found.cFileName) && count < TOOL_FRAMES_MAX){
+                    snprintf(entries[count].path, sizeof(entries[count].path), "%s%s", folder, found.cFileName);
+                    entries[count++].interval = -1.0;
+                }
+            } while(FindNextFileA(search, &found));
+            FindClose(search);
+        }
+        qsort(entries + first, count - first, sizeof(Encode_Entry), naturalCompare);
+        return count;
+    }
+#endif
+    if(count < TOOL_FRAMES_MAX){
+        snprintf(entries[count].path, sizeof(entries[count].path), "%s", name);
+        entries[count++].interval = -1.0;
+    }
+    return count;
+}
+
+int toolArgs_encode(const char* toolName, const char* toolTitle, int argc, char** argv){
+    Encode_Entry* entries = (Encode_Entry*)calloc(TOOL_FRAMES_MAX, sizeof(Encode_Entry));
+    double* intervals = (double*)calloc(TOOL_FRAMES_MAX, sizeof(double));
+    if(entries == NULL || intervals == NULL){ free(entries); free(intervals); return 1; }
+
+    unsigned count = 0, groupStart = 0; // groupStart is the first image added by the latest image argument
+    double interval = TOOL_ENCODE_INTERVAL;
+    int fps = TOOL_ENCODE_FPS;
+    char output[1024];
+    snprintf(output, sizeof(output), "%s", toolName);
+    int ok = TRUE;
+
+    for(int a = 0; a < argc && ok; a++){ // Parsing arguments
+        const char* arg = argv[a];
+        double seconds;
+        if(!strcmp(arg, "-h") || !strcmp(arg, "--help")){ printEncodeUsage(toolTitle); free(entries); free(intervals); return 0; }
+        else if(!strcmp(arg, "-o") || !strcmp(arg, "--output")){
+            if(a + 1 >= argc){ printf("Missing file name after %s\n", arg); ok = FALSE; }
+            else snprintf(output, sizeof(output), "%s", argv[++a]);
+        }
+        else if(!strcmp(arg, "--fps")){
+            if(a + 1 >= argc || !toolArgs_int(argv[a + 1], &fps) || fps < 1 || fps > 120){ printf("--fps takes a frame rate from 1 to 120\n"); ok = FALSE; }
+            else a++;
+        }
+        else if(isImageName(arg) || strchr(arg, '*') != NULL || strchr(arg, '?') != NULL){ // image or wildcard
+            if(count >= TOOL_FRAMES_MAX){ printf("At most %d images can be encoded at once\n", TOOL_FRAMES_MAX); ok = FALSE; }
+            groupStart = count;
+            count = addEncodeFiles(entries, count, arg);
+            if(count == groupStart && ok){ printf("No image files match '%s'\n", arg); ok = FALSE; }
+            if(count == TOOL_FRAMES_MAX) printf("Reached the limit of %d images, any further ones are left out\n", TOOL_FRAMES_MAX);
+        }
+        else if(toolArgs_float(arg, &seconds)){
+            if(seconds <= 0.0 || seconds > TOOL_ENCODE_INTERVAL_MAX){ printf("Interval '%s' must be above 0 and at most %d seconds\n", arg, TOOL_ENCODE_INTERVAL_MAX); ok = FALSE; }
+            else if(count == 0) interval = seconds; // applies to every image without its own interval
+            else for(unsigned e = groupStart; e < count; e++) entries[e].interval = seconds;
+        }
+        else { printf("'%s' is neither an image file (bmp, png, tiff, jpg) nor an interval in seconds\n", arg); ok = FALSE; }
+    }
+    if(ok && count == 0){ printf("No images to encode\n"); ok = FALSE; }
+    if(!ok){ printEncodeUsage(toolTitle); free(entries); free(intervals); return 1; }
+
+    Rasteron_Queue* queue = NULL; // Loading images into the queue
+    ImageSize size = { 0, 0 };
+    double duration = 0.0;
+    for(unsigned e = 0; e < count && ok; e++){
+        FILE* file = fopen(entries[e].path, "rb");
+        if(file == NULL){ printf("Cannot open '%s'\n", entries[e].path); ok = FALSE; break; }
+        fclose(file);
+
+        Rasteron_Image* image = loadEncodeImage(entries[e].path);
+        if(image == NULL || image->data == NULL || image->width < 2 || image->height < 2){
+            printf("Cannot read '%s' as an image\n", entries[e].path);
+            if(image != NULL) RASTERON_DEALLOC(image);
+            ok = FALSE;
+            break;
+        }
+
+        if(queue == NULL){ // the first image decides the video size, which the encoder needs to be even
+            size = _create_size(image->height & ~1u, image->width & ~1u);
+            double megabytes = (double)size.width * size.height * 4.0 * count / (1024.0 * 1024.0);
+            printf("Encoding %u image(s) at %ux%u, %d fps\n", count, size.width, size.height, fps);
+            if(megabytes > 1024.0) printf("  the queue needs about %.1f GB of memory\n", megabytes / 1024.0);
+            queue = RASTERON_QUEUE_ALLOC(toolName, size, count);
+        }
+        if(image->width != size.width || image->height != size.height){
+            Rasteron_Image* sizedImg = resizeImgOp(size, image);
+            if(e > 0) printf("  %s resized from %ux%u\n", entries[e].path, image->width, image->height);
+            RASTERON_DEALLOC(image);
+            image = sizedImg;
+        }
+        for(unsigned p = 0; p < image->width * image->height; p++) *(image->data + p) |= 0xFF000000; // video frames are opaque
+        queue_addImg(queue, image, (unsigned short)e);
+        RASTERON_DEALLOC(image);
+
+        intervals[e] = (entries[e].interval > 0.0)? entries[e].interval : interval;
+        duration += intervals[e];
+    }
+
+    if(ok){ // Encoding
+        char fileName[1100], stem[1024];
+        snprintf(stem, sizeof(stem), "%s", output);
+        size_t length = strlen(stem);
+        if(length > 4 && toolArgs_equals(stem + length - 4, ".mp4")) stem[length - 4] = '\0';
+        snprintf(fileName, sizeof(fileName), "%s.mp4", stem);
+        for(unsigned i = 1; access(fileName, F_OK) == 0 && i < 100000; i++) snprintf(fileName, sizeof(fileName), "%s_%u.mp4", stem, i);
+
+        ok = encodeQueueExt(queue, fileName, (unsigned)fps, intervals);
+        if(ok) printf("Encoded %s, %u image(s) over %.2f seconds\n", fileName, count, duration);
+        else printf("Encoding %s failed\n", fileName);
+    }
+
+    if(queue != NULL) RASTERON_QUEUE_DEALLOC(queue);
+    free(entries);
+    free(intervals);
+    return ok? 0 : 1;
+}
+
+#else
+
+int toolArgs_encode(const char* toolName, const char* toolTitle, int argc, char** argv){
+    for(int a = 0; a < argc; a++) if(!strcmp(argv[a], "-h") || !strcmp(argv[a], "--help")) printEncodeUsage(toolTitle);
+    printf("--encode needs a Windows build with CUDA detected, this build has it switched off\n");
+    return 1;
+}
+
+#endif
